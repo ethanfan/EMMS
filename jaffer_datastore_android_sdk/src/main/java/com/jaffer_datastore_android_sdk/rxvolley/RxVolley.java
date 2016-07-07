@@ -53,7 +53,7 @@ public class RxVolley {
 
     public static void setContext(Context context){
         mContext =context;
-        CACHE_FOLDER = FileUtils.getSaveFolder("EMMS",mContext);
+        CACHE_FOLDER = FileUtils.getSaveFolder("cache",mContext);
     }
 
 
