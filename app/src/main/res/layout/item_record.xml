@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="100dp">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp">
+        <TextView
+            android:id="@+id/id_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="组别：D"/>
+        <TextView
+            android:id="@+id/id_num_device"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设备编号：0115"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true" />
+        <TextView
+            android:id="@+id/id_device_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="设备名称：平车"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/id_group"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:id="@+id/id_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="任务状态： "
+            android:layout_alignTop="@+id/tv_task_state"
+            android:layout_toLeftOf="@+id/tv_task_state" />
+
+        <TextView
+            android:id="@+id/tv_task_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="进行中 "
+            android:layout_alignTop="@+id/id_device_name"
+            android:layout_alignRight="@+id/id_num_device" />
+
+        <TextView
+            android:id="@+id/id_start_time_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="开始时间： "
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:id="@+id/tv_repair_time_process"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2016.05.05 10:22 "
+            android:layout_alignTop="@+id/id_start_time_description"
+            android:layout_toRightOf="@+id/id_start_time_description" />
+
+        <TextView
+            android:id="@+id/id_end_time_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="结束时间： "
+            android:layout_below="@+id/id_start_time_description"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:id="@+id/tv_start_time_process"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2016.05.05 10:22 "
+            android:layout_below="@+id/tv_repair_time_process"
+            android:layout_toRightOf="@+id/id_end_time_description" />
+
+        <TextView
+            android:id="@+id/id_task_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="任务描述： "
+            android:layout_below="@+id/id_end_time_description"
+            android:layout_alignParentLeft="true" />
+
+        <TextView
+            android:id="@+id/tv_task_describe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="任务描述任务描述 "
+            android:layout_alignTop="@+id/id_task_description"
+            android:layout_alignRight="@+id/tv_start_time_process" />
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

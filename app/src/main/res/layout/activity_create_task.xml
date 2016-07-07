@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:drop="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_main">
+
+    <include android:id="@+id/top_menu"
+        layout="@layout/toolbar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/top_menu">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_main"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1.6"
+                    android:gravity="end"
+                    android:layout_marginRight="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/task_type"
+                    android:textColor="@color/text_color"
+                    android:textSize="18sp" />
+
+                <com.emms.ui.DropEditText
+                    android:id="@+id/task_type"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="wrap_content"
+                    drop:drawableRight="@mipmap/drop_down"
+                    drop:dropMode="flow_parent"
+                    drop:hintColor="@color/hint_color"
+                    drop:hint="@string/select" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1.6"
+                    android:gravity="end"
+                    android:layout_marginRight="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/task_subtype_name"
+                    android:textColor="@color/text_color"
+                    android:textSize="18sp" />
+
+                <com.emms.ui.DropEditText
+                    android:id="@+id/task_subtype"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="wrap_content"
+                    drop:drawableRight="@mipmap/drop_down"
+                    drop:hintColor="@color/hint_color"
+                    drop:dropMode="flow_parent"
+                    drop:hint="@string/select" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1.6"
+                    android:gravity="end"
+                    android:layout_marginRight="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/creater"
+                    android:textColor="@color/text_color"
+                    android:textSize="18sp" />
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="wrap_content">
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/edit_bg_shape" >
+
+                        <EditText
+                            android:id="@+id/create_task"
+                            android:layout_width="0dip"
+                            android:layout_weight="1"
+                            android:hint="@string/scan"
+                            android:textColorHint="@color/hint_color"
+                            android:textColor="@color/text_color"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textViewStyle"
+                            android:background="@null"
+                            android:height="40dip"
+                            android:textSize="18sp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginTop="2dip"
+                            android:layout_marginRight="8dp"
+                            android:src="@mipmap/scan"
+                            android:layout_marginBottom="2dip"
+                            android:paddingRight="2dip" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/create_task_action"
+                        android:layout_width="43dp"
+                        android:layout_height="43dp"
+                        android:background="@color/transparent"
+                        android:layout_alignParentRight="true"
+                        android:contentDescription="@null"/>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1.6"
+                    android:gravity="end"
+                    android:layout_marginRight="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/group"
+                    android:textColor="@color/text_color"
+                    android:textSize="18sp" />
+                <com.emms.ui.DropEditText
+                    android:id="@+id/group"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="wrap_content"
+                    drop:drawableRight="@mipmap/drop_down"
+                    drop:dropMode="flow_parent"
+                    drop:hintColor="@color/hint_color"
+                    drop:hint="@string/select" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1.6"
+                    android:gravity="end"
+                    android:layout_marginRight="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/equipment_name"
+                    android:textColor="@color/text_color"
+                    android:textSize="18sp" />
+                <com.emms.ui.DropEditText
+                    android:id="@+id/device_name"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="wrap_content"
+                    drop:drawableRight="@mipmap/drop_down"
+                    drop:dropMode="flow_parent"
+                    drop:hintColor="@color/hint_color"
+                    drop:hint="@string/select" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.6"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="end"
+                    android:layout_marginRight="8dp"
+                    android:text="@string/equipment_num"
+                    android:textColor="@color/text_color"
+                    android:textSize="18sp" />
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="wrap_content">
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@drawable/edit_bg_shape" >
+
+                        <EditText
+                            android:id="@+id/device_num"
+                            android:layout_width="0dip"
+                            android:layout_weight="1"
+                            android:hint="@string/scan"
+                            android:textColorHint="@color/hint_color"
+                            android:layout_height="wrap_content"
+                            style="?android:attr/textViewStyle"
+                            android:background="@null"
+                            android:textColor="@color/text_color"
+                            android:height="40dip"
+                            android:textSize="18sp" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginTop="2dip"
+                            android:layout_marginRight="8dp"
+                            android:src="@mipmap/scan"
+                            android:layout_marginBottom="2dip"
+                            android:paddingRight="2dip" />
+
+                    </LinearLayout>
+                    <ImageView
+                        android:id="@+id/device_num_action"
+                        android:layout_width="43dp"
+                        android:layout_height="43dp"
+                        android:background="@color/transparent"
+                        android:layout_alignParentRight="true"
+                        android:contentDescription="@null"/>
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1.6"
+                    android:gravity="end"
+                    android:layout_marginRight="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="13dp"
+                    android:text="@string/task_description"
+                    android:textColor="@color/text_color"
+                    android:textSize="18sp" />
+
+                <RelativeLayout
+                    android:id="@+id/edit_resume"
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="130dp"
+                    android:background="@android:color/white"
+                    android:padding="10dp">
+
+                    <EditText
+                        android:id="@+id/edit_task_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:hint="@string/task_description_hint"
+                        android:textSize="18sp"
+                        android:textColor="@color/text_color"
+                        android:textColorHint="@color/hint_color" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/sure"
+                android:layout_width="280dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/yellow"
+                android:padding="2dp"
+                android:text="@string/warning_message_confirm"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

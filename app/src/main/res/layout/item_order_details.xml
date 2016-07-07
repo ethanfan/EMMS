@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="16dp"
+        android:layout_marginTop="13dp"
+        android:background="@color/click_item"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
+        <TextView
+            android:id="@+id/id_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:text="@string/device_num"
+            android:textSize="17sp"/>
+        <TextView
+            android:id="@+id/tv_device_num_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:paddingLeft="5dp"
+            android:layout_toRightOf="@id/id_group"
+            android:text="0115"
+            android:textSize="17sp"/>
+        <TextView
+            android:id="@+id/id_num_device"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/device_name"
+            android:textColor="@color/text_color"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/tv_device_name_details"
+            android:textSize="17sp"/>
+        <TextView
+            android:id="@+id/tv_device_name_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:text="平车"
+            android:layout_marginRight="40dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:textSize="17sp"/>
+
+        <TextView
+            android:id="@+id/id_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/task_state"
+            android:textColor="@color/text_color"
+            android:layout_marginTop="5dp"
+            android:textSize="17sp"
+            android:layout_below="@+id/id_end_time_description"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:id="@+id/tv_task_state_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="未执行 "
+            android:textColor="@color/pause_color"
+            android:textSize="17sp"
+            android:layout_alignTop="@+id/id_status"
+            android:layout_toRightOf="@+id/id_status"
+            android:layout_toEndOf="@+id/id_status" />
+
+        <TextView
+            android:id="@+id/id_start_time_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/start_time"
+            android:textColor="@color/text_color"
+            android:layout_alignParentLeft="true"
+            android:textSize="17sp"
+            android:layout_below="@+id/id_group" />
+
+        <TextView
+            android:id="@+id/tv_start_time_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2016.05.05 10:23 "
+            android:textColor="@color/text_color"
+            android:layout_alignTop="@+id/id_start_time_description"
+            android:layout_toRightOf="@+id/id_start_time_description"
+            android:textSize="17sp"/>
+
+        <TextView
+            android:id="@+id/id_end_time_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/end_time"
+            android:textColor="@color/text_color"
+            android:layout_below="@+id/id_start_time_description"
+            android:layout_alignParentLeft="true"
+            android:textSize="17sp"/>
+
+        <TextView
+            android:id="@+id/tv_end_time_details"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2016.05.05 10:22 "
+            android:textColor="@color/text_color"
+            android:layout_alignTop="@+id/id_end_time_description"
+            android:layout_toRightOf="@+id/id_end_time_description"
+            android:textSize="17sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:text="何邵勃"
+            android:textSize="17sp"
+            android:id="@+id/id_participant"
+            android:layout_alignTop="@+id/textView20"
+            android:layout_alignRight="@+id/tv_device_name_details"
+            android:layout_alignEnd="@+id/tv_device_name_details" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:textColor="@color/text_color"
+            android:text="@string/participant"
+            android:layout_alignTop="@+id/tv_task_state_details"
+            android:layout_alignLeft="@+id/id_num_device"
+            android:layout_alignStart="@+id/id_num_device"
+            android:id="@+id/textView20" />
+    </RelativeLayout>
+</RelativeLayout>

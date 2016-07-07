@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:tl="http://schemas.android.com/apk/res-auto"
+    android:background="@color/bg_main"
+    android:layout_height="match_parent">
+    <com.flyco.tablayout.SegmentTabLayout
+        android:id="@+id/tl_1"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="13dp"
+       android:layout_marginBottom="6dp"
+        tl:tl_bar_color="#ffffff"
+        tl:tl_indicator_color="@color/main_color"
+        tl:tl_tab_padding="20dp"
+        tl:tl_indicator_corner_radius="9dp"
+        android:visibility="gone"/>
+    <ListView
+        android:id="@+id/processing_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:divider="@android:color/transparent"
+        android:listSelector="@android:color/transparent"
+        android:cacheColorHint="@android:color/transparent"
+        android:scrollbars="none"
+        android:clipToPadding="true">
+    </ListView>
+</LinearLayout>

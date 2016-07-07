@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.emms">
+
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_INSTALL_SESSIONS" />
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature android:name="android.hardware.nfc" />
+
+    <application
+        android:name=".activity.AppAplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/emms"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".activity.LoginActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.MachineActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <activity
+            android:name=".activity.SearchRecordActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+
+        <activity
+            android:name=".activity.MainActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.CreateTaskActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".activity.searchActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity android:name=".activity.RepairTaskACtivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".activity.TaskDetailsActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".activity.PhotoActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activity.GetPicActivity"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activity.ImageGridActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+    </application>
+
+</manifest>

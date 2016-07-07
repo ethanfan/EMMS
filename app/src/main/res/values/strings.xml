@@ -1,0 +1,95 @@
+<resources>
+    <string name="app_name">EMMS</string>
+
+    <string name="login_id_hint">请输入用户名</string>
+    <string name="login_password_hint">请输入密码</string>
+
+    <string name="warning_title">溫馨提示</string>
+
+    <string name="network_error">请检测网络是否正常,谢谢!</string>
+    <string name="warning_message_confirm">确定</string>
+
+    <string name="warning_message_no_user">请输入员工号,谢谢!</string>
+    <string name="warning_message_no_password">请输入用戶密码,谢谢!</string>
+    <string name="exit">退出</string>
+    <string name="warning_message_error">登录失败，员工号或密码错误</string>
+    <string name="warning_message_frozen">帐号已冻结</string>
+    <string name="task_history_query">任务历史查询</string>
+    <string name="repair">报修</string>
+    <string name="move_car">搬车</string>
+    <string name="other">其他</string>
+    <string name="login">登录</string>
+    <string name="logining">登录中. . .</string>
+    <string name="public_machine">公共机</string>
+
+    <string name="login_error">员工号不存在或密码错误</string>
+    <string name="create_task">创建任务</string>
+    <string name="repair_tag">维修</string>
+    <string name="maintenance">维护</string>
+    <string name="team_status">班组人员状态查询</string>
+    <string name="select">请下拉</string>
+    <string name="scan">请扫描</string>
+    <string name="task_type">任务类型: </string>
+    <string name="creater"> 创   建  人: </string>
+    <string name="equipment_num"> 机 台 号: </string>
+    <string name="group">组&#160;&#160;&#160;&#160;&#160;别: </string>
+    <string name="equipment_name"> 设备名称: </string>
+    <string name="task_subtype_name"> 设备子类型: </string>
+    <string name="task_description"> 任务描述:</string>
+    <string name="task_description_hint"> 任务描述</string>
+    <string name="hint_search_box">搜索</string>
+    <string name="nothing_found">没有搜索结果~</string>
+    <string name="title_search_task_type">任务类型</string>
+    <string name="title_search_task_subtype">设备子类型</string>
+    <string name="title_search_group">组&#160;&#160;&#160;&#160;&#160;别</string>
+    <string name="title_search_equipment_name">设备名称</string>
+    <string name="dialog_tips">您的任务已创建成功!</string>
+    <string name="waiting">正在提交，请稍后. . .</string>
+    <string name="tips_nfc">请在手机背面刷卡</string>
+    <string name="error">提示</string>
+    <string name="no_nfc">在这个装置没有发现NFC功能</string>
+    <string name="nfc_disabled">NFC没有启用。请转到无线设置来启用.</string>
+
+    <string name="repair_task">维修任务</string>
+    <string name="working">进行中</string>
+    <string name="paused">已暂停</string>
+    <string name="group_type">组别：</string>
+    <string name="device_num">设备编号：</string>
+    <string name="device_name">设备名称：&#160;&#160; </string>
+    <string name="task_state">任务状态：&#160;&#160; </string>
+    <string name="repair_time">报修时间：&#160;&#160;</string>
+    <string name="start_time">开始时间：&#160;&#160; </string>
+    <string name="end_time">结束时间：&#160;&#160;</string>
+    <string name="task_descripbe">任务描述：&#160;&#160; </string>
+    <string name="pending_orders">待接单</string>
+    <string name="orders">接单</string>
+    <string name="task_state_order">任务状态：</string>
+    <string name="device_name_order">设备名称：</string>
+    <string name="create_time">创建时间：</string>
+    <string name="linked_order">已结单</string>
+    <string name="task_number">任务单号：</string>
+    <string name="issue_time">发出时间：</string>
+    <string name="receive_time">接单时间：</string>
+    <string name="device_count">设备总数：</string>
+    <string name="dealed_count">已处理：</string>
+    <string name="participant">参与人：</string>
+    <string name="task_details">任务详情</string>
+    <string name="task_state_details_non">未执行</string>
+    <string name="task_state_details_finish">已完成</string>
+    <string name="no_creater">暂无</string>
+    <string name="task_picture">任务图片：</string>
+    <string name="take_photo">拍照</string>
+    <string name="select_from_album">从相册中选取</string>
+    <string name="cancel">取消</string>
+    <string name="album">相册</string>
+    <string name="max_picture">最多选择9张图片</string>
+    <string name="finish">完成</string>
+    <string name="task_reason">任务原因</string>
+    <string name="task_reason_add">任务原因：</string>
+    <string name="task_note">任务备注：</string>
+    <string name="hint_task_note">请输入任务备注</string>
+    <!--<string name="error">Error</string>-->
+    <!--<string name="no_nfc">No NFC found on this device</string>-->
+    <!--<string name="nfc_disabled">NFC is not enabled. Please go to the wireless settings to enable it.</string>-->
+    <!--<string name="menu_main_clear_title">Clear all</string>-->
+</resources>

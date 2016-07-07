@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:drawablePadding="3.0dip"
+        android:padding="7.0dip"
+        android:gravity="center"
+        android:textColor="@color/text_color"
+        android:text="停发"
+        android:textSize="18.0sp" />
+</LinearLayout>

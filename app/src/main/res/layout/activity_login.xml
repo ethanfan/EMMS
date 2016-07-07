@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_main"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:id="@+id/log"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:contentDescription="@null"
+        android:src="@mipmap/logo"
+        android:visibility="visible" />
+
+    <RelativeLayout
+        android:id="@+id/input_user_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:padding="10dp"
+        android:background="@android:color/white"
+        android:visibility="visible" >
+
+        <ImageView
+            android:id="@+id/icon_input_user"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentLeft="true"
+            android:background="@android:color/white"
+            android:contentDescription="@null"
+            android:padding="4dp"
+            android:src="@mipmap/icon_input_user" />
+
+        <EditText
+            android:id="@+id/inputUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/icon_input_user"
+            android:background="@null"
+            android:hint="@string/login_id_hint"
+            android:paddingLeft="20dp"
+            android:paddingRight="0dp"
+            android:singleLine="true"
+            android:textColor="@color/text_color"
+            android:textColorHint="#909090" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/input_password_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/input_user_layout"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:padding="10dp"
+        android:background="@android:color/white"
+        android:visibility="visible" >
+
+        <ImageView
+            android:id="@+id/icon_input_password"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentLeft="true"
+            android:background="@android:color/white"
+            android:contentDescription="@null"
+            android:padding="4dp"
+            android:src="@mipmap/icon_input_password" />
+
+        <EditText
+            android:id="@+id/inputPassWord"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/icon_input_password"
+            android:background="@null"
+            android:hint="@string/login_password_hint"
+            android:inputType="textPassword"
+            android:paddingLeft="20dp"
+            android:paddingRight="0dp"
+            android:singleLine="true"
+            android:textColor="@color/text_color"
+            android:textColorHint="#909090" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/buttondecrisp"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/login"
+            android:textColor="@color/text_login"
+            android:textSize="20sp"
+            android:id="@+id/login" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/bg_line" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/public_machine"
+            android:textColor="@color/text_login"
+            android:textSize="20sp"
+            android:id="@+id/machine" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/buttondecrisp"
+        android:background="@color/bg_line" />
+
+</RelativeLayout>

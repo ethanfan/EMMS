@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="bg_main">#EEEEEE</color>
+    <color name="bg_line">#dddddd</color>
+
+
+    <color name="text_login">#a7293d</color>
+    <color name="text_color">#333333</color>
+    <color name="black">#000</color>
+    <color name="main_color">#a9293d</color>
+    <color name="tag_color">#ECD3D9</color>
+    <color name="hint_color">#999999</color>
+    <color name="transparent">#00000000</color>
+    <color name="yellow">#fbca00</color>
+    <color name="white">#ffffff</color>
+    <color name="divider">#E5E5E5</color>
+    <color name="kprogresshud_default_color">#b1000000</color>
+    <color name="kprogresshud_grey_color">#449E9E9E</color>
+    <color name="processing_color">#1c9e03</color>
+    <color name="pause_color">#fe0100</color>
+    <color name="order_color">#ff8602</color>
+    <color name="click_item">#fff2db</color>
+</resources>

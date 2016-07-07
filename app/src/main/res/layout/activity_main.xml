@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_main"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@color/main_color">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:contentDescription="@null"
+            android:src="@mipmap/avatar"
+            android:id="@+id/imageView" />
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:background="@color/transparent"
+            android:id="@+id/avatar" />
+
+        <Button
+            android:layout_width="70dp"
+            android:layout_height="35dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:background="@mipmap/bg_btn"
+            android:text="@string/exit"
+            android:textColor="@android:color/white"
+            android:id="@+id/button2" />
+
+        <Button
+            android:id="@+id/btn_exit"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@color/transparent"
+            android:layout_alignLeft="@+id/button2" />
+    </RelativeLayout>
+    <include layout="@layout/view_tag"/>
+
+</LinearLayout>

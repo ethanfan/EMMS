@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="select_tab_status">
+        <item>处理中</item>
+        <item>待接单</item>
+        <item>已结单</item>
+    </string-array>
+
+    <string-array name="select_tab_time">
+        <item>1个月内</item>
+        <item>2个月内</item>
+        <item>3个月内</item>
+    </string-array>
+    <string-array name="menu_list">
+        <item>工作量录入</item>
+        <item>完成任务</item>
+        <item>扫描</item>
+        <item>转单</item>
+        <item>邀请协助</item>
+        <item>子任务管理</item>
+        <item>故障总结</item>
+    </string-array>
+</resources>

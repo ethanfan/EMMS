@@ -1,0 +1,157 @@
+package com.emms.fragment;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.emms.R;
+import com.emms.activity.TaskDetailsActivity;
+import com.emms.adapter.TaskAdapter;
+import com.emms.bean.TaskBean;
+import com.emms.util.LongToDate;
+import com.flyco.tablayout.SegmentTabLayout;
+import com.flyco.tablayout.listener.OnTabSelectListener;
+
+import java.util.ArrayList;
+
+/**
+ * Created by jaffer.deng on 2016/6/21.
+ */
+public class LinkedOrdersFragment extends Fragment{
+    private ListView listView;
+    private TaskAdapter taskAdapter;
+    private ArrayList<TaskBean> datas1;
+    private ArrayList<TaskBean> datas2;
+    private ArrayList<TaskBean> datas3;
+    private Context mContext;
+    private SegmentTabLayout tabLayout_1;
+    private String[] mTitles ;
+    private ArrayList<TaskBean> data;
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mContext =getActivity();
+        View v = inflater.inflate(R.layout.fr_processing, null);
+        tabLayout_1 = (SegmentTabLayout) v.findViewById(R.id.tl_1);
+        tabLayout_1.setVisibility(View.VISIBLE);
+        listView = (ListView) v.findViewById(R.id.processing_list);
+        return v;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mTitles = getResources().getStringArray(R.array.select_tab_time);
+        tabLayout_1.setTabData(mTitles);
+        datas1 =new ArrayList<TaskBean>(){
+            {
+                add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+            }
+        };
+
+        datas2 =new ArrayList<TaskBean>(){
+            {
+                add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("一只勃","C","0118","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+            }
+        };
+        datas3 =new ArrayList<TaskBean>(){
+            {
+                add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+                add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
+            }
+        };
+
+        taskAdapter =new TaskAdapter(datas1) {
+            @Override
+            public View getCustomView(View convertView, int position, ViewGroup parent) {
+                TaskViewHolder holder;
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(mContext).inflate(R.layout.item_fr_linked_order, parent, false);
+                    holder = new TaskViewHolder();
+                    holder.tv_creater = (TextView) convertView.findViewById(R.id.tv_creater_linked);
+                    holder.tv_group = (TextView) convertView.findViewById(R.id.tv_device_num);
+                    holder.tv_device_num = (TextView) convertView.findViewById(R.id.tv_device_name_detail);
+                    holder.tv_device_name = (TextView) convertView.findViewById(R.id.tv_device_name_linked);
+                    holder.tv_repair_time = (TextView) convertView.findViewById(R.id.tv_repair_time_process);
+                    holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
+                    holder.tv_end_time = (TextView) convertView.findViewById(R.id.tv_end_time_linked);
+                    holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe_linked);
+                    convertView.setTag(holder);
+                }else {
+                    holder = (TaskViewHolder) convertView.getTag();
+                }
+                holder.tv_creater.setText(data.get(position).getCreater());
+                holder.tv_group.setText(data.get(position).getGroup());
+                holder.tv_device_num.setText(data.get(position).getDeviceNum());
+                holder.tv_device_name.setText(data.get(position).getDeviceName());
+                String repairTime = LongToDate.longPointDate(data.get(position).getRepairTime());
+                holder.tv_repair_time.setText(repairTime);
+
+                String startTime = LongToDate.longPointDate(data.get(position).getStartTime());
+                holder.tv_start_time.setText(startTime);
+                String endTime = LongToDate.longPointDate(data.get(position).getEndTime());
+                holder.tv_end_time.setText(endTime);
+                holder.tv_task_describe.setText(data.get(position).getTaskDescriptions());
+                return convertView;
+            }
+        };
+        listView.setAdapter(taskAdapter);
+        data=new ArrayList<TaskBean>();
+        data.addAll(datas1);
+        tabLayout_1.setOnTabSelectListener(new OnTabSelectListener() {
+            @Override
+            public void onTabSelect(int position) {
+
+                if (position == 0) {
+                    data.clear();
+                    data.addAll(datas1);
+                    taskAdapter.setDatas(data);
+                } else if (position == 1) {
+                    data.clear();
+                    data.addAll(datas1);
+                    data.addAll(datas2);
+                    taskAdapter.setDatas(data);
+                } else if (position == 2) {
+                    data.clear();
+                    data.addAll(datas1);
+                    data.addAll(datas2);
+                    data.addAll(datas3);
+                    taskAdapter.setDatas(data);
+                }
+            }
+
+            @Override
+            public void onTabReselect(int position) {
+
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startActivity(new Intent(mContext, TaskDetailsActivity.class));
+            }
+        });
+    }
+}
