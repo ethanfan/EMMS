@@ -2,6 +2,11 @@ package com.emms;
 
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 //暂时未启用
 public final class ConfigurationManager {
@@ -25,20 +30,5 @@ public final class ConfigurationManager {
 
     }
 
-
-//    public SQLiteDatabase getSqliteStore(final Context context) {
-//        databaseContext = new DatabaseContext(context);
-//        try {
-//            return  databaseContext.openOrCreateDatabase(DB_NAME+".db",Context.MODE_PRIVATE,null,new DatabaseErrorHandler() {
-//                @Override
-//                public void onCorruption(SQLiteDatabase dbObj) {
-//                    Toast.makeText(context,"数据库出错，请重启App",Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//        }catch (Exception e){
-//            e.printStackTrace();
-//        }
-//      return null;
-//    }
 
 }

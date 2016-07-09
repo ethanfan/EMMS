@@ -25,12 +25,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.emms.R;
+import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.record.NdefMessageParser;
 import com.emms.record.ParsedNdefRecord;
 import com.emms.ui.DropEditText;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.NFCDialog;
 import com.emms.ui.TipsDialog;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.jaffer_datastore_android_sdk.datastore.DataElement;
 
 import java.nio.charset.Charset;
 import java.text.DateFormat;
@@ -135,7 +140,22 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
     private void initEvent() {
 
+        String rawQuery = "select Team_ID,TeamName from Operator where Operator_ID=4204";
+        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+                EPassSqliteStoreOpenHelper.SCHEMA_ARTICLE, null);
+//        GetUserList();
+        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
 
+            @Override
+            public void onSuccess(DataElement dataElement) {
+                System.out.println(dataElement);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                System.out.println(throwable.getMessage());
+            }
+        });
         final  ArrayList<String> mList = new ArrayList<String>() {
             {
                 add("维修");
