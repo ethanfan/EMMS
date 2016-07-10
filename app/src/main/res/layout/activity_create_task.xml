@@ -66,7 +66,8 @@
                     android:layout_gravity="center_vertical"
                     android:text="@string/task_subtype_name"
                     android:textColor="@color/text_color"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:id="@+id/task_subtype_name_id" />
 
                 <com.emms.ui.DropEditText
                     android:id="@+id/task_subtype"

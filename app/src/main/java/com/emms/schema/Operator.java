@@ -34,7 +34,7 @@ import com.jaffer_datastore_android_sdk.schema.Model;
  *
  */
 @DatabaseTable(tableName = "Operator")
-public class Operator extends Model<Operator, String> implements Identity<String> {
+public class Operator extends Model<Operator, Long> implements Identity<Long> {
 
 	// For QueryBuilder to be able to find the fields
 	public static final String OPERATOR_ID = "Operator_ID";
@@ -77,162 +77,163 @@ public class Operator extends Model<Operator, String> implements Identity<String
 	public static final int STATUS_APPROVED = 1;
 	public static final int STATUS_REJECTED = 2;
 
-	@DatabaseField(id = true, 
+	@DatabaseField(id = true,
 			columnName = OPERATOR_ID, canBeNull = false)
 	@SerializedName(OPERATOR_ID)
 	@Expose
-	private int id;
+	private Long id;
 
 	@DatabaseField(columnName = OPERATOR_KY_ID, canBeNull = false)
 	@SerializedName(OPERATOR_KY_ID)
 	@Expose
 	private String operator_KyID;
 
-	@DatabaseField(columnName = OPERATOR_NO, canBeNull = true)
+	@DatabaseField(columnName = OPERATOR_NO, canBeNull = false)
 	@SerializedName(OPERATOR_NO)
 	@Expose
 	private String operator_no;
 
 
-	@DatabaseField(columnName = NAME, canBeNull = true)
+	@DatabaseField(columnName = NAME, canBeNull = false)
 	@SerializedName(NAME)
 	@Expose
 	private String name;
 
-	@DatabaseField(columnName = SEX, canBeNull = true)
+	@DatabaseField(columnName = SEX, canBeNull = false)
 	@SerializedName(SEX)
 	@Expose
 	private String sex;
 
-	@DatabaseField(columnName = IC_CARD_ID, canBeNull = true)
+	@DatabaseField(columnName = IC_CARD_ID, canBeNull = false)
 	@SerializedName(IC_CARD_ID)
 	@Expose
 	private String ic_cardId;
 
-	@DatabaseField(columnName = FACTORY_ID, canBeNull = true)
+	@DatabaseField(columnName = FACTORY_ID, canBeNull = false)
 	@SerializedName(FACTORY_ID)
 	@Expose
 	private String factoryId;
 
-	@DatabaseField(columnName = DEPARTMENT_ID, canBeNull = true)
+	@DatabaseField(columnName = DEPARTMENT_ID, canBeNull = false)
 	@SerializedName(DEPARTMENT_ID)
 	@Expose
 	private String departmentId;
 
 
-	@DatabaseField(columnName = TEAM_ID, canBeNull = true)
+	@DatabaseField(columnName = TEAM_ID, canBeNull = false)
 	@SerializedName(TEAM_ID)
 	@Expose
 	private String teamId;
 
-	@DatabaseField(columnName = TEAM_NAME, canBeNull = true)
+	@DatabaseField(columnName = TEAM_NAME, canBeNull = false)
 	@SerializedName(TEAM_NAME)
 	@Expose
 	private String teamName;
 
-	@DatabaseField(columnName = POST, canBeNull = true)
+	@DatabaseField(columnName = POST, canBeNull = false)
 	@SerializedName(POST)
 	@Expose
 	private String post;
 
-	@DatabaseField(columnName = STATUS, canBeNull = true)
+	@DatabaseField(columnName = STATUS, canBeNull = false)
 	@SerializedName(STATUS)
 	@Expose
 	private String status;
 
-	@DatabaseField(columnName = BORNDATE, canBeNull = true, dataType = DataType.DATE_STRING, format = "yyyy-MM-dd HH:mm:ss")
+	@DatabaseField(columnName = BORNDATE, canBeNull = false, dataType = DataType.DATE_STRING, format = "yyyy-MM-dd HH:mm:ss")
 	@SerializedName(BORNDATE)
 	@Expose
 	private Date bornDate;
 
-	@DatabaseField(columnName = JOINDATE, canBeNull = true, dataType = DataType.DATE_STRING, format = "yyyy-MM-dd HH:mm:ss")
+	@DatabaseField(columnName = JOINDATE, canBeNull = false, dataType = DataType.DATE_STRING, format = "yyyy-MM-dd HH:mm:ss")
 	@SerializedName(JOINDATE)
 	@Expose
 	private Date joinDate;
 
-	@DatabaseField(columnName = MAIL, canBeNull = true)
+	@DatabaseField(columnName = MAIL, canBeNull = false)
 	@SerializedName(MAIL)
 	@Expose
 	private String mail;
 
-	@DatabaseField(columnName = ACCOUNT, canBeNull = true)
+	@DatabaseField(columnName = ACCOUNT, canBeNull = false)
 	@SerializedName(ACCOUNT)
 	@Expose
 	private String account;
 
-	@DatabaseField(columnName = MOBILE, canBeNull = true)
+	@DatabaseField(columnName = MOBILE, canBeNull = false)
 	@SerializedName(MOBILE)
 	@Expose
 	private String moblie;
 
-	@DatabaseField(columnName = EDUCATION, canBeNull = true)
+	@DatabaseField(columnName = EDUCATION, canBeNull = false)
 	@SerializedName(EDUCATION)
 	@Expose
 	private String education;
 
 
-	@DatabaseField(columnName = CREDENTIAL, canBeNull = true)
+	@DatabaseField(columnName = CREDENTIAL, canBeNull = false)
 	@SerializedName(CREDENTIAL)
 	@Expose
 	private String credential;
 
-	@DatabaseField(columnName = FROMFACTORY, canBeNull = true)
+	@DatabaseField(columnName = FROMFACTORY, canBeNull = false)
 	@SerializedName(FROMFACTORY)
 	@Expose
 	private String fromFactory;
 
-	@DatabaseField(columnName = TIMESTAMP, canBeNull = true)
+	@DatabaseField(columnName = TIMESTAMP, canBeNull = false , dataType = DataType.BYTE_ARRAY)
+	@BlobDatabaseField(baseURI = "/resources/" + TIMESTAMP)
 	@SerializedName(TIMESTAMP)
 	@Expose
 	private String timetamp;
 
-	@DatabaseField(columnName = CREATETIME, canBeNull = true, dataType = DataType.DATE_STRING, format = "yyyy-MM-dd HH:mm:ss")
+	@DatabaseField(columnName = CREATETIME, canBeNull = false, dataType = DataType.DATE_STRING, format = "yyyy-MM-dd HH:mm:ss")
 	@SerializedName(CREATETIME)
 	@Expose
 	private Date createdTime;
 
-	@DatabaseField(columnName = WX_USER_ID, canBeNull = true)
+	@DatabaseField(columnName = WX_USER_ID, canBeNull = false)
 	@SerializedName(WX_USER_ID)
 	@Expose
 	private String wx_user_id;
 
-	@DatabaseField(columnName = WX_USER_SYSUSERID, canBeNull = true)
+	@DatabaseField(columnName = WX_USER_SYSUSERID, canBeNull = false)
 	@SerializedName(WX_USER_SYSUSERID)
 	@Expose
 	private String wx_user_sysuserid;
 
-	@DatabaseField(columnName = WX_USER_CODE, canBeNull = true)
+	@DatabaseField(columnName = WX_USER_CODE, canBeNull = false)
 	@SerializedName(WX_USER_CODE)
 	@Expose
 	private String wx_user_code;
 
-	@DatabaseField(columnName = WX_USER_WORKTYPE, canBeNull = true)
+	@DatabaseField(columnName = WX_USER_WORKTYPE, canBeNull = false)
 	@SerializedName(WX_USER_WORKTYPE)
 	@Expose
 	private String wx_user_worktype;
 
-	@DatabaseField(columnName = WX_USER_ISPRINCIPAL, canBeNull = true)
+	@DatabaseField(columnName = WX_USER_ISPRINCIPAL, canBeNull = false)
 	@SerializedName(WX_USER_ISPRINCIPAL)
 	@Expose
 	private String wx_user_isprincipal;
 
-	@DatabaseField(columnName = WX_USER_POSTID, canBeNull = true)
+	@DatabaseField(columnName = WX_USER_POSTID, canBeNull = false)
 	@SerializedName(WX_USER_POSTID)
 	@Expose
 	private String wx_user_postid;
 
-	@DatabaseField(columnName = WX_USER_GROUPID, canBeNull = true)
+	@DatabaseField(columnName = WX_USER_GROUPID, canBeNull = false)
 	@SerializedName(WX_USER_GROUPID)
 	@Expose
 	private String wx_user_groupid;
 
-	@DatabaseField(columnName = WX_USER_SYSUSERLOGINID, canBeNull = true)
+	@DatabaseField(columnName = WX_USER_SYSUSERLOGINID, canBeNull = false)
 	@SerializedName(WX_USER_SYSUSERLOGINID)
 	@Expose
 	private String wx_user_sysuserloginid;
 
 
-	@DatabaseField(columnName = KY_UPDATE_LOG_DATE, canBeNull = true, dataType = DataType.DATE_STRING, format = "yyyy-MM-dd HH:mm:ss")
+	@DatabaseField(columnName = KY_UPDATE_LOG_DATE, canBeNull = false, dataType = DataType.DATE_STRING, format = "yyyy-MM-dd HH:mm:ss")
 	@SerializedName(KY_UPDATE_LOG_DATE)
 	@Expose
 	private Date ky_update_log_date;
@@ -240,12 +241,15 @@ public class Operator extends Model<Operator, String> implements Identity<String
 
 	@Override
 	public int hashCode() {
-		return id;
+		return id.hashCode();
 	}
 
+
+
+
 	@Override
-	public String getIdentity() {
-		return id+"";
+	public Long getIdentity() {
+		return id;
 	}
 
 	@Override
@@ -258,11 +262,11 @@ public class Operator extends Model<Operator, String> implements Identity<String
 		// package visibility
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

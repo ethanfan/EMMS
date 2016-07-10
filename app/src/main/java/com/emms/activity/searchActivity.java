@@ -139,6 +139,7 @@ public class searchActivity extends BaseActivity implements View.OnClickListener
                     Intent intent=new Intent();
                     intent.putExtra(BACK_CONTENT, mResultAdapter.getItem(position).toString());
                     intent.putExtra(CreateTaskActivity.FORM_TYPE,type);
+                    intent.putExtra(CreateTaskActivity.SELECTINDEX,position);
                     setResult(RESULT_CODE, intent);
                     finish();
                 } else {

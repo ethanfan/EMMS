@@ -15,6 +15,9 @@ import android.nfc.tech.MifareUltralight;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.renderscript.Element;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
@@ -26,16 +29,22 @@ import android.widget.Toast;
 
 import com.emms.R;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
+import com.emms.httputils.HttpUtils;
 import com.emms.record.NdefMessageParser;
 import com.emms.record.ParsedNdefRecord;
+import com.emms.schema.DataDictionary;
+import com.emms.schema.Equipment;
+import com.emms.schema.Operator;
 import com.emms.ui.DropEditText;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.NFCDialog;
 import com.emms.ui.TipsDialog;
+import com.emms.util.SharedPreferenceManager;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.jaffer_datastore_android_sdk.datastore.DataElement;
+import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 
 import java.nio.charset.Charset;
 import java.text.DateFormat;
@@ -51,10 +60,11 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
     private Context mContext;
 
-    private DropEditText task_type,task_subtype,group,device_name;
-    private EditText create_task ,task_description,device_num;
+    private DropEditText task_type, task_subtype, group, device_name;
+    private EditText create_task, task_description, device_num;
+    private TextView task_subtype_name_desc;
     private Button btn_sure;
-    private ImageView create_task_action,device_num_action;
+    private ImageView create_task_action, device_num_action;
     private KProgressHUD hud;
 
     private NfcAdapter mAdapter;
@@ -64,11 +74,10 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     private AlertDialog mDialog;
     private static final DateFormat TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
 
-    private int width ;
-
-    public final static String FORM_TYPE ="formtype";
-    public final static String FORM_CONTENT ="content";
-    public final static int REQUEST_CODE =10000;
+    public final static String FORM_TYPE = "formtype";
+    public final static String FORM_CONTENT = "content";
+    public final static String SELECTINDEX = "indexlist";
+    public final static int REQUEST_CODE = 10000;
     public final static int TASK_TYPE = 1;
     public final static int TASK_SUBTYPE = 2;
     public final static int DEVICE_NAME = 3;
@@ -77,12 +86,15 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     public final static int DEVICE_NUM = 6;
     public final static int TASK_DESCRIPTION = 7;
 
-    private int  nfctag =0;
-    private ArrayList<String> datalist;
+    private int nfctag = 0;
+    private ArrayList<String> mDeviceTypelist;
 
-    private ArrayList<String> mDatalist = new ArrayList<String>();
+    private ArrayList<ObjectElement> mDeviceType = new ArrayList<ObjectElement>();
+    private ArrayList<String> mSubType;
+    private ArrayList<String> mTeamNamelist;
+    private ArrayList<String> mDeviceNamelist;
     private NFCDialog nfcDialog;
-    private Cursor cursor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,8 +108,8 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         mAdapter = NfcAdapter.getDefaultAdapter(this);
         mPendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        mNdefPushMessage = new NdefMessage(new NdefRecord[] { newTextRecord(
-                "Message from NFC Reader :-)", Locale.ENGLISH, true) });
+        mNdefPushMessage = new NdefMessage(new NdefRecord[]{newTextRecord(
+                "Message from NFC Reader :-)", Locale.ENGLISH, true)});
 //        HttpUtils.get(this, "", new HttpParams(), new HttpCallback() {
 //            @Override
 //            public void onSuccess(String t) {
@@ -140,15 +152,83 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
     private void initEvent() {
 
-        String rawQuery = "select Team_ID,TeamName from Operator where Operator_ID=4204";
+        getTaskType();
+        getOperator("4204");
+        group.getmEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                getDeviceName(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        device_name.getDropImage().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mTeamNamelist.size() > 0) {
+                    group.showOnclik();
+                } else {
+                    Toast.makeText(mContext, "请先选择组别", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        device_name.getmEditText().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mTeamNamelist.size() > 0) {
+                    Intent intent = new Intent(CreateTaskActivity.this, searchActivity.class);
+                    intent.putExtra(FORM_TYPE, DEVICE_NAME);
+                    intent.putStringArrayListExtra(FORM_CONTENT, mDeviceNamelist);
+                    startActivityForResult(intent, REQUEST_CODE);
+                } else {
+                    Toast.makeText(mContext, "请先选择组别", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+    }
+
+    private void getDeviceName(String groupName) {
+        String rawQuery = "select distinct EquipmentClass,EquipmentName from Equipment where UseTeam_ID in (select Team_ID from Team where TeamName =\"" + groupName + "\")";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
-                EPassSqliteStoreOpenHelper.SCHEMA_ARTICLE, null);
-//        GetUserList();
+                EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
 
             @Override
-            public void onSuccess(DataElement dataElement) {
-                System.out.println(dataElement);
+            public void onSuccess(final DataElement element) {
+                System.out.println(element);
+                mDeviceNamelist = new ArrayList<String>();
+                if (element != null && element.isArray()
+                        && element.asArrayElement().size() > 0) {
+                    mDeviceNamelist.clear();
+                    for (int i = 0; i < element.asArrayElement().size(); i++) {
+                        mDeviceNamelist.add(element.asArrayElement().get(i).asObjectElement().get(Equipment.EQUIPMENT_NAME).valueAsString());
+                    }
+                } else {
+                    Toast.makeText(mContext, "程序数据库出错，请重新登陆", Toast.LENGTH_SHORT).show();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String name = element.asObjectElement().get(Operator.NAME).valueAsString();
+                        if (name != null) {
+                            create_task.setText(name);
+                        }
+                        device_name.setDatas(mContext, mDeviceNamelist);
+
+                    }
+                });
             }
 
             @Override
@@ -156,92 +236,108 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                 System.out.println(throwable.getMessage());
             }
         });
-        final  ArrayList<String> mList = new ArrayList<String>() {
-            {
-                add("维修");
-                add("维护");
-                add("搬车");
-            }
-        };
 
-      final  ArrayList<String> m1List = new ArrayList<String>() {
-            {
-                add("平车");
-                add("领车");
-                add("搬车");
-            }
-        };
+    }
 
-        final  ArrayList<String> m2List = new ArrayList<String>() {
-            {
-                add("普通搬车");
-                add("特定搬车");
-                add("大型设备调整");
-            }
-        };
+    private void getOperator(String operatorId) {
 
-        final  ArrayList<String> m3List = new ArrayList<String>() {
-            {
-                add("A");
-                add("B");
-                add("C");
-                add("D");
-                add("E");
-            }
-        };
-        ViewTreeObserver vto = device_name.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        String rawQuery = "select Name,Team_ID,TeamName from Operator where Operator_ID=" + operatorId;
+        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+                EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
+        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+
             @Override
-            public void onGlobalLayout() {
-                device_name.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                device_name.getHeight();
-                width = device_name.getWidth() + 35;
-                device_name.setDatas(mContext, width, m1List);
-                task_type.setDatas(mContext, width, mList);
-                task_subtype.setDatas(mContext, width, m2List);
-                group.setDatas(mContext, width, m3List);
+            public void onSuccess(final DataElement element) {
+                System.out.println(element);
+                mTeamNamelist = new ArrayList<String>();
+                if (element != null && element.isArray()
+                        && element.asArrayElement().size() > 0) {
+                    mTeamNamelist.clear();
+                    String teamName = element.asArrayElement().get(0).asObjectElement().get(Operator.TEAM_NAME).valueAsString();
+                    String a[] = teamName.split(",");
+                    for (int i = 0; i < a.length; i++) {
+                        mTeamNamelist.add(a[i]);
+                    }
+                } else {
+                    Toast.makeText(mContext, "程序数据库出错，请重新登陆", Toast.LENGTH_SHORT).show();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String name = element.asArrayElement().get(0).asObjectElement().get(Operator.NAME).valueAsString();
+                        if (name != null) {
+                            create_task.setText(name);
+                        }
+
+                        group.setDatas(mContext, mTeamNamelist);
+                        group.getmEditText().setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(CreateTaskActivity.this, searchActivity.class);
+                                intent.putExtra(FORM_TYPE, GROUP);
+                                intent.putStringArrayListExtra(FORM_CONTENT, mTeamNamelist);
+                                startActivityForResult(intent, REQUEST_CODE);
+                            }
+                        });
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                System.out.println(throwable.getMessage());
+            }
+        });
+    }
+
+    private void getTaskType() {
+//        String rawQuery = "select Team_ID,TeamName from Operator where Operator_ID=" +OperaterId;
+        String rawQuery = "select * from DataDictionary where DataType = \"TaskClass\" and PData_ID is null";
+        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+                EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
+        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+
+            @Override
+            public void onSuccess(DataElement element) {
+                System.out.println(element);
+                mDeviceTypelist = new ArrayList<String>();
+                if (element != null && element.isArray()
+                        && element.asArrayElement().size() > 0) {
+                    mDeviceTypelist.clear();
+                    for (int i = 0; i < element.asArrayElement().size(); i++) {
+                        mDeviceType.add(element.asArrayElement().get(i).asObjectElement());
+                        mDeviceTypelist.add(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_NAME).valueAsString());
+
+                    }
+
+                } else {
+                    Toast.makeText(mContext, "程序数据库出错，请重新登陆", Toast.LENGTH_SHORT).show();
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        task_type.setDatas(mContext, mDeviceTypelist);
+                        task_type.getmEditText().setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(CreateTaskActivity.this, searchActivity.class);
+                                intent.putExtra(FORM_TYPE, TASK_TYPE);
+                                intent.putStringArrayListExtra(FORM_CONTENT, mDeviceTypelist);
+                                startActivityForResult(intent, REQUEST_CODE);
+                            }
+                        });
+
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                System.out.println(throwable.getMessage());
             }
         });
 
-        task_type.getmEditText().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                Intent intent = new Intent(CreateTaskActivity.this, searchActivity.class);
-                intent.putExtra(FORM_TYPE, TASK_TYPE);
-                intent.putStringArrayListExtra(FORM_CONTENT, mList);
-                startActivityForResult(intent, REQUEST_CODE);
-            }
-        });
-        group.getmEditText().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CreateTaskActivity.this,searchActivity.class);
-                intent.putExtra(FORM_TYPE, GROUP);
-                intent.putStringArrayListExtra(FORM_CONTENT, m3List);
-                startActivityForResult(intent, REQUEST_CODE);
-            }
-        });
-
-        task_subtype.getmEditText().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CreateTaskActivity.this, searchActivity.class);
-                intent.putExtra(FORM_TYPE, TASK_SUBTYPE);
-                intent.putStringArrayListExtra(FORM_CONTENT, m2List);
-                startActivityForResult(intent, REQUEST_CODE);
-            }
-        });
-
-        device_name.getmEditText().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CreateTaskActivity.this, searchActivity.class);
-                intent.putExtra(FORM_TYPE, DEVICE_NAME);
-                intent.putStringArrayListExtra(FORM_CONTENT, m1List);
-                startActivityForResult(intent, REQUEST_CODE);
-            }
-        });
     }
 
     private void initView() {
@@ -249,6 +345,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.create_task));
         findViewById(R.id.edit_resume).setOnClickListener(this);
 
+        task_subtype_name_desc = (TextView) findViewById(R.id.task_subtype_name_id);
         task_type = (DropEditText) findViewById(R.id.task_type);
         task_subtype = (DropEditText) findViewById(R.id.task_subtype);
         group = (DropEditText) findViewById(R.id.group);
@@ -272,29 +369,85 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                 .setLabel(getResources().getString(R.string.waiting))
                 .setCancellable(true);
 
-         nfcDialog =new NFCDialog(mContext,R.style.MyDialog){
+        nfcDialog = new NFCDialog(mContext, R.style.MyDialog) {
             @Override
             public void dismissAction() {
-                nfctag =0;
+                nfctag = 0;
             }
         };
-        create_task.setText("何邵勃");
+
         device_num.setText("AD0001528");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==REQUEST_CODE)
-        {
-            if (resultCode==searchActivity.RESULT_CODE)
-            {
-                Bundle bundle=data.getExtras();
-                String str=bundle.getString(searchActivity.BACK_CONTENT);
-                int index =bundle.getInt(FORM_TYPE);
-                switch (index){
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == searchActivity.RESULT_CODE) {
+                Bundle bundle = data.getExtras();
+                String str = bundle.getString(searchActivity.BACK_CONTENT);
+                int index = bundle.getInt(FORM_TYPE);
+                switch (index) {
                     case TASK_TYPE:
+                        int posi = bundle.getInt(SELECTINDEX);
                         task_type.getmEditText().setText(str);
+                        try {
+                            String pdataid = mDeviceType.get(posi).get(DataDictionary.DATA_ID).valueAsString();
+                            String rawQuery = "select * from DataDictionary where DataType = \"TaskClass\" and PData_ID=" + pdataid;
+                            ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+                                    EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
+                            Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+
+                                @Override
+                                public void onSuccess(DataElement element) {
+                                    System.out.println(element);
+                                    mSubType = new ArrayList<String>();
+                                    if (element != null && element.isArray()
+                                            && element.asArrayElement().size() > 0) {
+                                        mSubType.clear();
+                                        for (int i = 0; i < element.asArrayElement().size(); i++) {
+                                            mSubType.add(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_NAME).valueAsString());
+                                        }
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                task_subtype.setVisibility(View.VISIBLE);
+                                                task_subtype_name_desc.setVisibility(View.VISIBLE);
+                                                task_subtype.setDatas(mContext, mSubType);
+                                                task_subtype.getmEditText().setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        Intent intent = new Intent(CreateTaskActivity.this, searchActivity.class);
+                                                        intent.putExtra(FORM_TYPE, TASK_SUBTYPE);
+                                                        intent.putStringArrayListExtra(FORM_CONTENT, mSubType);
+                                                        startActivityForResult(intent, REQUEST_CODE);
+                                                    }
+                                                });
+
+                                            }
+                                        });
+                                    } else {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                task_subtype.setVisibility(View.GONE);
+                                                task_subtype_name_desc.setVisibility(View.GONE);
+                                            }
+                                        });
+                                    }
+
+                                }
+
+                                @Override
+                                public void onFailure(Throwable throwable) {
+                                    System.out.println(throwable.getMessage());
+                                }
+                            });
+                        } catch (Exception e) {
+                            task_subtype.setVisibility(View.GONE);
+                            task_subtype_name_desc.setVisibility(View.GONE);
+                            e.printStackTrace();
+                        }
                         break;
                     case TASK_SUBTYPE:
                         task_subtype.getmEditText().setText(str);
@@ -324,42 +477,94 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
             InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             imm.toggleSoftInput(0, InputMethodManager.RESULT_SHOWN);
 
-        }else if (id == R.id.create_task_action){
+        } else if (id == R.id.create_task_action) {
             if (mAdapter == null) {
                 showMessage(R.string.error, R.string.no_nfc);
                 return;
             }
-            nfctag =CREATER;
+            nfctag = CREATER;
             nfcDialog.show();
-        } else if (id == R.id.device_num_action){
+        } else if (id == R.id.device_num_action) {
             if (mAdapter == null) {
                 showMessage(R.string.error, R.string.no_nfc);
                 return;
             }
-            nfctag =DEVICE_NUM;
+            nfctag = DEVICE_NUM;
             nfcDialog.show();
         } else if (id == R.id.sure) {
             createRequest();
         }
     }
+
     private void showMessage(int title, int message) {
         mDialog.setTitle(title);
         mDialog.setMessage(getText(message));
         mDialog.show();
     }
-    private android.os.Handler mHandler =new android.os.Handler();
+
+    private android.os.Handler mHandler = new android.os.Handler();
+
     private void createRequest() {
         hud.show();
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                hud.dismiss();
-                TipsDialog tipsDialog =new TipsDialog(mContext,R.style.MyDialog);
-                tipsDialog.show();
+        String taskType = task_type .getText();
+        String teamName = group .getText();
+        String deviceName = device_name .getText();
+        String createTask = create_task.getText().toString();
+        String taskDesc = task_description .getText().toString();
+        String deviceNum = device_num .getText().toString();
+        String taskSubType = null;
+        if (View.VISIBLE ==task_subtype.getVisibility()){
+            taskSubType = task_subtype.getText();
+        }
+
+        if (taskType.equals(getResources().getString(R.string.select))){
+            Toast.makeText(mContext,getResources().getString(R.string.tips_tasktype_post),Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (taskSubType !=null) {
+            if (taskSubType.equals(getResources().getString(R.string.select))) {
+                Toast.makeText(mContext, getResources().getString(R.string.tips_subtype_post), Toast.LENGTH_SHORT).show();
+                return;
             }
-        },1000);
+        }
+        if (createTask.equals("")){
+            Toast.makeText(mContext,getResources().getString(R.string.tips_scan_operator_post),Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (teamName.equals(getResources().getString(R.string.select))){
+            Toast.makeText(mContext,getResources().getString(R.string.tips_team_type_post),Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (deviceName.equals(getResources().getString(R.string.select))){
+            Toast.makeText(mContext,getResources().getString(R.string.tips_device_name_post),Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
+        if (deviceNum.equals(getResources().getString(R.string.scan))){
+            Toast.makeText(mContext,getResources().getString(R.string.tips_device_num_post),Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (taskDesc.equals(getResources().getString(R.string.task_description_hint))){
+            Toast.makeText(mContext,getResources().getString(R.string.tips_task_desc_post),Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    hud.dismiss();
+                    TipsDialog tipsDialog = new TipsDialog(mContext, R.style.MyDialog);
+                    tipsDialog.show();
+                }
+            }, 1000);
 
     }
+
     void buildTagViews(NdefMessage[] msgs) {
         if (msgs == null || msgs.length == 0) {
             return;
@@ -370,15 +575,15 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
             ParsedNdefRecord record = records.get(i);
         }
         if (nfctag == CREATER) {
-            nfctag=0;
+            nfctag = 0;
             create_task.setText("李伟");
             nfcDialog.dismiss();
-            Toast.makeText(mContext,"刷卡成功",Toast.LENGTH_SHORT).show();
-        }else if (nfctag == DEVICE_NUM){
-            nfctag=0;
+            Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
+        } else if (nfctag == DEVICE_NUM) {
+            nfctag = 0;
             device_num.setText("AB0001234");
             nfcDialog.dismiss();
-            Toast.makeText(mContext,"刷卡成功",Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -419,15 +624,16 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                 Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
                 byte[] payload = dumpTagData(tag).getBytes();
                 NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, id, payload);
-                NdefMessage msg = new NdefMessage(new NdefRecord[] { record });
-                msgs = new NdefMessage[] { msg };
-               
+                NdefMessage msg = new NdefMessage(new NdefRecord[]{record});
+                msgs = new NdefMessage[]{msg};
+
             }
             // Setup the views
             buildTagViews(msgs);
 
         }
     }
+
     private void showWirelessSettingsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.nfc_disabled);
@@ -445,6 +651,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         builder.create().show();
         return;
     }
+
     private String dumpTagData(Parcelable p) {
         StringBuilder sb = new StringBuilder();
         Tag tag = (Tag) p;

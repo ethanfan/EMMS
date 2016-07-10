@@ -1,24 +1,25 @@
 package com.emms.datastore;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import android.content.Context;
-import android.graphics.Region;
 import android.util.Log;
 
-
-import com.emms.schema.ApplicationDownloadState;
+import com.emms.schema.AlertRule;
+import com.emms.schema.DataDictionary;
+import com.emms.schema.DataType;
+import com.emms.schema.Department;
+import com.emms.schema.Equipment;
+import com.emms.schema.Factory;
 import com.emms.schema.Operator;
+import com.emms.schema.Team;
+import com.emms.schema.TeamService;
 import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
 import com.jaffer_datastore_android_sdk.schema.Model;
 import com.jaffer_datastore_android_sdk.schema.Schema;
 import com.jaffer_datastore_android_sdk.sqlite.SqliteStoreHelper;
 
-import org.restlet.security.User;
+import java.io.File;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 /**
@@ -29,32 +30,24 @@ import org.restlet.security.User;
  */
 public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 	// define the constant of table name
-	public static final String SCHEMA_ARTICLE = Schema.getAttributes(
+	public static final String SCHEMA_OPERATOR = Schema.getAttributes(
 			Operator.class).getTableName();
-//	public static final String SCHEMA_ARTICLE_CONTENT = Schema.getAttributes(
-//			ArticleContent.class).getTableName();
-//	public static final String SCHEMA_CATEGORY = Schema.getAttributes(
-//			Category.class).getTableName();
-//	public static final String SCHEMA_CATEGORY_CHANNEL = Schema.getAttributes(
-//			CategoryChannel.class).getTableName();
-//	public static final String SCHEMA_CHANNEL = Schema.getAttributes(
-//			Channel.class).getTableName();
-//	public static final String SCHEMA_CHANNEL_ARTICLE = Schema.getAttributes(
-//			ChannelArticle.class).getTableName();
-//	public static final String SCHEMA_LAST_SYNC_DATE = Schema.getAttributes(
-//			LastSynchronizeDate.class).getTableName();
-//	public static final String SCHEMA_USER = Schema.getAttributes(User.class)
-//			.getTableName();
-//	public static final String SCHEMA_USER_CHANNEL = Schema.getAttributes(
-//			UserChannel.class).getTableName();
-//	public static final String SCHEMA_LIKE = Schema.getAttributes(Like.class)
-//			.getTableName();
-//	public static final String SCHEMA_APPLICATION_DOWNLOAD_STATE = Schema.getAttributes(ApplicationDownloadState.class)
-//			.getTableName();
-//	public static final String SCHEMA_APPLICATION = Schema.getAttributes(Application.class)
-//			.getTableName();
-//	public static final String SCHEMA_REGION = Schema.getAttributes(Region.class).getTableName();
-//	public static final String SCHEMA_ARTICLE_REGION = Schema.getAttributes(ArticleRegion.class).getTableName();
+	public static final String SCHEMA_DEPARTMENT = Schema.getAttributes(
+			Department.class).getTableName();
+	public static final String SCHEMA_ALERTRULE = Schema.getAttributes(
+			AlertRule.class).getTableName();
+	public static final String SCHEMA_DATADICTIONARY = Schema.getAttributes(
+			DataDictionary.class).getTableName();
+	public static final String SCHEMA_DATATYPE = Schema.getAttributes(
+			DataType.class).getTableName();
+	public static final String SCHEMA_TEAMSERVICE = Schema.getAttributes(
+			TeamService.class).getTableName();
+	public static final String SCHEMA_TEAM = Schema.getAttributes(
+			Team.class).getTableName();
+	public static final String SCHEMA_FACTORY = Schema.getAttributes(Factory.class)
+			.getTableName();
+	public static final String SCHEMA_EQUIPMENT = Schema.getAttributes(
+			Equipment.class).getTableName();
 
 	/**
 	 * A HashMap store a key pair a schema object class.
@@ -124,20 +117,15 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 	}
 
 	private void setTables() {
-		schema.put(SCHEMA_ARTICLE, Operator.class);
-//		schema.put(SCHEMA_ARTICLE_CONTENT, ArticleContent.class);
-//		schema.put(SCHEMA_CATEGORY, Category.class);
-//		schema.put(SCHEMA_CATEGORY_CHANNEL, CategoryChannel.class);
-//		schema.put(SCHEMA_CHANNEL, Channel.class);
-//		schema.put(SCHEMA_CHANNEL_ARTICLE, ChannelArticle.class);
-//		schema.put(SCHEMA_APPLICATION_DOWNLOAD_STATE, ApplicationDownloadState.class);
-//		schema.put(SCHEMA_APPLICATION, Application.class);
-//		schema.put(SCHEMA_REGION, Region.class);
-//		schema.put(SCHEMA_ARTICLE_REGION, ArticleRegion.class);
-//		schema.put(SCHEMA_LAST_SYNC_DATE, LastSynchronizeDate.class);
-//		schema.put(SCHEMA_LIKE, Like.class);
-//		schema.put(SCHEMA_USER, User.class);
-//		schema.put(SCHEMA_USER_CHANNEL, UserChannel.class);
+		schema.put(SCHEMA_OPERATOR, Operator.class);
+		schema.put(SCHEMA_DEPARTMENT, Department.class);
+		schema.put(SCHEMA_ALERTRULE, AlertRule.class);
+		schema.put(SCHEMA_DATADICTIONARY, DataDictionary.class);
+		schema.put(SCHEMA_DATATYPE, DataType.class);
+		schema.put(SCHEMA_TEAMSERVICE, TeamService.class);
+		schema.put(SCHEMA_TEAM, Team.class);
+		schema.put(SCHEMA_FACTORY, Factory.class);
+		schema.put(SCHEMA_EQUIPMENT, Equipment.class);
 	}
 
 }
