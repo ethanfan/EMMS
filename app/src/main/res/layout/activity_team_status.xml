@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.TeamStatusActivity">
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbar"></include>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="3dp"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/toolbar">
+    </View>
+    <ListView
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@+id/divider"
+        android:layout_below="@+id/toolbar">
+    </ListView>
+    <ListView
+        android:id="@+id/memberInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/divider"
+        android:layout_below="@+id/toolbar">
+    </ListView>
+</RelativeLayout>

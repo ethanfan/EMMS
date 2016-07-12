@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:padding="7.0dip"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:background="@color/white"
     android:layout_height="wrap_content">
     <ImageView
         android:id="@+id/menu_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
+        android:paddingLeft="5dp"
         android:src="@mipmap/sub_task_management"/>
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
-        android:paddingLeft="8dp"
+        android:paddingLeft="10dp"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/menu_detail"
         android:background="@color/white"
         android:textColor="@color/text_login"
         android:text="停发"
         android:textSize="16.0sp" />
-</LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="6sp"
+        android:layout_below="@+id/textView"
+        ></View>
+</RelativeLayout>
