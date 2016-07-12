@@ -17,6 +17,7 @@ import android.widget.ImageView;
 
 import com.emms.R;
 import com.emms.adapter.MenuAdapter;
+import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 
 import java.util.ArrayList;
 
@@ -30,8 +31,11 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 	private String mHit;
 	private int mTexthitColor = 999999;
 	public Context mContext;
-	public ArrayList datas;
+	public ArrayList<ObjectElement> datas;
 	private View view ;
+	private int with =300;
+	private int selectPosition;
+	private String itemName;
 	public DropEditText(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
@@ -65,6 +69,15 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 		
 		mDropImage.setOnClickListener(this);
 //		mPopView.setOnItemClickListener(this);
+		ViewTreeObserver vto = view.getViewTreeObserver();
+		vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+			@Override
+			public void onGlobalLayout() {
+				view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+				with = view.getWidth() + 35;
+
+			}
+		});
 	}
 
 	@Override
@@ -77,21 +90,15 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 		if(changed && 0 == mDropMode) {
 
 		}
+
 	}
 
-	public void setDatas(final Context context,final ArrayList datas) {
+	public void setDatas(final Context context,final ArrayList datas,String itemName) {
 		this.datas = datas;
-		ViewTreeObserver vto = view.getViewTreeObserver();
-		vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-			@Override
-			public void onGlobalLayout() {
-				view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-				popMenu = new PopMenu(context, view.getWidth()+35);
-				popMenu.addItems(datas);
-				popMenu.setOnItemClickListener(popmenuItemClickListener);
-			}
-		});
-
+		this.itemName =itemName;
+		popMenu = new PopMenu(context, view.getWidth()+35);
+		popMenu.addItems(datas,itemName);
+		popMenu.setOnItemClickListener(popmenuItemClickListener);
 	}
 	/**
 	 * 获取输入框内的内容
@@ -125,11 +132,15 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 								long id) {
-			mEditText.setText(datas.get(position).toString());
+			mEditText.setText(datas.get(position).get(itemName).valueAsString());
+			selectPosition =position;
 			popMenu.dismiss();
 		}
 	};
 
+	public int getSelectPosition(){
+		return selectPosition;
+	}
 	public EditText getmEditText(){
 		return mEditText;
 	}

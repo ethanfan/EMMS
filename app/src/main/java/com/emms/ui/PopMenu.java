@@ -18,21 +18,23 @@ import android.widget.TextView;
 
 
 import com.emms.R;
+import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 
 import java.util.ArrayList;
 
 public class PopMenu {
-	private ArrayList<String> itemList;
+	private ArrayList<ObjectElement> itemList;
 	private Context context;
 	private PopupWindow popupWindow;
 	private ListView listView;
 	private PopAdapter popAdapter;
+	private String itemName;
 	// private OnItemClickListener listener;
 	public PopMenu(Context context,int width) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 
-		itemList = new ArrayList<String>(5);
+		itemList = new ArrayList<ObjectElement>(5);
 
 		View view = LayoutInflater.from(context)
 				.inflate(R.layout.popmenu, null);
@@ -62,21 +64,22 @@ public class PopMenu {
 
 	}
 
-	// 批量添加菜单项
-	public void addItems(String[] items) {
-		for (String s : items)
-			itemList.add(s);
-	}
+//	// 批量添加菜单项
+//	public void addItems(String[] items) {
+//		for (String s : items)
+//			itemList.add(s);
+//	}
 
 	// 批量添加菜单项
-	public void addItems(ArrayList items) {
+	public void addItems(ArrayList items,String itemName) {
 		this.itemList =items;
+		this.itemName = itemName;
 	}
 
-	// 单个添加菜单项
-	public void addItem(String item) {
-		itemList.add(item);
-	}
+//	// 单个添加菜单项
+//	public void addItem(String item) {
+//		itemList.add(item);
+//	}
 
 	// 下拉式 弹出 pop菜单 parent 右下角
 	public void showAsDropDown(View parent) {
@@ -146,7 +149,7 @@ public class PopMenu {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			holder.groupItem.setText(itemList.get(position));
+			holder.groupItem.setText(itemList.get(position).get(itemName).valueAsString());
 
 			return convertView;
 		}

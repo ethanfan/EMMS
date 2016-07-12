@@ -65,7 +65,7 @@ public class searchActivity extends BaseActivity implements View.OnClickListener
         mResultAdapter = new ResultListAdapter(this);
         if (dataLists!=null) {
             if (dataLists.size() > 0) {
-                mResultAdapter.changeData(dataLists);
+//                mResultAdapter.changeData(dataLists);
             }
         }else {
             Toast.makeText(this,"获取数据失败",Toast.LENGTH_SHORT).show();
@@ -84,71 +84,7 @@ public class searchActivity extends BaseActivity implements View.OnClickListener
             ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.title_search_equipment_name));
         }
 
-        clearBtn = (ImageView) findViewById(R.id.iv_search_clear);
-        searchBox = (EditText) findViewById(R.id.et_search);
-        emptyView = (ViewGroup) findViewById(R.id.empty_view);
-        mResultListView = (ListView) findViewById(R.id.listview_search_result);
 
-        searchBox.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String keyword = s.toString();
-
-//                if (TextUtils.isEmpty(keyword)) {
-//                    clearBtn.setVisibility(View.GONE);
-//                    mResultListView.setVisibility(View.VISIBLE);
-//                    emptyView.setVisibility(View.GONE);
-//                    mResultAdapter.changeData(dataLists);
-//
-//                } else {
-//                if (tag){
-//                    keyword = "";
-//                    tag = false;
-//                }
-                    clearBtn.setVisibility(View.VISIBLE);
-                    mResultListView.setVisibility(View.VISIBLE);
-                    ArrayList<String> result = search(keyword);
-                    if (result == null || result.size() == 0) {
-                        emptyView.setVisibility(View.VISIBLE);
-                    } else {
-                        emptyView.setVisibility(View.GONE);
-                        mResultAdapter.changeData(result);
-
-                    }
-
-
-            }
-        });
-
-        mResultListView.setAdapter(mResultAdapter);
-        mResultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                tag =true;
-//                searchBox.setText(mResultAdapter.getItem(position).toString());
-                if (!mResultAdapter.getItem(position).toString().equals("")) {
-//                    Toast.makeText(this, "您选择了" + searchBox.getText(), Toast.LENGTH_SHORT).show();
-                    Intent intent=new Intent();
-                    intent.putExtra(BACK_CONTENT, mResultAdapter.getItem(position).toString());
-                    intent.putExtra(CreateTaskActivity.FORM_TYPE,type);
-                    intent.putExtra(CreateTaskActivity.SELECTINDEX,position);
-                    setResult(RESULT_CODE, intent);
-                    finish();
-                } else {
-                    Toast.makeText(searchActivity.this, "出错了", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        clearBtn.setOnClickListener(this);
     }
 
     private ArrayList<String> search(String keyword) {

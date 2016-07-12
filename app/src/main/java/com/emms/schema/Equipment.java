@@ -70,7 +70,7 @@ public class Equipment extends Model<Operator, Long> implements Identity<Long> {
     public static final String BPQ = "Bpq";
     public static final String ZMDGL = "Zmdgl";
     public static final String KY_UPDATE_LOG_DATE = "Ky_Update_Log_date";
-
+    public static final String IC_CARD_ID = "ICCardID";
     @DatabaseField(id = true,
             columnName = EQUIPMENT_ID, canBeNull = false)
     @SerializedName(EQUIPMENT_ID)

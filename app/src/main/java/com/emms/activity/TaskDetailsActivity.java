@@ -16,7 +16,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -67,6 +66,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void initEvent() {
+        Bimp.bmp.clear();
         taskAdapter = new TaskAdapter(datas) {
 
             @Override

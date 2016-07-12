@@ -5,52 +5,53 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.nfc.NdefMessage;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.MifareClassic;
-import android.nfc.tech.MifareUltralight;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
-import android.renderscript.Element;
+import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.View;
-import android.view.ViewTreeObserver;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.emms.R;
+import com.emms.adapter.ResultListAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
-import com.emms.record.NdefMessageParser;
-import com.emms.record.ParsedNdefRecord;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
 import com.emms.schema.Operator;
+import com.emms.schema.Team;
 import com.emms.ui.DropEditText;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.NFCDialog;
 import com.emms.ui.TipsDialog;
-import com.emms.util.SharedPreferenceManager;
+import com.emms.util.BuildConfig;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.jaffer_datastore_android_sdk.datastore.DataElement;
 import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
+import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
 
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -63,6 +64,12 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     private DropEditText task_type, task_subtype, group, device_name;
     private EditText create_task, task_description, device_num;
     private TextView task_subtype_name_desc;
+    private TextView menuSearchTitle;
+    private ImageView clearBtn;
+    private ViewGroup emptyView;
+    private ListView mResultListView;
+    private ResultListAdapter mResultAdapter;
+    private EditText searchBox;
     private Button btn_sure;
     private ImageView create_task_action, device_num_action;
     private KProgressHUD hud;
@@ -76,32 +83,42 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
     public final static String FORM_TYPE = "formtype";
     public final static String FORM_CONTENT = "content";
-    public final static String SELECTINDEX = "indexlist";
     public final static int REQUEST_CODE = 10000;
     public final static int TASK_TYPE = 1;
     public final static int TASK_SUBTYPE = 2;
-    public final static int DEVICE_NAME = 3;
+    public final static int DEVICE_NAME =5;
     public final static int GROUP = 4;
-    public final static int CREATER = 5;
+    public final static int CREATER = 3;
     public final static int DEVICE_NUM = 6;
     public final static int TASK_DESCRIPTION = 7;
 
-    private int nfctag = 0;
+
     private ArrayList<String> mDeviceTypelist;
 
     private ArrayList<ObjectElement> mDeviceType = new ArrayList<ObjectElement>();
-    private ArrayList<String> mSubType;
-    private ArrayList<String> mTeamNamelist;
-    private ArrayList<String> mDeviceNamelist;
+    private ArrayList<ObjectElement> mSubType;
+    private ArrayList<ObjectElement> mTeamNamelist;
+    private ArrayList<ObjectElement> mDeviceNamelist;
+    private ArrayList<ObjectElement> mDeviceNumlist;
+    private ArrayList<ObjectElement> searchDataLists;
     private NFCDialog nfcDialog;
+    private DrawerLayout mDrawer_layout;
 
+    private int nfctag = 0;
+    private int  searchtag =0;
+
+    private String teamId ="";
+    private String equipmentClass ="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
         mContext = CreateTaskActivity.this;
         initView();
+        initSearchView();
         initEvent();
+        mDrawer_layout = (DrawerLayout) findViewById(R.id.main_drawer_layout);
+        mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
         resolveIntent(getIntent());
         mDialog = new AlertDialog.Builder(this).setNeutralButton("Ok", null).create();
@@ -110,23 +127,98 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                 new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
         mNdefPushMessage = new NdefMessage(new NdefRecord[]{newTextRecord(
                 "Message from NFC Reader :-)", Locale.ENGLISH, true)});
-//        HttpUtils.get(this, "", new HttpParams(), new HttpCallback() {
-//            @Override
-//            public void onSuccess(String t) {
-//                super.onSuccess(t);
-//            }
-//
-//            @Override
-//            public void onFailure(int errorNo, String strMsg) {
-//                super.onFailure(errorNo, strMsg);
-//            }
-//
-//            @Override
-//            public void onSuccessInAsync(byte[] t) {
-//                super.onSuccessInAsync(t);
-//            }
-//        });
 
+    }
+
+    private void initSearchView() {
+        menuSearchTitle = (TextView) findViewById(R.id.left_title);
+        clearBtn = (ImageView) findViewById(R.id.iv_search_clear);
+        searchBox = (EditText) findViewById(R.id.et_search);
+        emptyView = (ViewGroup) findViewById(R.id.empty_view);
+        mResultListView = (ListView) findViewById(R.id.listview_search_result);
+
+        searchBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String keyword = s.toString();
+                clearBtn.setVisibility(View.VISIBLE);
+                mResultListView.setVisibility(View.VISIBLE);
+                ArrayList<ObjectElement> result = search(keyword, searchtag);
+                if (result == null || result.size() == 0) {
+                    emptyView.setVisibility(View.VISIBLE);
+                } else {
+                    emptyView.setVisibility(View.GONE);
+                    mResultAdapter.changeData(result, EditTextIndex(searchtag));
+
+                }
+
+
+            }
+        });
+        mResultAdapter = new ResultListAdapter(this);
+        mResultListView.setAdapter(mResultAdapter);
+        mResultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final int inPosition = position;
+                String itemNam = EditTextIndex(searchtag);
+                final String searchResult =mResultAdapter.getItem(position).get(itemNam).toString();
+                if (!searchResult.equals("")) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            switch (searchtag) {
+                                case TASK_TYPE:
+                                    getSubTaskType(searchResult);
+                                    task_type.getmEditText().setText(searchResult);
+                                    break;
+                                case TASK_SUBTYPE:
+                                    task_subtype.getmEditText().setText(searchResult);
+                                    break;
+                                case GROUP:
+                                    teamId =mResultAdapter.getItem(inPosition).get(Team.TEAM_ID).valueAsString();
+                                    group.getmEditText().setText(searchResult);
+                                    break;
+                                case DEVICE_NAME:
+                                    equipmentClass =mResultAdapter.getItem(inPosition).get(Equipment.EQUIPMENT_CLASS).valueAsString();
+                                    device_name.getmEditText().setText(searchResult);
+                                    break;
+                                case DEVICE_NUM:
+                                    device_num.setText(searchResult);
+                                    break;
+                            }
+                            mDrawer_layout.closeDrawer(Gravity.RIGHT);
+                        }
+                    });
+                } else {
+                    Toast.makeText(mContext, "出错了", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        clearBtn.setOnClickListener(this);
+        searchDataLists = new ArrayList<ObjectElement>();
+    }
+
+
+
+    private ArrayList<ObjectElement> search(String keyword,int tagIndex) {
+        ArrayList<ObjectElement> reDatas = new ArrayList<>();
+        String tagString = EditTextIndex(searchtag);
+        for (int i = 0; i < searchDataLists.size(); i++) {
+            if (searchDataLists.get(i).get(tagString).valueAsString().toUpperCase().contains(keyword.toUpperCase())) {
+                reDatas.add(searchDataLists.get(i));
+            }
+        }
+        return reDatas;
     }
 
     @Override
@@ -151,9 +243,37 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     }
 
     private void initEvent() {
+        mDeviceNumlist = new ArrayList<>();
 
+        getTeamId("4204");  //获取组别
         getTaskType();
-        getOperator("4204");
+
+        initDropSearchView(null, task_type, mDeviceType, getResources().
+                getString(R.string.title_search_task_type), DataDictionary.DATA_NAME,
+                TASK_TYPE, "获取数据失败");
+
+        task_subtype.getDropImage().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!task_type.getText().equals("")) {
+                            if (mSubType.size() > 0) {
+                                task_subtype.setDatas(mContext, mSubType, DataDictionary.DATA_NAME);
+                                task_subtype.showOnclik();
+                            }
+                        } else {
+                            Toast.makeText(mContext, "请先选择任务类型", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+            }
+        });
+        initDropSearchView(task_type, task_subtype, mSubType, getResources().
+                getString(R.string.title_search_task_type), DataDictionary.DATA_NAME, TASK_SUBTYPE, "请先选择任务类型");
+
         group.getmEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -162,7 +282,13 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                getDeviceName(s.toString());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        device_name.getmEditText().setText("");
+                    }
+                });
+                getDeviceName();
             }
 
             @Override
@@ -171,64 +297,196 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
             }
         });
 
-        device_name.getDropImage().setOnClickListener(new View.OnClickListener() {
+        group.getmEditText().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mTeamNamelist.size() > 0) {
-                    group.showOnclik();
+                if (!create_task.getText().toString().equals("")) {
+                    if (mTeamNamelist != null) {
+                        if (mTeamNamelist.size() > 0) {
+                            searchDataLists.clear();
+                            searchDataLists.addAll(mTeamNamelist);
+                            mResultAdapter.changeData(searchDataLists, Team.TEAMNAME);
+                            menuSearchTitle.setText(getResources().getString(R.string.title_search_task_type));
+                            mDrawer_layout.openDrawer(Gravity.RIGHT);
+                            searchtag = GROUP;
+                        }
+                    } else {
+                        Toast.makeText(mContext, "获取数据失败", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(mContext, "请先选择组别", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "请先扫描工卡获取创建人信息", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        device_name.getmEditText().setOnClickListener(new View.OnClickListener() {
+        group.getDropImage().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mTeamNamelist.size() > 0) {
-                    Intent intent = new Intent(CreateTaskActivity.this, searchActivity.class);
-                    intent.putExtra(FORM_TYPE, DEVICE_NAME);
-                    intent.putStringArrayListExtra(FORM_CONTENT, mDeviceNamelist);
-                    startActivityForResult(intent, REQUEST_CODE);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!create_task.getText().toString().equals("") && mTeamNamelist.size() > 0) {
+                            group.showOnclik();
+                            teamId = mTeamNamelist.get(group.getSelectPosition()).get(Team.TEAM_ID).valueAsString();
+                        } else {
+                            Toast.makeText(mContext, "请先扫描工卡获取创建人信息", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+            }
+        });
+        task_type.getmEditText()
+                .addTextChangedListener(
+                        new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                task_subtype.getmEditText().setText("");
+                                getSubTaskType(s.toString());
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                            }
+                        }
+                );
+
+        device_name.getDropImage().
+                setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (!group.getText().equals("")) {
+//                                            equipmentClass = mResultAdapter.getItem(device_name.getSelectPosition()).get(Equipment.EQUIPMENT_CLASS).valueAsString();
+                                            if (mDeviceNamelist != null) {
+                                                if (mDeviceNamelist.size() > 0) {
+                                                    device_name.setDatas(mContext, mDeviceNamelist, Equipment.EQUIPMENT_NAME);
+                                                    device_name.showOnclik();
+                                                }
+                                            } else {
+                                                Toast.makeText(mContext, "获取数据失败", Toast.LENGTH_SHORT).show();
+                                            }
+
+                                        } else {
+                                            Toast.makeText(mContext, "请先选择组别", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                    }
+                                });
+
+                            }
+
+                        }
+
+                );
+
+        initDropSearchView(group,device_name,mDeviceNamelist,getResources().
+                getString(R.string.title_search_task_type),Equipment.EQUIPMENT_NAME,DEVICE_NAME,"请先选择组别");
+        device_name.getmEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mDeviceNumlist.clear();
+                initDeviceNum();
+            }
+
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        device_num.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!device_name.getText().equals("")) {
+                    if (mDeviceNumlist.size()>0) {
+                        searchDataLists.clear();
+                        searchDataLists.addAll(mDeviceNumlist);
+                        mResultAdapter.changeData(searchDataLists, Equipment.IC_CARD_ID);
+                        menuSearchTitle.setText(getResources().getString(R.string.title_search_task_type));
+                        mDrawer_layout.openDrawer(Gravity.RIGHT);
+                        searchtag = DEVICE_NUM;
+                    }
                 } else {
-                    Toast.makeText(mContext, "请先选择组别", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "请先选择设备名称，或刷设备卡获取机台号", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+    }
+
+    private void initDeviceNum() {
+        String rawQuery = "SELECT * FROM Equipment WHERE EquipmentClass="+"'"+equipmentClass
+                +"'"+" AND UseTeam_ID ="+teamId+" AND ICCardID is not null";
+        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+                EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
+        Futures.addCallback(elemt, new FutureCallback<DataElement>(){
+
+            @Override
+            public void onSuccess(DataElement dataElement) {
+                if (dataElement != null && dataElement.isArray()
+                        && dataElement.asArrayElement().size() > 0) {
+                    for (int i =0;i<dataElement.asArrayElement().size();i++){
+                        mDeviceNumlist.add(dataElement.asArrayElement().get(i).asObjectElement());
+                    }
+                }else {
+                    Toast.makeText(mContext,"目前该设备没有机台号",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
 
             }
         });
 
     }
 
-    private void getDeviceName(String groupName) {
-        String rawQuery = "select distinct EquipmentClass,EquipmentName from Equipment where UseTeam_ID in (select Team_ID from Team where TeamName =\"" + groupName + "\")";
+    private void getDeviceName() {
+//
+        String rawQuery ="select distinct EquipmentClass,EquipmentName from Equipment where UseTeam_ID ="+teamId+" and EquipmentName is not null";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
-                EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
+                EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
 
             @Override
             public void onSuccess(final DataElement element) {
                 System.out.println(element);
-                mDeviceNamelist = new ArrayList<String>();
-                if (element != null && element.isArray()
-                        && element.asArrayElement().size() > 0) {
-                    mDeviceNamelist.clear();
-                    for (int i = 0; i < element.asArrayElement().size(); i++) {
-                        mDeviceNamelist.add(element.asArrayElement().get(i).asObjectElement().get(Equipment.EQUIPMENT_NAME).valueAsString());
-                    }
-                } else {
-                    Toast.makeText(mContext, "程序数据库出错，请重新登陆", Toast.LENGTH_SHORT).show();
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        String name = element.asObjectElement().get(Operator.NAME).valueAsString();
-                        if (name != null) {
-                            create_task.setText(name);
+                mDeviceNamelist = new ArrayList<ObjectElement>();
+                try {
+                    if (element != null && element.isArray()
+                            && element.asArrayElement().size() > 0) {
+                        mDeviceNamelist.clear();
+                        for (int i = 0; i < element.asArrayElement().size(); i++) {
+                            mDeviceNamelist.add(element.asArrayElement().get(i)
+                                    .asObjectElement());
                         }
-                        device_name.setDatas(mContext, mDeviceNamelist);
-
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                device_name.setDatas(mContext, mDeviceNamelist,Equipment.EQUIPMENT_NAME);
+                            }
+                        });
+                    } else {
+                        Toast.makeText(mContext, "程序数据库出错，请重新登陆", Toast.LENGTH_SHORT).show();
                     }
-                });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -239,7 +497,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
     }
 
-    private void getOperator(String operatorId) {
+    private void getTeamId(String operatorId) {
 
         String rawQuery = "select Name,Team_ID,TeamName from Operator where Operator_ID=" + operatorId;
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
@@ -249,38 +507,65 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
             @Override
             public void onSuccess(final DataElement element) {
                 System.out.println(element);
-                mTeamNamelist = new ArrayList<String>();
-                if (element != null && element.isArray()
-                        && element.asArrayElement().size() > 0) {
-                    mTeamNamelist.clear();
-                    String teamName = element.asArrayElement().get(0).asObjectElement().get(Operator.TEAM_NAME).valueAsString();
-                    String a[] = teamName.split(",");
-                    for (int i = 0; i < a.length; i++) {
-                        mTeamNamelist.add(a[i]);
-                    }
-                } else {
-                    Toast.makeText(mContext, "程序数据库出错，请重新登陆", Toast.LENGTH_SHORT).show();
-                }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        String name = element.asArrayElement().get(0).asObjectElement().get(Operator.NAME).valueAsString();
+                        String name = element.asArrayElement().get(0)
+                                .asObjectElement().get(Operator.NAME).valueAsString();
                         if (name != null) {
                             create_task.setText(name);
                         }
-
-                        group.setDatas(mContext, mTeamNamelist);
-                        group.getmEditText().setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(CreateTaskActivity.this, searchActivity.class);
-                                intent.putExtra(FORM_TYPE, GROUP);
-                                intent.putStringArrayListExtra(FORM_CONTENT, mTeamNamelist);
-                                startActivityForResult(intent, REQUEST_CODE);
-                            }
-                        });
                     }
                 });
+                mTeamNamelist = new ArrayList<ObjectElement>();
+                if (element != null && element.isArray()
+                        && element.asArrayElement().size() > 0) {
+                    mTeamNamelist.clear();
+                    String teamName = element.asArrayElement().get(0)
+                            .asObjectElement().get(Operator.TEAM_ID).valueAsString();
+                    String a[] = teamName.split(",");
+                    StringBuffer conditionSql = new StringBuffer();
+                    for (int i = 0; i < a.length; i++) {
+                        conditionSql = conditionSql.append("Team_ID ="+"\""+a[i]+"\"");
+                        if (i == a.length-1){
+                            conditionSql.append(" ");
+                        }else {
+                            conditionSql.append(" or ");
+                        }
+                    }
+                    String rawQuery1 = "select distinct Team_ID,TeamName from Team where " +conditionSql;
+                    ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery1,
+                            EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
+                    Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+
+                        @Override
+                        public void onSuccess(DataElement dataElement) {
+                            System.out.println(dataElement);
+                            if (dataElement != null && dataElement.isArray()
+                                    && dataElement.asArrayElement().size() > 0) {
+                                for (int j = 0; j < dataElement.asArrayElement().size(); j++) {
+                                    mTeamNamelist.add(dataElement.asArrayElement().get(j).asObjectElement());
+                                }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        group.setDatas(mContext, mTeamNamelist, Team.TEAMNAME);
+                                    }
+                                });
+
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Throwable throwable) {
+                            System.out.println(throwable.getMessage());
+                        }
+                    });
+
+                } else {
+                    Toast.makeText(mContext, "程序数据库出错，请重新登陆", Toast.LENGTH_SHORT).show();
+                }
+
             }
 
             @Override
@@ -291,8 +576,9 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     }
 
     private void getTaskType() {
-//        String rawQuery = "select Team_ID,TeamName from Operator where Operator_ID=" +OperaterId;
-        String rawQuery = "select * from DataDictionary where DataType = \"TaskClass\" and PData_ID is null";
+
+        String rawQuery = "select * from DataDictionary " +
+                "where DataType = \"TaskClass\" and PData_ID is null";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -300,35 +586,22 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
             @Override
             public void onSuccess(DataElement element) {
                 System.out.println(element);
-                mDeviceTypelist = new ArrayList<String>();
                 if (element != null && element.isArray()
                         && element.asArrayElement().size() > 0) {
-                    mDeviceTypelist.clear();
+                    searchDataLists.clear();
                     for (int i = 0; i < element.asArrayElement().size(); i++) {
                         mDeviceType.add(element.asArrayElement().get(i).asObjectElement());
-                        mDeviceTypelist.add(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_NAME).valueAsString());
-
                     }
-
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            task_type.setDatas(mContext, mDeviceType,DataDictionary.DATA_NAME);
+                        }
+                    });
                 } else {
                     Toast.makeText(mContext, "程序数据库出错，请重新登陆", Toast.LENGTH_SHORT).show();
                 }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        task_type.setDatas(mContext, mDeviceTypelist);
-                        task_type.getmEditText().setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(CreateTaskActivity.this, searchActivity.class);
-                                intent.putExtra(FORM_TYPE, TASK_TYPE);
-                                intent.putStringArrayListExtra(FORM_CONTENT, mDeviceTypelist);
-                                startActivityForResult(intent, REQUEST_CODE);
-                            }
-                        });
 
-                    }
-                });
             }
 
             @Override
@@ -376,91 +649,65 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
             }
         };
 
-        device_num.setText("AD0001528");
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE) {
-            if (resultCode == searchActivity.RESULT_CODE) {
-                Bundle bundle = data.getExtras();
-                String str = bundle.getString(searchActivity.BACK_CONTENT);
-                int index = bundle.getInt(FORM_TYPE);
-                switch (index) {
-                    case TASK_TYPE:
-                        int posi = bundle.getInt(SELECTINDEX);
-                        task_type.getmEditText().setText(str);
-                        try {
-                            String pdataid = mDeviceType.get(posi).get(DataDictionary.DATA_ID).valueAsString();
-                            String rawQuery = "select * from DataDictionary where DataType = \"TaskClass\" and PData_ID=" + pdataid;
-                            ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
-                                    EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
-                            Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+    private void getSubTaskType(String str) {
 
-                                @Override
-                                public void onSuccess(DataElement element) {
-                                    System.out.println(element);
-                                    mSubType = new ArrayList<String>();
-                                    if (element != null && element.isArray()
-                                            && element.asArrayElement().size() > 0) {
-                                        mSubType.clear();
-                                        for (int i = 0; i < element.asArrayElement().size(); i++) {
-                                            mSubType.add(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_NAME).valueAsString());
-                                        }
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                task_subtype.setVisibility(View.VISIBLE);
-                                                task_subtype_name_desc.setVisibility(View.VISIBLE);
-                                                task_subtype.setDatas(mContext, mSubType);
-                                                task_subtype.getmEditText().setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        Intent intent = new Intent(CreateTaskActivity.this, searchActivity.class);
-                                                        intent.putExtra(FORM_TYPE, TASK_SUBTYPE);
-                                                        intent.putStringArrayListExtra(FORM_CONTENT, mSubType);
-                                                        startActivityForResult(intent, REQUEST_CODE);
-                                                    }
-                                                });
-
-                                            }
-                                        });
-                                    } else {
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                task_subtype.setVisibility(View.GONE);
-                                                task_subtype_name_desc.setVisibility(View.GONE);
-                                            }
-                                        });
-                                    }
-
-                                }
-
-                                @Override
-                                public void onFailure(Throwable throwable) {
-                                    System.out.println(throwable.getMessage());
-                                }
-                            });
-                        } catch (Exception e) {
-                            task_subtype.setVisibility(View.GONE);
-                            task_subtype_name_desc.setVisibility(View.GONE);
-                            e.printStackTrace();
-                        }
-                        break;
-                    case TASK_SUBTYPE:
-                        task_subtype.getmEditText().setText(str);
-                        break;
-                    case GROUP:
-                        group.getmEditText().setText(str);
-                        break;
-                    case DEVICE_NAME:
-                        device_name.getmEditText().setText(str);
-                        break;
+        try {
+            int pos = 0;
+            for (int i = 0; i < mDeviceType.size(); i++) {
+                if (mDeviceType.get(i).get(DataDictionary.DATA_NAME).valueAsString().equals(str)) {
+                    pos = i;
                 }
 
             }
+            String pdataid = mDeviceType.get(pos).get(DataDictionary.DATA_ID).valueAsString();
+            String rawQuery = "select * from DataDictionary where " +
+                    "DataType = \"TaskClass\" and PData_ID=" + pdataid;
+            ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+                    EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
+            Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+
+                @Override
+                public void onSuccess(DataElement element) {
+                    System.out.println(element);
+                    mSubType = new ArrayList<ObjectElement>();
+                    if (element != null && element.isArray()
+                            && element.asArrayElement().size() > 0) {
+                        mSubType.clear();
+                        for (int i = 0; i < element.asArrayElement().size(); i++) {
+                            mSubType.add(element.asArrayElement().get(i).asObjectElement());
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                task_subtype.setVisibility(View.VISIBLE);
+                                task_subtype_name_desc.setVisibility(View.VISIBLE);
+                                task_subtype.setDatas(mContext, mSubType, DataDictionary.DATA_NAME);
+
+                            }
+                        });
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                task_subtype.setVisibility(View.GONE);
+                                task_subtype_name_desc.setVisibility(View.GONE);
+                            }
+                        });
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    System.out.println(throwable.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            task_subtype.setVisibility(View.GONE);
+            task_subtype_name_desc.setVisibility(View.GONE);
+            e.printStackTrace();
         }
     }
 
@@ -491,6 +738,9 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
             }
             nfctag = DEVICE_NUM;
             nfcDialog.show();
+        }else if (id == R.id.iv_search_clear){
+                searchBox.setText("");
+                clearBtn.setVisibility(View.GONE);
         } else if (id == R.id.sure) {
             createRequest();
         }
@@ -506,85 +756,62 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
     private void createRequest() {
         hud.show();
-        String taskType = task_type .getText();
-        String teamName = group .getText();
-        String deviceName = device_name .getText();
-        String createTask = create_task.getText().toString();
-        String taskDesc = task_description .getText().toString();
-        String deviceNum = device_num .getText().toString();
-        String taskSubType = null;
-        if (View.VISIBLE ==task_subtype.getVisibility()){
-            taskSubType = task_subtype.getText();
-        }
-
-        if (taskType.equals(getResources().getString(R.string.select))){
-            Toast.makeText(mContext,getResources().getString(R.string.tips_tasktype_post),Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (taskSubType !=null) {
-            if (taskSubType.equals(getResources().getString(R.string.select))) {
-                Toast.makeText(mContext, getResources().getString(R.string.tips_subtype_post), Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-        if (createTask.equals("")){
-            Toast.makeText(mContext,getResources().getString(R.string.tips_scan_operator_post),Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (teamName.equals(getResources().getString(R.string.select))){
-            Toast.makeText(mContext,getResources().getString(R.string.tips_team_type_post),Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (deviceName.equals(getResources().getString(R.string.select))){
-            Toast.makeText(mContext,getResources().getString(R.string.tips_device_name_post),Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-
-        if (deviceNum.equals(getResources().getString(R.string.scan))){
-            Toast.makeText(mContext,getResources().getString(R.string.tips_device_num_post),Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (taskDesc.equals(getResources().getString(R.string.task_description_hint))){
-            Toast.makeText(mContext,getResources().getString(R.string.tips_task_desc_post),Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        //
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    hud.dismiss();
-                    TipsDialog tipsDialog = new TipsDialog(mContext, R.style.MyDialog);
-                    tipsDialog.show();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                String taskType = task_type.getText();
+                String teamName = group.getText();
+                String deviceName = device_name.getText();
+                String createTask = create_task.getText().toString();
+                String taskDesc = task_description.getText().toString();
+                String deviceNum = device_num.getText().toString();
+                String taskSubType = null;
+                if (View.VISIBLE == task_subtype.getVisibility()) {
+                    taskSubType = task_subtype.getText();
                 }
-            }, 1000);
 
-    }
+                if (taskType.equals("")) {
+                    Toast.makeText(mContext, getResources().getString(R.string.tips_tasktype_post), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (taskSubType != null) {
+                    if (taskSubType.equals("")) {
+                        Toast.makeText(mContext, getResources().getString(R.string.tips_subtype_post), Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+                if (createTask.equals("")) {
+                    Toast.makeText(mContext, getResources().getString(R.string.tips_scan_operator_post), Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-    void buildTagViews(NdefMessage[] msgs) {
-        if (msgs == null || msgs.length == 0) {
-            return;
-        }
-        List<ParsedNdefRecord> records = NdefMessageParser.parse(msgs[0]);
-        final int size = records.size();
-        for (int i = 0; i < size; i++) {
-            ParsedNdefRecord record = records.get(i);
-        }
-        if (nfctag == CREATER) {
-            nfctag = 0;
-            create_task.setText("李伟");
-            nfcDialog.dismiss();
-            Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
-        } else if (nfctag == DEVICE_NUM) {
-            nfctag = 0;
-            device_num.setText("AB0001234");
-            nfcDialog.dismiss();
-            Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
-        }
+                if (teamName.equals("")) {
+                    Toast.makeText(mContext, getResources().getString(R.string.tips_team_type_post), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (deviceName.equals("")) {
+                    Toast.makeText(mContext, getResources().getString(R.string.tips_device_name_post), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+                if (taskDesc.equals("")) {
+                    Toast.makeText(mContext, getResources().getString(R.string.tips_task_desc_post), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        hud.dismiss();
+                        TipsDialog tipsDialog = new TipsDialog(mContext, R.style.MyDialog);
+                        tipsDialog.show();
+                    }
+                }, 1000);
+            }
+        });
+
 
     }
 
@@ -605,31 +832,45 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         return new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], data);
     }
 
+    //刷nfc卡处理
     private void resolveIntent(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            NdefMessage[] msgs;
-            if (rawMsgs != null) {
-                msgs = new NdefMessage[rawMsgs.length];
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    msgs[i] = (NdefMessage) rawMsgs[i];
-                }
-            } else {
-                // Unknown tag type
-                byte[] empty = new byte[0];
-                byte[] id = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);
-                Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-                byte[] payload = dumpTagData(tag).getBytes();
-                NdefRecord record = new NdefRecord(NdefRecord.TNF_UNKNOWN, empty, id, payload);
-                NdefMessage msg = new NdefMessage(new NdefRecord[]{record});
-                msgs = new NdefMessage[]{msg};
-
+//
+            Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            String operatorId = dumpTagData(tag);
+            if (operatorId == null) {
+                return;
+            } else if (operatorId.equals("")) {
+                return;
             }
-            // Setup the views
-            buildTagViews(msgs);
+            if (nfctag == CREATER) {
+                nfctag = 0;
+                HttpParams params = new HttpParams();
+                params.putHeaders("ICCardID", "005567");
+                HttpUtils.get(mContext, BuildConfig.getConfigurationEndPoint(), params,
+                        new HttpCallback() {
+                            @Override
+                            public void onSuccess(String t) {
+                                super.onSuccess(t);
+                            }
+
+                            @Override
+                            public void onFailure(int errorNo, String strMsg) {
+                                super.onFailure(errorNo, strMsg);
+                            }
+                        });
+
+                nfcDialog.dismiss();
+                Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
+            } else if (nfctag == DEVICE_NUM) {
+                nfctag = 0;
+                device_num.setText("AB0001234");
+                nfcDialog.dismiss();
+                Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
+            }
 
         }
     }
@@ -653,84 +894,10 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     }
 
     private String dumpTagData(Parcelable p) {
-        StringBuilder sb = new StringBuilder();
+
         Tag tag = (Tag) p;
         byte[] id = tag.getId();
-        sb.append("Tag ID (hex): ").append(getHex(id)).append("\n");
-        sb.append("Tag ID (dec): ").append(getDec(id)).append("\n");
-        sb.append("ID (reversed): ").append(getReversed(id)).append("\n");
-
-        String prefix = "android.nfc.tech.";
-        sb.append("Technologies: ");
-        for (String tech : tag.getTechList()) {
-            sb.append(tech.substring(prefix.length()));
-            sb.append(", ");
-        }
-        sb.delete(sb.length() - 2, sb.length());
-        for (String tech : tag.getTechList()) {
-            if (tech.equals(MifareClassic.class.getName())) {
-                sb.append('\n');
-                MifareClassic mifareTag = MifareClassic.get(tag);
-                String type = "Unknown";
-                switch (mifareTag.getType()) {
-                    case MifareClassic.TYPE_CLASSIC:
-                        type = "Classic";
-                        break;
-                    case MifareClassic.TYPE_PLUS:
-                        type = "Plus";
-                        break;
-                    case MifareClassic.TYPE_PRO:
-                        type = "Pro";
-                        break;
-                }
-                sb.append("Mifare Classic type: ");
-                sb.append(type);
-                sb.append('\n');
-
-                sb.append("Mifare size: ");
-                sb.append(mifareTag.getSize() + " bytes");
-                sb.append('\n');
-
-                sb.append("Mifare sectors: ");
-                sb.append(mifareTag.getSectorCount());
-                sb.append('\n');
-
-                sb.append("Mifare blocks: ");
-                sb.append(mifareTag.getBlockCount());
-            }
-
-            if (tech.equals(MifareUltralight.class.getName())) {
-                sb.append('\n');
-                MifareUltralight mifareUlTag = MifareUltralight.get(tag);
-                String type = "Unknown";
-                switch (mifareUlTag.getType()) {
-                    case MifareUltralight.TYPE_ULTRALIGHT:
-                        type = "Ultralight";
-                        break;
-                    case MifareUltralight.TYPE_ULTRALIGHT_C:
-                        type = "Ultralight C";
-                        break;
-                }
-                sb.append("Mifare Ultralight type: ");
-                sb.append(type);
-            }
-        }
-
-        return sb.toString();
-    }
-
-    private String getHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = bytes.length - 1; i >= 0; --i) {
-            int b = bytes[i] & 0xff;
-            if (b < 0x10)
-                sb.append('0');
-            sb.append(Integer.toHexString(b));
-            if (i > 0) {
-                sb.append(" ");
-            }
-        }
-        return sb.toString();
+        return getDec(id) + "";
     }
 
     private long getDec(byte[] bytes) {
@@ -744,23 +911,75 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         return result;
     }
 
-    private long getReversed(byte[] bytes) {
-        long result = 0;
-        long factor = 1;
-        for (int i = bytes.length - 1; i >= 0; --i) {
-            long value = bytes[i] & 0xffl;
-            result += value * factor;
-            factor *= 256l;
-        }
-        return result;
-    }
-
-
     @Override
     public void onNewIntent(Intent intent) {
         setIntent(intent);
         resolveIntent(intent);
     }
+    private String  EditTextIndex(int defaultIndex) {
+        String indexString = "";
+        switch (defaultIndex) {
+            case TASK_TYPE:
+                indexString = DataDictionary.DATA_NAME ;
+                break;
+            case TASK_SUBTYPE:
+                indexString = DataDictionary.DATA_NAME;
+                break;
+            case GROUP:
+                indexString = Team.TEAMNAME;
+                break;
+            case DEVICE_NAME:
+                indexString = Equipment.EQUIPMENT_NAME;
+                break;
+            case DEVICE_NUM:
+                indexString = Equipment.IC_CARD_ID;
+                break;
+        }
 
+        return indexString;
+    }
 
+    private void initDropSearchView(
+            final DropEditText condition,DropEditText dropEditText,final ArrayList<ObjectElement> dataSearchList,
+            final String searchTitle,final String searchName,final int searTag ,final String tips){
+        dropEditText.getmEditText().
+                setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (condition != null) {
+                                            if (!condition.getText().equals("") && dataSearchList.size() > 0) {
+                                                searchDataLists.clear();
+                                                searchDataLists.addAll(dataSearchList);
+                                                mResultAdapter.changeData(searchDataLists, searchName);
+                                                menuSearchTitle.setText(searchTitle);
+                                                mDrawer_layout.openDrawer(Gravity.RIGHT);
+                                                searchtag = searTag;
+                                            } else {
+                                                Toast.makeText(mContext, tips, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }else {
+                                            if ( dataSearchList.size() > 0) {
+                                                searchDataLists.clear();
+                                                searchDataLists.addAll(dataSearchList);
+                                                mResultAdapter.changeData(searchDataLists, searchName);
+                                                menuSearchTitle.setText(searchTitle);
+                                                mDrawer_layout.openDrawer(Gravity.RIGHT);
+                                                searchtag = searTag;
+                                            } else {
+                                                Toast.makeText(mContext, tips, Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+
+                                    }
+                                });
+
+                            }
+                        }
+
+                );
+    }
 }

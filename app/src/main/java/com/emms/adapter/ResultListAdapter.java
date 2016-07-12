@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.emms.R;
+import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +18,15 @@ import java.util.List;
  */
 public class ResultListAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<String> results;
-
+    private ArrayList<ObjectElement> results;
+    private String itemName;
     public ResultListAdapter(Context mContext) {
         this.results = new ArrayList<>();
         this.mContext = mContext;
     }
 
-    public void changeData(ArrayList<String> list){
+    public void changeData(ArrayList<ObjectElement> list,String itemName){
+        this.itemName =itemName ;
         if (results == null){
             results.addAll(list);
         }else{
@@ -40,7 +42,7 @@ public class ResultListAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int position) {
+    public ObjectElement getItem(int position) {
         return results == null ? null : results.get(position);
     }
 
@@ -60,7 +62,7 @@ public class ResultListAdapter extends BaseAdapter {
         }else{
             holder = (ResultViewHolder) view.getTag();
         }
-        holder.name.setText(results.get(position));
+        holder.name.setText(results.get(position).get(itemName).valueAsString());
         return view;
     }
 

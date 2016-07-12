@@ -15,7 +15,9 @@ import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.adapter.TaskAdapter;
 import com.emms.bean.TaskBean;
+import com.emms.httputils.HttpUtils;
 import com.emms.util.LongToDate;
+import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
 
 import java.util.ArrayList;
 
@@ -40,6 +42,13 @@ public class ProcessingFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+//        HttpParams params = new HttpParams();
+//
+//        params.put("AutoLogin", "GET0001502");
+//
+//        params.putHeaders("Origin", "http://EMMSAPP");
+//        params.putHeaders("Referer", "http://EMMSAPP");
+//        HttpUtils.get(mContext,"Task",);
         datas = new ArrayList<TaskBean>() {
             {
                 add(new TaskBean("D", "0115", "平车", 1, 1403300, 0, "我是描述描述"));

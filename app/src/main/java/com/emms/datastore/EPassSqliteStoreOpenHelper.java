@@ -9,6 +9,7 @@ import com.emms.schema.DataType;
 import com.emms.schema.Department;
 import com.emms.schema.Equipment;
 import com.emms.schema.Factory;
+import com.emms.schema.Maintain;
 import com.emms.schema.Operator;
 import com.emms.schema.Team;
 import com.emms.schema.TeamService;
@@ -48,6 +49,9 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 			.getTableName();
 	public static final String SCHEMA_EQUIPMENT = Schema.getAttributes(
 			Equipment.class).getTableName();
+	public static final String SCHEMA_MAINTAIN = Schema.getAttributes(
+			Maintain.class).getTableName();
+
 
 	/**
 	 * A HashMap store a key pair a schema object class.
@@ -63,7 +67,7 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 
 	@Override
 	public String getDatabaseName() {
-		return new File(getContext().getExternalFilesDir(null), "test4.db")
+		return new File(getContext().getExternalFilesDir(null), "EMMS.db")
 					.getAbsolutePath();
 
 	}
@@ -126,6 +130,7 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 		schema.put(SCHEMA_TEAM, Team.class);
 		schema.put(SCHEMA_FACTORY, Factory.class);
 		schema.put(SCHEMA_EQUIPMENT, Equipment.class);
+		schema.put(SCHEMA_MAINTAIN,Maintain.class);
 	}
 
 }

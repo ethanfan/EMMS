@@ -34,6 +34,7 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
         mContext = this;
 
         initView();
+
         mTitles =getResources().getStringArray(R.array.select_tab_status);
         for (int i =0;i< mTitles.length;i++) {
             if (i==0) {
