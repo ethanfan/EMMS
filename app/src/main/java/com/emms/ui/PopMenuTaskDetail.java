@@ -1,6 +1,7 @@
 package com.emms.ui;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -12,11 +13,14 @@ import android.view.WindowManager;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.emms.R;
+import com.emms.util.ListViewUtility;
 
 import java.util.ArrayList;
 
@@ -36,16 +40,26 @@ public abstract class PopMenuTaskDetail {
 
 		View view = LayoutInflater.from(context)
 				.inflate(R.layout.popmenu, null);
+		final RelativeLayout layout=(RelativeLayout)view.findViewById(R.id.popup_view_cont);
+		layout.setBackgroundColor(Color.argb(80,0,0,0));
+		layout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dismiss();
+			}
+		});
 		popAdapter =new PopAdapter();
 		// 设置 listview
 		listView = (ListView) view.findViewById(R.id.listView);
+		//listView.setPaddingRelative();
+		listView.setBackgroundColor(Color.WHITE);
 		listView.setAdapter(popAdapter);
 		listView.setFocusableInTouchMode(true);
 		listView.setFocusable(true);
-
+      //  ListViewUtility.setListViewHeightBasedOnChildren(listView);
 //		popupWindow = new PopupWindow(view, 254, LayoutParams.WRAP_CONTENT);
 
-		popupWindow = new PopupWindow(view, 350, LayoutParams.WRAP_CONTENT);
+		popupWindow = new PopupWindow(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
 		// 这个是为了点击“返回Back”也能使其消失，并且并不会影响你的背景（很神奇的）
 		popupWindow.setBackgroundDrawable(new BitmapDrawable());

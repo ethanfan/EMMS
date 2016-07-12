@@ -333,8 +333,8 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             ll_popup.startAnimation(AnimationUtils.loadAnimation(mContext,
                     R.anim.push_bottom_in_2));
 
-            setWidth(ViewGroup.LayoutParams.FILL_PARENT);
-            setHeight(ViewGroup.LayoutParams.FILL_PARENT);
+            setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
+            setHeight(ViewGroup.LayoutParams.MATCH_PARENT);
             setBackgroundDrawable(new BitmapDrawable());
             setFocusable(true);
             setOutsideTouchable(true);
