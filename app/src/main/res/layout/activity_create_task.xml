@@ -173,7 +173,7 @@
                             android:textSize="18sp" />
 
                         <com.emms.ui.DropEditText
-                            android:id="@+id/group"
+                            android:id="@+id/group_id"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="3"

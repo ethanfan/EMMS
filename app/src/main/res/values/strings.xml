@@ -43,6 +43,7 @@
     <string name="title_search_task_subtype">任务子类型</string>
     <string name="title_search_group">组&#160;&#160;&#160;&#160;&#160;别</string>
     <string name="title_search_equipment_name">设备名称</string>
+    <string name="title_search_equipment_nun">机台号</string>
     <string name="dialog_tips">您的任务已创建成功!</string>
     <string name="waiting">正在提交，请稍后. . .</string>
     <string name="tips_nfc">请在手机背面刷卡</string>

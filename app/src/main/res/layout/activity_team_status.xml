@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     tools:context=".activity.TeamStatusActivity">
     <include layout="@layout/toolbar"
-        android:id="@+id/toolbar"></include>
+        android:id="@+id/toolbar">
+    </include>
 
     <View
         android:id="@+id/divider"
