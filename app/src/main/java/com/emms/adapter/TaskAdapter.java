@@ -6,6 +6,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.emms.bean.TaskBean;
+import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 
 import java.util.ArrayList;
 
@@ -14,13 +15,13 @@ import java.util.ArrayList;
  */
 public abstract class TaskAdapter extends BaseAdapter{
 
-    private ArrayList<TaskBean> datas;
+    private ArrayList<ObjectElement> datas;
 
-    public TaskAdapter(ArrayList<TaskBean> datas) {
+    public TaskAdapter(ArrayList<ObjectElement> datas) {
         this.datas = datas;
     }
 
-    public void setDatas(ArrayList<TaskBean> mDatas){
+    public void setDatas(ArrayList<ObjectElement> mDatas){
         if (mDatas.size()>0) {
             this.datas = mDatas;
             notifyDataSetChanged();

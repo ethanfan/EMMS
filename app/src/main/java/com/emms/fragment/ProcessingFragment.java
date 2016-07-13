@@ -15,11 +15,16 @@ import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.adapter.TaskAdapter;
 import com.emms.bean.TaskBean;
-import com.emms.httputils.HttpUtils;
+import com.emms.schema.Maintain;
 import com.emms.util.LongToDate;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.jaffer_datastore_android_sdk.datastore.DataElement;
+import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 
 import java.util.ArrayList;
+import java.util.concurrent.Future;
 
 /**
  * Created by jaffer.deng on 2016/6/20.
@@ -27,8 +32,33 @@ import java.util.ArrayList;
 public class ProcessingFragment extends Fragment {
 
     private ListView listView;
+
     private TaskAdapter taskAdapter;
-    private ArrayList<TaskBean> datas;
+
+    public ArrayList<ObjectElement> getDatas() {
+        return datas;
+    }
+
+    public void setDatas(ListenableFuture<DataElement> data) {
+        // this.datas = datas;
+        Futures.addCallback(data, new FutureCallback<DataElement>() {
+            @Override
+            public void onSuccess(DataElement dataElement) {
+                if(dataElement!=null&&dataElement.asArrayElement().size()>0){
+                    for(int i=0;i<dataElement.asArrayElement().size();i++){
+                        datas.add(dataElement.asArrayElement().get(i).asObjectElement());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+
+            }
+        });
+    }
+    //private ArrayList<TaskBean> datas;
+    private ArrayList<ObjectElement> datas=new ArrayList<ObjectElement>();
     private Context mContext;
 
     @Override
@@ -42,14 +72,7 @@ public class ProcessingFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        HttpParams params = new HttpParams();
-//
-//        params.put("AutoLogin", "GET0001502");
-//
-//        params.putHeaders("Origin", "http://EMMSAPP");
-//        params.putHeaders("Referer", "http://EMMSAPP");
-//        HttpUtils.get(mContext,"Task",);
-        datas = new ArrayList<TaskBean>() {
+     /*   datas = new ArrayList<TaskBean>() {
             {
                 add(new TaskBean("D", "0115", "平车", 1, 1403300, 0, "我是描述描述"));
                 add(new TaskBean("D", "0115", "平车", 2, 1403300, 0, "我是描述我是描述描述我是描述描述我是描述描述我是描述描述我是描述描述"));
@@ -58,7 +81,7 @@ public class ProcessingFragment extends Fragment {
                 add(new TaskBean("D", "0115", "平车", 2, 1403300, 0, "我是描述我是描述描述我是描述描述我是描述描述我是描述描述我是描述描述"));
                 add(new TaskBean("D", "0115", "平车", 2, 1403300, 0, "我是描述我是描述描述我是描述描述我是描述描述我是描述描述我是描述描述"));
             }
-        };
+        };*/
         taskAdapter = new TaskAdapter(datas) {
             @Override
             public View getCustomView(View convertView, int position, ViewGroup parent) {
@@ -77,10 +100,10 @@ public class ProcessingFragment extends Fragment {
                 } else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
-                holder.tv_group.setText(datas.get(position).getGroup());
-                holder.tv_device_num.setText(datas.get(position).getDeviceNum());
-                holder.tv_device_name.setText(datas.get(position).getDeviceName());
-                int tag = datas.get(position).getTaskTag();
+                holder.tv_group.setText(datas.get(position).get(Maintain.GROUP_NAME).valueAsString());
+                holder.tv_device_num.setText(datas.get(position).get(Maintain.MACHINE_CODE).valueAsString());
+                holder.tv_device_name.setText(datas.get(position).get(Maintain.MACHINE_NAME).valueAsString());
+           /*     int tag = datas.get(position).getTaskTag();
                 String state = "";
                 if (tag == 1) {
                     holder.tv_task_state.setTextColor(getResources().getColor(R.color.processing_color));
@@ -88,16 +111,18 @@ public class ProcessingFragment extends Fragment {
                 } else if (tag == 2) {
                     holder.tv_task_state.setTextColor(getResources().getColor(R.color.pause_color));
                     state = getResources().getString(R.string.paused);
-                }
-                holder.tv_task_state.setText(state);
-                String start_date = LongToDate.longPointDate(datas.get(position).getStartTime());
+                }*/
+                holder.tv_task_state.setText(datas.get(position).get(Maintain.STATUS).valueAsString());
+                // String start_date = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_START_TIME).valueAsLong());
+                String start_date=datas.get(position).get(Maintain.MAINTAIN_START_TIME).valueAsString();
                 holder.tv_start_time.setText(start_date);
                 holder.tv_end_time.setText("");
-                holder.tv_task_describe.setText(datas.get(position).getTaskDescriptions());
+                holder.tv_task_describe.setText(datas.get(position).get(Maintain.DESCRIPTION).valueAsString());
                 return convertView;
             }
         };
         listView.setAdapter(taskAdapter);
+        taskAdapter.setDatas(datas);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

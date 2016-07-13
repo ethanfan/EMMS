@@ -55,7 +55,7 @@
     <string name="working">进行中</string>
     <string name="paused">已暂停</string>
     <string name="group_type">组别：</string>
-    <string name="device_num">设备编号：</string>
+    <string name="device_num">设备编号：&#160;&#160;</string>
     <string name="device_name">设备名称：&#160;&#160; </string>
     <string name="task_state">任务状态：&#160;&#160; </string>
     <string name="repair_time">报修时间：&#160;&#160;</string>

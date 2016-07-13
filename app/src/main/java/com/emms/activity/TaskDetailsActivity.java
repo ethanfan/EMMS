@@ -29,12 +29,14 @@ import android.widget.TextView;
 import com.emms.R;
 import com.emms.adapter.TaskAdapter;
 import com.emms.bean.TaskBean;
+import com.emms.schema.Maintain;
 import com.emms.ui.ExpandGridView;
 import com.emms.ui.PopMenuTaskDetail;
 import com.emms.ui.ScrollViewWithListView;
 import com.emms.util.Bimp;
 import com.emms.util.FileUtils;
 import com.emms.util.LongToDate;
+import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +53,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
     private ExpandGridView noScrollgridview;
     private GridAdapter adapter;
     private TaskAdapter taskAdapter;
-    private ArrayList<TaskBean> datas;
+    private ArrayList<ObjectElement> datas;
     private Context mContext;
     private PopMenuTaskDetail popMenuTaskDetail;
 
@@ -85,7 +87,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 } else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
-                String creater = datas.get(position).getCreater();
+                String creater = datas.get(position).get("Maintainer").valueAsString();
                 if (creater != null) {
                     if (!creater.equals("")) {
                         holder.tv_creater.setText(creater);
@@ -98,22 +100,24 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 }
 
 
-                holder.tv_device_num.setText(datas.get(position).getDeviceNum());
-                holder.tv_device_name.setText(datas.get(position).getDeviceName());
-                String createTime = LongToDate.longPointDate(datas.get(position).getCreatTime());
+                holder.tv_device_num.setText(datas.get(position).get(Maintain.MACHINE_CODE).valueAsString());
+                holder.tv_device_name.setText(datas.get(position).get(Maintain.MACHINE_NAME).valueAsString());
+                //String createTime = LongToDate.longPointDate(datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsLong());
+                String createTime=datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsString();
                 holder.tv_create_time.setText(createTime);
-                String endTime = LongToDate.longPointDate(datas.get(position).getEndTime());
+                //String endTime = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsLong());
+                String endTime=datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsString();
                 holder.tv_end_time.setText(endTime);
                 String state = "";
-                int tag = datas.get(position).getTaskTag();
+            /*    int tag = datas.get(position).getTaskTag();
                 if (tag == 1) {
                     holder.tv_task_state.setTextColor(getResources().getColor(R.color.processing_color));
                     state = getResources().getString(R.string.task_state_details_finish);
                 } else if (tag == 0) {
                     holder.tv_task_state.setTextColor(getResources().getColor(R.color.pause_color));
                     state = getResources().getString(R.string.task_state_details_non);
-                }
-                holder.tv_task_state.setText(state);
+                }*/
+                holder.tv_task_state.setText(datas.get(position).get(Maintain.STATUS).valueAsString());
                 return convertView;
             }
 
@@ -129,13 +133,14 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void initDatas() {
-        datas = new ArrayList<TaskBean>() {
+   /*     datas = new ArrayList<TaskBean>() {
             {
                 add(new TaskBean("何邵勃", "0115", "平车", 0, 144400000, 199900000));
                 add(new TaskBean(null, "0115", "平车", 1, 144400000, 199900000));
                 add(new TaskBean("何邵勃", "0115", "平车", 1, 144400000, 199900000));
             }
-        };
+        };*/
+        datas=new ArrayList<ObjectElement>();
     }
 
     private void initView() {

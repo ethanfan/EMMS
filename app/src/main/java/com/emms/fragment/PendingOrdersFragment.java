@@ -16,7 +16,9 @@ import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.adapter.TaskAdapter;
 import com.emms.bean.TaskBean;
+import com.emms.schema.Maintain;
 import com.emms.util.LongToDate;
+import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 
 import java.util.ArrayList;
 
@@ -27,7 +29,7 @@ public class PendingOrdersFragment extends Fragment{
 
     private ListView listView;
     private TaskAdapter taskAdapter;
-    private ArrayList<TaskBean> datas;
+    private ArrayList<ObjectElement> datas;
     private Context mContext;
     @Nullable
     @Override
@@ -41,7 +43,8 @@ public class PendingOrdersFragment extends Fragment{
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        datas =new ArrayList<TaskBean>(){
+        datas =new ArrayList<ObjectElement>();
+    /*    {
             {
                 add(new TaskBean("何邵勃","D","0115","平车",144400000));
                 add(new TaskBean("何邵勃","D","0115","平车",144400000));
@@ -50,7 +53,7 @@ public class PendingOrdersFragment extends Fragment{
                 add(new TaskBean("何邵勃","D","0115","平车",144400000));
                 add(new TaskBean("何邵勃","D","0115","平车",144400000));
             }
-        };
+        };*/
         taskAdapter = new TaskAdapter(datas) {
             @Override
             public View getCustomView(View convertView, int position, ViewGroup parent) {
@@ -67,11 +70,12 @@ public class PendingOrdersFragment extends Fragment{
                 }else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
-                holder.tv_creater.setText(datas.get(position).getCreater());
-                holder.tv_group.setText(datas.get(position).getGroup());
-                holder.tv_device_num.setText(datas.get(position).getDeviceNum());
-                holder.tv_device_name.setText(datas.get(position).getDeviceName());
-                String createTime = LongToDate.longPointDate(datas.get(position).getCreatTime());
+                //   holder.tv_creater.setText(datas.get(position).getCreater());
+                holder.tv_group.setText(datas.get(position).get(Maintain.GROUP_NAME).valueAsString());
+                holder.tv_device_num.setText(datas.get(position).get(Maintain.MACHINE_CODE).valueAsString());
+                holder.tv_device_name.setText(datas.get(position).get(Maintain.MACHINE_NAME).valueAsString());
+                // String createTime = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_START_TIME).valueAsInt());
+                String createTime=datas.get(position).get(Maintain.MAINTAIN_START_TIME).valueAsString();
                 holder.tv_create_time.setText(createTime);
                 return convertView;
             }

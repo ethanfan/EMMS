@@ -16,9 +16,11 @@ import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.adapter.TaskAdapter;
 import com.emms.bean.TaskBean;
+import com.emms.schema.Maintain;
 import com.emms.util.LongToDate;
 import com.flyco.tablayout.SegmentTabLayout;
 import com.flyco.tablayout.listener.OnTabSelectListener;
+import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 
 import java.util.ArrayList;
 
@@ -28,13 +30,13 @@ import java.util.ArrayList;
 public class LinkedOrdersFragment extends Fragment{
     private ListView listView;
     private TaskAdapter taskAdapter;
-    private ArrayList<TaskBean> datas1;
-    private ArrayList<TaskBean> datas2;
-    private ArrayList<TaskBean> datas3;
+    private ArrayList<ObjectElement> datas1;
+    private ArrayList<ObjectElement> datas2;
+    private ArrayList<ObjectElement> datas3;
     private Context mContext;
     private SegmentTabLayout tabLayout_1;
     private String[] mTitles ;
-    private ArrayList<TaskBean> data;
+    private ArrayList<ObjectElement> data;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,8 +53,8 @@ public class LinkedOrdersFragment extends Fragment{
         super.onViewCreated(view, savedInstanceState);
         mTitles = getResources().getStringArray(R.array.select_tab_time);
         tabLayout_1.setTabData(mTitles);
-        datas1 =new ArrayList<TaskBean>(){
-            {
+        datas1 =new ArrayList<ObjectElement>();
+     /*       {
                 add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
                 add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
                 add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
@@ -61,9 +63,9 @@ public class LinkedOrdersFragment extends Fragment{
                 add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
             }
         };
-
-        datas2 =new ArrayList<TaskBean>(){
-            {
+*/
+        datas2 =new ArrayList<ObjectElement>();
+      /*      {
                 add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
                 add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
                 add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
@@ -71,9 +73,9 @@ public class LinkedOrdersFragment extends Fragment{
                 add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
                 add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
             }
-        };
-        datas3 =new ArrayList<TaskBean>(){
-            {
+        };*/
+        datas3 =new ArrayList<ObjectElement>();
+      /*      {
                 add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
                 add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
                 add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
@@ -81,7 +83,7 @@ public class LinkedOrdersFragment extends Fragment{
                 add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
                 add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
             }
-        };
+        };*/
 
         taskAdapter =new TaskAdapter(datas1) {
             @Override
@@ -102,23 +104,25 @@ public class LinkedOrdersFragment extends Fragment{
                 }else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
-                holder.tv_creater.setText(data.get(position).getCreater());
-                holder.tv_group.setText(data.get(position).getGroup());
-                holder.tv_device_num.setText(data.get(position).getDeviceNum());
-                holder.tv_device_name.setText(data.get(position).getDeviceName());
-                String repairTime = LongToDate.longPointDate(data.get(position).getRepairTime());
-                holder.tv_repair_time.setText(repairTime);
+                //  holder.tv_creater.setText(data.get(position).getCreater());
+                holder.tv_group.setText(data.get(position).get(Maintain.GROUP_NAME).valueAsString());
+                holder.tv_device_num.setText(data.get(position).get(Maintain.MACHINE_CODE).valueAsString());
+                holder.tv_device_name.setText(data.get(position).get(Maintain.MACHINE_NAME).valueAsString());
+                //  String repairTime = LongToDate.longPointDate(data.get(position).getRepairTime());
+                //   holder.tv_repair_time.setText(repairTime);
 
-                String startTime = LongToDate.longPointDate(data.get(position).getStartTime());
+                /// String startTime = LongToDate.longPointDate(data.get(position).get(Maintain.MAINTAIN_START_TIME).valueAsLong());
+                String startTime=data.get(position).get(Maintain.MAINTAIN_START_TIME).valueAsString();
                 holder.tv_start_time.setText(startTime);
-                String endTime = LongToDate.longPointDate(data.get(position).getEndTime());
+                //String endTime = LongToDate.longPointDate(data.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsLong());
+                String endTime=data.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsString();
                 holder.tv_end_time.setText(endTime);
-                holder.tv_task_describe.setText(data.get(position).getTaskDescriptions());
+                holder.tv_task_describe.setText(data.get(position).get(Maintain.DESCRIPTION).valueAsString());
                 return convertView;
             }
         };
         listView.setAdapter(taskAdapter);
-        data=new ArrayList<TaskBean>();
+        data=new ArrayList<ObjectElement>();
         data.addAll(datas1);
         tabLayout_1.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
