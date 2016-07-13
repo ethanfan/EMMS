@@ -10,6 +10,8 @@ import android.widget.TextView;
 import com.emms.R;
 import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 
+import org.restlet.resource.Get;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,4 +71,8 @@ public class ResultListAdapter extends BaseAdapter {
     public static class ResultViewHolder{
         TextView name;
     }
+    public String getItemName(){
+        return itemName;
+    }
+
 }

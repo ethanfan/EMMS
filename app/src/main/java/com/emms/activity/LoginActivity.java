@@ -104,7 +104,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     @Override
                     public void onSuccess(Map<String, String> headers, byte[] t) {
                         super.onSuccess(headers, t);
-                        SharedPreferenceManager.setCookie(LoginActivity.this, headers.get("Set-Cookie"));
+                        SaveCookies(headers);
                     }
 
                     @Override
@@ -161,5 +161,21 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         }
         NetworkInfo.State network = info.getState();
         return network == NetworkInfo.State.CONNECTED;
+    }
+
+    /**
+     * 保存Cookie
+     */
+    public void SaveCookies( Map<String, String> headers)
+    {
+
+        if (headers == null)
+            return;
+
+            String cookie=headers.get("Set-Cookie");
+            String[]cookies=cookie.split(";");
+        String[] cookievalues = cookies[0].split("=");
+        SharedPreferenceManager.setCookie(LoginActivity.this,cookievalues[1]);
+
     }
 }

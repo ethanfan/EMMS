@@ -98,9 +98,10 @@ public  class HttpUtils {
         if (cookie !=null) {
             params.putHeaders("Origin", "http://EMMSAPP");
             params.putHeaders("Referer", "http://EMMSAPP");
+            params.putHeaders("Cookie",cookie);
             RxVolley.setContext(context);
             new RxVolley.Builder()
-                    .url("http://devazure.esquel.cn:80/EMMS/api/DataBase") //接口地址
+                    .url(BuildConfig.getServerAPIEndPoint() +table) //接口地址
                             //请求类型，如果不加，默认为 GET 可选项：
                             //POST/PUT/DELETE/HEAD/OPTIONS/TRACE/PATCH
                     .httpMethod(RxVolley.Method.GET)

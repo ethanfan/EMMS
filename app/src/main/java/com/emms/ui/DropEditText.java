@@ -39,7 +39,7 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 	public DropEditText(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
-	
+
 	public DropEditText(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		mContext = context;
@@ -51,22 +51,22 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 		mTexthitColor = ta.getColor(R.styleable.DropEditText_hintColor,mTexthitColor);
 		ta.recycle();
 	}
-	
+
 	@Override
 	protected void onFinishInflate() {
 		super.onFinishInflate();
-		
+
 		mEditText = (EditText) findViewById(R.id.dropview_edit);
 		mDropImage = (ImageView) findViewById(R.id.dropview_image);
-		
+
 		mEditText.setSelectAllOnFocus(true);
 		mDropImage.setImageResource(mDrawableLeft);
-	
+
 		if(!TextUtils.isEmpty(mHit)) {
 			mEditText.setHint(mHit);
 			mEditText.setHintTextColor(mTexthitColor);
 		}
-		
+
 		mDropImage.setOnClickListener(this);
 //		mPopView.setOnItemClickListener(this);
 		ViewTreeObserver vto = view.getViewTreeObserver();
@@ -82,7 +82,7 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right,
-			int bottom) {
+							int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
 		// 如果布局发生改
 		// 并且dropMode是flower_parent
@@ -132,7 +132,12 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 								long id) {
-			mEditText.setText(datas.get(position).get(itemName).valueAsString());
+			try {
+				mEditText.setText(datas.get(position).get(itemName).valueAsString());
+			}catch (Exception e){
+				e.printStackTrace();
+			}
+
 			selectPosition =position;
 			popMenu.dismiss();
 		}

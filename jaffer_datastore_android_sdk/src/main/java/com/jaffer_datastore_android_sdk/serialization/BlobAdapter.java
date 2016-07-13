@@ -43,8 +43,6 @@ public abstract class BlobAdapter<T> {
 	 * Determines whether or not the given value is already in the desired
 	 * deserialized form.
 	 *
-	 * @param value
-	 *          The value of the data
 	 * @return true if the value was already in the desired deserialized format,
 	 *         false otherwise
 	 */
