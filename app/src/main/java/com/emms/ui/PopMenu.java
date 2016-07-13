@@ -37,7 +37,8 @@ public class PopMenu {
 		itemList = new ArrayList<ObjectElement>(5);
 
 		View view = LayoutInflater.from(context)
-				.inflate(R.layout.popmenu, null);
+				.inflate(R.layout.dropmenu, null);
+
 		popAdapter =new PopAdapter();
 		// 设置 listview
 		listView = (ListView) view.findViewById(R.id.listView);
@@ -64,11 +65,7 @@ public class PopMenu {
 
 	}
 
-//	// 批量添加菜单项
-//	public void addItems(String[] items) {
-//		for (String s : items)
-//			itemList.add(s);
-//	}
+
 
 	// 批量添加菜单项
 	public void addItems(ArrayList items,String itemName) {
@@ -76,10 +73,6 @@ public class PopMenu {
 		this.itemName = itemName;
 	}
 
-//	// 单个添加菜单项
-//	public void addItem(String item) {
-//		itemList.add(item);
-//	}
 
 	// 下拉式 弹出 pop菜单 parent 右下角
 	public void showAsDropDown(View parent) {
