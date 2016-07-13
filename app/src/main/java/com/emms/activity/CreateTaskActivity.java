@@ -419,7 +419,13 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                             mDeviceNumlist.add(dataElement.asArrayElement().get(i).asObjectElement());
                         }
                     } else {
-                        Toast.makeText(mContext, "目前该设备没有机台号", Toast.LENGTH_SHORT).show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(mContext, "目前该设备没有机台号", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
                     }
                 }
 
@@ -430,6 +436,12 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
             });
         }catch (Exception e){
             e.printStackTrace();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, "目前该设备没有机台号", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
 
     }
