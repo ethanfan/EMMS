@@ -132,13 +132,12 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 								long id) {
+			selectPosition =position;
 			try {
 				mEditText.setText(datas.get(position).get(itemName).valueAsString());
 			}catch (Exception e){
 				e.printStackTrace();
 			}
-
-			selectPosition =position;
 			popMenu.dismiss();
 		}
 	};

@@ -245,21 +245,8 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     }
 
     private void initEvent() {
-        HttpParams params = new HttpParams();
-        params.put("id","systemadmin");
-        HttpUtils.get(mContext, "Task", params, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-            }
-
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-            }
-        });
-        getTeamId("4204");  //获取组别
-        getTaskType();
+        getTeamId("4204");  //获取组别 目前数据只缺OperatorId
+        getTaskType();//获取任务类型 基本不用改
         initDropSearchView(null, task_type.getmEditText(), getResources().
                         getString(R.string.title_search_task_type), DataDictionary.DATA_NAME,
                 TASK_TYPE, "获取数据失败");
@@ -307,6 +294,9 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                 getResources().
                         getString(R.string.title_search_task_type), DataDictionary.DATA_NAME, TASK_SUBTYPE, "请先选择任务类型");
 
+        initDropSearchView(group.getmEditText(), device_name.getmEditText(),
+                getResources().
+                        getString(R.string.title_search_task_type), Equipment.EQUIPMENT_NAME, DEVICE_NAME, "请先选择组别");
         group.getmEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -381,9 +371,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
                 );
 
-        initDropSearchView(group.getmEditText(), device_name.getmEditText(),
-                getResources().
-                        getString(R.string.title_search_task_type), Equipment.EQUIPMENT_NAME, DEVICE_NAME, "请先选择组别");
+
         device_name.getmEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -392,7 +380,10 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                initDeviceNum();
+                if (!s.toString().equals("")){
+                    initDeviceNum();
+                }
+
             }
 
 
@@ -421,6 +412,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
                 @Override
                 public void onSuccess(DataElement dataElement) {
+                    mDeviceNumlist = new ArrayList<ObjectElement>();
                     if (dataElement != null && dataElement.isArray()
                             && dataElement.asArrayElement().size() > 0) {
                         for (int i = 0; i < dataElement.asArrayElement().size(); i++) {
@@ -449,7 +441,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
      */
     private void getDeviceName() {
         if (!isSearchview) {
-            teamId = mTeamNamelist.get(group.getSelectPosition()).get(Team.TEAM_ID).valueAsString();
+            teamId = mTeamNamelist.get(group.getSelectPosition()).get("Team_ID").valueAsString();
         }
         String rawQuery ="select distinct EquipmentClass,EquipmentName from Equipment where UseTeam_ID ="+teamId+" and EquipmentName is not null";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
@@ -500,7 +492,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                         String name = element.asArrayElement().get(0)
                                 .asObjectElement().get(Operator.NAME).valueAsString();
                         if (name != null) {
-                            create_task.setText(name);
+                            create_task.setText(name);  //创建人名
                         }
                     }
                 });
