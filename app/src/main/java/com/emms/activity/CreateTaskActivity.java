@@ -97,10 +97,10 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
     private ArrayList<ObjectElement> mTaskType = new ArrayList<ObjectElement>();
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
-    private ArrayList<ObjectElement> mSubType;
-    private ArrayList<ObjectElement> mTeamNamelist;
-    private ArrayList<ObjectElement> mDeviceNamelist;
-    private ArrayList<ObjectElement> mDeviceNumlist;
+    private ArrayList<ObjectElement> mSubType = new ArrayList<>();
+    private ArrayList<ObjectElement> mTeamNamelist = new ArrayList<>();
+    private ArrayList<ObjectElement> mDeviceNamelist = new ArrayList<>();
+    private ArrayList<ObjectElement> mDeviceNumlist = new ArrayList<>();
 
     private NFCDialog nfcDialog;
     private DrawerLayout mDrawer_layout;
@@ -292,11 +292,11 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         });
         initDropSearchView(task_type.getmEditText(), task_subtype.getmEditText(),
                 getResources().
-                        getString(R.string.title_search_task_type), DataDictionary.DATA_NAME, TASK_SUBTYPE, "请先选择任务类型");
+                        getString(R.string.title_search_task_subtype), DataDictionary.DATA_NAME, TASK_SUBTYPE, "请先选择任务类型");
 
         initDropSearchView(group.getmEditText(), device_name.getmEditText(),
                 getResources().
-                        getString(R.string.title_search_task_type), Equipment.EQUIPMENT_NAME, DEVICE_NAME, "请先选择组别");
+                        getString(R.string.title_search_equipment_name), Equipment.EQUIPMENT_NAME, DEVICE_NAME, "请先选择组别");
         group.getmEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -317,7 +317,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
         initDropSearchView(create_task, group.getmEditText(),
                 getResources().
-                        getString(R.string.title_search_task_type), Team.TEAMNAME, GROUP, "请先扫描工卡获取创建人信息");
+                        getString(R.string.title_search_group), Team.TEAMNAME, GROUP, "请先扫描工卡获取创建人信息");
 
         group.getDropImage().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -395,7 +395,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
         initDropSearchView(device_name.getmEditText(), device_num,
                 getResources().
-                        getString(R.string.title_search_task_type), Equipment.IC_CARD_ID, DEVICE_NUM, "请先选择设备名称，或刷设备卡获取机台号");
+                        getString(R.string.title_search_equipment_nun), Equipment.IC_CARD_ID, DEVICE_NUM, "请先选择设备名称，或刷设备卡获取机台号");
 
     }
 
