@@ -432,13 +432,13 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             try {
                    if (bitmap != null) {
                           baos = new ByteArrayOutputStream();
-                          bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                          bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
 
                           baos.flush();
                           baos.close();
 
                           byte[] bitmapBytes = baos.toByteArray();
-                          result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+                          result = Base64.encodeToString(bitmapBytes, Base64.NO_WRAP);
                        }
                 } catch (IOException e) {
                    e.printStackTrace();
