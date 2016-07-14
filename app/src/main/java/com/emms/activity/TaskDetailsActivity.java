@@ -432,7 +432,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             try {
                    if (bitmap != null) {
                           baos = new ByteArrayOutputStream();
-                          bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
+                          bitmap.compress(Bitmap.CompressFormat.PNG, 20, baos);
 
                           baos.flush();
                           baos.close();
@@ -469,12 +469,18 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
              String base64=bitmapToBase64(bitmap);
              HttpParams params=new HttpParams();
              if(TaskDetail!=null){
-             JsonObjectElement jsonObjectElement=new JsonObjectElement(TaskDetail);
-             params.put(Task.TASK_ID,jsonObjectElement.get(Task.TASK_ID).valueAsString());}
+             JsonObjectElement jsonObjectElement=new JsonObjectElement(TaskDetail);}
+           /*  params.put(Task.TASK_ID,jsonObjectElement.get(Task.TASK_ID).valueAsString());}
              else{
-                 params.put(Task.TASK_ID,0);
+                 params.put(Task.TASK_ID,16);
              }
-             params.put("ImgBase64",base64);
+             params.put("TaskAttachment_ID",0);
+             params.put("ImgBase64",base64);*/
+             JsonObjectElement jsonObjectElement=new JsonObjectElement();
+             jsonObjectElement.set(Task.TASK_ID,16);
+             jsonObjectElement.set("TaskAttachment_ID",0);
+             jsonObjectElement.set("ImgBase64",base64);
+                 params.putJsonParams(jsonObjectElement.toJson());
              HttpUtils.post(this, "TaskAttachment", params, new HttpCallback() {
                  @Override
                  public void onFailure(int errorNo, String strMsg) {
