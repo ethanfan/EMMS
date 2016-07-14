@@ -18,6 +18,7 @@ import com.emms.adapter.TaskAdapter;
 import com.emms.bean.TaskBean;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Maintain;
+import com.emms.schema.Task;
 import com.emms.util.LongToDate;
 import com.emms.util.SharedPreferenceManager;
 import com.google.common.util.concurrent.FutureCallback;
@@ -134,6 +135,11 @@ public class ProcessingFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 startActivity(new Intent(mContext, TaskDetailsActivity.class));
+                //Intent intent=new Intent(mContext,TaskDetailsActivity.class);
+                //intent.putExtra(Task.TASK_ID,datas.get(position).get(Task.TASK_ID).valueAsString());
+                //intent.putExtra("TaskDetail",datas.get(position).asObjectElement().valueAsString());
+                //startActivity(intent);
+                //startActivity(new Intent(mContext, TaskDetailsActivity.class));
             }
         });
     }

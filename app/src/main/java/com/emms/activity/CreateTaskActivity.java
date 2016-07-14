@@ -48,6 +48,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.jaffer_datastore_android_sdk.datastore.DataElement;
 import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
+import com.jaffer_datastore_android_sdk.rest.JsonObjectElement;
 import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
 
@@ -494,6 +495,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     private void getTeamId(String operatorId) {
 
         String rawQuery = "select Name,Team_ID,TeamName from Operator where Operator_ID=" + operatorId;
+       // String rawQuery = "select Name,Team_ID,TeamName from Operator where Operator_ID=" +"\""+ operatorId+"\"";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -742,7 +744,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     private android.os.Handler mHandler = new android.os.Handler();
 
     private void createRequest() {
-        hud.show();
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -786,8 +788,8 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
                 if (taskDesc.equals("")) {
                     Toast.makeText(mContext, getResources().getString(R.string.tips_task_desc_post), Toast.LENGTH_SHORT).show();
-                    return;
                 }
+                hud.show();
                 submitTask(taskType,taskSubType,createTask,teamId,deviceName,deviceNum,description );
                 mHandler.postDelayed(new Runnable() {
                     @Override
@@ -967,13 +969,23 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     private void submitTask(String TaskType,String TaskSubType,String TaskBuilder,String teamId,String equipmentName
             ,String MachineCode,String TaskDescription){
         HttpParams params=new HttpParams();
-        params.put(Task.TASK_TYPE,TaskType);
-        params.put(Task.OPERATOR_ID,TaskBuilder);
-        params.put(Task.TEAM_ID,teamId);
-        params.put(Task.EQUIPEMENT_NAME,equipmentName);
-        params.put(Task.EQUIPMENT_ID,MachineCode);
-        params.put(Task.TASK_DESCRIPTION,TaskDescription);
+       // params.put(Task.TASK_ID,0);
+        //params.put(Task.TASK_TYPE,TaskType);
+        //params.put(Task.OPERATOR_ID,TaskBuilder);
+        //params.put(Task.TEAM_ID,teamId);
+        //params.put(Task.EQUIPEMENT_NAME,equipmentName);
+        //params.put(Task.EQUIPMENT_ID,MachineCode);
+        //params.put(Task.TASK_DESCRIPTION,TaskDescription);
         //params.put();
+        JsonObjectElement task=new JsonObjectElement();
+        JsonObjectElement taskDetail=new JsonObjectElement();
+        taskDetail.set(Task.TASK_ID,0);
+        taskDetail.set(Task.TASK_TYPE,TaskType);
+        taskDetail.set("Applicant",TaskBuilder);
+        taskDetail.set("TaskName","维修");
+        task.set("Task",taskDetail);
+        params.putJsonParams(task.toJson());
+        //params.put("Task",task.toJson());
         HttpUtils.post(this, "TaskCollection", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {

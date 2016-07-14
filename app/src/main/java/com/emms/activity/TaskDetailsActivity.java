@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,7 +30,9 @@ import android.widget.TextView;
 import com.emms.R;
 import com.emms.adapter.TaskAdapter;
 import com.emms.bean.TaskBean;
+import com.emms.httputils.HttpUtils;
 import com.emms.schema.Maintain;
+import com.emms.schema.Task;
 import com.emms.ui.ExpandGridView;
 import com.emms.ui.PopMenuTaskDetail;
 import com.emms.ui.ScrollViewWithListView;
@@ -37,7 +40,11 @@ import com.emms.util.Bimp;
 import com.emms.util.FileUtils;
 import com.emms.util.LongToDate;
 import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
+import com.jaffer_datastore_android_sdk.rest.JsonObjectElement;
+import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,12 +63,14 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
     private ArrayList<ObjectElement> datas;
     private Context mContext;
     private PopMenuTaskDetail popMenuTaskDetail;
-
+    String TaskDetail=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
         mContext = this;
+        //获取任务详细信息
+        TaskDetail=getIntent().getStringExtra(Task.TASK_ID);
         initDatas();
         initView();
         initEvent();
@@ -405,11 +414,83 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             case TAKE_PICTURE:
                 if ( resultCode == -1) {
                     Bimp.drr.add(path);
+                    //在此上传图片到服务器;
+                    submitPictureToServer(path);
                 }
                 break;
         }
     }
+/**
+ * bitmap转为base64
+ * @param bitmap
+ * @return
+ */
+ public static String bitmapToBase64(Bitmap bitmap) {
 
+          String result = null;
+            ByteArrayOutputStream baos = null;
+            try {
+                   if (bitmap != null) {
+                          baos = new ByteArrayOutputStream();
+                          bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+
+                          baos.flush();
+                          baos.close();
+
+                          byte[] bitmapBytes = baos.toByteArray();
+                          result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
+                       }
+                } catch (IOException e) {
+                   e.printStackTrace();
+                } finally {
+                   try {
+                            if (baos != null) {
+                                  baos.flush();
+                                  baos.close();
+                                }
+                      } catch (IOException e) {
+                         e.printStackTrace();
+                       }
+               }
+           return result;
+       }
+
+    /**
+      * base64转为bitmap
+      * @param base64Data
+      * @return
+      */
+           public static Bitmap base64ToBitmap(String base64Data) {
+          byte[] bytes = Base64.decode(base64Data, Base64.DEFAULT);
+           return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+       }
+     private void submitPictureToServer(String path){
+         try{Bitmap bitmap=Bimp.revitionImageSize(path);
+             String base64=bitmapToBase64(bitmap);
+             HttpParams params=new HttpParams();
+             if(TaskDetail!=null){
+             JsonObjectElement jsonObjectElement=new JsonObjectElement(TaskDetail);
+             params.put(Task.TASK_ID,jsonObjectElement.get(Task.TASK_ID).valueAsString());}
+             else{
+                 params.put(Task.TASK_ID,0);
+             }
+             params.put("ImgBase64",base64);
+             HttpUtils.post(this, "TaskAttachment", params, new HttpCallback() {
+                 @Override
+                 public void onFailure(int errorNo, String strMsg) {
+                     super.onFailure(errorNo, strMsg);
+                 }
+
+                 @Override
+                 public void onSuccess(String t) {
+                     super.onSuccess(t);
+                 }
+             });
+             //上传String
+         }catch (IOException e){
+
+         }
+     }
 
 
 
