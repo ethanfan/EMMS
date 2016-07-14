@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +16,19 @@ import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.adapter.TaskAdapter;
 import com.emms.bean.TaskBean;
+import com.emms.httputils.HttpUtils;
 import com.emms.schema.Maintain;
 import com.emms.util.LongToDate;
+import com.emms.util.SharedPreferenceManager;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.jaffer_datastore_android_sdk.datastore.DataElement;
 import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
+import com.jaffer_datastore_android_sdk.rest.JsonArrayElement;
+import com.jaffer_datastore_android_sdk.rest.JsonObjectElement;
+import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
 
 import java.util.ArrayList;
 import java.util.concurrent.Future;
@@ -32,7 +39,6 @@ import java.util.concurrent.Future;
 public class ProcessingFragment extends Fragment {
 
     private ListView listView;
-
     private TaskAdapter taskAdapter;
 
     public ArrayList<ObjectElement> getDatas() {
@@ -122,11 +128,39 @@ public class ProcessingFragment extends Fragment {
             }
         };
         listView.setAdapter(taskAdapter);
-        taskAdapter.setDatas(datas);
+       taskAdapter.setDatas(datas);
+        getProcessingDataFromServer();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 startActivity(new Intent(mContext, TaskDetailsActivity.class));
+            }
+        });
+    }
+    private void getProcessingDataFromServer(){
+        HttpParams params=new HttpParams();
+        params.put("id", SharedPreferenceManager.getUserName(mContext));
+        //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
+        Log.e("returnString","dd");
+        HttpUtils.get(mContext, "Task", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                Log.e("returnString",t);
+                if(t!=null) {
+                    //JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                    JsonArrayElement jsonArrayElement=new JsonArrayElement(t);
+                    if(jsonArrayElement!=null&&jsonArrayElement.size()>0){
+                        for(int i=0;i<jsonArrayElement.size();i++){
+                            datas.add(jsonArrayElement.get(i).asObjectElement());
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+
+                super.onFailure(errorNo, strMsg);
             }
         });
     }

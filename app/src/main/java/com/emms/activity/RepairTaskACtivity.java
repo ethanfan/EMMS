@@ -134,7 +134,7 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
     }
     private void getRepairTaskFromServer(){
         HttpParams params=new HttpParams();
-        params.put("id", SharedPreferenceManager.getUserName(this));
+        params.put("Operator_ID", SharedPreferenceManager.getUserName(this));
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
         Log.e("returnString","dd");
         HttpUtils.get(this, "Task", params, new HttpCallback() {
@@ -145,6 +145,7 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
             }
             @Override
             public void onFailure(int errorNo, String strMsg) {
+
                 super.onFailure(errorNo, strMsg);
             }
         });

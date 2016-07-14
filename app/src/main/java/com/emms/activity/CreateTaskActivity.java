@@ -1,5 +1,6 @@
 package com.emms.activity;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.EventLogTags;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +36,7 @@ import com.emms.httputils.HttpUtils;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
 import com.emms.schema.Operator;
+import com.emms.schema.Task;
 import com.emms.schema.Team;
 import com.emms.ui.DropEditText;
 import com.emms.ui.KProgressHUD;
@@ -750,6 +753,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                 String taskDesc = task_description.getText().toString();
                 String deviceNum = device_num.getText().toString();
                 String taskSubType = null;
+                String description= task_description.getText().toString();
                 if (View.VISIBLE == task_subtype.getVisibility()) {
                     taskSubType = task_subtype.getText();
                 }
@@ -784,13 +788,13 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                     Toast.makeText(mContext, getResources().getString(R.string.tips_task_desc_post), Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                submitTask(taskType,taskSubType,createTask,teamId,deviceName,deviceNum,description );
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         hud.dismiss();
-                        TipsDialog tipsDialog = new TipsDialog(mContext, R.style.MyDialog);
-                        tipsDialog.show();
+                      //  TipsDialog tipsDialog = new TipsDialog(mContext, R.style.MyDialog);
+                      //  tipsDialog.show();
                     }
                 }, 1000);
             }
@@ -959,5 +963,32 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                         }
 
                 );
+    }
+    private void submitTask(String TaskType,String TaskSubType,String TaskBuilder,String teamId,String equipmentName
+            ,String MachineCode,String TaskDescription){
+        HttpParams params=new HttpParams();
+        params.put(Task.TASK_TYPE,TaskType);
+        params.put(Task.OPERATOR_ID,TaskBuilder);
+        params.put(Task.TEAM_ID,teamId);
+        params.put(Task.EQUIPEMENT_NAME,equipmentName);
+        params.put(Task.EQUIPMENT_ID,MachineCode);
+        params.put(Task.TASK_DESCRIPTION,TaskDescription);
+        //params.put();
+        HttpUtils.post(this, "TaskCollection", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+            }
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(CreateTaskActivity.this,"任务创建失败",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 }

@@ -113,4 +113,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             }
         });
     }
+  /*  private void getTaskCountFromServer(){
+        HttpParams params=new HttpParams();
+        HttpUtils.get(this,);
+    }*/
 }
