@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/main_color" >
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:padding="3dp"
+            android:text="@string/invitor_help"
+            android:textColor="@android:color/white"
+            android:textSize="23sp" />
+
+        <ImageView
+            android:id="@+id/btn_bar_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@null"
+            android:padding="5dp"
+            android:src="@mipmap/back" />
+
+        <ImageView
+            android:id="@+id/btn_bar_left_action"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:layout_width="80dp"
+            android:layout_height="35dp"
+            android:drawableLeft="@mipmap/line"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:layout_marginRight="6dp"
+            android:text="@string/warning_message_confirm"
+            android:textColor="@android:color/white"
+            android:id="@+id/btn_sure_bg"
+            android:visibility="visible"/>
+        <ImageView
+            android:id="@+id/btn_right_action"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@color/transparent"
+            android:contentDescription="@null"
+            android:layout_alignLeft="@+id/btn_sure_bg" />
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ListView
+            android:layout_weight="1"
+            android:id="@+id/group_list"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+        </ListView>
+        <ListView
+            android:layout_weight="2"
+            android:id="@+id/id_wait_list"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+        </ListView>
+    </LinearLayout>
+
+</LinearLayout>

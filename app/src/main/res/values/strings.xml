@@ -96,6 +96,9 @@
     <string name="tips_device_name_post">设备名称不能为空</string>
     <string name="tips_device_num_post">机台号不能为空</string>
     <string name="tips_task_desc_post">任务描述不能为空</string>
+    <string name="invitor_help">邀请协助</string>
+    <string name="name">姓名: &#160;</string>
+    <string name="tech">技能： &#160; </string>
     <!--<string name="error">Error</string>-->
     <!--<string name="no_nfc">No NFC found on this device</string>-->
     <!--<string name="nfc_disabled">NFC is not enabled. Please go to the wireless settings to enable it.</string>-->

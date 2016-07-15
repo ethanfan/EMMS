@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/multi_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:gravity="center">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_marginTop="13dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/name"
+                android:textSize="17sp"
+                android:textColor="@color/text_color"
+                android:id="@+id/textView22"
+                android:layout_marginRight="5dp"
+                android:layout_alignParentTop="true" />
+            <TextView
+                android:layout_marginTop="13dp"
+                android:id="@+id/id_worknum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="工单号"
+                android:textSize="17sp"
+                android:textColor="@color/text_color"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="5dp"
+                android:layout_toRightOf="@+id/textView22"
+                android:layout_toEndOf="@+id/textView22" />
+            <ImageView
+                android:layout_marginTop="13dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/busy"
+                android:id="@+id/workstatus"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/id_worknum"
+                android:layout_toEndOf="@+id/id_worknum" />
+            <TextView
+                android:layout_marginTop="13dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:textColor="@color/text_color"
+                android:text="@string/tech"
+                android:layout_below="@+id/workstatus"
+                android:layout_alignLeft="@+id/textView22"
+                android:layout_alignStart="@+id/textView22"
+                android:id="@+id/textView23"
+                android:paddingBottom="13dp"/>
+            <TextView
+                android:id="@+id/id_tech"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="特殊设备维修"
+                android:textSize="17sp"
+                android:textColor="@color/text_color"
+                android:layout_alignTop="@+id/textView23"
+                android:layout_toRightOf="@+id/textView23"
+                android:layout_toEndOf="@+id/textView23" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="48dp"
+        android:layout_height="60dp"
+        android:gravity="center_vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/select"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/select_normal"
+                android:contentDescription="@null"
+                android:layout_centerInParent="true" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@mipmap/select_normal"
+                android:contentDescription="@null"
+                android:layout_centerInParent="true" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
