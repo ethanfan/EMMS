@@ -16,14 +16,10 @@
         tl:tl_tab_padding="20dp"
         tl:tl_indicator_corner_radius="9dp"
         android:visibility="gone"/>
-    <ListView
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
         android:id="@+id/processing_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="@android:color/transparent"
-        android:listSelector="@android:color/transparent"
-        android:cacheColorHint="@android:color/transparent"
-        android:scrollbars="none"
-        android:clipToPadding="true">
-    </ListView>
+         android:divider="@android:color/transparent">
+    </com.handmark.pulltorefresh.library.PullToRefreshListView>
 </LinearLayout>

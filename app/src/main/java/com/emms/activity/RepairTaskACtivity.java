@@ -129,12 +129,13 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
             return mFragments.get(position);
         }
     }
+
     private void getRepairTaskNumber(){
 
     }
     private void getRepairTaskFromServer(){
         HttpParams params=new HttpParams();
-        params.put("Operator_ID", SharedPreferenceManager.getUserName(this));
+     //   params.put("Operator_ID", SharedPreferenceManager.getUserName(this));
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
         Log.e("returnString","dd");
         HttpUtils.get(this, "Task", params, new HttpCallback() {

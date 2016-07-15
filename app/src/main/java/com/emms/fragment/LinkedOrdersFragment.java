@@ -23,6 +23,7 @@ import com.emms.util.LongToDate;
 import com.emms.util.SharedPreferenceManager;
 import com.flyco.tablayout.SegmentTabLayout;
 import com.flyco.tablayout.listener.OnTabSelectListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 import com.jaffer_datastore_android_sdk.rest.JsonArrayElement;
 import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
@@ -34,7 +35,7 @@ import java.util.ArrayList;
  * Created by jaffer.deng on 2016/6/21.
  */
 public class LinkedOrdersFragment extends Fragment{
-    private ListView listView;
+    private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
     private ArrayList<ObjectElement> datas1;
     private ArrayList<ObjectElement> datas2;
@@ -50,7 +51,7 @@ public class LinkedOrdersFragment extends Fragment{
         View v = inflater.inflate(R.layout.fr_processing, null);
         tabLayout_1 = (SegmentTabLayout) v.findViewById(R.id.tl_1);
         tabLayout_1.setVisibility(View.VISIBLE);
-        listView = (ListView) v.findViewById(R.id.processing_list);
+        listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
         return v;
     }
 

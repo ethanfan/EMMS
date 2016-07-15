@@ -21,6 +21,7 @@ import com.emms.httputils.HttpUtils;
 import com.emms.schema.Maintain;
 import com.emms.util.LongToDate;
 import com.emms.util.SharedPreferenceManager;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 import com.jaffer_datastore_android_sdk.rest.JsonArrayElement;
 import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
  */
 public class PendingOrdersFragment extends Fragment{
 
-    private ListView listView;
+    private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
     private ArrayList<ObjectElement> datas;
     private Context mContext;
@@ -42,7 +43,7 @@ public class PendingOrdersFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
-        listView = (ListView) v.findViewById(R.id.processing_list);
+        listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
         return v;
     }
 
