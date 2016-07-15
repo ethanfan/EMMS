@@ -117,4 +117,10 @@
     <string name="error_tag_gs_empty">格式不对</string>
     <string name="error_network">网络连接异常,初始化失败 请检查网络！</string>
     <string name="setting_su">设置成功</string>
+
+    <string name="invitor_help">邀请协助</string>
+    <string name="workname">姓名：&#160;</string>
+    <string name="tech">技能：&#160;</string>
+
+
 </resources>
