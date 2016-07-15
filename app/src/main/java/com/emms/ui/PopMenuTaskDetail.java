@@ -42,7 +42,6 @@ public abstract class PopMenuTaskDetail {
 		this.context = context;
 
 		itemList = new ArrayList<String>(5);
-
 		View view = LayoutInflater.from(context)
 				.inflate(R.layout.popmenu, null);
 		final RelativeLayout layout=(RelativeLayout)view.findViewById(R.id.popup_view_cont);
@@ -61,6 +60,7 @@ public abstract class PopMenuTaskDetail {
 		listView.setAdapter(popAdapter);
 		listView.setFocusableInTouchMode(true);
 		listView.setFocusable(true);
+		setOnItemClickListener();
       //  ListViewUtility.setListViewHeightBasedOnChildren(listView);
 //		popupWindow = new PopupWindow(view, 254, LayoutParams.WRAP_CONTENT);
 

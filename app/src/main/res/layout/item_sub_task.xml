@@ -2,7 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/aaaaa">
      <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -23,5 +26,12 @@
         android:paddingLeft="40dp"
         android:layout_toRightOf="@id/sub_task"
         android:id="@+id/description"/>
-
+    </RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_toRightOf="@id/aaaaa"
+        android:gravity="center"
+        android:text="@string/delete"/>
 </RelativeLayout>

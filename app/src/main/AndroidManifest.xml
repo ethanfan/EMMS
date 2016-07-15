@@ -63,6 +63,9 @@
         <activity android:name=".activity.TaskDetailsActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".activity.SubTaskManageActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <activity android:name=".activity.PhotoActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".activity.GetPicActivity"

@@ -48,8 +48,11 @@ public abstract class SubTaskAdapter extends BaseAdapter{
     }
     public abstract View getCustomView(View convertView,int position ,ViewGroup parent );
     public static   class TaskViewHolder {
-        public  TextView sub_task_name;
-        public  TextView sub_task_status;
-        public  TextView sub_task_remark;
+        public  TextView work_num;
+        public  TextView approve_work_hours;
+        public  TextView work_name;
+        public  TextView status;
+        public  TextView work_description;
+        public  TextView equipment_num;
     }
 }
