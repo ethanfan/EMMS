@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -127,7 +128,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                                 SharedPreferenceManager.setUserName(LoginActivity.this, userid);
                                 SharedPreferenceManager.setPassWord(LoginActivity.this, password);
                                 String userData =jsonObject.getString("UserData");
-                                SharedPreferenceManager.setUserData(LoginActivity.this,userData);
+                                SharedPreferenceManager.setUserData(LoginActivity.this, userData);
                                 String data=jsonObject.getString("Data");
                                 SharedPreferenceManager.setLoginData(LoginActivity.this,data);
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
