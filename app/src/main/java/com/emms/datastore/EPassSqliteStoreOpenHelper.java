@@ -14,9 +14,9 @@ import com.emms.schema.Operator;
 import com.emms.schema.Team;
 import com.emms.schema.TeamService;
 import com.j256.ormlite.support.ConnectionSource;
-import com.jaffer_datastore_android_sdk.schema.Model;
-import com.jaffer_datastore_android_sdk.schema.Schema;
-import com.jaffer_datastore_android_sdk.sqlite.SqliteStoreHelper;
+import com.datastore_android_sdk.schema.Model;
+import com.datastore_android_sdk.schema.Schema;
+import com.datastore_android_sdk.sqlite.SqliteStoreHelper;
 
 import java.io.File;
 import java.util.Map;

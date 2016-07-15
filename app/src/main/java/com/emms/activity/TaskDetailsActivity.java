@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,14 +29,20 @@ import android.widget.TextView;
 
 import com.emms.R;
 import com.emms.adapter.TaskAdapter;
-import com.emms.bean.TaskBean;
+import com.emms.httputils.HttpUtils;
+import com.emms.schema.Maintain;
+import com.emms.schema.Task;
 import com.emms.ui.ExpandGridView;
 import com.emms.ui.PopMenuTaskDetail;
 import com.emms.ui.ScrollViewWithListView;
 import com.emms.util.Bimp;
 import com.emms.util.FileUtils;
-import com.emms.util.LongToDate;
+import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,15 +58,17 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
     private ExpandGridView noScrollgridview;
     private GridAdapter adapter;
     private TaskAdapter taskAdapter;
-    private ArrayList<TaskBean> datas;
+    private ArrayList<ObjectElement> datas;
     private Context mContext;
     private PopMenuTaskDetail popMenuTaskDetail;
-
+    String TaskDetail=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
         mContext = this;
+        //获取任务详细信息
+        TaskDetail=getIntent().getStringExtra(Task.TASK_ID);
         initDatas();
         initView();
         initEvent();
@@ -85,7 +94,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 } else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
-                String creater = datas.get(position).getCreater();
+                String creater = datas.get(position).get("Maintainer").valueAsString();
                 if (creater != null) {
                     if (!creater.equals("")) {
                         holder.tv_creater.setText(creater);
@@ -98,22 +107,24 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 }
 
 
-                holder.tv_device_num.setText(datas.get(position).getDeviceNum());
-                holder.tv_device_name.setText(datas.get(position).getDeviceName());
-                String createTime = LongToDate.longPointDate(datas.get(position).getCreatTime());
+                holder.tv_device_num.setText(datas.get(position).get(Maintain.MACHINE_CODE).valueAsString());
+                holder.tv_device_name.setText(datas.get(position).get(Maintain.MACHINE_NAME).valueAsString());
+                //String createTime = LongToDate.longPointDate(datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsLong());
+                String createTime=datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsString();
                 holder.tv_create_time.setText(createTime);
-                String endTime = LongToDate.longPointDate(datas.get(position).getEndTime());
+                //String endTime = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsLong());
+                String endTime=datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsString();
                 holder.tv_end_time.setText(endTime);
                 String state = "";
-                int tag = datas.get(position).getTaskTag();
+            /*    int tag = datas.get(position).getTaskTag();
                 if (tag == 1) {
                     holder.tv_task_state.setTextColor(getResources().getColor(R.color.processing_color));
                     state = getResources().getString(R.string.task_state_details_finish);
                 } else if (tag == 0) {
                     holder.tv_task_state.setTextColor(getResources().getColor(R.color.pause_color));
                     state = getResources().getString(R.string.task_state_details_non);
-                }
-                holder.tv_task_state.setText(state);
+                }*/
+                holder.tv_task_state.setText(datas.get(position).get(Maintain.STATUS).valueAsString());
                 return convertView;
             }
 
@@ -129,13 +140,14 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
     }
 
     private void initDatas() {
-        datas = new ArrayList<TaskBean>() {
+   /*     datas = new ArrayList<TaskBean>() {
             {
                 add(new TaskBean("何邵勃", "0115", "平车", 0, 144400000, 199900000));
                 add(new TaskBean(null, "0115", "平车", 1, 144400000, 199900000));
                 add(new TaskBean("何邵勃", "0115", "平车", 1, 144400000, 199900000));
             }
-        };
+        };*/
+        datas=new ArrayList<ObjectElement>();
     }
 
     private void initView() {
@@ -400,11 +412,89 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             case TAKE_PICTURE:
                 if ( resultCode == -1) {
                     Bimp.drr.add(path);
+                    //在此上传图片到服务器;
+                    submitPictureToServer(path);
                 }
                 break;
         }
     }
+/**
+ * bitmap转为base64
+ * @param bitmap
+ * @return
+ */
+ public static String bitmapToBase64(Bitmap bitmap) {
 
+          String result = null;
+            ByteArrayOutputStream baos = null;
+            try {
+                   if (bitmap != null) {
+                          baos = new ByteArrayOutputStream();
+                          bitmap.compress(Bitmap.CompressFormat.PNG, 20, baos);
+
+                          baos.flush();
+                          baos.close();
+
+                          byte[] bitmapBytes = baos.toByteArray();
+                          result = Base64.encodeToString(bitmapBytes, Base64.NO_WRAP);
+                       }
+                } catch (IOException e) {
+                   e.printStackTrace();
+                } finally {
+                   try {
+                            if (baos != null) {
+                                  baos.flush();
+                                  baos.close();
+                                }
+                      } catch (IOException e) {
+                         e.printStackTrace();
+                       }
+               }
+           return result;
+       }
+
+    /**
+      * base64转为bitmap
+      * @param base64Data
+      * @return
+      */
+           public static Bitmap base64ToBitmap(String base64Data) {
+          byte[] bytes = Base64.decode(base64Data, Base64.DEFAULT);
+           return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+       }
+     private void submitPictureToServer(String path){
+         try{Bitmap bitmap=Bimp.revitionImageSize(path);
+             String base64=bitmapToBase64(bitmap);
+             HttpParams params=new HttpParams();
+             if(TaskDetail!=null){
+             JsonObjectElement jsonObjectElement=new JsonObjectElement(TaskDetail);}
+           /*  params.put(Task.TASK_ID,jsonObjectElement.get(Task.TASK_ID).valueAsString());}
+             else{
+                 params.put(Task.TASK_ID,16);
+             }
+             params.put("TaskAttachment_ID",0);
+             params.put("ImgBase64",base64);*/
+             JsonObjectElement jsonObjectElement=new JsonObjectElement();
+             jsonObjectElement.set(Task.TASK_ID,16);
+             jsonObjectElement.set("TaskAttachment_ID",0);
+             jsonObjectElement.set("ImgBase64",base64);
+                 params.putJsonParams(jsonObjectElement.toJson());
+             HttpUtils.post(this, "TaskAttachment", params, new HttpCallback() {
+                 @Override
+                 public void onFailure(int errorNo, String strMsg) {
+                     super.onFailure(errorNo, strMsg);
+                 }
+
+                 @Override
+                 public void onSuccess(String t) {
+                     super.onSuccess(t);
+                 }
+             });
+             //上传String
+         }catch (IOException e){
+
+         }
+     }
 
 
 

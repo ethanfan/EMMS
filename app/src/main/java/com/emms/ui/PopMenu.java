@@ -2,23 +2,20 @@ package com.emms.ui;
 
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.SystemClock;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.ListPopupWindow;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
 
 import com.emms.R;
-import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.datastore.ObjectElement;
 
 import java.util.ArrayList;
 

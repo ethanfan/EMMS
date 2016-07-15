@@ -34,19 +34,20 @@ import com.emms.httputils.HttpUtils;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
 import com.emms.schema.Operator;
+import com.emms.schema.Task;
 import com.emms.schema.Team;
 import com.emms.ui.DropEditText;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.NFCDialog;
-import com.emms.ui.TipsDialog;
 import com.emms.util.BuildConfig;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.jaffer_datastore_android_sdk.datastore.DataElement;
-import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
+import com.datastore_android_sdk.datastore.DataElement;
+import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
 
 import java.nio.charset.Charset;
 import java.text.DateFormat;
@@ -491,6 +492,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     private void getTeamId(String operatorId) {
 
         String rawQuery = "select Name,Team_ID,TeamName from Operator where Operator_ID=" + operatorId;
+       // String rawQuery = "select Name,Team_ID,TeamName from Operator where Operator_ID=" +"\""+ operatorId+"\"";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -652,6 +654,8 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                     EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
             Futures.addCallback(elemt, new FutureCallback<DataElement>() {
 
+
+
                 @Override
                 public void onSuccess(DataElement element) {
                     System.out.println(element);
@@ -739,7 +743,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     private android.os.Handler mHandler = new android.os.Handler();
 
     private void createRequest() {
-        hud.show();
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -750,6 +754,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                 String taskDesc = task_description.getText().toString();
                 String deviceNum = device_num.getText().toString();
                 String taskSubType = null;
+                String description= task_description.getText().toString();
                 if (View.VISIBLE == task_subtype.getVisibility()) {
                     taskSubType = task_subtype.getText();
                 }
@@ -782,15 +787,15 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
                 if (taskDesc.equals("")) {
                     Toast.makeText(mContext, getResources().getString(R.string.tips_task_desc_post), Toast.LENGTH_SHORT).show();
-                    return;
                 }
-
+                hud.show();
+                submitTask(taskType,taskSubType,createTask,teamId,deviceName,deviceNum,description );
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         hud.dismiss();
-                        TipsDialog tipsDialog = new TipsDialog(mContext, R.style.MyDialog);
-                        tipsDialog.show();
+                      //  TipsDialog tipsDialog = new TipsDialog(mContext, R.style.MyDialog);
+                      //  tipsDialog.show();
                     }
                 }, 1000);
             }
@@ -959,5 +964,42 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                         }
 
                 );
+    }
+    private void submitTask(String TaskType,String TaskSubType,String TaskBuilder,String teamId,String equipmentName
+            ,String MachineCode,String TaskDescription){
+        HttpParams params=new HttpParams();
+       // params.put(Task.TASK_ID,0);
+        //params.put(Task.TASK_TYPE,TaskType);
+        //params.put(Task.OPERATOR_ID,TaskBuilder);
+        //params.put(Task.TEAM_ID,teamId);
+        //params.put(Task.EQUIPEMENT_NAME,equipmentName);
+        //params.put(Task.EQUIPMENT_ID,MachineCode);
+        //params.put(Task.TASK_DESCRIPTION,TaskDescription);
+        //params.put();
+        JsonObjectElement task=new JsonObjectElement();
+        JsonObjectElement taskDetail=new JsonObjectElement();
+        taskDetail.set(Task.TASK_ID,0);
+        taskDetail.set(Task.TASK_TYPE,TaskType);
+        taskDetail.set("Applicant",TaskBuilder);
+        taskDetail.set("TaskName","维修");
+        task.set("Task",taskDetail);
+        params.putJsonParams(task.toJson());
+        //params.put("Task",task.toJson());
+        HttpUtils.post(this, "TaskCollection", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+            }
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(CreateTaskActivity.this,"任务创建失败",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 }

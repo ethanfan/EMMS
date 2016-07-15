@@ -5,10 +5,10 @@ import android.widget.Toast;
 
 import com.emms.util.BuildConfig;
 import com.emms.util.SharedPreferenceManager;
-import com.jaffer_datastore_android_sdk.rxvolley.RxVolley;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
-import com.jaffer_datastore_android_sdk.rxvolley.client.ProgressListener;
+import com.datastore_android_sdk.rxvolley.RxVolley;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.datastore_android_sdk.rxvolley.client.ProgressListener;
 
 import java.util.Map;
 
@@ -26,10 +26,12 @@ public  class HttpUtils {
     public static void login(Context context,String userName,String passWord,HttpCallback callback ){
 
         HttpParams params = new HttpParams();
-        params.put("UserName", userName);
+       params.put("UserName", userName);
         params.put("Password", passWord);
+       // params.put("UserName", "Max Ooi");
+      // params.put("Password", "99295219CBAD91205AFD9A5629910AC2");
         params.put("AutoLogin", "true");
-
+        params.put("PasswordEncrypt","true");
         params.putHeaders("Origin", "http://EMMSAPP");
         params.putHeaders("Referer", "http://EMMSAPP");
         RxVolley.setContext(context);
@@ -56,12 +58,12 @@ public  class HttpUtils {
         if (cookie !=null) {
             params.putHeaders("Origin", "http://EMMSAPP");
             params.putHeaders("Referer", "http://EMMSAPP");
-            params.put("cookie", cookie);
+            params.putHeaders("Cookie",cookie);
             RxVolley.setContext(context);
             new RxVolley.Builder()
                     .url(BuildConfig.getServerAPIEndPoint() + table)
                     .httpMethod(RxVolley.Method.POST) //default GET or POST/PUT/DELETE/HEAD/OPTIONS/TRACE/PATCH
-                    .contentType(RxVolley.ContentType.FORM)//default FORM or JSON
+                    .contentType(RxVolley.ContentType.JSON)//default FORM or JSON
                     .params(params)
                     .callback(callback)
                     .encoding("UTF-8") //default
@@ -125,4 +127,6 @@ public  class HttpUtils {
         RxVolley.setContext(context);
         RxVolley.download(storeFilePath,url,progressListener,callback);
     }
+
+
 }

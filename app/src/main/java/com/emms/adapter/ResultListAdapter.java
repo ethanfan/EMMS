@@ -8,12 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.emms.R;
-import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
-
-import org.restlet.resource.Get;
+import com.datastore_android_sdk.datastore.ObjectElement;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by jaffer.deng on 2016/6/16.

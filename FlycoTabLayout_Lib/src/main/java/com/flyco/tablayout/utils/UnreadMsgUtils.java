@@ -21,12 +21,10 @@ public class UnreadMsgUtils {
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) msgView.getLayoutParams();
         DisplayMetrics dm = msgView.getResources().getDisplayMetrics();
 
-        if (num <= 0) {//圆点,设置默认宽高
-            msgView.setVisibility(View.GONE);
-        } else {
+
             msgView.setVisibility(View.VISIBLE);
             lp.height = (int) (20 * dm.density);
-            if (num > 0 && num < 10) {//圆
+            if (num >= 0 && num < 10) {//圆
                 lp.width = (int) (20 * dm.density);
                 msgView.setPadding(0, 0, 0, (int) (3 * dm.density));
                 msgView.setText(num + "");
@@ -40,7 +38,7 @@ public class UnreadMsgUtils {
                 msgView.setText("99+");
             }
             msgView.setLayoutParams(lp);
-        }
+
     }
 
     public static void setSize(MsgView rtv, int size) {

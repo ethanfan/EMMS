@@ -55,7 +55,7 @@
     <string name="working">进行中</string>
     <string name="paused">已暂停</string>
     <string name="group_type">组别：</string>
-    <string name="device_num">设备编号：</string>
+    <string name="device_num">设备编号：&#160;&#160;</string>
     <string name="device_name">设备名称：&#160;&#160; </string>
     <string name="task_state">任务状态：&#160;&#160; </string>
     <string name="repair_time">报修时间：&#160;&#160;</string>
@@ -96,8 +96,25 @@
     <string name="tips_device_name_post">设备名称不能为空</string>
     <string name="tips_device_num_post">机台号不能为空</string>
     <string name="tips_task_desc_post">任务描述不能为空</string>
+    <string name="work_num">工作编号:</string>
+    <string name="work_name">工作名称:</string>
+    <string name="work_status">状态:</string>
+    <string name="work_description">工作描述:</string>
+    <string name="approved_working_hours">核定工时:</string>
+    <string name="add">添加</string>
+    <string name="sub_task">子任务</string>
     <!--<string name="error">Error</string>-->
     <!--<string name="no_nfc">No NFC found on this device</string>-->
     <!--<string name="nfc_disabled">NFC is not enabled. Please go to the wireless settings to enable it.</string>-->
     <!--<string name="menu_main_clear_title">Clear all</string>-->
+
+    <string name="tag_hint">Tag为大小写字母，数字，下划线,中文， 多个用以逗号分隔</string>
+    <string name="alias_hint">Alias为大小写字母，数字，下划线</string>
+    <string name="style_hint">style为数字</string>
+    <string name="error_style_empty">style不能为空</string>
+    <string name="error_alias_empty">alias不能为空</string>
+    <string name="error_tag_empty">tag不能为空</string>
+    <string name="error_tag_gs_empty">格式不对</string>
+    <string name="error_network">网络连接异常,初始化失败 请检查网络！</string>
+    <string name="setting_su">设置成功</string>
 </resources>

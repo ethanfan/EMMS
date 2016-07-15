@@ -1,6 +1,7 @@
 package com.emms.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -20,6 +22,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.emms.R;
+import com.emms.activity.SubTaskManageActivity;
+import com.emms.httputils.HttpUtils;
+import com.emms.schema.Task;
 import com.emms.util.ListViewUtility;
 
 import java.util.ArrayList;
@@ -30,7 +35,7 @@ public abstract class PopMenuTaskDetail {
 	private PopupWindow popupWindow;
 	private ListView listView;
 	private PopAdapter popAdapter;
-
+    private Long TaskId;
 	// private OnItemClickListener listener;
 	public PopMenuTaskDetail(Context context, int width) {
 		// TODO Auto-generated constructor stub
@@ -78,9 +83,28 @@ public abstract class PopMenuTaskDetail {
 		popAdapter.notifyDataSetChanged();
 	}
 	// 设置菜单项点击监听器
-	public void setOnItemClickListener(OnItemClickListener listener) {
+	public void setOnItemClickListener() {
 		// this.listener = listener;
-		listView.setOnItemClickListener(listener);
+		listView.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				if (position == 0) {
+					WorkloadInput();
+				}else if (position == 1) {
+
+				}else if(position==2){
+
+				}else if(position==3){
+
+				}else if(position==4){
+
+				}else if(position==5){
+					SubTaskManage();
+				}else if(position==6){
+
+				}
+			}
+		});
 
 	}
 
@@ -198,6 +222,31 @@ public abstract class PopMenuTaskDetail {
 			ImageView imageView;
 		}
 	}
+	private void WorkloadInput(){
 
+	}
+    private void MissionComplete(){
+
+	}
+	private void Scan(){
+
+	}
+	private void ExChangeOrder(){
+
+	}
+	private void InviteHelp(){
+
+	}
+	private void SubTaskManage(){
+		Intent intent=new Intent(context, SubTaskManageActivity.class);
+		//intent.putExtra(Task.TASK_ID,TaskId);
+		context.startActivity(intent);
+	}
+	private void FailureSummary(){
+
+	}
+	private void setTaskIdFromActivity(Long taskId){
+		this.TaskId=taskId;
+	}
 
 }

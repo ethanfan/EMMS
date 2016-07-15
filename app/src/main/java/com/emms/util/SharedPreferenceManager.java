@@ -20,7 +20,9 @@ public final class SharedPreferenceManager {
 
 	public static final String KEY_LAST_SYNC_DATA_DATE = "last-sync-data-date";
 
-	public static final String USER_DATA_FROM_SERVER = "password";
+	public static final String USER_DATA_FROM_SERVER = "UserData";
+
+	public static final String LOGIN_DATA="Data";
 
 	private SharedPreferenceManager() {
 
@@ -80,10 +82,21 @@ public final class SharedPreferenceManager {
 		return pref.getString(USER_DATA_FROM_SERVER, null);
 	}
 
-	public static void setUserData(Context context, String passWord) {
+	public static void setUserData(Context context, String Data) {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
-		pref.edit().putString(USER_DATA_FROM_SERVER, passWord).commit();
+		pref.edit().putString(USER_DATA_FROM_SERVER, Data).commit();
+	}
+	public static String getLoginData(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getString(LOGIN_DATA, null);
+	}
+
+	public static void setLoginData(Context context, String Data) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putString(LOGIN_DATA, Data).commit();
 	}
 }
  

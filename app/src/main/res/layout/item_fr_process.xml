@@ -27,24 +27,23 @@
             android:text="D"
             android:textSize="17sp"/>
         <TextView
+            android:layout_marginTop="5dp"
             android:id="@+id/id_num_device"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/device_num"
             android:textColor="@color/text_color"
             android:textSize="17sp"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/tv_device_num_process"
-            android:layout_toStartOf="@+id/tv_device_num_process" />
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/id_group" />
         <TextView
             android:id="@+id/tv_device_num_process"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
             android:text="0115"
-            android:layout_marginRight="40dp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/id_num_device"
+            android:layout_toRightOf="@+id/id_num_device"
             android:textSize="17sp"/>
         <TextView
             android:layout_marginTop="5dp"
@@ -53,7 +52,7 @@
             android:layout_height="wrap_content"
             android:text="@string/device_name"
             android:textColor="@color/text_color"
-            android:layout_below="@+id/id_group"
+            android:layout_below="@+id/id_num_device"
             android:layout_alignParentLeft="true"
             android:textSize="17sp"/>
 
@@ -74,8 +73,8 @@
             android:layout_height="wrap_content"
             android:text="@string/task_state"
             android:textColor="@color/text_color"
-            android:layout_below="@+id/id_num_device"
-            android:layout_alignLeft="@+id/id_num_device"
+            android:layout_below="@+id/id_device_name"
+            android:layout_alignLeft="@+id/id_device_name"
             android:textSize="17sp"/>
 
         <TextView
@@ -95,7 +94,7 @@
             android:layout_marginTop="5dp"
             android:text="@string/start_time"
             android:textColor="@color/text_color"
-            android:layout_below="@+id/id_device_name"
+            android:layout_below="@+id/id_status"
             android:layout_alignParentLeft="true"
             android:textSize="17sp"/>
 
