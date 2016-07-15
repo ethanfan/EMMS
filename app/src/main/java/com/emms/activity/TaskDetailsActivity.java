@@ -29,7 +29,6 @@ import android.widget.TextView;
 
 import com.emms.R;
 import com.emms.adapter.TaskAdapter;
-import com.emms.bean.TaskBean;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Maintain;
 import com.emms.schema.Task;
@@ -38,11 +37,10 @@ import com.emms.ui.PopMenuTaskDetail;
 import com.emms.ui.ScrollViewWithListView;
 import com.emms.util.Bimp;
 import com.emms.util.FileUtils;
-import com.emms.util.LongToDate;
-import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
-import com.jaffer_datastore_android_sdk.rest.JsonObjectElement;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
+import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

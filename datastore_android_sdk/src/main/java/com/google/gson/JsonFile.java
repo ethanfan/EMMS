@@ -20,11 +20,8 @@ import java.io.StringWriter;
 
 import android.util.Log;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonPrimitive;
-import com.jaffer_datastore_android_sdk.datastore.Build;
-import com.jaffer_datastore_android_sdk.serialization.Base64FileEncoder;
+import com.datastore_android_sdk.datastore.Build;
+import com.datastore_android_sdk.serialization.Base64FileEncoder;
 
 
 /**

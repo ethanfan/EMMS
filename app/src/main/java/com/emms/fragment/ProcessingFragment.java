@@ -15,24 +15,19 @@ import android.widget.TextView;
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.adapter.TaskAdapter;
-import com.emms.bean.TaskBean;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Maintain;
-import com.emms.schema.Task;
-import com.emms.util.LongToDate;
 import com.emms.util.SharedPreferenceManager;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.jaffer_datastore_android_sdk.datastore.DataElement;
-import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
-import com.jaffer_datastore_android_sdk.rest.JsonArrayElement;
-import com.jaffer_datastore_android_sdk.rest.JsonObjectElement;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
+import com.datastore_android_sdk.datastore.DataElement;
+import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
 
 import java.util.ArrayList;
-import java.util.concurrent.Future;
 
 /**
  * Created by jaffer.deng on 2016/6/20.

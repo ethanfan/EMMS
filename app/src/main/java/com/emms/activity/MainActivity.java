@@ -11,9 +11,9 @@ import com.emms.R;
 import com.emms.httputils.HttpUtils;
 import com.emms.util.BuildConfig;
 import com.emms.util.SharedPreferenceManager;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
-import com.jaffer_datastore_android_sdk.rxvolley.http.VolleyError;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.datastore_android_sdk.rxvolley.http.VolleyError;
 
 import java.io.File;
 
@@ -24,13 +24,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
     private Button btn_exit;
     private CardView create_task,repair_tag,maintain_tag,move_car_tag,other_tag,team_status_tag;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         initView();
         getNewDataFromServer(); //下载DB文件
+
+
     }
 
     private void initView() {
@@ -117,4 +122,5 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         HttpParams params=new HttpParams();
         HttpUtils.get(this,);
     }*/
+
 }
