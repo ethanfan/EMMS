@@ -63,19 +63,20 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
         ViewPager vp = ViewFindUtils.find(decorView, R.id.vp);
         mAdapter = new MyPagerAdapter(getSupportFragmentManager());
         vp.setAdapter(mAdapter);
+        String[] taskNum=getIntent().getStringExtra("TaskNum").split("/");
 
         SlidingTabLayout tabLayout_2 = ViewFindUtils.find(decorView, R.id.tl_2);
         tabLayout_2.setViewPager(vp);
         tabLayout_2.setOnTabSelectListener(this);
 
 
-        tabLayout_2.showMsg(2, 9);         //消息数量和位置
-        tabLayout_2.setMsgMargin(2, 12, 10);
+     //   tabLayout_2.showMsg(2, 9);         //消息数量和位置
+     //   tabLayout_2.setMsgMargin(2, 12, 10);
 
-        tabLayout_2.showMsg(1, 99);
+        tabLayout_2.showMsg(1, Integer.valueOf(taskNum[1]));
         tabLayout_2.setMsgMargin(1, 12, 10);
 
-        tabLayout_2.showMsg(0, 100);
+        tabLayout_2.showMsg(0, Integer.valueOf(taskNum[0]));
         tabLayout_2.setMsgMargin(0, 12, 10);
     }
 
@@ -122,12 +123,13 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
             return mFragments.get(position);
         }
     }
+
     private void getRepairTaskNumber(){
 
     }
     private void getRepairTaskFromServer(){
         HttpParams params=new HttpParams();
-        params.put("Operator_ID", SharedPreferenceManager.getUserName(this));
+     //   params.put("Operator_ID", SharedPreferenceManager.getUserName(this));
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
         Log.e("returnString","dd");
         HttpUtils.get(this, "Task", params, new HttpCallback() {

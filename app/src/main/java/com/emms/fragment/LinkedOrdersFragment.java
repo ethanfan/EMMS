@@ -16,15 +16,18 @@ import android.widget.TextView;
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.adapter.TaskAdapter;
+import com.emms.bean.TaskBean;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Maintain;
+import com.emms.util.LongToDate;
 import com.emms.util.SharedPreferenceManager;
 import com.flyco.tablayout.SegmentTabLayout;
 import com.flyco.tablayout.listener.OnTabSelectListener;
-import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rest.JsonArrayElement;
-import com.datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
+import com.jaffer_datastore_android_sdk.rest.JsonArrayElement;
+import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
 
 import java.util.ArrayList;
 
@@ -32,7 +35,7 @@ import java.util.ArrayList;
  * Created by jaffer.deng on 2016/6/21.
  */
 public class LinkedOrdersFragment extends Fragment{
-    private ListView listView;
+    private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
     private ArrayList<ObjectElement> datas1;
     private ArrayList<ObjectElement> datas2;
@@ -48,7 +51,7 @@ public class LinkedOrdersFragment extends Fragment{
         View v = inflater.inflate(R.layout.fr_processing, null);
         tabLayout_1 = (SegmentTabLayout) v.findViewById(R.id.tl_1);
         tabLayout_1.setVisibility(View.VISIBLE);
-        listView = (ListView) v.findViewById(R.id.processing_list);
+        listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
         return v;
     }
 
@@ -58,37 +61,8 @@ public class LinkedOrdersFragment extends Fragment{
         mTitles = getResources().getStringArray(R.array.select_tab_time);
         tabLayout_1.setTabData(mTitles);
         datas1 =new ArrayList<ObjectElement>();
-     /*       {
-                add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("何邵勃","D","0115","平车",1984000000,148500000,149500000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-            }
-        };
-*/
         datas2 =new ArrayList<ObjectElement>();
-      /*      {
-                add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("一只勃","C","0118","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("一只勃","C","0118","平车",1984000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-            }
-        };*/
         datas3 =new ArrayList<ObjectElement>();
-      /*      {
-                add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-                add(new TaskBean("一勃","E","0128","平车",1484000000,1485000000,1485000000,"我是描述我是描述我是描述我是描述我是描述我是描述我是描述我是描述"));
-            }
-        };*/
-
         taskAdapter =new TaskAdapter(datas1) {
             @Override
             public View getCustomView(View convertView, int position, ViewGroup parent) {

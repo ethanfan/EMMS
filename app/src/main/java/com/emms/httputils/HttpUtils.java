@@ -26,10 +26,10 @@ public  class HttpUtils {
     public static void login(Context context,String userName,String passWord,HttpCallback callback ){
 
         HttpParams params = new HttpParams();
-      //  params.put("UserName", userName);
-     //   params.put("Password", passWord);
-        params.put("UserName", "黄丽琼");
-        params.put("Password", "E10ADC3949BA59ABBE56E057F20F883E");
+       params.put("UserName", userName);
+        params.put("Password", passWord);
+       // params.put("UserName", "Max Ooi");
+      // params.put("Password", "99295219CBAD91205AFD9A5629910AC2");
         params.put("AutoLogin", "true");
         params.put("PasswordEncrypt","true");
         params.putHeaders("Origin", "http://EMMSAPP");
@@ -127,4 +127,6 @@ public  class HttpUtils {
         RxVolley.setContext(context);
         RxVolley.download(storeFilePath,url,progressListener,callback);
     }
+
+
 }

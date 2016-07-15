@@ -1,17 +1,18 @@
 package com.emms.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.emms.ConfigurationManager;
 import com.emms.R;
 import com.emms.httputils.HttpUtils;
 import com.emms.push.PushService;
@@ -56,6 +57,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         machine = (TextView) findViewById(R.id.machine);
         inputPassWord = (EditText) findViewById(R.id.inputPassWord);
         inputname = (EditText) findViewById(R.id.inputUserName);
+        inputname.setText("闫文波");
+        inputPassWord.setText("5F85DF852FCC6B36A502D622B926C563");
         login.setOnClickListener(this);
         machine.setOnClickListener(this);
         hud = KProgressHUD.create(this)
@@ -124,7 +127,9 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                                 SharedPreferenceManager.setUserName(LoginActivity.this, userid);
                                 SharedPreferenceManager.setPassWord(LoginActivity.this, password);
                                 String userData =jsonObject.getString("UserData");
-                                SharedPreferenceManager.setUserData(LoginActivity.this, userData);
+                                SharedPreferenceManager.setUserData(LoginActivity.this,userData);
+                                String data=jsonObject.getString("Data");
+                                SharedPreferenceManager.setLoginData(LoginActivity.this,data);
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
 
 

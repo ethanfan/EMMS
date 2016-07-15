@@ -53,7 +53,21 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical">
-
+                <com.flyco.tablayout.widget.MsgView
+                    android:id="@+id/repair_tip"
+                    xmlns:mv="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:gravity="center"
+                    android:layout_marginRight="35dp"
+                    android:textColor="#ffffff"
+                    android:textSize="11.5sp"
+                    android:text="0/0"
+                    mv:mv_backgroundColor="#FD481F"
+                    mv:mv_isRadiusHalfHeight="true"
+                    mv:mv_strokeColor="#ffffff"
+                    mv:mv_strokeWidth="1dp"/>
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -91,7 +105,21 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical">
-
+                <com.flyco.tablayout.widget.MsgView
+                    android:id="@+id/maintian_tip"
+                    xmlns:mv="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:gravity="center"
+                    android:layout_marginRight="35dp"
+                    android:textColor="#ffffff"
+                    android:textSize="11.5sp"
+                    android:text="0/0"
+                    mv:mv_backgroundColor="#FD481F"
+                    mv:mv_isRadiusHalfHeight="true"
+                    mv:mv_strokeColor="#ffffff"
+                    mv:mv_strokeWidth="1dp"/>
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -119,7 +147,21 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical">
-
+                <com.flyco.tablayout.widget.MsgView
+                    android:id="@+id/move_car_tip"
+                    xmlns:mv="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:gravity="center"
+                    android:layout_marginRight="35dp"
+                    android:textColor="#ffffff"
+                    android:textSize="11.5sp"
+                    android:text="0/0"
+                    mv:mv_backgroundColor="#FD481F"
+                    mv:mv_isRadiusHalfHeight="true"
+                    mv:mv_strokeColor="#ffffff"
+                    mv:mv_strokeWidth="1dp"/>
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -158,7 +200,21 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical">
-
+                <com.flyco.tablayout.widget.MsgView
+                    android:id="@+id/other_tip"
+                    xmlns:mv="http://schemas.android.com/apk/res-auto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:gravity="center"
+                    android:layout_marginRight="35dp"
+                    android:textColor="#ffffff"
+                    android:textSize="11.5sp"
+                    android:text="0/0"
+                    mv:mv_backgroundColor="#FD481F"
+                    mv:mv_isRadiusHalfHeight="true"
+                    mv:mv_strokeColor="#ffffff"
+                    mv:mv_strokeWidth="1dp"/>
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

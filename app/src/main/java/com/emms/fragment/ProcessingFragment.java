@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
@@ -21,20 +22,24 @@ import com.emms.util.SharedPreferenceManager;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.datastore_android_sdk.datastore.DataElement;
-import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rest.JsonArrayElement;
-import com.datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.jaffer_datastore_android_sdk.datastore.DataElement;
+import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
+import com.jaffer_datastore_android_sdk.rest.JsonArrayElement;
+import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
 
 import java.util.ArrayList;
+
+import android.os.Handler;
 
 /**
  * Created by jaffer.deng on 2016/6/20.
  */
 public class ProcessingFragment extends Fragment {
 
-    private ListView listView;
+    private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
 
     public ArrayList<ObjectElement> getDatas() {
@@ -62,12 +67,28 @@ public class ProcessingFragment extends Fragment {
     //private ArrayList<TaskBean> datas;
     private ArrayList<ObjectElement> datas=new ArrayList<ObjectElement>();
     private Context mContext;
+    private Handler handler=new Handler();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
-        listView = (ListView) v.findViewById(R.id.processing_list);
+        listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
+        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+            @Override
+            public void onRefresh(final PullToRefreshBase<ListView> refreshView) {
+                
+
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        listView.onRefreshComplete();
+                        Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
+                    }
+                },2000);
+           }
+        });
         return v;
     }
 
@@ -165,6 +186,7 @@ public class ProcessingFragment extends Fragment {
             }
         });
     }
+
 
 
 }
