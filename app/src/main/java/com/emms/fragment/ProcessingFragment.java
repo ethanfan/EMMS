@@ -27,6 +27,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.jaffer_datastore_android_sdk.datastore.DataElement;
 import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
 import com.jaffer_datastore_android_sdk.rest.JsonArrayElement;
+import com.jaffer_datastore_android_sdk.rest.JsonObjectElement;
 import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
 
@@ -74,11 +75,12 @@ public class ProcessingFragment extends Fragment {
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
-        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+       // listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
             @Override
             public void onRefresh(final PullToRefreshBase<ListView> refreshView) {
-                
+                //下拉刷新
 
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -88,6 +90,24 @@ public class ProcessingFragment extends Fragment {
                     }
                 },2000);
            }
+        });
+        listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+                //上拉加载更多
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        listView.onRefreshComplete();
+                        Toast.makeText(mContext,"dadada",Toast.LENGTH_SHORT).show();
+                    }
+                },2000);
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+
+            }
         });
         return v;
     }
@@ -161,22 +181,30 @@ public class ProcessingFragment extends Fragment {
     }
     private void getProcessingDataFromServer(){
         HttpParams params=new HttpParams();
-        params.put("id", SharedPreferenceManager.getUserName(mContext));
+       // params.put("id", SharedPreferenceManager.getUserName(mContext));
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
-        Log.e("returnString","dd");
-        HttpUtils.get(mContext, "Task", params, new HttpCallback() {
+       // Log.e("returnString","dd");
+        String s=SharedPreferenceManager.getLoginData(mContext);
+        //params.put("Operator_id",);
+        JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
+        int operator_id=jsonObjectElement.get("Operator_ID").valueAsInt();
+        params.put("operator_id",operator_id);
+        params.put("status",0);
+        params.put("taskClass",0);
+        HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 Log.e("returnString",t);
                 if(t!=null) {
-                    //JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    JsonArrayElement jsonArrayElement=new JsonArrayElement(t);
-                    if(jsonArrayElement!=null&&jsonArrayElement.size()>0){
+                    JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                   // JsonArrayElement jsonArrayElement=jsonObjectElement.asArrayElement();
+                 /*  if(jsonArrayElement!=null&&jsonArrayElement.size()>0){
                         for(int i=0;i<jsonArrayElement.size();i++){
                             datas.add(jsonArrayElement.get(i).asObjectElement());
                         }
-                    }
+                    }*/
+
                 }
             }
             @Override

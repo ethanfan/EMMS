@@ -982,9 +982,11 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         JsonObjectElement task=new JsonObjectElement();
         JsonObjectElement taskDetail=new JsonObjectElement();
         taskDetail.set(Task.TASK_ID,0);
-        taskDetail.set(Task.TASK_TYPE,TaskType);
+      //  taskDetail.set(Task.TASK_TYPE,TaskType);
         taskDetail.set("Applicant",TaskBuilder);
         taskDetail.set("TaskName","维修");
+
+        taskDetail.set("TaskClass",0);
         task.set("Task",taskDetail);
         params.putJsonParams(task.toJson());
         //params.put("Task",task.toJson());
