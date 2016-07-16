@@ -1,36 +1,22 @@
 package com.emms.activity;
 
-import android.content.Intent;
+
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.SubTaskAdapter;
-import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Maintain;
-import com.emms.util.BuildConfig;
-import com.emms.util.SharedPreferenceManager;
-import com.flyco.tablayout.widget.MsgView;
-import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
-import com.jaffer_datastore_android_sdk.rest.JsonObjectElement;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
-import com.jaffer_datastore_android_sdk.rxvolley.http.VolleyError;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by jaffer.deng on 2016/6/6.
