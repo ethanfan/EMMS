@@ -134,8 +134,6 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             }
         }
 
-        retData = 93L;
-
         return retData;
     }
 
@@ -221,6 +219,9 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 add(new TaskBean("何邵勃", "0115", "平车", 1, 144400000, 199900000));
             }
         };*/
+
+        // for test
+        taskId = 93L;
 
         getTaskEquipmentFromServerByTaskId();
         if (null == datas) {
