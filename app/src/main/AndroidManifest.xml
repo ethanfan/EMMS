@@ -92,6 +92,13 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity
+            android:name=".activity.InvitorActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+
+
 
         <!-- Rich push 核心功能 since 2.0.6-->
         <activity

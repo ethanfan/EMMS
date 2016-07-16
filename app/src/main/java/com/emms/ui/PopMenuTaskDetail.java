@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.emms.R;
+import com.emms.activity.InvitorActivity;
 import com.emms.activity.SubTaskManageActivity;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
@@ -97,7 +98,7 @@ public abstract class PopMenuTaskDetail {
 				}else if(position==3){
 
 				}else if(position==4){
-
+					InviteHelp();
 				}else if(position==5){
 					SubTaskManage();
 				}else if(position==6){
@@ -235,6 +236,9 @@ public abstract class PopMenuTaskDetail {
 
 	}
 	private void InviteHelp(){
+
+		Intent intent=new Intent(context, InvitorActivity.class);
+		context.startActivity(intent);
 
 	}
 	private void SubTaskManage(){

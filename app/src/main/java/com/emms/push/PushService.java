@@ -11,6 +11,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.emms.util.MessageUtils;
+
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Set;
 
 import cn.jpush.android.api.JPushInterface;
@@ -123,7 +127,9 @@ public class PushService {
                     Log.e(TAG, logs);
             }
 
-            ExampleUtil.showToast(logs, applicationContext);
+            if(StringUtils.isNotBlank(logs)){
+                MessageUtils.showToast(logs, applicationContext);
+            }
         }
 
     };
@@ -155,7 +161,9 @@ public class PushService {
                     Log.e(TAG, logs);
             }
 
-            ExampleUtil.showToast(logs, applicationContext);
+            if(code != 0){
+                MessageUtils.showToast(logs, applicationContext);
+            }
         }
 
     };

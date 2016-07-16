@@ -10,6 +10,6 @@
     <string name="error_tag_empty">tag cannot be empty</string>
     <string name="error_tag_gs_empty">Invalid format</string>
     <string name="error_network">Failed to init due to network exception.</string>
-    <string name="logining">Running in background. Please see log.</string>
+    <string name="logining">Loading...</string>
     <string name="setting_su">Succeed to set</string>
 </resources>
