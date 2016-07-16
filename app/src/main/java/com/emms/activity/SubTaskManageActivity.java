@@ -51,18 +51,24 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             public View getCustomView(View convertView, int position, ViewGroup parent) {
                 TaskViewHolder holder;
                 if (convertView == null) {
-                    convertView = LayoutInflater.from(SubTaskManageActivity.this).inflate(R.layout.item_sub_task, parent, false);
+                    convertView = LayoutInflater.from(SubTaskManageActivity.this).inflate(R.layout.sub_task_item, parent, false);
                     holder = new SubTaskAdapter.TaskViewHolder();
-                    holder.sub_task_name = (TextView) convertView.findViewById(R.id.sub_task);
-                    holder.sub_task_status = (TextView) convertView.findViewById(R.id.status);
-                    holder.sub_task_remark = (TextView) convertView.findViewById(R.id.description);
+                    holder.work_num = (TextView) convertView.findViewById(R.id.work_num);
+                    holder.approve_work_hours = (TextView) convertView.findViewById(R.id.approve_work_hours);
+                    holder.work_name = (TextView) convertView.findViewById(R.id.work_name);
+                    holder.status = (TextView) convertView.findViewById(R.id.status);
+                    holder.work_description = (TextView) convertView.findViewById(R.id.work_description);
+                    holder.equipment_num = (TextView) convertView.findViewById(R.id.equipment_num);
                     convertView.setTag(holder);
                 } else {
                     holder = (SubTaskAdapter.TaskViewHolder) convertView.getTag();
                 }
-                holder.sub_task_name.setText(datas.get(position).get("TaskItemName").valueAsString());
-                holder.sub_task_status.setText(datas.get(position).get("Status").valueAsString());
-                holder.sub_task_remark.setText(datas.get(position).get("TaskItemDesc").valueAsString());
+                holder.work_num.setText(datas.get(position).get("TaskItem_ID").valueAsString());
+           //     holder.approve_work_hours.setText(datas.get(position).get("approve_work_hours").valueAsString());
+                holder.work_name.setText(datas.get(position).get("TaskItemName").valueAsString());
+                holder.status.setText(datas.get(position).get("Status").valueAsString());
+                holder.work_description.setText(datas.get(position).get("TaskItemDesc").valueAsString());
+                holder.equipment_num.setText(datas.get(position).get("Equipment_ID").valueAsString());
                 return convertView;
             }
         };

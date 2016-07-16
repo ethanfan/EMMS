@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.emms.R;
+import com.emms.activity.InvitorActivity;
 import com.emms.activity.SubTaskManageActivity;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
@@ -42,7 +43,6 @@ public abstract class PopMenuTaskDetail {
 		this.context = context;
 
 		itemList = new ArrayList<String>(5);
-
 		View view = LayoutInflater.from(context)
 				.inflate(R.layout.popmenu, null);
 		final RelativeLayout layout=(RelativeLayout)view.findViewById(R.id.popup_view_cont);
@@ -61,6 +61,7 @@ public abstract class PopMenuTaskDetail {
 		listView.setAdapter(popAdapter);
 		listView.setFocusableInTouchMode(true);
 		listView.setFocusable(true);
+		setOnItemClickListener();
       //  ListViewUtility.setListViewHeightBasedOnChildren(listView);
 //		popupWindow = new PopupWindow(view, 254, LayoutParams.WRAP_CONTENT);
 
@@ -97,7 +98,7 @@ public abstract class PopMenuTaskDetail {
 				}else if(position==3){
 
 				}else if(position==4){
-
+					InviteHelp();
 				}else if(position==5){
 					SubTaskManage();
 				}else if(position==6){
@@ -235,6 +236,9 @@ public abstract class PopMenuTaskDetail {
 
 	}
 	private void InviteHelp(){
+
+		Intent intent=new Intent(context, InvitorActivity.class);
+		context.startActivity(intent);
 
 	}
 	private void SubTaskManage(){

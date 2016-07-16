@@ -102,6 +102,7 @@
     <string name="work_description">工作描述:</string>
     <string name="approved_working_hours">核定工时:</string>
     <string name="add">添加</string>
+    <string name="delete">删除</string>
     <string name="sub_task">子任务</string>
     <!--<string name="error">Error</string>-->
     <!--<string name="no_nfc">No NFC found on this device</string>-->

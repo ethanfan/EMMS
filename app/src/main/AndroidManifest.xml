@@ -80,6 +80,9 @@
         <activity android:name=".activity.TaskDetailsActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".activity.SubTaskManageActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <activity android:name=".activity.PhotoActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".activity.GetPicActivity"
@@ -88,6 +91,13 @@
             android:name=".activity.ImageGridActivity"
             android:screenOrientation="portrait">
         </activity>
+
+        <activity
+            android:name=".activity.InvitorActivity"
+            android:screenOrientation="portrait">
+        </activity>
+
+
 
 
         <!-- Rich push 核心功能 since 2.0.6-->

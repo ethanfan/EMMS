@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.adapter.TaskAdapter;
@@ -74,11 +75,12 @@ public class ProcessingFragment extends Fragment {
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
-        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+       // listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
             @Override
             public void onRefresh(final PullToRefreshBase<ListView> refreshView) {
-                
+                //下拉刷新
 
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -88,6 +90,24 @@ public class ProcessingFragment extends Fragment {
                     }
                 },2000);
            }
+        });
+        listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+                //上拉加载更多
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        listView.onRefreshComplete();
+                        Toast.makeText(mContext,"dadada",Toast.LENGTH_SHORT).show();
+                    }
+                },2000);
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+
+            }
         });
         return v;
     }
@@ -113,8 +133,8 @@ public class ProcessingFragment extends Fragment {
                     convertView = LayoutInflater.from(mContext).inflate(R.layout.item_fr_process, parent, false);
                     holder = new TaskViewHolder();
                     holder.tv_group = (TextView) convertView.findViewById(R.id.tv_device_num);
-                    holder.tv_device_num = (TextView) convertView.findViewById(R.id.tv_device_num_process);
-                    holder.tv_device_name = (TextView) convertView.findViewById(R.id.tv_device_name_procee);
+              //      holder.tv_device_num = (TextView) convertView.findViewById(R.id.tv_device_num_process);
+              //      holder.tv_device_name = (TextView) convertView.findViewById(R.id.tv_device_name_procee);
                     holder.tv_task_state = (TextView) convertView.findViewById(R.id.tv_task_state);
                     holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_repair_time_process);
                     holder.tv_end_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
@@ -124,8 +144,8 @@ public class ProcessingFragment extends Fragment {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
                 holder.tv_group.setText(datas.get(position).get(Maintain.GROUP_NAME).valueAsString());
-                holder.tv_device_num.setText(datas.get(position).get(Maintain.MACHINE_CODE).valueAsString());
-                holder.tv_device_name.setText(datas.get(position).get(Maintain.MACHINE_NAME).valueAsString());
+           //     holder.tv_device_num.setText(datas.get(position).get(Maintain.MACHINE_CODE).valueAsString());
+           //     holder.tv_device_name.setText(datas.get(position).get(Maintain.MACHINE_NAME).valueAsString());
            /*     int tag = datas.get(position).getTaskTag();
                 String state = "";
                 if (tag == 1) {
@@ -161,22 +181,37 @@ public class ProcessingFragment extends Fragment {
     }
     private void getProcessingDataFromServer(){
         HttpParams params=new HttpParams();
-        params.put("id", SharedPreferenceManager.getUserName(mContext));
+       // params.put("id", SharedPreferenceManager.getUserName(mContext));
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
-        Log.e("returnString","dd");
-        HttpUtils.get(mContext, "Task", params, new HttpCallback() {
+       // Log.e("returnString","dd");
+        String s=SharedPreferenceManager.getLoginData(mContext);
+        //params.put("Operator_id",);
+        JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
+        int operator_id=jsonObjectElement.get("Operator_ID").valueAsInt();
+        params.put("operator_id",2295);
+        params.put("status",0);
+        params.put("taskClass","T02");
+        HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 Log.e("returnString",t);
                 if(t!=null) {
-                    //JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    JsonArrayElement jsonArrayElement=new JsonArrayElement(t);
-                    if(jsonArrayElement!=null&&jsonArrayElement.size()>0){
+                    JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                    int RecCount=jsonObjectElement.get("RecCount").valueAsInt();
+                    if(jsonObjectElement.get("PageData").asArrayElement().size()==0){
+                      //提示没有处理中的任务
+                    }
+                    for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
+                        datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
+                    }
+                   // JsonArrayElement jsonArrayElement=jsonObjectElement.asArrayElement();
+                 /*  if(jsonArrayElement!=null&&jsonArrayElement.size()>0){
                         for(int i=0;i<jsonArrayElement.size();i++){
                             datas.add(jsonArrayElement.get(i).asObjectElement());
                         }
-                    }
+                    }*/
+
                 }
             }
             @Override
