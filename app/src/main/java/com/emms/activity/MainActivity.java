@@ -89,7 +89,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             startActivity(intent);
         }else if (id == R.id.repair_tag){
             Intent intent=new Intent(MainActivity.this,RepairTaskACtivity.class);
-            intent.putExtra("TaskNum",taskNum.get(0));
+            if(taskNum.get(0)!=null){
+            intent.putExtra("TaskNum",taskNum.get(0));}
+            else {
+                intent.putExtra("TaskNum","0/0");
+            }
             startActivity(intent);
 //            Toast.makeText(MainActivity.this,"该模块正在开发",Toast.LENGTH_SHORT).show();
         }else if (id == R.id.maintain_tag){
@@ -142,21 +146,25 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-               JsonObjectElement json=new JsonObjectElement(t);
-              //获取任务数目，Data_ID对应，1对应维修，2对应维护，3对应搬车，4对应其它
-               for(int i=0;i<json.get("PageData").asArrayElement().size();i++) {
-                   //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
-                   //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
-                   String taskNumToShow = json.get("PageData").asArrayElement().get(i).asObjectElement().get("ToDoNum").valueAsString() + "/" +
-                           json.get("PageData").asArrayElement().get(i).asObjectElement().get("DoingNum").valueAsString();
-                   taskNum.put(i,taskNumToShow);
-               }
-                  repair_msg.setText(taskNum.get(0));
-                  maintain_msg.setText(taskNum.get(1));
-                  move_car_msg.setText(taskNum.get(2));
-                  other_msg.setText(taskNum.get(3));
-            }
+                if (t != null) {
+                    JsonObjectElement json = new JsonObjectElement(t);
+                    //获取任务数目，Data_ID对应，1对应维修，2对应维护，3对应搬车，4对应其它
+                    if(json.get("PageData")!=null&&json.get("PageData").asArrayElement()!=null) {
+                        for (int i = 0; i < json.get("PageData").asArrayElement().size(); i++) {
+                            //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
+                            //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
+                            String taskNumToShow = json.get("PageData").asArrayElement().get(i).asObjectElement().get("ToDoNum").valueAsString() + "/" +
+                                    json.get("PageData").asArrayElement().get(i).asObjectElement().get("DoingNum").valueAsString();
+                            taskNum.put(i, taskNumToShow);
+                        }
 
+                    repair_msg.setText(taskNum.get(0));
+                    maintain_msg.setText(taskNum.get(1));
+                    move_car_msg.setText(taskNum.get(2));
+                    other_msg.setText(taskNum.get(3));
+                    }
+                }
+            }
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);

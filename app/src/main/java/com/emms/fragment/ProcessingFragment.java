@@ -133,8 +133,8 @@ public class ProcessingFragment extends Fragment {
                     convertView = LayoutInflater.from(mContext).inflate(R.layout.item_fr_process, parent, false);
                     holder = new TaskViewHolder();
                     holder.tv_group = (TextView) convertView.findViewById(R.id.tv_device_num);
-                    holder.tv_device_num = (TextView) convertView.findViewById(R.id.tv_device_num_process);
-                    holder.tv_device_name = (TextView) convertView.findViewById(R.id.tv_device_name_procee);
+              //      holder.tv_device_num = (TextView) convertView.findViewById(R.id.tv_device_num_process);
+              //      holder.tv_device_name = (TextView) convertView.findViewById(R.id.tv_device_name_procee);
                     holder.tv_task_state = (TextView) convertView.findViewById(R.id.tv_task_state);
                     holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_repair_time_process);
                     holder.tv_end_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
@@ -144,8 +144,8 @@ public class ProcessingFragment extends Fragment {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
                 holder.tv_group.setText(datas.get(position).get(Maintain.GROUP_NAME).valueAsString());
-                holder.tv_device_num.setText(datas.get(position).get(Maintain.MACHINE_CODE).valueAsString());
-                holder.tv_device_name.setText(datas.get(position).get(Maintain.MACHINE_NAME).valueAsString());
+           //     holder.tv_device_num.setText(datas.get(position).get(Maintain.MACHINE_CODE).valueAsString());
+           //     holder.tv_device_name.setText(datas.get(position).get(Maintain.MACHINE_NAME).valueAsString());
            /*     int tag = datas.get(position).getTaskTag();
                 String state = "";
                 if (tag == 1) {
@@ -188,9 +188,9 @@ public class ProcessingFragment extends Fragment {
         //params.put("Operator_id",);
         JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
         int operator_id=jsonObjectElement.get("Operator_ID").valueAsInt();
-        params.put("operator_id",operator_id);
+        params.put("operator_id",2295);
         params.put("status",0);
-        params.put("taskClass",0);
+        params.put("taskClass","T02");
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -198,6 +198,13 @@ public class ProcessingFragment extends Fragment {
                 Log.e("returnString",t);
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                    int RecCount=jsonObjectElement.get("RecCount").valueAsInt();
+                    if(jsonObjectElement.get("PageData").asArrayElement().size()==0){
+                      //提示没有处理中的任务
+                    }
+                    for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
+                        datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
+                    }
                    // JsonArrayElement jsonArrayElement=jsonObjectElement.asArrayElement();
                  /*  if(jsonArrayElement!=null&&jsonArrayElement.size()>0){
                         for(int i=0;i<jsonArrayElement.size();i++){

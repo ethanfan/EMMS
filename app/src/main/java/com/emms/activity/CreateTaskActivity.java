@@ -27,6 +27,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
@@ -40,6 +41,7 @@ import com.emms.ui.DropEditText;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.NFCDialog;
 import com.emms.util.BuildConfig;
+import com.google.common.base.Strings;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -48,6 +50,12 @@ import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.nio.charset.Charset;
 import java.text.DateFormat;
@@ -976,15 +984,42 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         //params.put(Task.EQUIPMENT_ID,MachineCode);
         //params.put(Task.TASK_DESCRIPTION,TaskDescription);
         //params.put();
+        if(task_subtype!=null){
+            TaskType=TaskSubType;
+        }
         JsonObjectElement task=new JsonObjectElement();
         JsonObjectElement taskDetail=new JsonObjectElement();
+
         taskDetail.set(Task.TASK_ID,0);
       //  taskDetail.set(Task.TASK_TYPE,TaskType);
         taskDetail.set("Applicant",TaskBuilder);
-        taskDetail.set("TaskName","维修");
-
+        taskDetail.set("TaskName",TaskType);
+        taskDetail.set("TaskDescr",TaskDescription);
         taskDetail.set("TaskClass",0);
+
+
+        MachineCode="123";
+        String  MachineCode2="312";
+
+        JsonArray jsonArray=new JsonArray();
+        JsonObject JsonObject=new JsonObject();
+        JsonObject.addProperty("Equipment_ID",MachineCode);
+        JsonObject JsonObject2=new JsonObject();
+        JsonObject2.addProperty("Equipment_ID",MachineCode2);
+        jsonArray.add(JsonObject);
+        jsonArray.add(JsonObject2);
+     //   JsonObjectElement equipment=new JsonObjectElement();
+      //  equipment.set("Equipment_ID",MachineCode);
+     //   JsonObjectElement equipment2=new JsonObjectElement();
+     //   equipment2.set("Equipment_ID",MachineCode2);
+
+       // JsonArrayElement equipmentArray=new JsonArrayElement(equipment.t);
+        //equipmentArray.add(equipment);
+       // equipmentArray.add(equipment2);
         task.set("Task",taskDetail);
+        task.set("TaskEquipment",jsonArray.toString());
+        String bb=jsonArray.toString();
+        //JsonObjectElement jsonObjectElement =new JsonObjectElement(bb);
         params.putJsonParams(task.toJson());
         //params.put("Task",task.toJson());
         HttpUtils.post(this, "TaskCollection", params, new HttpCallback() {

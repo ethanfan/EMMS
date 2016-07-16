@@ -26,6 +26,7 @@
             android:layout_toRightOf="@id/id_group"
             android:text="D"
             android:textSize="17sp"/>
+        <!--
         <TextView
             android:layout_marginTop="5dp"
             android:id="@+id/id_num_device"
@@ -45,6 +46,7 @@
             android:layout_alignTop="@+id/id_num_device"
             android:layout_toRightOf="@+id/id_num_device"
             android:textSize="17sp"/>
+
         <TextView
             android:layout_marginTop="5dp"
             android:id="@+id/id_device_name"
@@ -65,7 +67,7 @@
             android:layout_alignTop="@+id/id_device_name"
             android:layout_toRightOf="@+id/id_device_name"
             android:textSize="17sp"/>
-
+-->
         <TextView
             android:id="@+id/id_status"
             android:layout_marginTop="5dp"
@@ -73,8 +75,8 @@
             android:layout_height="wrap_content"
             android:text="@string/task_state"
             android:textColor="@color/text_color"
-            android:layout_below="@+id/id_device_name"
-            android:layout_alignLeft="@+id/id_device_name"
+            android:layout_below="@+id/id_group"
+            android:layout_alignLeft="@+id/id_group"
             android:textSize="17sp"/>
 
         <TextView
