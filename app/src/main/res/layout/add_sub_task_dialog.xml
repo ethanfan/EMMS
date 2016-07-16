@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:drop="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
     android:layout_alignParentBottom="true"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
     >
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -16,19 +20,23 @@
         android:layout_marginTop="10dp"
         android:id="@+id/one"
         >
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/work_num_tag"
-        android:text="@string/work_num"
-        android:layout_centerVertical="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/work_num_tag"
+            android:text="@string/work_num"
+            android:paddingLeft="10dp"
+            android:layout_centerVertical="true"/>
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/work_num_tag"
-        android:paddingLeft="5dp"
-        android:paddingRight="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_toRightOf="@+id/work_num_tag"
+        android:id="@+id/work_num"
         android:layout_centerVertical="true"/>
+
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -41,16 +49,20 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/approved_working_hours"
+            android:id="@+id/approved_working_hours_tag"
             android:text="@string/approved_working_hours"
+            android:paddingLeft="10dp"
             android:layout_centerVertical="true"/>
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/approved_working_hours"
-            android:paddingLeft="5dp"
-            android:paddingRight="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_toRightOf="@+id/approved_working_hours_tag"
+            android:id="@+id/approved_working_hours"
             android:layout_centerVertical="true"/>
+
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -63,16 +75,85 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/equipment_num"
-            android:text="@string/equipment_num"
+            android:id="@+id/sub_task_equipment_num_tag"
+            android:text="@string/sub_task_equipment_num"
+            android:paddingLeft="10dp"
             android:layout_centerVertical="true"/>
-        <EditText
+        <com.emms.ui.DropEditText
+            android:id="@+id/sub_task_equipment_num"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_toRightOf="@+id/sub_task_equipment_num_tag"
+            android:layout_weight="3"
+            drop:drawableRight="@mipmap/drop_down"
+            drop:dropMode="flow_parent"
+            drop:hint="@string/select"
+            drop:hintColor="@color/hint_color" />
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/three"
+        android:layout_alignLeft="@+id/three"
+        android:layout_marginTop="10dp"
+        android:id="@+id/four">
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/equipment_num"
-            android:paddingLeft="5dp"
-            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:id="@+id/work_name_tag"
+            android:text="@string/work_name"
             android:layout_centerVertical="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/work_name_tag"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/work_name"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/four"
+        android:layout_alignLeft="@+id/four"
+        android:id="@+id/five"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:id="@+id/work_description_tag"
+            android:text="@string/work_description"
+            android:layout_centerVertical="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/work_description_tag"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/work_description"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/five"
+        android:layout_marginTop="10dp"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:id="@+id/comfirm"
+            android:layout_height="50dp"
+            android:layout_marginLeft="20dp"
+            android:background="#FCC900"
+            android:gravity="center"
+            android:text="@string/sure"
+            android:textSize="23sp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"/>
     </RelativeLayout>
 </RelativeLayout>
 </RelativeLayout>

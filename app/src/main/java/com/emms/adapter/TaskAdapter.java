@@ -58,5 +58,6 @@ public abstract class TaskAdapter extends BaseAdapter{
         public TextView tv_start_time;
         public  TextView tv_create_time;
         public  TextView tv_repair_time;
+        public TextView warranty_person;
     }
 }

@@ -15,6 +15,7 @@ import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.SubTaskAdapter;
 import com.emms.httputils.HttpUtils;
+import com.emms.ui.CustomDialog;
 
 import java.util.ArrayList;
 
@@ -44,6 +45,8 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onClick(View v) {
                 //添加子任务
+                CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,0);
+                customDialog.show();
             }
         });
         adapter=new SubTaskAdapter(datas) {
