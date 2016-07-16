@@ -86,13 +86,14 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
 
     //0-开始，1-暂停，2-领料，3-待料，4-结束
 
+    private final String STATUS_DONE = "4";
     static private  HashMap<String,String> taskEquipmentStatus = new HashMap<String,String>();
     {
         taskEquipmentStatus.put("0","开始");
         taskEquipmentStatus.put("1","暂停");
         taskEquipmentStatus.put("2","领料");
         taskEquipmentStatus.put("3","待料");
-        taskEquipmentStatus.put("4","结束");
+        taskEquipmentStatus.put(STATUS_DONE,"结束");
     }
 
     protected ImageLoader imageLoader = ImageLoader.getInstance();
@@ -182,7 +183,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 String equipmentStatus = datas.get(position).get(Equipment.STATUS).valueAsString();
 
                 String endTime ="";
-                if(!"4".equals(equipmentStatus)){
+                if(!STATUS_DONE.equals(equipmentStatus)){
                     endTime = datas.get(position).get("StatusTime").valueAsString();
                 }
                 holder.tv_end_time.setText(endTime);
@@ -629,7 +630,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                             datas.add(jsonArrayElement.get(i).asObjectElement());
 
                             String equipmentStatus = jsonArrayElement.get(i).asObjectElement().get(Equipment.STATUS).valueAsString();
-                            if("4".equals(equipmentStatus)){
+                            if(STATUS_DONE.equals(equipmentStatus)){
                                 dealDeviceCount ++;
                             }
 
