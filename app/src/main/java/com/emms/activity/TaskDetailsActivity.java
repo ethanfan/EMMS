@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.ArrayElement;
 import com.emms.R;
@@ -74,10 +75,25 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
     private ArrayList<ObjectElement> datas;
     private Context mContext;
     private PopMenuTaskDetail popMenuTaskDetail;
+    private TextView deviceCountTextView;
+    private TextView dealCountTextView;
+
     String TaskDetail = null;
 
     Long taskId = null;
     private List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+    private Map<String, Object> deviceCountMap = new HashMap<String, Object>();
+
+    //0-开始，1-暂停，2-领料，3-待料，4-结束
+
+    static private  HashMap<String,String> taskEquipmentStatus = new HashMap<String,String>();
+    {
+        taskEquipmentStatus.put("0","开始");
+        taskEquipmentStatus.put("1","暂停");
+        taskEquipmentStatus.put("2","领料");
+        taskEquipmentStatus.put("3","待料");
+        taskEquipmentStatus.put("4","结束");
+    }
 
     protected ImageLoader imageLoader = ImageLoader.getInstance();
     DisplayImageOptions options; // DisplayImageOptions是用于设置图片显示的类
@@ -94,8 +110,10 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
 
         //初始化imageLoader
         options = new DisplayImageOptions.Builder().cacheInMemory(false) // 设置下载的图片是否缓存在内存中
-                // .cacheOnDisc(true) // 设置下载的图片是否缓存在SD卡中
+//                .cacheOnDisc(true) // 设置下载的图片是否缓存在SD卡中
+                .cacheOnDisk(true)
                 .imageScaleType(ImageScaleType.NONE)
+                .showImageOnLoading(R.mipmap.bg_btn)
                 // .bitmapConfig(Bitmap.Config.RGB_565)
                 .build();
         imageLoader.init(ImageLoaderConfiguration
@@ -173,7 +191,14 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                     holder.tv_task_state.setTextColor(getResources().getColor(R.color.pause_color));
                     state = getResources().getString(R.string.task_state_details_non);
                 }*/
-                holder.tv_task_state.setText(datas.get(position).get(Equipment.STATUS).valueAsString());
+                holder.tv_task_state.setText(taskEquipmentStatus.get(datas.get(position).get(Equipment.STATUS).valueAsString()));
+
+
+                //设备数数
+                deviceCountTextView.setText(String.valueOf(deviceCountMap.get("deviceCount")));
+                //已处理数量
+                dealCountTextView.setText(String.valueOf(deviceCountMap.get("dealCount")));
+
                 return convertView;
             }
 
@@ -203,7 +228,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         }
 
         // for test
-        taskId = 14L;
+        taskId = 16L;
 
         getTaskAttachmentDataFromServerByTaskId();
     }
@@ -217,22 +242,25 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         menuImageView.setOnClickListener(this);
         scrollview = (ScrollView) findViewById(R.id.scrollview_parent);
         mListview = (ScrollViewWithListView) findViewById(R.id.problem_count);
+        deviceCountTextView = (TextView) findViewById(R.id.device_count);
+        dealCountTextView =  (TextView) findViewById(R.id.deal_count);
         noScrollgridview = (ExpandGridView) findViewById(R.id.picture_containt);
         noScrollgridview.setSelector(new ColorDrawable(Color.TRANSPARENT));
+
         adapter = new GridAdapter(this);
-        adapter.update1();
+//        adapter.update1();
         noScrollgridview.setAdapter(adapter);
         noScrollgridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                                     long arg3) {
-                if (arg2 == Bimp.bmp.size()) {
+                if (arg2 == dataList.size()) {
                     new PopupWindows(mContext, noScrollgridview);
                 } else {
-                    Intent intent = new Intent(mContext,
-                            PhotoActivity.class);
-                    intent.putExtra("ID", arg2);
-                    startActivity(intent);
+//                    Intent intent = new Intent(mContext,
+//                            PhotoActivity.class);
+//                    intent.putExtra("ID", arg2);
+//                    startActivity(intent);
                 }
             }
         });
@@ -250,7 +278,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
     }
 
     protected void onRestart() {
-        adapter.update1();
+//        adapter.update1();
         super.onRestart();
     }
 
@@ -266,11 +294,16 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
     }
 
     public class GridAdapter extends BaseAdapter {
+        //        private List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
         private LayoutInflater inflater; // 视图容器
         private int selectedPosition = -1;// 选中的位置
         private boolean shape;
 
         private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
+
+//        public void setData(List<Map<String, Object>> dataList) {
+//            this.dataList = dataList;
+//        }
 
         public boolean isShape() {
             return shape;
@@ -284,9 +317,9 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             inflater = LayoutInflater.from(context);
         }
 
-        public void update1() {
-            loading1();
-        }
+//        public void update1() {
+//            //loading1();
+//        }
 
         public int getCount() {
             return dataList.size() + 1;
@@ -332,14 +365,18 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             holder.image.setVisibility(View.VISIBLE);
 
             if (position == dataList.size()) {
-                holder.image.setImageBitmap(BitmapFactory.decodeResource(
-                        getResources(), R.mipmap.icon_addpic_unfocused));
+//                holder.image.setImageBitmap(BitmapFactory.decodeResource(
+//                        getResources(), R.mipmap.icon_addpic_unfocused));
 
+                // String addImageUrl =  "mipmap://" + R.mipmap.icon_addpic_unfocused;
+                String imgUrl =  "drawable://" + R.drawable.icon_addpic_unfocused;
+                //addImageUrlToDataList(imgUrl);
+                imageLoader.displayImage(imgUrl, holder.image, options,
+                        animateFirstListener);
             } else {
                 String imgUrl = (String) dataList.get(position).get("imageUrl");
                 imageLoader.displayImage(imgUrl, holder.image, options,
                         animateFirstListener);
-                // holder.image.setImageBitmap(Bimp.bmp.get(position));
             }
 
             return convertView;
@@ -349,49 +386,12 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             public ImageView image;
         }
 
-        Handler handler = new Handler() {
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case 1:
-                        adapter.notifyDataSetChanged();
-                        break;
-                }
-                super.handleMessage(msg);
-            }
-        };
+    }
 
-        public void loading1() {
-            new Thread(new Runnable() {
-                public void run() {
-                    while (true) {
-                        if (Bimp.max == Bimp.drr.size()) {
-                            Message message = new Message();
-                            message.what = 1;
-                            handler.sendMessage(message);
-                            break;
-                        } else {
-                            try {
-                                String path = Bimp.drr.get(Bimp.max);
-                                System.out.println(path);
-                                Bitmap bm = Bimp.revitionImageSize(path);
-                                Bimp.bmp.add(bm);
-                                String newStr = path.substring(
-                                        path.lastIndexOf("/") + 1,
-                                        path.lastIndexOf("."));
-                                FileUtils.saveBitmap(mContext, bm, "" + newStr);
-                                Bimp.max += 1;
-                                Message message = new Message();
-                                message.what = 1;
-                                handler.sendMessage(message);
-                            } catch (IOException e) {
-
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }).start();
-        }
+    private void addImageUrlToDataList(String path) {
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        dataMap.put("imageUrl", path);
+        dataList.add(dataList.size(), dataMap);
     }
 
     public class PopupWindows extends PopupWindow {
@@ -475,7 +475,36 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         switch (requestCode) {
             case TAKE_PICTURE:
                 if (resultCode == -1) {
+                    //Bimp.drr.add(path);
+
+                    //将图片地址增加到图片列表
                     Bimp.drr.add(path);
+                    String path = Bimp.drr.get(Bimp.max);
+                    System.out.println(path);
+                    try {
+                        Bitmap bm = Bimp.revitionImageSize(path);
+                        Bimp.bmp.add(bm);
+                        String fileName = path.substring(
+                                path.lastIndexOf("/") + 1,
+                                path.lastIndexOf("."));
+                        FileUtils.saveBitmap(mContext, bm, "" + fileName);
+                        Bimp.max += 1;
+
+                        //压缩目录的路径--在saveBitmap方法中写死了的
+                        String SDPATH = mContext.getExternalFilesDir(null)
+                                + "/btp/formats/";
+
+                        addImageUrlToDataList("file://" + SDPATH + fileName + ".JPEG");
+                        if (null != adapter) {
+//                            adapter.setData(dataList);
+                            adapter.notifyDataSetChanged();
+                        }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
                     //在此上传图片到服务器;
                     submitPictureToServer(path);
                 }
@@ -553,11 +582,20 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 @Override
                 public void onFailure(int errorNo, String strMsg) {
                     super.onFailure(errorNo, strMsg);
+
+                    Toast toast = Toast.makeText(TaskDetailsActivity.this, "上传图片失败", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
                 }
 
                 @Override
                 public void onSuccess(String t) {
                     super.onSuccess(t);
+
+                    Toast toast = Toast.makeText(TaskDetailsActivity.this, "上传图片成功", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+
                 }
             });
             //上传String
@@ -587,9 +625,25 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                     ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
 
                     if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
+
+                        int dealDeviceCount = 0;
                         for (int i = 0; i < jsonArrayElement.size(); i++) {
                             datas.add(jsonArrayElement.get(i).asObjectElement());
+
+                            String equipmentStatus = jsonArrayElement.get(i).asObjectElement().get(Equipment.STATUS).valueAsString();
+                            if("5".equals(equipmentStatus)){
+                                dealDeviceCount ++;
+                            }
+
                         }
+
+                        if (null != taskAdapter) {
+//                            adapter.setData(dataList);
+                            taskAdapter.notifyDataSetChanged();
+                        }
+
+                        deviceCountMap.put("deviceCount",String.valueOf(jsonArrayElement.size()));
+                        deviceCountMap.put("dealCount",String.valueOf(dealDeviceCount));
                     }
                 }
             }
@@ -601,7 +655,6 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             }
         });
     }
-
 
     private void getTaskAttachmentDataFromServerByTaskId() {
         if (null == taskId) {
@@ -623,9 +676,8 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                         for (int i = 0; i < jsonArrayElement.size(); i++) {
                             Map<String, Object> dataMap = new HashMap<String, Object>();
 
-                            dataMap.put("imageUrl", jsonArrayElement.get(i).asObjectElement().get("FileName").valueAsString());
-
-                            dataList.add(0, dataMap);
+                            String path = jsonArrayElement.get(i).asObjectElement().get("FileName").valueAsString();
+                            addImageUrlToDataList(path);
 
                         }
 
@@ -633,7 +685,10 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
 //                        Message message = new Message();
 //                        message.what = 1;
 //                        handler.sendMessage(message);
-                        adapter.notifyDataSetChanged();
+                        if (null != adapter) {
+//                            adapter.setData(dataList);
+                            adapter.notifyDataSetChanged();
+                        }
                     }
                 }
             }
