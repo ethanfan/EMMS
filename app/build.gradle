@@ -31,5 +31,6 @@ dependencies {
     compile project(':datastore_android_sdk')
     compile project(':FlycoTabLayout_Lib')
     compile project(':PullToRefresh')
+    compile project(':universal-image-loader')
     compile 'com.android.support:cardview-v7:22.2.0'
 }
