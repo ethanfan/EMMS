@@ -4,10 +4,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
-import com.jaffer_datastore_android_sdk.schema.Identity;
-import com.jaffer_datastore_android_sdk.schema.Model;
-
-import java.util.TimeZone;
+import com.datastore_android_sdk.schema.Identity;
+import com.datastore_android_sdk.schema.Model;
 
 /**
  * Created by jaffer.deng on 2016/7/10.

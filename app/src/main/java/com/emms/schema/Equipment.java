@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName;
 import com.j256.ormlite.field.*;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.table.DatabaseTable;
-import com.jaffer_datastore_android_sdk.schema.BlobDatabaseField;
-import com.jaffer_datastore_android_sdk.schema.Identity;
-import com.jaffer_datastore_android_sdk.schema.Model;
+import com.datastore_android_sdk.schema.BlobDatabaseField;
+import com.datastore_android_sdk.schema.Identity;
+import com.datastore_android_sdk.schema.Model;
 
 import java.util.Date;
 

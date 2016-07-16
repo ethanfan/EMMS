@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,25 +30,34 @@ import android.widget.TextView;
 
 import com.emms.R;
 import com.emms.adapter.TaskAdapter;
-import com.emms.bean.TaskBean;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Equipment;
 import com.emms.schema.Maintain;
 import com.emms.schema.Task;
 import com.emms.ui.ExpandGridView;
 import com.emms.ui.PopMenuTaskDetail;
 import com.emms.ui.ScrollViewWithListView;
+import com.emms.util.AnimateFirstDisplayListener;
 import com.emms.util.Bimp;
 import com.emms.util.FileUtils;
-import com.emms.util.LongToDate;
-import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
-import com.jaffer_datastore_android_sdk.rest.JsonObjectElement;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
+import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
+import com.datastore_android_sdk.rest.JsonObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jaffer.deng on 2016/6/22.
@@ -63,18 +73,52 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
     private ArrayList<ObjectElement> datas;
     private Context mContext;
     private PopMenuTaskDetail popMenuTaskDetail;
-    String TaskDetail=null;
+    String TaskDetail = null;
+
+    Long taskId = null;
+    private List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+
+    protected ImageLoader imageLoader = ImageLoader.getInstance();
+    DisplayImageOptions options; // DisplayImageOptions是用于设置图片显示的类
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
         mContext = this;
         //获取任务详细信息
-        TaskDetail=getIntent().getStringExtra(Task.TASK_ID);
+        TaskDetail = getIntent().getStringExtra(Task.TASK_ID);
+
+        taskId = getTaskId(TaskDetail);
+
+        //初始化imageLoader
+        options = new DisplayImageOptions.Builder().cacheInMemory(false) // 设置下载的图片是否缓存在内存中
+                // .cacheOnDisc(true) // 设置下载的图片是否缓存在SD卡中
+                .imageScaleType(ImageScaleType.NONE)
+                // .bitmapConfig(Bitmap.Config.RGB_565)
+                .build();
+        imageLoader.init(ImageLoaderConfiguration
+                .createDefault(TaskDetailsActivity.this));
+
         initDatas();
         initView();
         initEvent();
     }
+
+    private Long getTaskId(String TaskDetail) {
+
+        Long retData = null;
+        if (TaskDetail != null) {
+            JsonObjectElement jsonObjectElement = new JsonObjectElement(TaskDetail);
+            if (null != jsonObjectElement) {
+                retData = jsonObjectElement.get(Task.TASK_ID).valueAsLong();
+            }
+        }
+
+        return retData;
+    }
+
+    ;
 
     private void initEvent() {
         Bimp.bmp.clear();
@@ -109,13 +153,13 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 }
 
 
-                holder.tv_device_num.setText(datas.get(position).get(Maintain.MACHINE_CODE).valueAsString());
+                holder.tv_device_num.setText(datas.get(position).get(Equipment.EQUIPMENT_ID).valueAsString());
                 holder.tv_device_name.setText(datas.get(position).get(Maintain.MACHINE_NAME).valueAsString());
                 //String createTime = LongToDate.longPointDate(datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsLong());
-                String createTime=datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsString();
+                String createTime = datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsString();
                 holder.tv_create_time.setText(createTime);
                 //String endTime = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsLong());
-                String endTime=datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsString();
+                String endTime = datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsString();
                 holder.tv_end_time.setText(endTime);
                 String state = "";
             /*    int tag = datas.get(position).getTaskTag();
@@ -149,7 +193,13 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 add(new TaskBean("何邵勃", "0115", "平车", 1, 144400000, 199900000));
             }
         };*/
-        datas=new ArrayList<ObjectElement>();
+
+        getTaskEquipmentFromServerByTaskId();
+        if (null == datas) {
+            datas = new ArrayList<ObjectElement>();
+        }
+
+        getTaskAttachmentDataFromServerByTaskId();
     }
 
     private void initView() {
@@ -180,23 +230,24 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 }
             }
         });
-        popMenuTaskDetail =new PopMenuTaskDetail(this,300){
+        popMenuTaskDetail = new PopMenuTaskDetail(this, 300) {
 
             @Override
             public void onEventDismiss() {
 
             }
         };
-        String[] mTitles =getResources().getStringArray(R.array.menu_list);
+        String[] mTitles = getResources().getStringArray(R.array.menu_list);
 
         popMenuTaskDetail.addItems(mTitles);
 
     }
-    protected void onRestart()
-    {
+
+    protected void onRestart() {
         adapter.update1();
         super.onRestart();
     }
+
     @Override
     public void onClick(View v) {
         int id_click = v.getId();
@@ -208,10 +259,136 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         }
     }
 
+    //    public class GridAdapter extends BaseAdapter {
+//        private LayoutInflater inflater; // 视图容器
+//        private int selectedPosition = -1;// 选中的位置
+//        private boolean shape;
+//
+//        public boolean isShape() {
+//            return shape;
+//        }
+//
+//        public void setShape(boolean shape) {
+//            this.shape = shape;
+//        }
+//
+//        public GridAdapter(Context context) {
+//            inflater = LayoutInflater.from(context);
+//        }
+//
+//        public void update1() {
+//            loading1();
+//        }
+//
+//        public int getCount() {
+//            return (Bimp.bmp.size() + 1);
+//        }
+//
+//        public Object getItem(int arg0) {
+//
+//            return null;
+//        }
+//
+//        public long getItemId(int arg0) {
+//
+//            return 0;
+//        }
+//
+//        public void setSelectedPosition(int position) {
+//            selectedPosition = position;
+//        }
+//
+//        public int getSelectedPosition() {
+//            return selectedPosition;
+//        }
+//
+//        /**
+//         * ListView Item设置
+//         */
+//        public View getView(int position, View convertView, ViewGroup parent) {
+//            //final int coord = position;
+//            ViewHolder holder = null;
+//
+//            if (convertView == null) {
+//
+//                convertView = inflater.inflate(R.layout.item_published_grida,
+//                        parent, false);
+//                holder = new ViewHolder();
+//                holder.image = (ImageView) convertView
+//                        .findViewById(R.id.item_grida_image);
+//                convertView.setTag(holder);
+//            } else {
+//                holder = (ViewHolder) convertView.getTag();
+//            }
+//
+//            holder.image.setVisibility(View.VISIBLE);
+//
+//            if (position == Bimp.bmp.size()) {
+//                holder.image.setImageBitmap(BitmapFactory.decodeResource(
+//                        getResources(), R.mipmap.icon_addpic_unfocused));
+//
+//            } else {
+//                holder.image.setImageBitmap(Bimp.bmp.get(position));
+//            }
+//
+//            return convertView;
+//        }
+//
+//        public class ViewHolder {
+//            public ImageView image;
+//        }
+//
+//        Handler handler = new Handler() {
+//            public void handleMessage(Message msg) {
+//                switch (msg.what) {
+//                    case 1:
+//                        adapter.notifyDataSetChanged();
+//                        break;
+//                }
+//                super.handleMessage(msg);
+//            }
+//        };
+//
+//        public void loading1() {
+//            new Thread(new Runnable() {
+//                public void run() {
+//                    while (true) {
+//                        if (Bimp.max == Bimp.drr.size()) {
+//                            Message message = new Message();
+//                            message.what = 1;
+//                            handler.sendMessage(message);
+//                            break;
+//                        } else {
+//                            try {
+//                                String path = Bimp.drr.get(Bimp.max);
+//                                System.out.println(path);
+//                                Bitmap bm = Bimp.revitionImageSize(path);
+//                                Bimp.bmp.add(bm);
+//                                String newStr = path.substring(
+//                                        path.lastIndexOf("/") + 1,
+//                                        path.lastIndexOf("."));
+//                                FileUtils.saveBitmap(mContext, bm, "" + newStr);
+//                                Bimp.max += 1;
+//                                Message message = new Message();
+//                                message.what = 1;
+//                                handler.sendMessage(message);
+//                            } catch (IOException e) {
+//
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                }
+//            }).start();
+//        }
+//    }
+//
     public class GridAdapter extends BaseAdapter {
         private LayoutInflater inflater; // 视图容器
         private int selectedPosition = -1;// 选中的位置
         private boolean shape;
+
+        private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 
         public boolean isShape() {
             return shape;
@@ -230,7 +407,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         }
 
         public int getCount() {
-            return (Bimp.bmp.size() + 1);
+            return dataList.size() + 1;
         }
 
         public Object getItem(int arg0) {
@@ -277,7 +454,10 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                         getResources(), R.mipmap.icon_addpic_unfocused));
 
             } else {
-                holder.image.setImageBitmap(Bimp.bmp.get(position));
+                String imgUrl = (String) dataList.get(position).get("imageUrl");
+                imageLoader.displayImage(imgUrl, holder.image, options,
+                        animateFirstListener);
+                // holder.image.setImageBitmap(Bimp.bmp.get(position));
             }
 
             return convertView;
@@ -393,7 +573,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         File dir = new File(mContext.getExternalFilesDir(null) + "/btp/");
         if (!dir.exists()) dir.mkdirs();
 
-        try{
+        try {
             Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             File file = new File(dir, String.valueOf(System.currentTimeMillis())
                     + ".jpg");
@@ -402,7 +582,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             openCameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
             openCameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
             startActivityForResult(openCameraIntent, TAKE_PICTURE);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -412,7 +592,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case TAKE_PICTURE:
-                if ( resultCode == -1) {
+                if (resultCode == -1) {
                     Bimp.drr.add(path);
                     //在此上传图片到服务器;
                     submitPictureToServer(path);
@@ -420,84 +600,207 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 break;
         }
     }
-/**
- * bitmap转为base64
- * @param bitmap
- * @return
- */
- public static String bitmapToBase64(Bitmap bitmap) {
-
-          String result = null;
-            ByteArrayOutputStream baos = null;
-            try {
-                   if (bitmap != null) {
-                          baos = new ByteArrayOutputStream();
-                          bitmap.compress(Bitmap.CompressFormat.PNG, 20, baos);
-
-                          baos.flush();
-                          baos.close();
-
-                          byte[] bitmapBytes = baos.toByteArray();
-                          result = Base64.encodeToString(bitmapBytes, Base64.NO_WRAP);
-                       }
-                } catch (IOException e) {
-                   e.printStackTrace();
-                } finally {
-                   try {
-                            if (baos != null) {
-                                  baos.flush();
-                                  baos.close();
-                                }
-                      } catch (IOException e) {
-                         e.printStackTrace();
-                       }
-               }
-           return result;
-       }
 
     /**
-      * base64转为bitmap
-      * @param base64Data
-      * @return
-      */
-           public static Bitmap base64ToBitmap(String base64Data) {
-          byte[] bytes = Base64.decode(base64Data, Base64.DEFAULT);
-           return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-       }
-     private void submitPictureToServer(String path){
-         try{Bitmap bitmap=Bimp.revitionImageSize(path);
-             String base64=bitmapToBase64(bitmap);
-             HttpParams params=new HttpParams();
-             if(TaskDetail!=null){
-             JsonObjectElement jsonObjectElement=new JsonObjectElement(TaskDetail);}
+     * bitmap转为base64
+     *
+     * @param bitmap
+     * @return
+     */
+    public static String bitmapToBase64(Bitmap bitmap) {
+
+        String result = null;
+        ByteArrayOutputStream baos = null;
+        try {
+            if (bitmap != null) {
+                baos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 20, baos);
+
+                baos.flush();
+                baos.close();
+
+                byte[] bitmapBytes = baos.toByteArray();
+                result = Base64.encodeToString(bitmapBytes, Base64.NO_WRAP);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (baos != null) {
+                    baos.flush();
+                    baos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    /**
+     * base64转为bitmap
+     *
+     * @param base64Data
+     * @return
+     */
+    public static Bitmap base64ToBitmap(String base64Data) {
+        byte[] bytes = Base64.decode(base64Data, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    private void submitPictureToServer(String path) {
+        try {
+            Bitmap bitmap = Bimp.revitionImageSize(path);
+            String base64 = bitmapToBase64(bitmap);
+            HttpParams params = new HttpParams();
+            if (TaskDetail != null) {
+                JsonObjectElement jsonObjectElement = new JsonObjectElement(TaskDetail);
+            }
            /*  params.put(Task.TASK_ID,jsonObjectElement.get(Task.TASK_ID).valueAsString());}
              else{
                  params.put(Task.TASK_ID,16);
              }
              params.put("TaskAttachment_ID",0);
              params.put("ImgBase64",base64);*/
-             JsonObjectElement jsonObjectElement=new JsonObjectElement();
-             jsonObjectElement.set(Task.TASK_ID,16);
-             jsonObjectElement.set("TaskAttachment_ID",0);
-             jsonObjectElement.set("ImgBase64",base64);
-                 params.putJsonParams(jsonObjectElement.toJson());
-             HttpUtils.post(this, "TaskAttachment", params, new HttpCallback() {
-                 @Override
-                 public void onFailure(int errorNo, String strMsg) {
-                     super.onFailure(errorNo, strMsg);
-                 }
+            JsonObjectElement jsonObjectElement = new JsonObjectElement();
+            jsonObjectElement.set(Task.TASK_ID, 16);
+            jsonObjectElement.set("TaskAttachment_ID", 0);
+            jsonObjectElement.set("ImgBase64", base64);
+            params.putJsonParams(jsonObjectElement.toJson());
+            HttpUtils.post(this, "TaskAttachment", params, new HttpCallback() {
+                @Override
+                public void onFailure(int errorNo, String strMsg) {
+                    super.onFailure(errorNo, strMsg);
+                }
 
-                 @Override
-                 public void onSuccess(String t) {
-                     super.onSuccess(t);
-                 }
-             });
-             //上传String
-         }catch (IOException e){
+                @Override
+                public void onSuccess(String t) {
+                    super.onSuccess(t);
+                }
+            });
+            //上传String
+        } catch (IOException e) {
 
-         }
-     }
+        }
+    }
 
 
+    private void getTaskEquipmentFromServerByTaskId() {
+        if (null == taskId) {
+            return;
+        }
+
+        HttpParams params = new HttpParams();
+        params.put("id", taskId.toString());
+        //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
+        Log.e("returnString", "dd");
+        HttpUtils.get(mContext, "TaskEquipment", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                Log.e("returnString", t);
+                if (t != null) {
+                    JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+
+                    String itemListJson = jsonObjectElement.get("PageData").valueAsString();
+
+                    JsonArrayElement jsonArrayElement = new JsonArrayElement(itemListJson);
+                    ;
+                    if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
+                        for (int i = 0; i < jsonArrayElement.size(); i++) {
+                            datas.add(jsonArrayElement.get(i).asObjectElement());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+
+                super.onFailure(errorNo, strMsg);
+            }
+        });
+    }
+
+
+    private void getTaskAttachmentDataFromServerByTaskId() {
+        if (null == taskId) {
+            return;
+        }
+
+        HttpParams params = new HttpParams();
+        params.put("id", taskId.toString());
+        //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
+        Log.e("returnString", "dd");
+        HttpUtils.get(mContext, "TaskImgsList", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                Log.e("returnString", t);
+                if (t != null) {
+                    JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                    String itemListJson = jsonObjectElement.get("PageData").valueAsString();
+
+                    //JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                    JsonArrayElement jsonArrayElement = new JsonArrayElement(itemListJson);
+                    if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
+                        for (int i = 0; i < jsonArrayElement.size(); i++) {
+                            Map<String, Object> dataMap = new HashMap<String, Object>();
+
+                            dataMap.put("imageUrl", jsonArrayElement.get(i).asObjectElement().get("FileName"));
+
+                            dataList.add(0, dataMap);
+                            // datas.add(jsonArrayElement.get(i).asObjectElement());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+
+               // test_json();
+                super.onFailure(errorNo, strMsg);
+            }
+        });
+    }
+
+
+    public  void test_json() {
+
+        String t = "{\n" +
+                "  \"PageCount\": 0,\n" +
+                "  \"RecCount\": 2,\n" +
+                "  \"PageData\": [\n" +
+                "    {\n" +
+                "      \"TaskAttachment_ID\": 20,\n" +
+                "      \"Task_ID\": 14,\n" +
+                "      \"FileName\": \"14_20160714165208831.jpg\",\n" +
+                "      \"AttachmentType\": null,\n" +
+                "      \"FileSize\": 18720,\n" +
+                "      \"UploadOperator\": null,\n" +
+                "      \"UploadTime\": null\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"TaskAttachment_ID\": 21,\n" +
+                "      \"Task_ID\": 14,\n" +
+                "      \"FileName\": \"14_20160714165813540.jpg\",\n" +
+                "      \"AttachmentType\": null,\n" +
+                "      \"FileSize\": 18720,\n" +
+                "      \"UploadOperator\": null,\n" +
+                "      \"UploadTime\": null\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"Success\": true,\n" +
+                "  \"Message\": \"https://gewdigitalimage.blob.core.chinacloudapi.cn/emms/TaskImages/\"\n" +
+                "}";
+
+        JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+
+        String itemListJson = jsonObjectElement.get("PageData").valueAsString();
+
+        JsonArrayElement jsonArrayElement = new JsonArrayElement(itemListJson);
+        ;
+    }
 
 }

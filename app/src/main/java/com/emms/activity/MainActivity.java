@@ -13,11 +13,11 @@ import com.emms.util.BuildConfig;
 import com.emms.util.SharedPreferenceManager;
 import com.flyco.tablayout.utils.UnreadMsgUtils;
 import com.flyco.tablayout.widget.MsgView;
-import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
-import com.jaffer_datastore_android_sdk.rest.JsonObjectElement;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
-import com.jaffer_datastore_android_sdk.rxvolley.http.VolleyError;
+import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.datastore_android_sdk.rxvolley.http.VolleyError;
 
 import java.io.File;
 import java.util.HashMap;

@@ -2,7 +2,6 @@ package com.emms.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -17,7 +16,7 @@ import android.widget.ImageView;
 
 import com.emms.R;
 import com.emms.adapter.MenuAdapter;
-import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.datastore.ObjectElement;
 
 import java.util.ArrayList;
 

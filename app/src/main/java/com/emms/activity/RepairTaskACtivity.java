@@ -1,7 +1,6 @@
 package com.emms.activity;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,7 +9,6 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.emms.R;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
@@ -22,18 +20,13 @@ import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ViewFindUtils;
 import com.flyco.tablayout.SlidingTabLayout;
 import com.flyco.tablayout.listener.OnTabSelectListener;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.jaffer_datastore_android_sdk.datastore.DataElement;
-import com.jaffer_datastore_android_sdk.datastore.ObjectElement;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
-import com.jaffer_datastore_android_sdk.schema.Query;
+import com.datastore_android_sdk.datastore.DataElement;
+import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.Future;
 
 /**
  * Created by jaffer.deng on 2016/6/20.

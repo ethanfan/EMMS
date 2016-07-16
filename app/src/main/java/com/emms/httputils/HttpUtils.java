@@ -5,10 +5,10 @@ import android.widget.Toast;
 
 import com.emms.util.BuildConfig;
 import com.emms.util.SharedPreferenceManager;
-import com.jaffer_datastore_android_sdk.rxvolley.RxVolley;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.jaffer_datastore_android_sdk.rxvolley.client.HttpParams;
-import com.jaffer_datastore_android_sdk.rxvolley.client.ProgressListener;
+import com.datastore_android_sdk.rxvolley.RxVolley;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.datastore_android_sdk.rxvolley.client.ProgressListener;
 
 import java.util.Map;
 
