@@ -178,19 +178,16 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 String createTime = datas.get(position).get("CreateTime").valueAsString();
                 holder.tv_create_time.setText(createTime);
                 //String endTime = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsLong());
-                String endTime = datas.get(position).get("StatusTime").valueAsString();
-                holder.tv_end_time.setText(endTime);
-                String state = "";
-            /*    int tag = datas.get(position).getTaskTag();
-                if (tag == 1) {
-                    holder.tv_task_state.setTextColor(getResources().getColor(R.color.processing_color));
-                    state = getResources().getString(R.string.task_state_details_finish);
-                } else if (tag == 0) {
-                    holder.tv_task_state.setTextColor(getResources().getColor(R.color.pause_color));
-                    state = getResources().getString(R.string.task_state_details_non);
-                }*/
-                holder.tv_task_state.setText(taskEquipmentStatus.get(datas.get(position).get(Equipment.STATUS).valueAsString()));
 
+                String equipmentStatus = datas.get(position).get(Equipment.STATUS).valueAsString();
+
+                String endTime ="";
+                if(!"4".equals(equipmentStatus)){
+                    endTime = datas.get(position).get("StatusTime").valueAsString();
+                }
+                holder.tv_end_time.setText(endTime);
+
+                holder.tv_task_state.setText(taskEquipmentStatus.get(equipmentStatus));
 
                 //设备数数
                 deviceCountTextView.setText(String.valueOf(deviceCountMap.get("deviceCount")));
@@ -632,7 +629,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                             datas.add(jsonArrayElement.get(i).asObjectElement());
 
                             String equipmentStatus = jsonArrayElement.get(i).asObjectElement().get(Equipment.STATUS).valueAsString();
-                            if("5".equals(equipmentStatus)){
+                            if("4".equals(equipmentStatus)){
                                 dealDeviceCount ++;
                             }
 
