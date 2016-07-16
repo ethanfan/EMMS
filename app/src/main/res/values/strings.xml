@@ -104,6 +104,9 @@
     <string name="add">添加</string>
     <string name="delete">删除</string>
     <string name="sub_task">子任务</string>
+    <string name="sub_task_equipment_num">机台号:&#160;&#160;&#160;&#160;</string>
+    <string name="sure">确定</string>
+    <string name="warranty_person">报修人:&#160;&#160;&#160;&#160;</string>
     <!--<string name="error">Error</string>-->
     <!--<string name="no_nfc">No NFC found on this device</string>-->
     <!--<string name="nfc_disabled">NFC is not enabled. Please go to the wireless settings to enable it.</string>-->

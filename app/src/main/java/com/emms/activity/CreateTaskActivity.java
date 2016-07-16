@@ -995,7 +995,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         taskDetail.set("Applicant",TaskBuilder);
         taskDetail.set("TaskName",TaskType);
         taskDetail.set("TaskDescr",TaskDescription);
-        taskDetail.set("TaskClass",0);
+        taskDetail.set("TaskClass","T01");
 
 
         MachineCode="123";

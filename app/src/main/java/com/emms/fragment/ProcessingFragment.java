@@ -115,16 +115,6 @@ public class ProcessingFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-     /*   datas = new ArrayList<TaskBean>() {
-            {
-                add(new TaskBean("D", "0115", "平车", 1, 1403300, 0, "我是描述描述"));
-                add(new TaskBean("D", "0115", "平车", 2, 1403300, 0, "我是描述我是描述描述我是描述描述我是描述描述我是描述描述我是描述描述"));
-                add(new TaskBean("D", "0115", "平车", 1, 1403300, 0, "我是描述我是描述描述我是描述描述我是描述描述我是描述描述我是描述描述"));
-                add(new TaskBean("D", "0115", "平车", 1, 1403300, 0, "我是描述我是描述描述我是描述描述我是描述描述我是描述描述我是描述描述"));
-                add(new TaskBean("D", "0115", "平车", 2, 1403300, 0, "我是描述我是描述描述我是描述描述我是描述描述我是描述描述我是描述描述"));
-                add(new TaskBean("D", "0115", "平车", 2, 1403300, 0, "我是描述我是描述描述我是描述描述我是描述描述我是描述描述我是描述描述"));
-            }
-        };*/
         taskAdapter = new TaskAdapter(datas) {
             @Override
             public View getCustomView(View convertView, int position, ViewGroup parent) {
@@ -132,34 +122,22 @@ public class ProcessingFragment extends Fragment {
                 if (convertView == null) {
                     convertView = LayoutInflater.from(mContext).inflate(R.layout.item_fr_process, parent, false);
                     holder = new TaskViewHolder();
-                    holder.tv_group = (TextView) convertView.findViewById(R.id.tv_device_num);
-              //      holder.tv_device_num = (TextView) convertView.findViewById(R.id.tv_device_num_process);
-              //      holder.tv_device_name = (TextView) convertView.findViewById(R.id.tv_device_name_procee);
+                    //显示5个内容，组别，报修人，状态，保修时间,开始时间，任务描述
+                    holder.tv_group = (TextView) convertView.findViewById(R.id.group);
+                    holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);
                     holder.tv_task_state = (TextView) convertView.findViewById(R.id.tv_task_state);
-                    holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_repair_time_process);
-                    holder.tv_end_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
+                    holder.tv_repair_time=(TextView)convertView.findViewById(R.id.tv_Warranty_time_process);
+                    holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
                     convertView.setTag(holder);
                 } else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
+                //待修改
                 holder.tv_group.setText(datas.get(position).get(Maintain.GROUP_NAME).valueAsString());
-           //     holder.tv_device_num.setText(datas.get(position).get(Maintain.MACHINE_CODE).valueAsString());
-           //     holder.tv_device_name.setText(datas.get(position).get(Maintain.MACHINE_NAME).valueAsString());
-           /*     int tag = datas.get(position).getTaskTag();
-                String state = "";
-                if (tag == 1) {
-                    holder.tv_task_state.setTextColor(getResources().getColor(R.color.processing_color));
-                    state = getResources().getString(R.string.working);
-                } else if (tag == 2) {
-                    holder.tv_task_state.setTextColor(getResources().getColor(R.color.pause_color));
-                    state = getResources().getString(R.string.paused);
-                }*/
                 holder.tv_task_state.setText(datas.get(position).get(Maintain.STATUS).valueAsString());
-                // String start_date = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_START_TIME).valueAsLong());
                 String start_date=datas.get(position).get(Maintain.MAINTAIN_START_TIME).valueAsString();
                 holder.tv_start_time.setText(start_date);
-                holder.tv_end_time.setText("");
                 holder.tv_task_describe.setText(datas.get(position).get(Maintain.DESCRIPTION).valueAsString());
                 return convertView;
             }
@@ -190,7 +168,7 @@ public class ProcessingFragment extends Fragment {
         int operator_id=jsonObjectElement.get("Operator_ID").valueAsInt();
         params.put("operator_id",2295);
         params.put("status",0);
-        params.put("taskClass","T02");
+        params.put("taskClass","T01");
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
