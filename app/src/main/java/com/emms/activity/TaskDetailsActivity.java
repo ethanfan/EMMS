@@ -28,6 +28,7 @@ import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.datastore_android_sdk.datastore.ArrayElement;
 import com.emms.R;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
@@ -115,6 +116,8 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             }
         }
 
+        retData = 93L;
+
         return retData;
     }
 
@@ -140,7 +143,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 } else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
-                String creater = datas.get(position).get("Maintainer").valueAsString();
+                String creater = datas.get(position).get("StatusOperator").valueAsString();
                 if (creater != null) {
                     if (!creater.equals("")) {
                         holder.tv_creater.setText(creater);
@@ -154,12 +157,12 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
 
 
                 holder.tv_device_num.setText(datas.get(position).get(Equipment.EQUIPMENT_ID).valueAsString());
-                holder.tv_device_name.setText(datas.get(position).get(Maintain.MACHINE_NAME).valueAsString());
+                holder.tv_device_name.setText(datas.get(position).get(Equipment.EQUIPMENT_NAME).valueAsString());
                 //String createTime = LongToDate.longPointDate(datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsLong());
-                String createTime = datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsString();
+                String createTime = datas.get(position).get("CreateTime").valueAsString();
                 holder.tv_create_time.setText(createTime);
                 //String endTime = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsLong());
-                String endTime = datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsString();
+                String endTime = datas.get(position).get("StatusTime").valueAsString();
                 holder.tv_end_time.setText(endTime);
                 String state = "";
             /*    int tag = datas.get(position).getTaskTag();
@@ -170,7 +173,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                     holder.tv_task_state.setTextColor(getResources().getColor(R.color.pause_color));
                     state = getResources().getString(R.string.task_state_details_non);
                 }*/
-                holder.tv_task_state.setText(datas.get(position).get(Maintain.STATUS).valueAsString());
+                holder.tv_task_state.setText(datas.get(position).get(Equipment.STATUS).valueAsString());
                 return convertView;
             }
 
@@ -198,6 +201,9 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         if (null == datas) {
             datas = new ArrayList<ObjectElement>();
         }
+
+        // for test
+        taskId = 14L;
 
         getTaskAttachmentDataFromServerByTaskId();
     }
@@ -259,130 +265,6 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         }
     }
 
-    //    public class GridAdapter extends BaseAdapter {
-//        private LayoutInflater inflater; // 视图容器
-//        private int selectedPosition = -1;// 选中的位置
-//        private boolean shape;
-//
-//        public boolean isShape() {
-//            return shape;
-//        }
-//
-//        public void setShape(boolean shape) {
-//            this.shape = shape;
-//        }
-//
-//        public GridAdapter(Context context) {
-//            inflater = LayoutInflater.from(context);
-//        }
-//
-//        public void update1() {
-//            loading1();
-//        }
-//
-//        public int getCount() {
-//            return (Bimp.bmp.size() + 1);
-//        }
-//
-//        public Object getItem(int arg0) {
-//
-//            return null;
-//        }
-//
-//        public long getItemId(int arg0) {
-//
-//            return 0;
-//        }
-//
-//        public void setSelectedPosition(int position) {
-//            selectedPosition = position;
-//        }
-//
-//        public int getSelectedPosition() {
-//            return selectedPosition;
-//        }
-//
-//        /**
-//         * ListView Item设置
-//         */
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            //final int coord = position;
-//            ViewHolder holder = null;
-//
-//            if (convertView == null) {
-//
-//                convertView = inflater.inflate(R.layout.item_published_grida,
-//                        parent, false);
-//                holder = new ViewHolder();
-//                holder.image = (ImageView) convertView
-//                        .findViewById(R.id.item_grida_image);
-//                convertView.setTag(holder);
-//            } else {
-//                holder = (ViewHolder) convertView.getTag();
-//            }
-//
-//            holder.image.setVisibility(View.VISIBLE);
-//
-//            if (position == Bimp.bmp.size()) {
-//                holder.image.setImageBitmap(BitmapFactory.decodeResource(
-//                        getResources(), R.mipmap.icon_addpic_unfocused));
-//
-//            } else {
-//                holder.image.setImageBitmap(Bimp.bmp.get(position));
-//            }
-//
-//            return convertView;
-//        }
-//
-//        public class ViewHolder {
-//            public ImageView image;
-//        }
-//
-//        Handler handler = new Handler() {
-//            public void handleMessage(Message msg) {
-//                switch (msg.what) {
-//                    case 1:
-//                        adapter.notifyDataSetChanged();
-//                        break;
-//                }
-//                super.handleMessage(msg);
-//            }
-//        };
-//
-//        public void loading1() {
-//            new Thread(new Runnable() {
-//                public void run() {
-//                    while (true) {
-//                        if (Bimp.max == Bimp.drr.size()) {
-//                            Message message = new Message();
-//                            message.what = 1;
-//                            handler.sendMessage(message);
-//                            break;
-//                        } else {
-//                            try {
-//                                String path = Bimp.drr.get(Bimp.max);
-//                                System.out.println(path);
-//                                Bitmap bm = Bimp.revitionImageSize(path);
-//                                Bimp.bmp.add(bm);
-//                                String newStr = path.substring(
-//                                        path.lastIndexOf("/") + 1,
-//                                        path.lastIndexOf("."));
-//                                FileUtils.saveBitmap(mContext, bm, "" + newStr);
-//                                Bimp.max += 1;
-//                                Message message = new Message();
-//                                message.what = 1;
-//                                handler.sendMessage(message);
-//                            } catch (IOException e) {
-//
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-//                }
-//            }).start();
-//        }
-//    }
-//
     public class GridAdapter extends BaseAdapter {
         private LayoutInflater inflater; // 视图容器
         private int selectedPosition = -1;// 选中的位置
@@ -449,7 +331,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
 
             holder.image.setVisibility(View.VISIBLE);
 
-            if (position == Bimp.bmp.size()) {
+            if (position == dataList.size()) {
                 holder.image.setImageBitmap(BitmapFactory.decodeResource(
                         getResources(), R.mipmap.icon_addpic_unfocused));
 
@@ -691,10 +573,10 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         }
 
         HttpParams params = new HttpParams();
-        params.put("id", taskId.toString());
+        params.put("task_id", taskId.toString());
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
         Log.e("returnString", "dd");
-        HttpUtils.get(mContext, "TaskEquipment", params, new HttpCallback() {
+        HttpUtils.get(mContext, "TaskDetailList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -702,10 +584,8 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                 if (t != null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
 
-                    String itemListJson = jsonObjectElement.get("PageData").valueAsString();
+                    ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
 
-                    JsonArrayElement jsonArrayElement = new JsonArrayElement(itemListJson);
-                    ;
                     if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
                         for (int i = 0; i < jsonArrayElement.size(); i++) {
                             datas.add(jsonArrayElement.get(i).asObjectElement());
@@ -729,29 +609,31 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         }
 
         HttpParams params = new HttpParams();
-        params.put("id", taskId.toString());
+        // params.put("id", taskId.toString());
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
-        Log.e("returnString", "dd");
-        HttpUtils.get(mContext, "TaskImgsList", params, new HttpCallback() {
+        HttpUtils.get(mContext, "TaskImgsList/" + taskId.toString(), params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 Log.e("returnString", t);
                 if (t != null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    String itemListJson = jsonObjectElement.get("PageData").valueAsString();
-
-                    //JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    JsonArrayElement jsonArrayElement = new JsonArrayElement(itemListJson);
+                    ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
                     if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
                         for (int i = 0; i < jsonArrayElement.size(); i++) {
                             Map<String, Object> dataMap = new HashMap<String, Object>();
 
-                            dataMap.put("imageUrl", jsonArrayElement.get(i).asObjectElement().get("FileName"));
+                            dataMap.put("imageUrl", jsonArrayElement.get(i).asObjectElement().get("FileName").valueAsString());
 
                             dataList.add(0, dataMap);
-                            // datas.add(jsonArrayElement.get(i).asObjectElement());
+
                         }
+
+                        //在这里刷新图片列表
+//                        Message message = new Message();
+//                        message.what = 1;
+//                        handler.sendMessage(message);
+                        adapter.notifyDataSetChanged();
                     }
                 }
             }
@@ -759,48 +641,10 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
             @Override
             public void onFailure(int errorNo, String strMsg) {
 
-               // test_json();
+                // test_json();
                 super.onFailure(errorNo, strMsg);
             }
         });
-    }
-
-
-    public  void test_json() {
-
-        String t = "{\n" +
-                "  \"PageCount\": 0,\n" +
-                "  \"RecCount\": 2,\n" +
-                "  \"PageData\": [\n" +
-                "    {\n" +
-                "      \"TaskAttachment_ID\": 20,\n" +
-                "      \"Task_ID\": 14,\n" +
-                "      \"FileName\": \"14_20160714165208831.jpg\",\n" +
-                "      \"AttachmentType\": null,\n" +
-                "      \"FileSize\": 18720,\n" +
-                "      \"UploadOperator\": null,\n" +
-                "      \"UploadTime\": null\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"TaskAttachment_ID\": 21,\n" +
-                "      \"Task_ID\": 14,\n" +
-                "      \"FileName\": \"14_20160714165813540.jpg\",\n" +
-                "      \"AttachmentType\": null,\n" +
-                "      \"FileSize\": 18720,\n" +
-                "      \"UploadOperator\": null,\n" +
-                "      \"UploadTime\": null\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"Success\": true,\n" +
-                "  \"Message\": \"https://gewdigitalimage.blob.core.chinacloudapi.cn/emms/TaskImages/\"\n" +
-                "}";
-
-        JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-
-        String itemListJson = jsonObjectElement.get("PageData").valueAsString();
-
-        JsonArrayElement jsonArrayElement = new JsonArrayElement(itemListJson);
-        ;
     }
 
 }
