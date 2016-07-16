@@ -50,6 +50,8 @@ public void initview(){
             comfirm_button_event();
         }
     });
+    //修改的情况下调用
+    setViewData();
 }
   public void comfirm_button_event(){
         if(work_num.getText()==null&&approved_working_hours.getText()==null&&sub_task_equipment_num.getText()==null){
@@ -64,7 +66,9 @@ public void initview(){
         HttpParams params=new HttpParams();
         JsonObjectElement jsonObjectElement=new JsonObjectElement();
         //jsonObjectElement.set(Task.TASK_ID,);
-       // jsonObjectElement.set();
+        //jsonObjectElement.set(TaskItemName,);
+        // jsonObjectElement.set(TaskItemDesc,);
+        // jsonObjectElement.set(Equipment_ID,);
         params.putJsonParams(jsonObjectElement.toJson());
         HttpUtils.post(context, "TaskItem", params, new HttpCallback() {
             @Override
@@ -77,5 +81,8 @@ public void initview(){
                 super.onFailure(errorNo, strMsg);
             }
         });
+    }
+    public void setViewData(){
+
     }
 }

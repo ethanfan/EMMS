@@ -86,7 +86,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
     }
     private void getSubTaskDataFromServer(){
         HttpParams params=new HttpParams();
-        params.put("id",16);
+        params.put("id",96);
         HttpUtils.get(this, "TaskItem", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
