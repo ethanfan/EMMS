@@ -1,5 +1,6 @@
 package com.emms.activity;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,9 +9,13 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.nfc.NdefMessage;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -27,24 +32,35 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.datastore_android_sdk.datastore.DataElement;
 import com.emms.R;
 import com.emms.adapter.TaskAdapter;
+import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Equipment;
 import com.emms.schema.Maintain;
+import com.emms.schema.Operator;
 import com.emms.schema.Task;
 import com.emms.ui.ExpandGridView;
 import com.emms.ui.PopMenuTaskDetail;
 import com.emms.ui.ScrollViewWithListView;
 import com.emms.util.AnimateFirstDisplayListener;
 import com.emms.util.Bimp;
+import com.emms.util.BuildConfig;
 import com.emms.util.FileUtils;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.emms.util.MessageUtils;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -62,7 +78,7 @@ import java.util.Map;
 /**
  * Created by jaffer.deng on 2016/6/22.
  */
-public class TaskDetailsActivity extends BaseActivity implements View.OnClickListener {
+public class TaskDetailsActivity extends NfcActivity implements View.OnClickListener {
 
     private ImageView menuImageView;
     private ScrollViewWithListView mListview;
@@ -80,6 +96,8 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
 
     protected ImageLoader imageLoader = ImageLoader.getInstance();
     DisplayImageOptions options; // DisplayImageOptions是用于设置图片显示的类
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +122,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         initView();
         initEvent();
     }
+
 
     private Long getTaskId(String TaskDetail) {
 
@@ -802,5 +821,95 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         JsonArrayElement jsonArrayElement = new JsonArrayElement(itemListJson);
         ;
     }
+
+
+    //刷nfc卡处理
+    public void resolveNfcMessage(Intent intent) {
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+//
+            Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            String iccardID = NfcUtils.dumpTagData(tag);
+
+            addTaskEquipment(iccardID);
+
+//            MessageUtils.showToast(iccardID,this);
+
+        }
+    }
+
+
+    private void addTaskEquipment(String iccardID){
+
+        String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='"+iccardID+"'";
+        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+                EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
+        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+
+            @Override
+            public void onSuccess(DataElement dataElement) {
+
+                if (dataElement != null && dataElement.isArray()
+                        && dataElement.asArrayElement().size() > 0) {
+                    ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
+                    postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString());
+
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(mContext, "目前该设备没有机台号", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+
+            }
+        });
+
+
+    }
+
+    private void postTaskEquipment(String equipmentID){
+
+        HttpParams params=new HttpParams();
+
+        JsonObjectElement taskEquepment=new JsonObjectElement();
+
+        taskEquepment.set(Task.TASK_ID,0);
+        //  taskDetail.set(Task.TASK_TYPE,TaskType);
+        taskEquepment.set("TaskEquipment_ID",0);
+        taskEquepment.set("Task_ID",taskId);
+        taskEquepment.set("Equipment_ID",equipmentID);
+
+
+        params.putJsonParams(taskEquepment.toJson());
+
+        HttpUtils.post(this, "TaskEquipment", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+            }
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(TaskDetailsActivity.this,getResources().getString(R.string.err_add_task_equipment),Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
+
+
 
 }

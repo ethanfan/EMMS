@@ -123,5 +123,8 @@
     <string name="workname">姓名：&#160;</string>
     <string name="tech">技能：&#160;</string>
 
+    <string name="err_add_task_equipment">增加任务设备失败</string>
+
+
 
 </resources>

@@ -66,7 +66,7 @@ import java.util.Locale;
 /**
  * Created by jaffer.deng on 2016/6/7.
  */
-public class CreateTaskActivity extends BaseActivity implements View.OnClickListener {
+public class CreateTaskActivity extends NfcActivity implements View.OnClickListener {
 
     private Context mContext;
 
@@ -83,9 +83,6 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     private ImageView create_task_action, device_num_action;
     private KProgressHUD hud;
 
-    private NfcAdapter mAdapter;
-    private PendingIntent mPendingIntent;
-    private NdefMessage mNdefPushMessage;
 
     private AlertDialog mDialog;
     private static final DateFormat TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
@@ -118,7 +115,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     private int  searchtag =0;
 
     private String teamId ="";
-    private String equipmentClass ="";
+    private String equipmentName ="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,13 +127,8 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         mDrawer_layout = (DrawerLayout) findViewById(R.id.main_drawer_layout);
         mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        resolveIntent(getIntent());
         mDialog = new AlertDialog.Builder(this).setNeutralButton("Ok", null).create();
-        mAdapter = NfcAdapter.getDefaultAdapter(this);
-        mPendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        mNdefPushMessage = new NdefMessage(new NdefRecord[]{newTextRecord(
-                "Message from NFC Reader :-)", Locale.ENGLISH, true)});
+
 
     }
 
@@ -200,7 +192,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                                     group.getmEditText().setText(searchResult);
                                     break;
                                 case DEVICE_NAME:
-                                    equipmentClass =mResultAdapter.getItem(inPosition).get(Equipment.EQUIPMENT_CLASS).valueAsString();
+                                    equipmentName =mResultAdapter.getItem(inPosition).get(Equipment.EQUIPMENT_NAME).valueAsString();
                                     device_name.getmEditText().setText(searchResult);
                                     break;
                                 case DEVICE_NUM:
@@ -235,22 +227,11 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
-        if (mAdapter != null) {
-            if (!mAdapter.isEnabled()) {
-                showWirelessSettingsDialog();
-            }
-            mAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
-            mAdapter.enableForegroundNdefPush(this, mNdefPushMessage);
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (mAdapter != null) {
-            mAdapter.disableForegroundDispatch(this);
-            mAdapter.disableForegroundNdefPush(this);
-        }
     }
 
     private void initEvent() {
@@ -404,17 +385,17 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
         initDropSearchView(device_name.getmEditText(), device_num,
                 getResources().
-                        getString(R.string.title_search_equipment_nun), Equipment.IC_CARD_ID, DEVICE_NUM, "请先选择设备名称，或刷设备卡获取机台号");
+                        getString(R.string.title_search_equipment_nun), Equipment.ASSETSID, DEVICE_NUM, "请先选择设备名称，或刷设备卡获取机台号");
 
     }
 
     private void initDeviceNum() {
         if ( !isSearchview){
-            equipmentClass = mDeviceNamelist.get(device_name.getSelectPosition()).get(Equipment.EQUIPMENT_CLASS).valueAsString();
+            equipmentName = mDeviceNamelist.get(device_name.getSelectPosition()).get(Equipment.EQUIPMENT_NAME).valueAsString();
         }
         try {
-            String rawQuery = "SELECT * FROM Equipment WHERE EquipmentClass=" + "'" + equipmentClass
-                    + "'" + " AND UseTeam_ID =" + teamId + " AND ICCardID is not null";
+            String rawQuery = "SELECT * FROM Equipment WHERE EquipmentName=" + "'" + equipmentName
+                    + "'" + " AND UseTeam_ID =" + teamId + " ";
             ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                     EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
             Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -440,6 +421,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
                 @Override
                 public void onFailure(Throwable throwable) {
+                    throwable.printStackTrace();
 
                 }
             });
@@ -464,7 +446,7 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         if (!isSearchview) {
             teamId = mTeamNamelist.get(group.getSelectPosition()).get("Team_ID").valueAsString();
         }
-        String rawQuery ="select distinct EquipmentClass,EquipmentName from Equipment where UseTeam_ID ="+teamId+" and EquipmentName is not null";
+        String rawQuery ="select distinct EquipmentName from Equipment where UseTeam_ID ="+teamId+" and EquipmentName is not null";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -812,32 +794,17 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
     }
 
-    private NdefRecord newTextRecord(String text, Locale locale, boolean encodeInUtf8) {
-        byte[] langBytes = locale.getLanguage().getBytes(Charset.forName("US-ASCII"));
 
-        Charset utfEncoding = encodeInUtf8 ? Charset.forName("UTF-8") : Charset.forName("UTF-16");
-        byte[] textBytes = text.getBytes(utfEncoding);
-
-        int utfBit = encodeInUtf8 ? 0 : (1 << 7);
-        char status = (char) (utfBit + langBytes.length);
-
-        byte[] data = new byte[1 + langBytes.length + textBytes.length];
-        data[0] = (byte) status;
-        System.arraycopy(langBytes, 0, data, 1, langBytes.length);
-        System.arraycopy(textBytes, 0, data, 1 + langBytes.length, textBytes.length);
-
-        return new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], data);
-    }
 
     //刷nfc卡处理
-    private void resolveIntent(Intent intent) {
+    public void resolveNfcMessage(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
 //
             Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            String operatorId = dumpTagData(tag);
+            String operatorId = NfcUtils.dumpTagData(tag);
             if (operatorId == null) {
                 return;
             } else if (operatorId.equals("")) {
@@ -872,47 +839,6 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         }
     }
 
-    private void showWirelessSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.nfc_disabled);
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-                startActivity(intent);
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialogInterface, int i) {
-                finish();
-            }
-        });
-        builder.create().show();
-        return;
-    }
-
-    private String dumpTagData(Parcelable p) {
-
-        Tag tag = (Tag) p;
-        byte[] id = tag.getId();
-        return getDec(id) + "";
-    }
-
-    private long getDec(byte[] bytes) {
-        long result = 0;
-        long factor = 1;
-        for (int i = 0; i < bytes.length; ++i) {
-            long value = bytes[i] & 0xffl;
-            result += value * factor;
-            factor *= 256l;
-        }
-        return result;
-    }
-
-    @Override
-    public void onNewIntent(Intent intent) {
-        setIntent(intent);
-        resolveIntent(intent);
-    }
 
 
     private void initDropSearchView(
@@ -926,46 +852,50 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        searchDataLists.clear();
-                                        switch (searTag){
-                                            case TASK_TYPE:
-                                                searchDataLists.addAll(mTaskType);
-                                                break;
-                                            case TASK_SUBTYPE:
-                                                searchDataLists.addAll(mSubType);
-                                                break;
-                                            case GROUP:
-                                                searchDataLists.addAll(mTeamNamelist);
-                                                break;
-                                            case DEVICE_NAME:
-                                                searchDataLists.addAll(mDeviceNamelist);
-                                                break;
+                                        try {
+                                            searchDataLists.clear();
+                                            switch (searTag) {
+                                                case TASK_TYPE:
+                                                    searchDataLists.addAll(mTaskType);
+                                                    break;
+                                                case TASK_SUBTYPE:
+                                                    searchDataLists.addAll(mSubType);
+                                                    break;
+                                                case GROUP:
+                                                    searchDataLists.addAll(mTeamNamelist);
+                                                    break;
+                                                case DEVICE_NAME:
+                                                    searchDataLists.addAll(mDeviceNamelist);
+                                                    break;
 
-                                            case DEVICE_NUM:
-                                                searchDataLists.addAll(mDeviceNumlist);
-                                                break;
+                                                case DEVICE_NUM:
+                                                    searchDataLists.addAll(mDeviceNumlist);
+                                                    break;
 
-                                        }
-                                        searchtag = searTag;
-                                        if (condition != null) {
-                                            if (!condition.getText().toString().equals("") && searchDataLists.size()>0) {
-                                                mResultAdapter.changeData(searchDataLists, searchName);
-                                                menuSearchTitle.setText(searchTitle);
-                                                mDrawer_layout.openDrawer(Gravity.RIGHT);
-                                            } else {
-                                                Toast.makeText(mContext, tips, Toast.LENGTH_SHORT).show();
                                             }
-                                        }else {
-                                            if ( searchDataLists.size() > 0) {
-                                                mResultAdapter.changeData(searchDataLists, searchName);
-                                                menuSearchTitle.setText(searchTitle);
-                                                mDrawer_layout.openDrawer(Gravity.RIGHT);
+                                            searchtag = searTag;
+                                            if (condition != null) {
+                                                if (!condition.getText().toString().equals("") && searchDataLists.size() > 0) {
+                                                    mResultAdapter.changeData(searchDataLists, searchName);
+                                                    menuSearchTitle.setText(searchTitle);
+                                                    mDrawer_layout.openDrawer(Gravity.RIGHT);
+                                                } else {
+                                                    Toast.makeText(mContext, tips, Toast.LENGTH_SHORT).show();
+                                                }
                                             } else {
-                                                Toast.makeText(mContext, tips, Toast.LENGTH_SHORT).show();
+                                                if (searchDataLists.size() > 0) {
+                                                    mResultAdapter.changeData(searchDataLists, searchName);
+                                                    menuSearchTitle.setText(searchTitle);
+                                                    mDrawer_layout.openDrawer(Gravity.RIGHT);
+                                                } else {
+                                                    Toast.makeText(mContext, tips, Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                            }catch(Exception e){
+                                                e.printStackTrace();
                                             }
                                         }
 
-                                    }
                                 });
 
                             }
@@ -973,41 +903,34 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
 
                 );
     }
-    private void submitTask(String TaskType,String TaskSubType,String TaskBuilder,String teamId,String equipmentName
-            ,String MachineCode,String TaskDescription){
+    private void submitTask(String taskType,String taskSubType,String taskBuilder,String teamId,String equipmentName
+            ,String MachineCode,String taskDescription){
         HttpParams params=new HttpParams();
-       // params.put(Task.TASK_ID,0);
-        //params.put(Task.TASK_TYPE,TaskType);
-        //params.put(Task.OPERATOR_ID,TaskBuilder);
-        //params.put(Task.TEAM_ID,teamId);
-        //params.put(Task.EQUIPEMENT_NAME,equipmentName);
-        //params.put(Task.EQUIPMENT_ID,MachineCode);
-        //params.put(Task.TASK_DESCRIPTION,TaskDescription);
-        //params.put();
+
         if(task_subtype!=null){
-            TaskType=TaskSubType;
+            taskType=taskSubType;
         }
         JsonObjectElement task=new JsonObjectElement();
         JsonObjectElement taskDetail=new JsonObjectElement();
 
         taskDetail.set(Task.TASK_ID,0);
-      //  taskDetail.set(Task.TASK_TYPE,TaskType);
-        taskDetail.set("Applicant",TaskBuilder);
-        taskDetail.set("TaskName",TaskType);
-        taskDetail.set("TaskDescr",TaskDescription);
+//        taskDetail.set(Task.TASK_TYPE,TaskType);
+        taskDetail.set("Applicant",taskBuilder);
+        taskDetail.set("TaskName",taskType);
+        taskDetail.set("TaskDescr",taskDescription);
         taskDetail.set("TaskClass",0);
 
 
-        MachineCode="123";
-        String  MachineCode2="312";
+//        MachineCode="123";
+//        String  MachineCode2="312";
 
         JsonArray jsonArray=new JsonArray();
         JsonObject JsonObject=new JsonObject();
         JsonObject.addProperty("Equipment_ID",MachineCode);
-        JsonObject JsonObject2=new JsonObject();
-        JsonObject2.addProperty("Equipment_ID",MachineCode2);
+//        JsonObject JsonObject2=new JsonObject();
+//        JsonObject2.addProperty("Equipment_ID",MachineCode2);
         jsonArray.add(JsonObject);
-        jsonArray.add(JsonObject2);
+//        jsonArray.add(JsonObject2);
      //   JsonObjectElement equipment=new JsonObjectElement();
       //  equipment.set("Equipment_ID",MachineCode);
      //   JsonObjectElement equipment2=new JsonObjectElement();
