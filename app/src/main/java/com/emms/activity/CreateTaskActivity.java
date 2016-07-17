@@ -66,7 +66,7 @@ import java.util.Locale;
 /**
  * Created by jaffer.deng on 2016/6/7.
  */
-public class CreateTaskActivity extends BaseActivity implements View.OnClickListener {
+public class CreateTaskActivity extends NfcActivity implements View.OnClickListener {
 
     private Context mContext;
 
@@ -110,6 +110,8 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     private ArrayList<ObjectElement> mTeamNamelist = new ArrayList<>();
     private ArrayList<ObjectElement> mDeviceNamelist = new ArrayList<>();
     private ArrayList<ObjectElement> mDeviceNumlist = new ArrayList<>();
+
+    String equipmentName;
 
     private NFCDialog nfcDialog;
     private DrawerLayout mDrawer_layout;
@@ -976,6 +978,14 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     private void submitTask(String TaskType,String TaskSubType,String TaskBuilder,String teamId,String equipmentName
             ,String MachineCode,String TaskDescription){
         HttpParams params=new HttpParams();
+       // params.put(Task.TASK_ID,0);
+        //params.put(Task.TASK_TYPE,TaskType);
+        //params.put(Task.OPERATOR_ID,TaskBuilder);
+        //params.put(Task.TEAM_ID,teamId);
+        //params.put(Task.EQUIPEMENT_NAME,equipmentName);
+        //params.put(Task.EQUIPMENT_ID,MachineCode);
+        //params.put(Task.TASK_DESCRIPTION,TaskDescription);
+        //params.put();
         if(task_subtype!=null){
             TaskType=TaskSubType;
         }
@@ -1000,10 +1010,20 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
         JsonObject2.addProperty("Equipment_ID",MachineCode2);
         jsonArray.add(JsonObject);
         jsonArray.add(JsonObject2);
+     //   JsonObjectElement equipment=new JsonObjectElement();
+      //  equipment.set("Equipment_ID",MachineCode);
+     //   JsonObjectElement equipment2=new JsonObjectElement();
+     //   equipment2.set("Equipment_ID",MachineCode2);
+
+       // JsonArrayElement equipmentArray=new JsonArrayElement(equipment.t);
+        //equipmentArray.add(equipment);
+       // equipmentArray.add(equipment2);
         task.set("Task",taskDetail);
         task.set("TaskEquipment",jsonArray.toString());
         String bb=jsonArray.toString();
+        //JsonObjectElement jsonObjectElement =new JsonObjectElement(bb);
         params.putJsonParams(task.toJson());
+        //params.put("Task",task.toJson());
         HttpUtils.post(this, "TaskCollection", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {

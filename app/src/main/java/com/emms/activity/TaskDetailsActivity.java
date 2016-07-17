@@ -1,5 +1,6 @@
 package com.emms.activity;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,9 +9,13 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
+import android.nfc.NdefMessage;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -29,24 +34,34 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ArrayElement;
 import com.emms.R;
 import com.emms.adapter.TaskAdapter;
+import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Equipment;
 import com.emms.schema.Maintain;
+import com.emms.schema.Operator;
 import com.emms.schema.Task;
 import com.emms.ui.ExpandGridView;
 import com.emms.ui.PopMenuTaskDetail;
 import com.emms.ui.ScrollViewWithListView;
 import com.emms.util.AnimateFirstDisplayListener;
 import com.emms.util.Bimp;
+import com.emms.util.BuildConfig;
 import com.emms.util.FileUtils;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.emms.util.MessageUtils;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.emms.util.SharedPreferenceManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -66,7 +81,7 @@ import java.util.Map;
 /**
  * Created by jaffer.deng on 2016/6/22.
  */
-public class TaskDetailsActivity extends BaseActivity implements View.OnClickListener {
+public class TaskDetailsActivity extends NfcActivity implements View.OnClickListener {
 
     private ImageView menuImageView;
     private ScrollViewWithListView mListview;
@@ -102,6 +117,8 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
     protected ImageLoader imageLoader = ImageLoader.getInstance();
     DisplayImageOptions options; // DisplayImageOptions是用于设置图片显示的类
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,6 +144,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         initView();
         initEvent();
     }
+
 
     private Long getTaskId(String TaskDetail) {
 
