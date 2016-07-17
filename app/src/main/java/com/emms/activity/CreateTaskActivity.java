@@ -116,7 +116,6 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private ArrayList<ObjectElement> mDeviceNamelist = new ArrayList<>();
     private ArrayList<ObjectElement> mDeviceNumlist = new ArrayList<>();
 
-    String equipmentName;
 
     private NFCDialog nfcDialog;
     private DrawerLayout mDrawer_layout;
@@ -125,7 +124,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private int  searchtag =0;
 
     private String teamId ="";
-    private String equipmentClass ="";
+    private String equipmentName ="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -202,7 +201,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                     group.getmEditText().setText(searchResult);
                                     break;
                                 case DEVICE_NAME:
-                                    equipmentClass =mResultAdapter.getItem(inPosition).get(Equipment.EQUIPMENT_CLASS).valueAsString();
+                                    equipmentName =mResultAdapter.getItem(inPosition).get(Equipment.EQUIPMENT_NAME).valueAsString();
                                     device_name.getmEditText().setText(searchResult);
                                     break;
                                 case DEVICE_NUM:
@@ -396,17 +395,17 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
         initDropSearchView(device_name.getmEditText(), device_num,
                 getResources().
-                        getString(R.string.title_search_equipment_nun), Equipment.IC_CARD_ID, DEVICE_NUM, "请先选择设备名称，或刷设备卡获取机台号");
+                        getString(R.string.title_search_equipment_nun), Equipment.ASSETSID, DEVICE_NUM, "请先选择设备名称，或刷设备卡获取机台号");
 
     }
 
     private void initDeviceNum() {
         if ( !isSearchview){
-            equipmentClass = mDeviceNamelist.get(device_name.getSelectPosition()).get(Equipment.EQUIPMENT_CLASS).valueAsString();
+            equipmentName = mDeviceNamelist.get(device_name.getSelectPosition()).get(Equipment.EQUIPMENT_NAME).valueAsString();
         }
         try {
-            String rawQuery = "SELECT * FROM Equipment WHERE EquipmentClass=" + "'" + equipmentClass
-                    + "'" + " AND UseTeam_ID =" + teamId + " AND ICCardID is not null";
+            String rawQuery = "SELECT * FROM Equipment WHERE EquipmentName=" + "'" + equipmentName
+                    + "'" + " AND UseTeam_ID =" + teamId ;
             ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                     EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
             Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -456,7 +455,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         if (!isSearchview) {
             teamId = mTeamNamelist.get(group.getSelectPosition()).get("Team_ID").valueAsString();
         }
-        String rawQuery ="select distinct EquipmentClass,EquipmentName from Equipment where UseTeam_ID ="+teamId+" and EquipmentName is not null";
+        String rawQuery ="select distinct EquipmentName from Equipment where UseTeam_ID ="+teamId+" and EquipmentName is not null";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
