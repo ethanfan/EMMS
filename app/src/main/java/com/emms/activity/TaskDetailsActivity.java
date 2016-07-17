@@ -47,6 +47,7 @@ import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.emms.util.SharedPreferenceManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -57,6 +58,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,13 +89,14 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
     //0-开始，1-暂停，2-领料，3-待料，4-结束
 
     private final String STATUS_DONE = "4";
-    static private  HashMap<String,String> taskEquipmentStatus = new HashMap<String,String>();
+    static private HashMap<String, String> taskEquipmentStatus = new HashMap<String, String>();
+
     {
-        taskEquipmentStatus.put("0","开始");
-        taskEquipmentStatus.put("1","暂停");
-        taskEquipmentStatus.put("2","领料");
-        taskEquipmentStatus.put("3","待料");
-        taskEquipmentStatus.put(STATUS_DONE,"结束");
+        taskEquipmentStatus.put("0", "开始");
+        taskEquipmentStatus.put("1", "暂停");
+        taskEquipmentStatus.put("2", "领料");
+        taskEquipmentStatus.put("3", "待料");
+        taskEquipmentStatus.put(STATUS_DONE, "结束");
     }
 
     protected ImageLoader imageLoader = ImageLoader.getInstance();
@@ -182,8 +185,8 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
 
                 String equipmentStatus = datas.get(position).get(Equipment.STATUS).valueAsString();
 
-                String endTime ="";
-                if(!STATUS_DONE.equals(equipmentStatus)){
+                String endTime = "";
+                if (!STATUS_DONE.equals(equipmentStatus)) {
                     endTime = datas.get(position).get("StatusTime").valueAsString();
                 }
                 holder.tv_end_time.setText(endTime);
@@ -227,7 +230,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         }
 
         // for test
-        taskId = 16L;
+        // taskId = 16L;
 
         getTaskAttachmentDataFromServerByTaskId();
     }
@@ -242,7 +245,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
         scrollview = (ScrollView) findViewById(R.id.scrollview_parent);
         mListview = (ScrollViewWithListView) findViewById(R.id.problem_count);
         deviceCountTextView = (TextView) findViewById(R.id.device_count);
-        dealCountTextView =  (TextView) findViewById(R.id.deal_count);
+        dealCountTextView = (TextView) findViewById(R.id.deal_count);
         noScrollgridview = (ExpandGridView) findViewById(R.id.picture_containt);
         noScrollgridview.setSelector(new ColorDrawable(Color.TRANSPARENT));
 
@@ -368,7 +371,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
 //                        getResources(), R.mipmap.icon_addpic_unfocused));
 
                 // String addImageUrl =  "mipmap://" + R.mipmap.icon_addpic_unfocused;
-                String imgUrl =  "drawable://" + R.drawable.icon_addpic_unfocused;
+                String imgUrl = "drawable://" + R.drawable.icon_addpic_unfocused;
                 //addImageUrlToDataList(imgUrl);
                 imageLoader.displayImage(imgUrl, holder.image, options,
                         animateFirstListener);
@@ -573,9 +576,17 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
              params.put("TaskAttachment_ID",0);
              params.put("ImgBase64",base64);*/
             JsonObjectElement jsonObjectElement = new JsonObjectElement();
-            jsonObjectElement.set(Task.TASK_ID, 16);
+            jsonObjectElement.set(Task.TASK_ID, taskId);
             jsonObjectElement.set("TaskAttachment_ID", 0);
             jsonObjectElement.set("ImgBase64", base64);
+
+            //      jsonObjectElement.set("",);
+            String t = SharedPreferenceManager.getLoginData(this);
+            JsonObjectElement json = new JsonObjectElement(t);
+            String operatorId = json.get("Operator_ID").valueAsString();
+
+            jsonObjectElement.set("UploadOperator", operatorId);
+
             params.putJsonParams(jsonObjectElement.toJson());
             HttpUtils.post(this, "TaskAttachment", params, new HttpCallback() {
                 @Override
@@ -630,8 +641,8 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                             datas.add(jsonArrayElement.get(i).asObjectElement());
 
                             String equipmentStatus = jsonArrayElement.get(i).asObjectElement().get(Equipment.STATUS).valueAsString();
-                            if(STATUS_DONE.equals(equipmentStatus)){
-                                dealDeviceCount ++;
+                            if (STATUS_DONE.equals(equipmentStatus)) {
+                                dealDeviceCount++;
                             }
 
                         }
@@ -641,8 +652,8 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
                             taskAdapter.notifyDataSetChanged();
                         }
 
-                        deviceCountMap.put("deviceCount",String.valueOf(jsonArrayElement.size()));
-                        deviceCountMap.put("dealCount",String.valueOf(dealDeviceCount));
+                        deviceCountMap.put("deviceCount", String.valueOf(jsonArrayElement.size()));
+                        deviceCountMap.put("dealCount", String.valueOf(dealDeviceCount));
                     }
                 }
             }
@@ -662,6 +673,7 @@ public class TaskDetailsActivity extends BaseActivity implements View.OnClickLis
 
         HttpParams params = new HttpParams();
         // params.put("id", taskId.toString());
+        params.put("t", String.valueOf(new Date().getTime()));
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
         HttpUtils.get(mContext, "TaskImgsList/" + taskId.toString(), params, new HttpCallback() {
             @Override
