@@ -67,7 +67,7 @@ public class ProcessingFragment extends Fragment {
         listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
        // listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
-        listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+    /*    listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
             @Override
             public void onRefresh(final PullToRefreshBase<ListView> refreshView) {
                 //下拉刷新
@@ -80,8 +80,8 @@ public class ProcessingFragment extends Fragment {
                     }
                 },2000);
            }
-        });
-        listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+        });*/
+       listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
                 //上拉加载更多
@@ -96,7 +96,13 @@ public class ProcessingFragment extends Fragment {
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        listView.onRefreshComplete();
+                        Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
+                    }
+                },2000);
             }
         });
         taskAdapter = new TaskAdapter(datas) {
@@ -118,7 +124,7 @@ public class ProcessingFragment extends Fragment {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
                 //待修改
-                holder.tv_group.setText(datas.get(position).get(Task.ORGANISE_NAME).valueAsString());
+            //    holder.tv_group.setText(datas.get(position).get(Task.ORGANISE_NAME).valueAsString());
                 holder.warranty_person.setText(datas.get(position).get(Task.APPLICANT).valueAsString());
                 holder.tv_task_state.setText(datas.get(position).get(Task.TASK_STATUS).valueAsString());
                 holder.tv_repair_time.setText(datas.get(position).get(Task.APPLICANT_TIME).valueAsString());
@@ -128,7 +134,6 @@ public class ProcessingFragment extends Fragment {
             }
         };
        listView.setAdapter(taskAdapter);
-        taskAdapter.setDatas(datas);
         getProcessingDataFromServer();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -172,9 +177,17 @@ public class ProcessingFragment extends Fragment {
                     if(jsonObjectElement.get("PageData").asArrayElement().size()==0){
                       //提示没有处理中的任务
                     }
+                    datas.clear();
                     for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
                         datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                     }
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            taskAdapter.setDatas(datas);
+                            taskAdapter.notifyDataSetChanged();
+                        }
+                    });
              //      setData(datas);
 
 
