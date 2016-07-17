@@ -798,9 +798,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
         HttpParams params = new HttpParams();
 
-        JsonObjectElement taskEquepment = new JsonObjectElement();
-
-        taskEquepment.set(Task.TASK_ID, 0);
+        JsonObjectElement taskEquepment=new JsonObjectElement();
+//创建任务提交数据：任务创建人，任务类型“T01”那些，几台号（数组），
+        taskEquepment.set(Task.TASK_ID,0);
         //  taskDetail.set(Task.TASK_TYPE,TaskType);
         taskEquepment.set("TaskEquipment_ID", 0);
         taskEquepment.set("Task_ID", taskId);

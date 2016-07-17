@@ -3,6 +3,7 @@ package com.emms.adapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
@@ -13,6 +14,10 @@ import java.util.ArrayList;
  * Created by jaffer.deng on 2016/6/21.
  */
 public abstract class TaskAdapter extends BaseAdapter{
+
+    public ArrayList<ObjectElement> getDatas() {
+        return datas;
+    }
 
     private ArrayList<ObjectElement> datas;
 
@@ -61,5 +66,6 @@ public abstract class TaskAdapter extends BaseAdapter{
         public  TextView tv_create_time;
         public  TextView tv_repair_time;
         public TextView warranty_person;
+        public Button acceptTaskButton;
     }
 }

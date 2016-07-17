@@ -125,7 +125,7 @@
     <string name="invitor_help">邀请协助</string>
     <string name="workname">姓名：&#160;</string>
     <string name="tech">技能：&#160;</string>
-
+    <string name="task_descr">任务描述：</string>
     <string name="err_add_task_equipment">增加任务设备失败</string>
 
 

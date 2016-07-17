@@ -25,14 +25,32 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="何邵勃"
             android:textColor="@color/text_color"
             android:textSize="17sp"
             android:id="@+id/tv_creater_order"
             android:layout_alignParentTop="true"
-            android:layout_alignRight="@+id/tv_device_name_order"
-            android:layout_alignEnd="@+id/tv_device_name_order" />
+           android:layout_toRightOf="@id/textView6" />
 
+
+        <TextView
+            android:id="@+id/Task_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/pending_orders"
+            android:textColor="@color/order_color"
+            android:textSize="17sp"
+            android:layout_marginRight="40dp"
+            android:layout_alignTop="@+id/tv_creater_order"
+            android:layout_alignParentRight="true" />
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/tv_creater_order"
+            android:text="@string/task_state_order"
+            android:layout_toLeftOf="@+id/Task_status"
+            android:textColor="@color/text_color"
+            android:textSize="17sp" />
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
@@ -45,7 +63,7 @@
             android:textSize="17sp" />
 
         <TextView
-            android:id="@+id/tv_device_num"
+            android:id="@+id/group_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignRight="@+id/textView6"
@@ -54,91 +72,12 @@
             android:text="D"
             android:textColor="@color/text_color"
             android:textSize="17sp" />
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/tv_device_num"
-            android:layout_marginTop="3dp"
-            android:text="@string/device_name_order"
-            android:textColor="@color/text_color"
-            android:textSize="17sp" />
-
-        <TextView
-            android:id="@+id/tv_device_name_order"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/textView2"
-            android:layout_marginLeft="2dp"
-            android:layout_toRightOf="@+id/textView2"
-            android:text="平车"
-            android:textColor="@color/text_color"
-            android:textSize="17sp" />
-
-        <TextView
-            android:id="@+id/tv_device_num_order"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0115"
-            android:textColor="@color/text_color"
-            android:textSize="17sp"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/textView4"
-            android:layout_toEndOf="@+id/textView4" />
-
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/textView5"
-            android:layout_toLeftOf="@+id/textView5"
-            android:text="@string/task_state_order"
-            android:textColor="@color/text_color"
-            android:textSize="17sp" />
-
-        <TextView
-            android:id="@+id/textView5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pending_orders"
-            android:textColor="@color/order_color"
-            android:textSize="17sp"
-            android:layout_marginRight="16dp"
-            android:layout_alignTop="@+id/tv_device_num"
-            android:layout_alignParentRight="true" />
-
-        <Button
-            android:id="@+id/btn_order"
-            android:layout_width="220dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/textView7"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="14dp"
-            android:background="@color/yellow"
-            android:padding="3dp"
-            android:text="@string/orders"
-            android:textColor="@color/white"
-            android:textSize="17sp" />
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/device_num"
-            android:textColor="@color/text_color"
-            android:textSize="17sp"
-            android:layout_alignParentTop="true"
-            android:layout_toLeftOf="@+id/tv_device_num_order"
-            android:layout_toStartOf="@+id/tv_device_num_order" />
-
         <TextView
             android:id="@+id/textView7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/textView2"
+            android:layout_below="@+id/group_type"
             android:layout_marginTop="3dp"
             android:text="@string/create_time"
             android:textColor="@color/text_color"
@@ -148,11 +87,48 @@
             android:id="@+id/tv_create_time_order"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2016.05.05  15:30"
             android:textColor="@color/text_color"
             android:textSize="17sp"
-            android:layout_above="@+id/btn_order"
+            android:layout_alignTop="@+id/textView7"
             android:layout_toRightOf="@+id/textView7"
             android:layout_toEndOf="@+id/textView7" />
+        <TextView
+            android:id="@+id/Task_description_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/textView7"
+            android:layout_marginTop="3dp"
+            android:text="@string/task_descr"
+            android:textColor="@color/text_color"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/Task_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:textSize="17sp"
+            android:layout_toRightOf="@id/Task_description_tag"
+            android:layout_alignTop="@id/Task_description_tag" />
+
+
+
+
+        <Button
+            android:id="@+id/btn_order"
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/Task_description"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="14dp"
+            android:background="@color/yellow"
+            android:padding="3dp"
+            android:text="@string/orders"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+
+
+
     </RelativeLayout>
 </RelativeLayout>

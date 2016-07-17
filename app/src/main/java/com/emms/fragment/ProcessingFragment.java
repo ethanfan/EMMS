@@ -23,6 +23,7 @@ import com.emms.httputils.HttpUtils;
 import com.emms.schema.Maintain;
 import com.emms.schema.Message;
 import com.emms.schema.Task;
+import com.emms.util.DataUtil;
 import com.emms.util.SharedPreferenceManager;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -67,20 +68,6 @@ public class ProcessingFragment extends Fragment {
         listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
        // listView.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
-    /*    listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
-            @Override
-            public void onRefresh(final PullToRefreshBase<ListView> refreshView) {
-                //下拉刷新
-
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        listView.onRefreshComplete();
-                        Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
-                    }
-                },2000);
-           }
-        });*/
        listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
@@ -124,12 +111,12 @@ public class ProcessingFragment extends Fragment {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
                 //待修改
-            //    holder.tv_group.setText(datas.get(position).get(Task.ORGANISE_NAME).valueAsString());
-                holder.warranty_person.setText(datas.get(position).get(Task.APPLICANT).valueAsString());
-                holder.tv_task_state.setText(datas.get(position).get(Task.TASK_STATUS).valueAsString());
-                holder.tv_repair_time.setText(datas.get(position).get(Task.APPLICANT_TIME).valueAsString());
-                holder.tv_start_time.setText(datas.get(position).get(Task.START_TIME).valueAsString());
-                holder.tv_task_describe.setText(datas.get(position).get(Task.TASK_DESCRIPTION).valueAsString());
+               holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
+                holder.warranty_person.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
+                holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
+                holder.tv_repair_time.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME)));
+                holder.tv_start_time.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME)));
+                holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
                 return convertView;
             }
         };
@@ -138,11 +125,10 @@ public class ProcessingFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                startActivity(new Intent(mContext, TaskDetailsActivity.class));
-                //Intent intent=new Intent(mContext,TaskDetailsActivity.class);
-                //intent.putExtra(Task.TASK_ID,datas.get(position).get(Task.TASK_ID).valueAsString());
-                //intent.putExtra("TaskDetail",datas.get(position).asObjectElement().valueAsString());
-                //startActivity(intent);
+                Intent intent=new Intent(mContext,TaskDetailsActivity.class);
+                intent.putExtra(Task.TASK_ID,datas.get(position-1).get(Task.TASK_ID).valueAsString());
+                intent.putExtra("TaskDetail",datas.get(position-1).toString());
+                startActivity(intent);
                 //startActivity(new Intent(mContext, TaskDetailsActivity.class));
             }
         });
@@ -164,7 +150,7 @@ public class ProcessingFragment extends Fragment {
         JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
         int operator_id=jsonObjectElement.get("Operator_ID").valueAsInt();
         params.put("operator_id",4673);
-        params.put("status",0);
+        params.put("status",1);
         params.put("taskClass","T01");
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
             @Override

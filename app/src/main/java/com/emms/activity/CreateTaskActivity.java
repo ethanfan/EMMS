@@ -62,6 +62,7 @@ import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 /**
@@ -125,6 +126,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
     private String teamId ="";
     private String equipmentName ="";
+
+    private HashMap<String,String> task_type_class=new HashMap<String, String>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -577,6 +580,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                     searchDataLists.clear();
                     for (int i = 0; i < element.asArrayElement().size(); i++) {
                         mTaskType.add(element.asArrayElement().get(i).asObjectElement());
+                        task_type_class.put(element.asArrayElement().get(i).asObjectElement().get("DataName").valueAsString(),
+                                element.asArrayElement().get(i).asObjectElement().get("DataCode").valueAsString());
                     }
                     runOnUiThread(new Runnable() {
                         @Override
@@ -927,19 +932,19 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         if(task_subtype!=null){
             TaskType=TaskSubType;
         }
+        //创建任务提交数据:创建人ID，任务类型"T01,T02"等，机台号（数组），任务描述；
         JsonObjectElement task=new JsonObjectElement();
         JsonObjectElement taskDetail=new JsonObjectElement();
-
+        //获取创建人ID
         String userData= SharedPreferenceManager.getLoginData(this);
         JsonObjectElement jsonObjectElement=new JsonObjectElement(userData);
-
-        //taskDetail.set(Task.TASK_ID,0);
         taskDetail.set("Applicant",jsonObjectElement.get("Operator_ID").valueAsString());
-        taskDetail.set("TaskName",TaskType);
-        taskDetail.set("TaskDescr", TaskDescription);
-        taskDetail.set("TaskClass","T01");
 
 
+        taskDetail.set("TaskDescr",TaskDescription);
+        taskDetail.set("TaskClass",task_type_class.get(TaskType));
+
+       //机台号处理
         MachineCode="123";
         String  MachineCode2="312";
 
@@ -950,14 +955,23 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         JsonObject2.addProperty("Equipment_ID",MachineCode2);
         jsonArray.add(JsonObject);
         jsonArray.add(JsonObject2);
+
+       //包装数据
         task.set("Task",taskDetail);
         task.set("TaskEquipment",jsonArray.toString());
-        String bb=jsonArray.toString();
+
+
         params.putJsonParams(task.toJson());
         HttpUtils.post(this, "TaskCollection", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(CreateTaskActivity.this,"任务创建成功",Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
             @Override
             public void onFailure(int errorNo, String strMsg) {
