@@ -66,7 +66,7 @@ import java.util.Locale;
 /**
  * Created by jaffer.deng on 2016/6/7.
  */
-public class CreateTaskActivity extends BaseActivity implements View.OnClickListener {
+public class CreateTaskActivity extends NfcActivity implements View.OnClickListener {
 
     private Context mContext;
 
@@ -107,6 +107,8 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
     private ArrayList<ObjectElement> mTeamNamelist = new ArrayList<>();
     private ArrayList<ObjectElement> mDeviceNamelist = new ArrayList<>();
     private ArrayList<ObjectElement> mDeviceNumlist = new ArrayList<>();
+
+    String equipmentName;
 
     private NFCDialog nfcDialog;
     private DrawerLayout mDrawer_layout;
@@ -868,7 +870,6 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        try {
                                             searchDataLists.clear();
                                             switch (searTag) {
                                                 case TASK_TYPE:
@@ -907,12 +908,9 @@ public class CreateTaskActivity extends BaseActivity implements View.OnClickList
                                                     Toast.makeText(mContext, tips, Toast.LENGTH_SHORT).show();
                                                 }
                                             }
-                                            }catch(Exception e){
-                                                e.printStackTrace();
-                                            }
+
                                         }
 
-                                    }
                                 });
 
                             }
