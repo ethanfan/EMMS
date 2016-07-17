@@ -2,6 +2,7 @@ package com.emms.activity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -26,6 +27,7 @@ import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 
 /**
@@ -37,6 +39,7 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
     private  String[] mTitles ;
     private MyPagerAdapter mAdapter;
     private ArrayList<ObjectElement> RepairTask=new ArrayList<ObjectElement>();
+    private Handler handler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,12 +48,10 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
 
         initView();
         getRepairTaskFromServer();
-        getRepairTaskContent("完成");
         mTitles =getResources().getStringArray(R.array.select_tab_status);
         for (int i =0;i< mTitles.length;i++) {
             if (i==0) {
                 ProcessingFragment processingFragment=new ProcessingFragment();
-                processingFragment.setDatas(getRepairTaskContent("完成"));
                 mFragments.add(processingFragment);
             }else if (i ==1){
                 mFragments.add(new PendingOrdersFragment());
@@ -78,6 +79,7 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
 
         tabLayout_2.showMsg(0, Integer.valueOf(taskNum[0]));
         tabLayout_2.setMsgMargin(0, 12, 10);
+        //getSupportFragmentManager().
     }
 
     private void initView() {
@@ -145,11 +147,11 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
             }
         });
     }
-    private ListenableFuture<DataElement> getRepairTaskContent(String status) {
+ //  private ListenableFuture<DataElement> getRepairTaskContent(String status) {
         // RepairTask.clear();
-        String rawQuery = "SELECT * FROM MAINTAIN WHERE STATUS=" + "\""+status+"\"";
-        return  getSqliteStore().performRawQuery(rawQuery,
-                EPassSqliteStoreOpenHelper.SCHEMA_MAINTAIN, null);
+   //     String rawQuery = "SELECT * FROM MAINTAIN WHERE STATUS=" + "\""+status+"\"";
+  //      return  getSqliteStore().performRawQuery(rawQuery,
+ //               EPassSqliteStoreOpenHelper.SCHEMA_MAINTAIN, null);
         /*Futures.addCallback(elemt, new FutureCallback<DataElement>() {
             @Override
             public void onSuccess(DataElement dataElement) {
@@ -172,7 +174,7 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
                });
             }
         });*/
-    }
+//    }
    /* private ArrayList<ObjectElement> getRepairTaskList(String status){
         ListenableFuture<DataElement> data=getRepairTaskContent(status);
         Futures.addCallback(data, new FutureCallback<DataElement>() {

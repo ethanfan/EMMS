@@ -96,7 +96,7 @@ public class LinkedOrdersFragment extends Fragment{
         };
         listView.setAdapter(taskAdapter);
         data=new ArrayList<ObjectElement>();
-        data.addAll(datas1);
+        //data.addAll(datas1);
         tabLayout_1.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelect(int position) {
