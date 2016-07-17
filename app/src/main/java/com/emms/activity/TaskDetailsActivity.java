@@ -731,4 +731,90 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         });
     }
 
+
+    //刷nfc卡处理
+    public void resolveNfcMessage(Intent intent) {
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+//
+            Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            String iccardID = NfcUtils.dumpTagData(tag);
+
+            addTaskEquipment(iccardID);
+
+//            MessageUtils.showToast(iccardID,this);
+
+        }
+    }
+
+    private void addTaskEquipment(String iccardID){
+
+        String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='"+iccardID+"'";
+        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+                EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
+        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+
+            @Override
+            public void onSuccess(DataElement dataElement) {
+
+                if (dataElement != null && dataElement.isArray()
+                        && dataElement.asArrayElement().size() > 0) {
+                    ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
+                    postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString());
+
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(mContext, "目前该设备没有机台号", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+
+            }
+        });
+
+
+    }
+
+    private void postTaskEquipment(String equipmentID){
+
+        HttpParams params=new HttpParams();
+
+        JsonObjectElement taskEquepment=new JsonObjectElement();
+
+        taskEquepment.set(Task.TASK_ID,0);
+        //  taskDetail.set(Task.TASK_TYPE,TaskType);
+        taskEquepment.set("TaskEquipment_ID",0);
+        taskEquepment.set("Task_ID",taskId);
+        taskEquepment.set("Equipment_ID",equipmentID);
+
+
+        params.putJsonParams(taskEquepment.toJson());
+
+        HttpUtils.post(this, "TaskEquipment", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+            }
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(TaskDetailsActivity.this,getResources().getString(R.string.err_add_task_equipment),Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+    }
+
 }
