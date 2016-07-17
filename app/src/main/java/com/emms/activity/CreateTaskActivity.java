@@ -137,13 +137,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         mDrawer_layout = (DrawerLayout) findViewById(R.id.main_drawer_layout);
         mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        resolveIntent(getIntent());
         mDialog = new AlertDialog.Builder(this).setNeutralButton("Ok", null).create();
-        mAdapter = NfcAdapter.getDefaultAdapter(this);
-        mPendingIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-        mNdefPushMessage = new NdefMessage(new NdefRecord[]{newTextRecord(
-                "Message from NFC Reader :-)", Locale.ENGLISH, true)});
+
 
     }
 
@@ -242,22 +237,12 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        if (mAdapter != null) {
-            if (!mAdapter.isEnabled()) {
-                showWirelessSettingsDialog();
-            }
-            mAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
-            mAdapter.enableForegroundNdefPush(this, mNdefPushMessage);
-        }
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (mAdapter != null) {
-            mAdapter.disableForegroundDispatch(this);
-            mAdapter.disableForegroundNdefPush(this);
-        }
     }
 
     private void initEvent() {
@@ -769,7 +754,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 String taskDesc = task_description.getText().toString();
                 String deviceNum = device_num.getText().toString();
                 String taskSubType = null;
-                String description= task_description.getText().toString();
+                String description = task_description.getText().toString();
                 if (View.VISIBLE == task_subtype.getVisibility()) {
                     taskSubType = task_subtype.getText();
                 }
@@ -804,13 +789,13 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                     Toast.makeText(mContext, getResources().getString(R.string.tips_task_desc_post), Toast.LENGTH_SHORT).show();
                 }
                 hud.show();
-                submitTask(taskType,taskSubType,teamId,deviceName,deviceNum,description );
+                submitTask(taskType, taskSubType, teamId, deviceName, deviceNum, description);
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         hud.dismiss();
-                      //  TipsDialog tipsDialog = new TipsDialog(mContext, R.style.MyDialog);
-                      //  tipsDialog.show();
+                        //  TipsDialog tipsDialog = new TipsDialog(mContext, R.style.MyDialog);
+                        //  tipsDialog.show();
                     }
                 }, 1000);
             }
@@ -844,7 +829,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
 //
             Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            String operatorId = dumpTagData(tag);
+            String operatorId = NfcUtils.dumpTagData(tag);
             if (operatorId == null) {
                 return;
             } else if (operatorId.equals("")) {
@@ -878,49 +863,6 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
         }
     }
-
-    private void showWirelessSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.nfc_disabled);
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
-                startActivity(intent);
-            }
-        });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialogInterface, int i) {
-                finish();
-            }
-        });
-        builder.create().show();
-        return;
-    }
-
-    private String dumpTagData(Parcelable p) {
-
-        Tag tag = (Tag) p;
-        byte[] id = tag.getId();
-        return getDec(id) + "";
-    }
-
-    private long getDec(byte[] bytes) {
-        long result = 0;
-        long factor = 1;
-        for (int i = 0; i < bytes.length; ++i) {
-            long value = bytes[i] & 0xffl;
-            result += value * factor;
-            factor *= 256l;
-        }
-        return result;
-    }
-
-    @Override
-    public void onNewIntent(Intent intent) {
-        setIntent(intent);
-        resolveIntent(intent);
-    }
-
 
     private void initDropSearchView(
             final EditText condition,EditText subEditText,
@@ -995,7 +937,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         //taskDetail.set(Task.TASK_ID,0);
         taskDetail.set("Applicant",jsonObjectElement.get("Operator_ID").valueAsString());
         taskDetail.set("TaskName",TaskType);
-        taskDetail.set("TaskDescr",TaskDescription);
+        taskDetail.set("TaskDescr", TaskDescription);
         taskDetail.set("TaskClass","T01");
 
 
