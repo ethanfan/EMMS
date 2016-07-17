@@ -91,7 +91,7 @@ public class CustomDialog extends Dialog {
                 comfirm_button_event();
             }
         });
-        //修改的情况下调用
+        //修改子任务的情况下调用
         setViewData();
     }
 
