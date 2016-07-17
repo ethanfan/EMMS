@@ -313,6 +313,11 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         }
     }
 
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
+    }
+
     public class GridAdapter extends BaseAdapter {
         //        private List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
         private LayoutInflater inflater; // 视图容器

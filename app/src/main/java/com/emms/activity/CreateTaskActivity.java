@@ -41,6 +41,7 @@ import com.emms.ui.DropEditText;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.NFCDialog;
 import com.emms.util.BuildConfig;
+import com.emms.util.SharedPreferenceManager;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -67,6 +68,10 @@ import java.util.Locale;
  * Created by jaffer.deng on 2016/6/7.
  */
 public class CreateTaskActivity extends NfcActivity implements View.OnClickListener {
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
+    }
 
     private Context mContext;
 
@@ -799,7 +804,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                     Toast.makeText(mContext, getResources().getString(R.string.tips_task_desc_post), Toast.LENGTH_SHORT).show();
                 }
                 hud.show();
-                submitTask(taskType,taskSubType,createTask,teamId,deviceName,deviceNum,description );
+                submitTask(taskType,taskSubType,teamId,deviceName,deviceNum,description );
                 mHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -975,26 +980,20 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
                 );
     }
-    private void submitTask(String TaskType,String TaskSubType,String TaskBuilder,String teamId,String equipmentName
+    private void submitTask(String TaskType,String TaskSubType,String teamId,String equipmentName
             ,String MachineCode,String TaskDescription){
         HttpParams params=new HttpParams();
-       // params.put(Task.TASK_ID,0);
-        //params.put(Task.TASK_TYPE,TaskType);
-        //params.put(Task.OPERATOR_ID,TaskBuilder);
-        //params.put(Task.TEAM_ID,teamId);
-        //params.put(Task.EQUIPEMENT_NAME,equipmentName);
-        //params.put(Task.EQUIPMENT_ID,MachineCode);
-        //params.put(Task.TASK_DESCRIPTION,TaskDescription);
-        //params.put();
         if(task_subtype!=null){
             TaskType=TaskSubType;
         }
         JsonObjectElement task=new JsonObjectElement();
         JsonObjectElement taskDetail=new JsonObjectElement();
 
-        taskDetail.set(Task.TASK_ID,0);
-      //  taskDetail.set(Task.TASK_TYPE,TaskType);
-        taskDetail.set("Applicant",TaskBuilder);
+        String userData= SharedPreferenceManager.getLoginData(this);
+        JsonObjectElement jsonObjectElement=new JsonObjectElement(userData);
+
+        //taskDetail.set(Task.TASK_ID,0);
+        taskDetail.set("Applicant",jsonObjectElement.get("Operator_ID").valueAsString());
         taskDetail.set("TaskName",TaskType);
         taskDetail.set("TaskDescr",TaskDescription);
         taskDetail.set("TaskClass","T01");
@@ -1010,20 +1009,10 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         JsonObject2.addProperty("Equipment_ID",MachineCode2);
         jsonArray.add(JsonObject);
         jsonArray.add(JsonObject2);
-     //   JsonObjectElement equipment=new JsonObjectElement();
-      //  equipment.set("Equipment_ID",MachineCode);
-     //   JsonObjectElement equipment2=new JsonObjectElement();
-     //   equipment2.set("Equipment_ID",MachineCode2);
-
-       // JsonArrayElement equipmentArray=new JsonArrayElement(equipment.t);
-        //equipmentArray.add(equipment);
-       // equipmentArray.add(equipment2);
         task.set("Task",taskDetail);
         task.set("TaskEquipment",jsonArray.toString());
         String bb=jsonArray.toString();
-        //JsonObjectElement jsonObjectElement =new JsonObjectElement(bb);
         params.putJsonParams(task.toJson());
-        //params.put("Task",task.toJson());
         HttpUtils.post(this, "TaskCollection", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
