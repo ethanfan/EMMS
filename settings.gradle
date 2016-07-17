@@ -1,1 +1,1 @@
-include ':app', ':datastore_android_sdk', ':FlycoTabLayout_Lib', ':PullToRefresh',':universal-image-loader',':PullToRefresh'
+include ':app', ':datastore_android_sdk', ':FlycoTabLayout_Lib', ':PullToRefresh',':universal-image-loader',':PullToRefresh' ,':gesture-imageview'

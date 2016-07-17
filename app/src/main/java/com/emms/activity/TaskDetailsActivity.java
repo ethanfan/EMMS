@@ -118,14 +118,13 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     DisplayImageOptions options; // DisplayImageOptions是用于设置图片显示的类
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
         mContext = this;
         //获取任务详细信息
-        TaskDetail = getIntent().getStringExtra(Task.TASK_ID);
+        TaskDetail = getIntent().getStringExtra("TaskDetail");
 
         taskId = getTaskId(TaskDetail);
 
@@ -148,13 +147,20 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
     private Long getTaskId(String TaskDetail) {
 
-        Long retData = null;
-        if (TaskDetail != null) {
-            JsonObjectElement jsonObjectElement = new JsonObjectElement(TaskDetail);
-            if (null != jsonObjectElement) {
-                retData = jsonObjectElement.get(Task.TASK_ID).valueAsLong();
-            }
+
+//        if (TaskDetail != null) {
+//            JsonObjectElement jsonObjectElement = new JsonObjectElement(TaskDetail);
+//            if (null != jsonObjectElement) {
+//                retData = jsonObjectElement.get(Task.TASK_ID).valueAsLong();
+//            }
+//        }
+        String taskIdStr = getIntent().getStringExtra(Task.TASK_ID);
+        if (null == taskIdStr || "".equals(taskIdStr.trim()) || "null".equals(taskIdStr.trim())) {
+            taskIdStr = "0";
         }
+
+        Long retData = null;
+        retData = Long.valueOf(taskIdStr);
 
         return retData;
     }
@@ -277,6 +283,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 if (arg2 == dataList.size()) {
                     new PopupWindows(mContext, noScrollgridview);
                 } else {
+                    ImageView image = (ImageView) arg1.findViewById(R.id.item_grida_image);
+                    imageClick(image);
+
 //                    Intent intent = new Intent(mContext,
 //                            PhotoActivity.class);
 //                    intent.putExtra("ID", arg2);
@@ -750,9 +759,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         }
     }
 
-    private void addTaskEquipment(String iccardID){
+    private void addTaskEquipment(String iccardID) {
 
-        String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='"+iccardID+"'";
+        String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='" + iccardID + "'";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -785,17 +794,17 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
     }
 
-    private void postTaskEquipment(String equipmentID){
+    private void postTaskEquipment(String equipmentID) {
 
-        HttpParams params=new HttpParams();
+        HttpParams params = new HttpParams();
 
-        JsonObjectElement taskEquepment=new JsonObjectElement();
+        JsonObjectElement taskEquepment = new JsonObjectElement();
 
-        taskEquepment.set(Task.TASK_ID,0);
+        taskEquepment.set(Task.TASK_ID, 0);
         //  taskDetail.set(Task.TASK_TYPE,TaskType);
-        taskEquepment.set("TaskEquipment_ID",0);
-        taskEquepment.set("Task_ID",taskId);
-        taskEquepment.set("Equipment_ID",equipmentID);
+        taskEquepment.set("TaskEquipment_ID", 0);
+        taskEquepment.set("Task_ID", taskId);
+        taskEquepment.set("Equipment_ID", equipmentID);
 
 
         params.putJsonParams(taskEquepment.toJson());
@@ -805,17 +814,35 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             public void onSuccess(String t) {
                 super.onSuccess(t);
             }
+
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(TaskDetailsActivity.this,getResources().getString(R.string.err_add_task_equipment),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TaskDetailsActivity.this, getResources().getString(R.string.err_add_task_equipment), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
     }
 
+    // 点击放大图片
+    public void imageClick(View v) {
+        Bitmap bmp = null;
+        if (v instanceof LinearLayout) {
+            LinearLayout tmpV = (LinearLayout) v;
+            bmp = ((BitmapDrawable) tmpV.getBackground()).getBitmap();
+        } else {
+            ImageView image = (ImageView) v;
+            bmp = ((BitmapDrawable) image.getDrawable()).getBitmap();
+        }
+
+        ShowBigImageActivity.saveTmpBitmap(bmp);
+        Intent showBigImageIntent = new Intent(TaskDetailsActivity.this,
+                ShowBigImageActivity.class);
+
+        startActivity(showBigImageIntent);
+    }
 }

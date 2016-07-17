@@ -96,8 +96,11 @@
             android:name=".activity.InvitorActivity"
             android:screenOrientation="portrait">
         </activity>
-
-
+        <!-- 查看大图 -->
+        <activity
+            android:name=".activity.ShowBigImageActivity"
+            android:label="@string/app_name" >
+        </activity>
 
 
         <!-- Rich push 核心功能 since 2.0.6-->
