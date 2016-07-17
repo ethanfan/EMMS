@@ -108,12 +108,12 @@ public  class HttpUtils {
                             //POST/PUT/DELETE/HEAD/OPTIONS/TRACE/PATCH
                     .httpMethod(RxVolley.Method.GET)
                     //设置缓存时间: 默认是 get 请求 5 分钟, post 请求不缓存
-                    .cacheTime(6)
+                   // .cacheTime(6)
                             //内容参数传递形式，如果不加，默认为 FORM 表单提交，可选项 JSON 内容
                     .contentType(RxVolley.ContentType.JSON)
                     .params(params) //上文创建的HttpParams请求参数集
                             //是否缓存，默认是 get 请求 5 缓存分钟, post 请求不缓存
-                    .shouldCache(true)
+                    //.shouldCache(true)
                     .callback(callback) //响应回调
                     .encoding("UTF-8") //编码格式，默认为utf-8
                     .doTask();  //执行请求操作

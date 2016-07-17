@@ -8,7 +8,12 @@ public class Task {
     public static final String TASK_TYPE = "TaskType";
     public static final String OPERATOR_ID = "Operator_ID";
     public static final String TEAM_ID = "Team_ID";
-    public static final String EQUIPEMENT_NAME = "EquipementName";
-    public static final String EQUIPMENT_ID = "Equipment_ID";
+    public static final String TASK_CLASS = "TaskClass";
+    public static final String APPLICANT="Applicant";//申请人
+    public static final String APPLICANT_TIME="ApplicantTime";
+    public static final String START_TIME="StartTime";
+    public static final String FINISH_TIME="FinishTime";
+    public static final String ORGANISE_NAME="OrganiseName";
     public static final String  TASK_DESCRIPTION= "TaskDescr";
+    public static final String  TASK_STATUS= "DataName";
 }

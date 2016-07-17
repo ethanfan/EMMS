@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.DataElement;
+import com.datastore_android_sdk.datastore.ArrayElement;
 import com.emms.R;
 import com.emms.adapter.TaskAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
@@ -61,6 +62,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.emms.util.SharedPreferenceManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -71,6 +73,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,10 +92,27 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private ArrayList<ObjectElement> datas;
     private Context mContext;
     private PopMenuTaskDetail popMenuTaskDetail;
+    private TextView deviceCountTextView;
+    private TextView dealCountTextView;
+
     String TaskDetail = null;
 
     Long taskId = null;
     private List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+    private Map<String, Object> deviceCountMap = new HashMap<String, Object>();
+
+    //0-开始，1-暂停，2-领料，3-待料，4-结束
+
+    private final String STATUS_DONE = "4";
+    static private HashMap<String, String> taskEquipmentStatus = new HashMap<String, String>();
+
+    {
+        taskEquipmentStatus.put("0", "开始");
+        taskEquipmentStatus.put("1", "暂停");
+        taskEquipmentStatus.put("2", "领料");
+        taskEquipmentStatus.put("3", "待料");
+        taskEquipmentStatus.put(STATUS_DONE, "结束");
+    }
 
     protected ImageLoader imageLoader = ImageLoader.getInstance();
     DisplayImageOptions options; // DisplayImageOptions是用于设置图片显示的类
@@ -111,8 +131,10 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
         //初始化imageLoader
         options = new DisplayImageOptions.Builder().cacheInMemory(false) // 设置下载的图片是否缓存在内存中
-                // .cacheOnDisc(true) // 设置下载的图片是否缓存在SD卡中
+//                .cacheOnDisc(true) // 设置下载的图片是否缓存在SD卡中
+                .cacheOnDisk(true)
                 .imageScaleType(ImageScaleType.NONE)
+                .showImageOnLoading(R.mipmap.bg_btn)
                 // .bitmapConfig(Bitmap.Config.RGB_565)
                 .build();
         imageLoader.init(ImageLoaderConfiguration
@@ -159,7 +181,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 } else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
-                String creater = datas.get(position).get("Maintainer").valueAsString();
+                String creater = datas.get(position).get("StatusOperator").valueAsString();
                 if (creater != null) {
                     if (!creater.equals("")) {
                         holder.tv_creater.setText(creater);
@@ -173,23 +195,27 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
 
                 holder.tv_device_num.setText(datas.get(position).get(Equipment.EQUIPMENT_ID).valueAsString());
-                holder.tv_device_name.setText(datas.get(position).get(Maintain.MACHINE_NAME).valueAsString());
+                holder.tv_device_name.setText(datas.get(position).get(Equipment.EQUIPMENT_NAME).valueAsString());
                 //String createTime = LongToDate.longPointDate(datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsLong());
-                String createTime = datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsString();
+                String createTime = datas.get(position).get("CreateTime").valueAsString();
                 holder.tv_create_time.setText(createTime);
                 //String endTime = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsLong());
-                String endTime = datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsString();
+
+                String equipmentStatus = datas.get(position).get(Equipment.STATUS).valueAsString();
+
+                String endTime = "";
+                if (!STATUS_DONE.equals(equipmentStatus)) {
+                    endTime = datas.get(position).get("StatusTime").valueAsString();
+                }
                 holder.tv_end_time.setText(endTime);
-                String state = "";
-            /*    int tag = datas.get(position).getTaskTag();
-                if (tag == 1) {
-                    holder.tv_task_state.setTextColor(getResources().getColor(R.color.processing_color));
-                    state = getResources().getString(R.string.task_state_details_finish);
-                } else if (tag == 0) {
-                    holder.tv_task_state.setTextColor(getResources().getColor(R.color.pause_color));
-                    state = getResources().getString(R.string.task_state_details_non);
-                }*/
-                holder.tv_task_state.setText(datas.get(position).get(Maintain.STATUS).valueAsString());
+
+                holder.tv_task_state.setText(taskEquipmentStatus.get(equipmentStatus));
+
+                //设备数数
+                deviceCountTextView.setText(String.valueOf(deviceCountMap.get("deviceCount")));
+                //已处理数量
+                dealCountTextView.setText(String.valueOf(deviceCountMap.get("dealCount")));
+
                 return convertView;
             }
 
@@ -213,10 +239,16 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             }
         };*/
 
+        // for test
+        taskId = 93L;
+
         getTaskEquipmentFromServerByTaskId();
         if (null == datas) {
             datas = new ArrayList<ObjectElement>();
         }
+
+        // for test
+        // taskId = 16L;
 
         getTaskAttachmentDataFromServerByTaskId();
     }
@@ -230,22 +262,25 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         menuImageView.setOnClickListener(this);
         scrollview = (ScrollView) findViewById(R.id.scrollview_parent);
         mListview = (ScrollViewWithListView) findViewById(R.id.problem_count);
+        deviceCountTextView = (TextView) findViewById(R.id.device_count);
+        dealCountTextView = (TextView) findViewById(R.id.deal_count);
         noScrollgridview = (ExpandGridView) findViewById(R.id.picture_containt);
         noScrollgridview.setSelector(new ColorDrawable(Color.TRANSPARENT));
+
         adapter = new GridAdapter(this);
-        adapter.update1();
+//        adapter.update1();
         noScrollgridview.setAdapter(adapter);
         noScrollgridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                                     long arg3) {
-                if (arg2 == Bimp.bmp.size()) {
+                if (arg2 == dataList.size()) {
                     new PopupWindows(mContext, noScrollgridview);
                 } else {
-                    Intent intent = new Intent(mContext,
-                            PhotoActivity.class);
-                    intent.putExtra("ID", arg2);
-                    startActivity(intent);
+//                    Intent intent = new Intent(mContext,
+//                            PhotoActivity.class);
+//                    intent.putExtra("ID", arg2);
+//                    startActivity(intent);
                 }
             }
         });
@@ -263,7 +298,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     }
 
     protected void onRestart() {
-        adapter.update1();
+//        adapter.update1();
         super.onRestart();
     }
 
@@ -278,136 +313,17 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         }
     }
 
-    //    public class GridAdapter extends BaseAdapter {
-//        private LayoutInflater inflater; // 视图容器
-//        private int selectedPosition = -1;// 选中的位置
-//        private boolean shape;
-//
-//        public boolean isShape() {
-//            return shape;
-//        }
-//
-//        public void setShape(boolean shape) {
-//            this.shape = shape;
-//        }
-//
-//        public GridAdapter(Context context) {
-//            inflater = LayoutInflater.from(context);
-//        }
-//
-//        public void update1() {
-//            loading1();
-//        }
-//
-//        public int getCount() {
-//            return (Bimp.bmp.size() + 1);
-//        }
-//
-//        public Object getItem(int arg0) {
-//
-//            return null;
-//        }
-//
-//        public long getItemId(int arg0) {
-//
-//            return 0;
-//        }
-//
-//        public void setSelectedPosition(int position) {
-//            selectedPosition = position;
-//        }
-//
-//        public int getSelectedPosition() {
-//            return selectedPosition;
-//        }
-//
-//        /**
-//         * ListView Item设置
-//         */
-//        public View getView(int position, View convertView, ViewGroup parent) {
-//            //final int coord = position;
-//            ViewHolder holder = null;
-//
-//            if (convertView == null) {
-//
-//                convertView = inflater.inflate(R.layout.item_published_grida,
-//                        parent, false);
-//                holder = new ViewHolder();
-//                holder.image = (ImageView) convertView
-//                        .findViewById(R.id.item_grida_image);
-//                convertView.setTag(holder);
-//            } else {
-//                holder = (ViewHolder) convertView.getTag();
-//            }
-//
-//            holder.image.setVisibility(View.VISIBLE);
-//
-//            if (position == Bimp.bmp.size()) {
-//                holder.image.setImageBitmap(BitmapFactory.decodeResource(
-//                        getResources(), R.mipmap.icon_addpic_unfocused));
-//
-//            } else {
-//                holder.image.setImageBitmap(Bimp.bmp.get(position));
-//            }
-//
-//            return convertView;
-//        }
-//
-//        public class ViewHolder {
-//            public ImageView image;
-//        }
-//
-//        Handler handler = new Handler() {
-//            public void handleMessage(Message msg) {
-//                switch (msg.what) {
-//                    case 1:
-//                        adapter.notifyDataSetChanged();
-//                        break;
-//                }
-//                super.handleMessage(msg);
-//            }
-//        };
-//
-//        public void loading1() {
-//            new Thread(new Runnable() {
-//                public void run() {
-//                    while (true) {
-//                        if (Bimp.max == Bimp.drr.size()) {
-//                            Message message = new Message();
-//                            message.what = 1;
-//                            handler.sendMessage(message);
-//                            break;
-//                        } else {
-//                            try {
-//                                String path = Bimp.drr.get(Bimp.max);
-//                                System.out.println(path);
-//                                Bitmap bm = Bimp.revitionImageSize(path);
-//                                Bimp.bmp.add(bm);
-//                                String newStr = path.substring(
-//                                        path.lastIndexOf("/") + 1,
-//                                        path.lastIndexOf("."));
-//                                FileUtils.saveBitmap(mContext, bm, "" + newStr);
-//                                Bimp.max += 1;
-//                                Message message = new Message();
-//                                message.what = 1;
-//                                handler.sendMessage(message);
-//                            } catch (IOException e) {
-//
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-//                }
-//            }).start();
-//        }
-//    }
-//
     public class GridAdapter extends BaseAdapter {
+        //        private List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
         private LayoutInflater inflater; // 视图容器
         private int selectedPosition = -1;// 选中的位置
         private boolean shape;
 
         private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
+
+//        public void setData(List<Map<String, Object>> dataList) {
+//            this.dataList = dataList;
+//        }
 
         public boolean isShape() {
             return shape;
@@ -421,9 +337,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             inflater = LayoutInflater.from(context);
         }
 
-        public void update1() {
-            loading1();
-        }
+//        public void update1() {
+//            //loading1();
+//        }
 
         public int getCount() {
             return dataList.size() + 1;
@@ -468,15 +384,19 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
             holder.image.setVisibility(View.VISIBLE);
 
-            if (position == Bimp.bmp.size()) {
-                holder.image.setImageBitmap(BitmapFactory.decodeResource(
-                        getResources(), R.mipmap.icon_addpic_unfocused));
+            if (position == dataList.size()) {
+//                holder.image.setImageBitmap(BitmapFactory.decodeResource(
+//                        getResources(), R.mipmap.icon_addpic_unfocused));
 
+                // String addImageUrl =  "mipmap://" + R.mipmap.icon_addpic_unfocused;
+                String imgUrl = "drawable://" + R.drawable.icon_addpic_unfocused;
+                //addImageUrlToDataList(imgUrl);
+                imageLoader.displayImage(imgUrl, holder.image, options,
+                        animateFirstListener);
             } else {
                 String imgUrl = (String) dataList.get(position).get("imageUrl");
                 imageLoader.displayImage(imgUrl, holder.image, options,
                         animateFirstListener);
-                // holder.image.setImageBitmap(Bimp.bmp.get(position));
             }
 
             return convertView;
@@ -486,49 +406,12 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             public ImageView image;
         }
 
-        Handler handler = new Handler() {
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case 1:
-                        adapter.notifyDataSetChanged();
-                        break;
-                }
-                super.handleMessage(msg);
-            }
-        };
+    }
 
-        public void loading1() {
-            new Thread(new Runnable() {
-                public void run() {
-                    while (true) {
-                        if (Bimp.max == Bimp.drr.size()) {
-                            Message message = new Message();
-                            message.what = 1;
-                            handler.sendMessage(message);
-                            break;
-                        } else {
-                            try {
-                                String path = Bimp.drr.get(Bimp.max);
-                                System.out.println(path);
-                                Bitmap bm = Bimp.revitionImageSize(path);
-                                Bimp.bmp.add(bm);
-                                String newStr = path.substring(
-                                        path.lastIndexOf("/") + 1,
-                                        path.lastIndexOf("."));
-                                FileUtils.saveBitmap(mContext, bm, "" + newStr);
-                                Bimp.max += 1;
-                                Message message = new Message();
-                                message.what = 1;
-                                handler.sendMessage(message);
-                            } catch (IOException e) {
-
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }).start();
-        }
+    private void addImageUrlToDataList(String path) {
+        Map<String, Object> dataMap = new HashMap<String, Object>();
+        dataMap.put("imageUrl", path);
+        dataList.add(dataList.size(), dataMap);
     }
 
     public class PopupWindows extends PopupWindow {
@@ -612,7 +495,36 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         switch (requestCode) {
             case TAKE_PICTURE:
                 if (resultCode == -1) {
+                    //Bimp.drr.add(path);
+
+                    //将图片地址增加到图片列表
                     Bimp.drr.add(path);
+                    String path = Bimp.drr.get(Bimp.max);
+                    System.out.println(path);
+                    try {
+                        Bitmap bm = Bimp.revitionImageSize(path);
+                        Bimp.bmp.add(bm);
+                        String fileName = path.substring(
+                                path.lastIndexOf("/") + 1,
+                                path.lastIndexOf("."));
+                        FileUtils.saveBitmap(mContext, bm, "" + fileName);
+                        Bimp.max += 1;
+
+                        //压缩目录的路径--在saveBitmap方法中写死了的
+                        String SDPATH = mContext.getExternalFilesDir(null)
+                                + "/btp/formats/";
+
+                        addImageUrlToDataList("file://" + SDPATH + fileName + ".JPEG");
+                        if (null != adapter) {
+//                            adapter.setData(dataList);
+                            adapter.notifyDataSetChanged();
+                        }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
                     //在此上传图片到服务器;
                     submitPictureToServer(path);
                 }
@@ -682,19 +594,36 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
              params.put("TaskAttachment_ID",0);
              params.put("ImgBase64",base64);*/
             JsonObjectElement jsonObjectElement = new JsonObjectElement();
-            jsonObjectElement.set(Task.TASK_ID, 16);
+            jsonObjectElement.set(Task.TASK_ID, taskId);
             jsonObjectElement.set("TaskAttachment_ID", 0);
             jsonObjectElement.set("ImgBase64", base64);
+
+            //      jsonObjectElement.set("",);
+            String t = SharedPreferenceManager.getLoginData(this);
+            JsonObjectElement json = new JsonObjectElement(t);
+            String operatorId = json.get("Operator_ID").valueAsString();
+
+            jsonObjectElement.set("UploadOperator", operatorId);
+
             params.putJsonParams(jsonObjectElement.toJson());
             HttpUtils.post(this, "TaskAttachment", params, new HttpCallback() {
                 @Override
                 public void onFailure(int errorNo, String strMsg) {
                     super.onFailure(errorNo, strMsg);
+
+                    Toast toast = Toast.makeText(TaskDetailsActivity.this, "上传图片失败", Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
                 }
 
                 @Override
                 public void onSuccess(String t) {
                     super.onSuccess(t);
+
+                    Toast toast = Toast.makeText(TaskDetailsActivity.this, "上传图片成功", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+
                 }
             });
             //上传String
@@ -710,10 +639,10 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         }
 
         HttpParams params = new HttpParams();
-        params.put("id", taskId.toString());
+        params.put("task_id", taskId.toString());
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
         Log.e("returnString", "dd");
-        HttpUtils.get(mContext, "TaskEquipment", params, new HttpCallback() {
+        HttpUtils.get(mContext, "TaskDetailList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -721,14 +650,28 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 if (t != null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
 
-                    String itemListJson = jsonObjectElement.get("PageData").valueAsString();
+                    ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
 
-                    JsonArrayElement jsonArrayElement = new JsonArrayElement(itemListJson);
-                    ;
                     if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
+
+                        int dealDeviceCount = 0;
                         for (int i = 0; i < jsonArrayElement.size(); i++) {
                             datas.add(jsonArrayElement.get(i).asObjectElement());
+
+                            String equipmentStatus = jsonArrayElement.get(i).asObjectElement().get(Equipment.STATUS).valueAsString();
+                            if (STATUS_DONE.equals(equipmentStatus)) {
+                                dealDeviceCount++;
+                            }
+
                         }
+
+                        if (null != taskAdapter) {
+//                            adapter.setData(dataList);
+                            taskAdapter.notifyDataSetChanged();
+                        }
+
+                        deviceCountMap.put("deviceCount", String.valueOf(jsonArrayElement.size()));
+                        deviceCountMap.put("dealCount", String.valueOf(dealDeviceCount));
                     }
                 }
             }
@@ -740,7 +683,6 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             }
         });
     }
-
 
     private void getTaskAttachmentDataFromServerByTaskId() {
         if (null == taskId) {
@@ -748,28 +690,33 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         }
 
         HttpParams params = new HttpParams();
-        params.put("id", taskId.toString());
+        // params.put("id", taskId.toString());
+        params.put("t", String.valueOf(new Date().getTime()));
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
-        Log.e("returnString", "dd");
-        HttpUtils.get(mContext, "TaskImgsList", params, new HttpCallback() {
+        HttpUtils.get(mContext, "TaskImgsList/" + taskId.toString(), params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 Log.e("returnString", t);
                 if (t != null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    String itemListJson = jsonObjectElement.get("PageData").valueAsString();
-
-                    //JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    JsonArrayElement jsonArrayElement = new JsonArrayElement(itemListJson);
+                    ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
                     if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
                         for (int i = 0; i < jsonArrayElement.size(); i++) {
                             Map<String, Object> dataMap = new HashMap<String, Object>();
 
-                            dataMap.put("imageUrl", jsonArrayElement.get(i).asObjectElement().get("FileName"));
+                            String path = jsonArrayElement.get(i).asObjectElement().get("FileName").valueAsString();
+                            addImageUrlToDataList(path);
 
-                            dataList.add(0, dataMap);
-                            // datas.add(jsonArrayElement.get(i).asObjectElement());
+                        }
+
+                        //在这里刷新图片列表
+//                        Message message = new Message();
+//                        message.what = 1;
+//                        handler.sendMessage(message);
+                        if (null != adapter) {
+//                            adapter.setData(dataList);
+                            adapter.notifyDataSetChanged();
                         }
                     }
                 }
@@ -778,138 +725,10 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             @Override
             public void onFailure(int errorNo, String strMsg) {
 
-               // test_json();
+                // test_json();
                 super.onFailure(errorNo, strMsg);
             }
         });
     }
-
-
-    public  void test_json() {
-
-        String t = "{\n" +
-                "  \"PageCount\": 0,\n" +
-                "  \"RecCount\": 2,\n" +
-                "  \"PageData\": [\n" +
-                "    {\n" +
-                "      \"TaskAttachment_ID\": 20,\n" +
-                "      \"Task_ID\": 14,\n" +
-                "      \"FileName\": \"14_20160714165208831.jpg\",\n" +
-                "      \"AttachmentType\": null,\n" +
-                "      \"FileSize\": 18720,\n" +
-                "      \"UploadOperator\": null,\n" +
-                "      \"UploadTime\": null\n" +
-                "    },\n" +
-                "    {\n" +
-                "      \"TaskAttachment_ID\": 21,\n" +
-                "      \"Task_ID\": 14,\n" +
-                "      \"FileName\": \"14_20160714165813540.jpg\",\n" +
-                "      \"AttachmentType\": null,\n" +
-                "      \"FileSize\": 18720,\n" +
-                "      \"UploadOperator\": null,\n" +
-                "      \"UploadTime\": null\n" +
-                "    }\n" +
-                "  ],\n" +
-                "  \"Success\": true,\n" +
-                "  \"Message\": \"https://gewdigitalimage.blob.core.chinacloudapi.cn/emms/TaskImages/\"\n" +
-                "}";
-
-        JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-
-        String itemListJson = jsonObjectElement.get("PageData").valueAsString();
-
-        JsonArrayElement jsonArrayElement = new JsonArrayElement(itemListJson);
-        ;
-    }
-
-
-    //刷nfc卡处理
-    public void resolveNfcMessage(Intent intent) {
-        String action = intent.getAction();
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
-                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
-                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-//
-            Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            String iccardID = NfcUtils.dumpTagData(tag);
-
-            addTaskEquipment(iccardID);
-
-//            MessageUtils.showToast(iccardID,this);
-
-        }
-    }
-
-
-    private void addTaskEquipment(String iccardID){
-
-        String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='"+iccardID+"'";
-        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
-                EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
-        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
-
-            @Override
-            public void onSuccess(DataElement dataElement) {
-
-                if (dataElement != null && dataElement.isArray()
-                        && dataElement.asArrayElement().size() > 0) {
-                    ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
-                    postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString());
-
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(mContext, "目前该设备没有机台号", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-
-            }
-        });
-
-
-    }
-
-    private void postTaskEquipment(String equipmentID){
-
-        HttpParams params=new HttpParams();
-
-        JsonObjectElement taskEquepment=new JsonObjectElement();
-
-        taskEquepment.set(Task.TASK_ID,0);
-        //  taskDetail.set(Task.TASK_TYPE,TaskType);
-        taskEquepment.set("TaskEquipment_ID",0);
-        taskEquepment.set("Task_ID",taskId);
-        taskEquepment.set("Equipment_ID",equipmentID);
-
-
-        params.putJsonParams(taskEquepment.toJson());
-
-        HttpUtils.post(this, "TaskEquipment", params, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-            }
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(TaskDetailsActivity.this,getResources().getString(R.string.err_add_task_equipment),Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
-    }
-
-
-
 
 }

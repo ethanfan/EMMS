@@ -67,10 +67,8 @@ public class LinkedOrdersFragment extends Fragment{
                 if (convertView == null) {
                     convertView = LayoutInflater.from(mContext).inflate(R.layout.item_fr_linked_order, parent, false);
                     holder = new TaskViewHolder();
-                    holder.tv_creater = (TextView) convertView.findViewById(R.id.tv_creater_linked);
-                    holder.tv_group = (TextView) convertView.findViewById(R.id.tv_device_num);
-                    holder.tv_device_num = (TextView) convertView.findViewById(R.id.tv_device_name_detail);
-                    holder.tv_device_name = (TextView) convertView.findViewById(R.id.tv_device_name_linked);
+                    holder.tv_creater = (TextView) convertView.findViewById(R.id.Warranty_person);
+                    holder.tv_group = (TextView) convertView.findViewById(R.id.group);
                     holder.tv_repair_time = (TextView) convertView.findViewById(R.id.tv_repair_time_process);
                     holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
                     holder.tv_end_time = (TextView) convertView.findViewById(R.id.tv_end_time_linked);
@@ -98,7 +96,7 @@ public class LinkedOrdersFragment extends Fragment{
         };
         listView.setAdapter(taskAdapter);
         data=new ArrayList<ObjectElement>();
-        data.addAll(datas1);
+        //data.addAll(datas1);
         tabLayout_1.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelect(int position) {

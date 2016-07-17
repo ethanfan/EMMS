@@ -66,7 +66,7 @@ import java.util.Locale;
 /**
  * Created by jaffer.deng on 2016/6/7.
  */
-public class CreateTaskActivity extends NfcActivity implements View.OnClickListener {
+public class CreateTaskActivity extends BaseActivity implements View.OnClickListener {
 
     private Context mContext;
 
@@ -115,7 +115,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private int  searchtag =0;
 
     private String teamId ="";
-    private String equipmentName ="";
+    private String equipmentClass ="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -421,7 +421,6 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
                 @Override
                 public void onFailure(Throwable throwable) {
-                    throwable.printStackTrace();
 
                 }
             });
@@ -839,6 +838,23 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         }
     }
 
+    private void showWirelessSettingsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.nfc_disabled);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+                startActivity(intent);
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+        builder.create().show();
+        return;
+    }
 
 
     private void initDropSearchView(
@@ -896,6 +912,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                             }
                                         }
 
+                                    }
                                 });
 
                             }
@@ -918,8 +935,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         taskDetail.set("Applicant",taskBuilder);
         taskDetail.set("TaskName",taskType);
         taskDetail.set("TaskDescr",taskDescription);
-        taskDetail.set("TaskClass",0);
-
+        taskDetail.set("TaskClass","T01");
 
 //        MachineCode="123";
 //        String  MachineCode2="312";

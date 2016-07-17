@@ -19,11 +19,13 @@ public abstract class TaskAdapter extends BaseAdapter{
     public TaskAdapter(ArrayList<ObjectElement> datas) {
         this.datas = datas;
     }
-
+    public TaskAdapter() {
+    }
     public void setDatas(ArrayList<ObjectElement> mDatas){
         if (mDatas.size()>0) {
             this.datas = mDatas;
-            notifyDataSetChanged();
+      //  notifyDataSetInvalidated();
+           notifyDataSetChanged();
         }
     }
     @Override
@@ -58,5 +60,6 @@ public abstract class TaskAdapter extends BaseAdapter{
         public TextView tv_start_time;
         public  TextView tv_create_time;
         public  TextView tv_repair_time;
+        public TextView warranty_person;
     }
 }
