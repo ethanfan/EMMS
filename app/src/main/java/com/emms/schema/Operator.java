@@ -67,13 +67,6 @@ public class Operator extends Model<Operator, Long> implements Identity<Long> {
 	public static final String WX_USER_SYSUSERLOGINID = "WX_User_SysUserLoginId";
     public static final String KY_UPDATE_LOG_DATE = "Ky_update_log_date";
 
-	public static final String CHANNEL_ARTICLE_FIELD_NAME = "channel_articles";
-	public static final String ARTICLE_CONTENT_FIELD_NAME = "artcle_contents";
-	public static final String ARTICLE_REGION_FIELD_NAME = "article_regions";
-
-	public static final int STATUS_TO_BE_APPROVED = 0;
-	public static final int STATUS_APPROVED = 1;
-	public static final int STATUS_REJECTED = 2;
 
 	@DatabaseField(id = true,
 			columnName = OPERATOR_ID, canBeNull = false)
@@ -507,4 +500,6 @@ public class Operator extends Model<Operator, Long> implements Identity<Long> {
 	public void setKy_update_log_date(Date ky_update_log_date) {
 		this.ky_update_log_date = ky_update_log_date;
 	}
+
+	
 }

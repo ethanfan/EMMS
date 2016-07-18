@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.emms.R;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Operator;
 import com.emms.util.BuildConfig;
 import com.emms.util.SharedPreferenceManager;
 import com.flyco.tablayout.utils.UnreadMsgUtils;
@@ -137,39 +138,37 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     }
    private void getTaskCountFromServer(){
         HttpParams params=new HttpParams();
-       String loginData=SharedPreferenceManager.getLoginData(this);
-       final JsonObjectElement jsonObjectElement=new JsonObjectElement(loginData);
-       String Operator_ID=jsonObjectElement.get("ds").
-               asArrayElement().get(0).asObjectElement().get("Operator_ID").valueAsString();
-      params.put("id",Operator_ID);
-      // String s=SharedPreferenceManager.getUserName(this);
-        HttpUtils.get(this, "TaskNum", params, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-                if (t != null) {
-                    JsonObjectElement json = new JsonObjectElement(t);
-                    //获取任务数目，Data_ID对应，1对应维修，2对应维护，3对应搬车，4对应其它
-                    if(json.get("PageData")!=null&&json.get("PageData").asArrayElement()!=null) {
-                        for (int i = 0; i < json.get("PageData").asArrayElement().size(); i++) {
-                            //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
-                            //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
-                            String taskNumToShow = json.get("PageData").asArrayElement().get(i).asObjectElement().get("ToDoNum").valueAsString() + "/" +
-                                    json.get("PageData").asArrayElement().get(i).asObjectElement().get("DoingNum").valueAsString();
-                            taskNum.put(i, taskNumToShow);
-                        }
 
-                    repair_msg.setText(taskNum.get(0));
-                    maintain_msg.setText(taskNum.get(1));
-                    move_car_msg.setText(taskNum.get(2));
-                    other_msg.setText(taskNum.get(3));
-                    }
-                }
-            }
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-            }
+        params.put("id",String.valueOf(getLoginInfo().getId()));
+      // String s=SharedPreferenceManager.getUserName(this);
+       HttpUtils.get(this, "TaskNum", params, new HttpCallback() {
+           @Override
+           public void onSuccess(String t) {
+               super.onSuccess(t);
+               if (t != null) {
+                   JsonObjectElement json = new JsonObjectElement(t);
+                   //获取任务数目，Data_ID对应，1对应维修，2对应维护，3对应搬车，4对应其它
+                   if (json.get("PageData") != null && json.get("PageData").asArrayElement() != null) {
+                       for (int i = 0; i < json.get("PageData").asArrayElement().size(); i++) {
+                           //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
+                           //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
+                           String taskNumToShow = json.get("PageData").asArrayElement().get(i).asObjectElement().get("ToDoNum").valueAsString() + "/" +
+                                   json.get("PageData").asArrayElement().get(i).asObjectElement().get("DoingNum").valueAsString();
+                           taskNum.put(i, taskNumToShow);
+                       }
+
+                       repair_msg.setText(taskNum.get(0));
+                       maintain_msg.setText(taskNum.get(1));
+                       move_car_msg.setText(taskNum.get(2));
+                       other_msg.setText(taskNum.get(3));
+                   }
+               }
+           }
+
+           @Override
+           public void onFailure(int errorNo, String strMsg) {
+               super.onFailure(errorNo, strMsg);
+           }
         });
     }
 }

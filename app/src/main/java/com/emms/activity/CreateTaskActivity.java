@@ -11,6 +11,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
@@ -27,6 +28,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
@@ -55,6 +57,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -69,10 +72,6 @@ import java.util.Locale;
  * Created by jaffer.deng on 2016/6/7.
  */
 public class CreateTaskActivity extends NfcActivity implements View.OnClickListener {
-    @Override
-    public void resolveNfcMessage(Intent intent) {
-
-    }
 
     private Context mContext;
 
@@ -89,9 +88,6 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private ImageView create_task_action, device_num_action;
     private KProgressHUD hud;
 
-    private NfcAdapter mAdapter;
-    private PendingIntent mPendingIntent;
-    private NdefMessage mNdefPushMessage;
 
     private AlertDialog mDialog;
     private static final DateFormat TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
@@ -251,7 +247,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     }
 
     private void initEvent() {
-        getTeamId("4204");  //获取组别 目前数据只缺OperatorId
+
+        initLoginData();
+
         getTaskType();//获取任务类型 基本不用改
         initDropSearchView(null, task_type.getmEditText(), getResources().
                         getString(R.string.title_search_task_type), DataDictionary.DATA_NAME,
@@ -493,7 +491,12 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         });
 
     }
-
+    private void initLoginData() {
+        Operator operator = getLoginInfo();
+        if(null !=  operator){
+            getTeamId(String.valueOf(operator.getId()));
+        }
+    }
     private void getTeamId(String operatorId) {
 
         String rawQuery = "select Name,Team_ID,TeamName from Operator where Operator_ID=" + operatorId;
@@ -508,11 +511,11 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        String name = element.asArrayElement().get(0)
-                                .asObjectElement().get(Operator.NAME).valueAsString();
-                        if (name != null) {
-                            create_task.setText(name);  //创建人名
-                        }
+//                        String name = element.asArrayElement().get(0)
+//                                .asObjectElement().get(Operator.NAME).valueAsString();
+//                        if (name != null) {
+//                            create_task.setText(name);  //创建人名
+//                        }
                     }
                 });
                 mTeamNamelist = new ArrayList<ObjectElement>();
@@ -829,23 +832,25 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     }
 
     //刷nfc卡处理
-    private void resolveIntent(Intent intent) {
+    public void resolveNfcMessage(Intent intent) {
         String action = intent.getAction();
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
 //
             Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            String operatorId = NfcUtils.dumpTagData(tag);
-            if (operatorId == null) {
+            String iccardID = NfcUtils.dumpTagData(tag);
+
+
+            if (iccardID == null) {
                 return;
-            } else if (operatorId.equals("")) {
+            } else if (iccardID.equals("")) {
                 return;
             }
             if (nfctag == CREATER) {
                 nfctag = 0;
                 HttpParams params = new HttpParams();
-                params.putHeaders("ICCardID", "005567");
+                params.putHeaders("ICCardID", iccardID);
                 HttpUtils.get(mContext, BuildConfig.getConfigurationEndPoint(), params,
                         new HttpCallback() {
                             @Override
@@ -863,9 +868,43 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
             } else if (nfctag == DEVICE_NUM) {
                 nfctag = 0;
-                device_num.setText("AB0001234");
-                nfcDialog.dismiss();
-                Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
+
+                String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='" + iccardID + "'";
+                ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+                        EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
+                Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+
+                    @Override
+                    public void onSuccess(DataElement dataElement) {
+
+                        if (dataElement != null && dataElement.isArray()
+                                && dataElement.asArrayElement().size() > 0) {
+                            ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
+                            device_num.setText(objectElement.get(Equipment.ASSETSID).valueAsString());
+                            nfcDialog.dismiss();
+                            Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(mContext, "目前该设备没有机台号", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable throwable) {
+
+                    }
+                });
+
+
+
+
+
             }
 
         }
@@ -972,7 +1011,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(CreateTaskActivity.this,"任务创建成功",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreateTaskActivity.this, "任务创建成功", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
