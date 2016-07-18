@@ -28,6 +28,7 @@
     <string name="maintenance">维护</string>
     <string name="team_status">班组人员状态查询</string>
     <string name="select">请下拉</string>
+    <string name="pleaseInputOrSelect">请点击或下拉</string>
     <string name="scan">请扫描</string>
     <string name="task_type">任务类型: </string>
     <string name="creater"> 创   建  人: </string>

@@ -106,7 +106,9 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 	public String getText() {
 		return mEditText.getText().toString();
 	}
-
+	public void setText(String s) {
+		 mEditText.setText(s);
+	}
 	public PopMenu popMenu;
 	@Override
 	public void onClick(View v) {

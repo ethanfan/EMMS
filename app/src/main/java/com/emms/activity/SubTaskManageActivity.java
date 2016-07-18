@@ -22,6 +22,7 @@ import com.emms.ui.CustomDialog;
 import com.emms.util.DataUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by jaffer.deng on 2016/6/6.
@@ -31,14 +32,15 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
    private LinearLayout add_sub_task;
     private SubTaskAdapter adapter;
     private ArrayList<ObjectElement> datas=new ArrayList<ObjectElement>();
-    private Long taskId;
+    private String taskId;
     private ObjectElement TaskDetail;
+    private HashMap<String,String> Status_Colors=new HashMap<String,String>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub_task);
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
-        taskId=TaskDetail.get(Task.TASK_ID).valueAsLong();
+        taskId=TaskDetail.get(Task.TASK_ID).valueAsString();
         initView();
     }
 
@@ -75,11 +77,11 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
                 } else {
                     holder = (SubTaskAdapter.TaskViewHolder) convertView.getTag();
                 }
-                holder.work_num.setText(DataUtil.isDataElementNull(datas.get(position).get("TaskItem_ID")));
-           //     holder.approve_work_hours.setText(datas.get(position).get("approve_work_hours").valueAsString());
-                holder.work_name.setText(DataUtil.isDataElementNull(datas.get(position).get("TaskItemName")));
+                holder.work_num.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkCode")));
+                holder.approve_work_hours.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkTime")));
+                holder.work_name.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkName")));
                 holder.status.setText(DataUtil.isDataElementNull(datas.get(position).get("DataName")));
-                holder.work_description.setText(DataUtil.isDataElementNull(datas.get(position).get("TaskItemName")));
+                holder.work_description.setText(DataUtil.isDataElementNull(datas.get(position).get("DataDescr")));
                 holder.equipment_num.setText(DataUtil.isDataElementNull(datas.get(position).get("Equipment_ID")));
                 return convertView;
             }
@@ -106,7 +108,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
     }
     private void getSubTaskDataFromServer(){
         HttpParams params=new HttpParams();
-        params.put("task_id",93);
+        params.put("task_id",taskId);
         HttpUtils.get(this, "TaskItemList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {

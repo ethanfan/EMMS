@@ -188,7 +188,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 } else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
-                String creater = datas.get(position).get("StatusOperator").valueAsString();
+                String creater = DataUtil.isDataElementNull(datas.get(position).get("StatusOperator"));
                 if (creater != null) {
                     if (!creater.equals("")) {
                         holder.tv_creater.setText(creater);
@@ -201,18 +201,18 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 }
 
 
-                holder.tv_device_num.setText(datas.get(position).get(Equipment.EQUIPMENT_ID).valueAsString());
-                holder.tv_device_name.setText(datas.get(position).get(Equipment.EQUIPMENT_NAME).valueAsString());
+                holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get(Equipment.EQUIPMENT_ID)));
+                holder.tv_device_name.setText(DataUtil.isDataElementNull(datas.get(position).get(Equipment.EQUIPMENT_NAME)));
                 //String createTime = LongToDate.longPointDate(datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsLong());
-                String createTime = datas.get(position).get("CreateTime").valueAsString();
+                String createTime = DataUtil.isDataElementNull(datas.get(position).get("CreateTime"));
                 holder.tv_create_time.setText(createTime);
                 //String endTime = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsLong());
 
-                String equipmentStatus = datas.get(position).get(Equipment.STATUS).valueAsString();
+                String equipmentStatus = DataUtil.isDataElementNull(datas.get(position).get(Equipment.STATUS));
 
                 String endTime = "";
                 if (!STATUS_DONE.equals(equipmentStatus)) {
-                    endTime = datas.get(position).get("StatusTime").valueAsString();
+                    endTime = DataUtil.isDataElementNull(datas.get(position).get("StatusTime"));
                 }
                 holder.tv_end_time.setText(endTime);
 
@@ -658,7 +658,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 Log.e("returnString", t);
                 if (t != null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-
+                      if(!jsonObjectElement.get("PageData").isNull()){
                     ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
 
                     if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
@@ -667,7 +667,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         for (int i = 0; i < jsonArrayElement.size(); i++) {
                             datas.add(jsonArrayElement.get(i).asObjectElement());
 
-                            String equipmentStatus = jsonArrayElement.get(i).asObjectElement().get(Equipment.STATUS).valueAsString();
+                            String equipmentStatus = DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.STATUS));
                             if (STATUS_DONE.equals(equipmentStatus)) {
                                 dealDeviceCount++;
                             }
@@ -683,7 +683,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         deviceCountMap.put("dealCount", String.valueOf(dealDeviceCount));
                     }
                 }
-            }
+            }}
 
             @Override
             public void onFailure(int errorNo, String strMsg) {

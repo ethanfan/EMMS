@@ -7,7 +7,7 @@
 <RelativeLayout
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="#FFFFFFFF"
     android:layout_alignParentBottom="true"
     android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
@@ -27,15 +27,18 @@
             android:text="@string/work_num"
             android:paddingLeft="10dp"
             android:layout_centerVertical="true"/>
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="20dp"
-        android:layout_toRightOf="@+id/work_num_tag"
-        android:id="@+id/work_num"
-        android:layout_centerVertical="true"/>
+        <com.emms.ui.DropEditText
+            android:id="@+id/work_num"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_toRightOf="@+id/work_num_tag"
+            android:layout_weight="3"
+            drop:drawableRight="@mipmap/drop_down"
+            drop:dropMode="flow_parent"
+            drop:hint="@string/pleaseInputOrSelect"
+            drop:hintColor="@color/hint_color" />
 
     </RelativeLayout>
     <RelativeLayout
@@ -89,7 +92,7 @@
             android:layout_weight="3"
             drop:drawableRight="@mipmap/drop_down"
             drop:dropMode="flow_parent"
-            drop:hint="@string/select"
+            drop:hint="@string/pleaseInputOrSelect"
             drop:hintColor="@color/hint_color" />
 
     </RelativeLayout>

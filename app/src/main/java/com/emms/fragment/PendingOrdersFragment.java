@@ -60,6 +60,7 @@ public class PendingOrdersFragment extends Fragment{
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        getCompleteTaskDataFromServer();
                         listView.onRefreshComplete();
                         Toast.makeText(mContext,"dadada",Toast.LENGTH_SHORT).show();
                     }
@@ -145,6 +146,7 @@ public class PendingOrdersFragment extends Fragment{
                     int RecCount=jsonObjectElement.get("RecCount").valueAsInt();
                     if(jsonObjectElement.get("PageData").asArrayElement().size()==0){
                     }
+                    datas.clear();
                     for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
                         datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                     }

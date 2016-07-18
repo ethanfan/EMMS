@@ -3,10 +3,16 @@
     android:layout_width="wrap_content"
     android:background="@color/white"
     android:layout_height="wrap_content">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="8sp"
+        android:id="@+id/ttt"
+        ></View>
     <ImageView
         android:id="@+id/menu_detail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/ttt"
         android:paddingLeft="5dp"
         android:src="@mipmap/sub_task_management"/>
     <TextView
@@ -15,14 +21,15 @@
         android:paddingLeft="10dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/menu_detail"
         android:layout_toRightOf="@+id/menu_detail"
         android:background="@color/white"
         android:textColor="@color/text_login"
         android:text="停发"
-        android:textSize="16.0sp" />
+        android:textSize="17.0sp" />
     <View
         android:layout_width="match_parent"
-        android:layout_height="6sp"
+        android:layout_height="8sp"
         android:layout_below="@+id/textView"
         ></View>
 </RelativeLayout>

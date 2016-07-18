@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +76,7 @@ public class ProcessingFragment extends Fragment {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        getProcessingDataFromServer();
                         listView.onRefreshComplete();
                         Toast.makeText(mContext,"dadada",Toast.LENGTH_SHORT).show();
                     }
@@ -183,6 +185,9 @@ public class ProcessingFragment extends Fragment {
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
+             Toast toast=Toast.makeText(mContext,"获取任务列表失败，请检查网络",Toast.LENGTH_LONG);
+              toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
             }
         });
     }

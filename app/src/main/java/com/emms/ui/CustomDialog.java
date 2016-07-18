@@ -66,6 +66,7 @@ public class CustomDialog extends Dialog {
         setContentView(layout);
         initview();
         setCanceledOnTouchOutside(true);
+
     }
 
     public void initview() {
@@ -77,7 +78,11 @@ public class CustomDialog extends Dialog {
         comfirm_button = (TextView) findViewById(R.id.comfirm);//确定按钮，提交信息
         //若为修改状态，则有初始数据
         if(modifySubTask!=null){
-           // work_num.setText(DataUtil.isDataElementNull(modifySubTask.get()));
+            work_num.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItem_ID")));//待修改
+           // approved_working_hours.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItem_ID")));
+            sub_task_equipment_num.setText(DataUtil.isDataElementNull(modifySubTask.get("Equipment_ID")));
+            work_name.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItemName")));
+            work_description.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItemName")));
         }
 
         work_num.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -120,6 +125,7 @@ public class CustomDialog extends Dialog {
     public void submitSubTaskData() {
         HttpParams params = new HttpParams();
         JsonObjectElement jsonObjectElement = new JsonObjectElement();
+        //如果是修改任务，传子任务ID,若添加子任务,传子任务ID=0
         //jsonObjectElement.set(Task.TASK_ID,);
         //jsonObjectElement.set(TaskItemName,);
         // jsonObjectElement.set(TaskItemDesc,);

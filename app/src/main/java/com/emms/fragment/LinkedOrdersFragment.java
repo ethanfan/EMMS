@@ -64,6 +64,7 @@ public class LinkedOrdersFragment extends Fragment{
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        getCompleteTaskDataFromServer(data);
                         listView.onRefreshComplete();
                         Toast.makeText(mContext,"dadada",Toast.LENGTH_SHORT).show();
                     }
@@ -182,6 +183,7 @@ public class LinkedOrdersFragment extends Fragment{
                  //  datas1.clear();
                  //   datas2.clear();
                  //   datas3.clear();
+                    data.clear();
                     for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
                         data.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                     }
