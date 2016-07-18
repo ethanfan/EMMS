@@ -7,7 +7,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.datastore_android_sdk.datastore.ObjectElement;
 import com.emms.R;
+import com.emms.util.DataUtil;
 
 import java.util.ArrayList;
 
@@ -17,8 +19,17 @@ import java.util.ArrayList;
 public class GroupAdapter extends BaseAdapter {
 
     private Context context;
-    private ArrayList<String> datas;
-    public GroupAdapter(Context context,ArrayList<String> datas) {
+
+    public ArrayList<ObjectElement> getDatas() {
+        return datas;
+    }
+
+    public void setDatas(ArrayList<ObjectElement> datas) {
+        this.datas = datas;
+    }
+
+    private ArrayList<ObjectElement> datas;
+    public GroupAdapter(Context context,ArrayList<ObjectElement> datas) {
         this.context =context;
         this.datas =datas;
     }
@@ -55,7 +66,7 @@ public class GroupAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.groupItem.setText(datas.get(position));
+        holder.groupItem.setText(DataUtil.isDataElementNull(datas.get(position).get("OrganiseName")));
 
         return convertView;
     }

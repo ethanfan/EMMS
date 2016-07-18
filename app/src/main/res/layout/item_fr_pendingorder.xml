@@ -39,7 +39,7 @@
             android:text="@string/pending_orders"
             android:textColor="@color/order_color"
             android:textSize="17sp"
-            android:layout_marginRight="40dp"
+            android:layout_marginRight="1dp"
             android:layout_alignTop="@+id/tv_creater_order"
             android:layout_alignParentRight="true" />
         <TextView

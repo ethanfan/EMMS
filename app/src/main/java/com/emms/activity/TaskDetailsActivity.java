@@ -44,6 +44,7 @@ import com.emms.schema.Equipment;
 import com.emms.schema.Maintain;
 import com.emms.schema.Operator;
 import com.emms.schema.Task;
+import com.emms.ui.ChangeEquipmentDialog;
 import com.emms.ui.ExpandGridView;
 import com.emms.ui.PopMenuTaskDetail;
 import com.emms.ui.ScrollViewWithListView;
@@ -125,6 +126,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         setContentView(R.layout.activity_task_detail);
         mContext = this;
         //获取任务详细信息
+         ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
+         changeEquipmentDialog.show();
         TaskDetail = getIntent().getStringExtra("TaskDetail");
 
         taskId = getTaskId(TaskDetail);
@@ -759,7 +762,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     }
 
     private void addTaskEquipment(String iccardID) {
-
+     //   ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
+     //  changeEquipmentDialog.show();
+        postTaskEquipment("aaaa","0",0);
         String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='" + iccardID + "'";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
@@ -771,7 +776,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 if (dataElement != null && dataElement.isArray()
                         && dataElement.asArrayElement().size() > 0) {
                     ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
-                    postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString());
+                    //进行判断，若任务未有该设备号，添加
+                    postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),"0",0);
+                    //若已有该设备号，弹出对话框，申请进行状态变更
 
                 } else {
                     runOnUiThread(new Runnable() {
@@ -793,18 +800,21 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
     }
 
-    private void postTaskEquipment(String equipmentID) {
+    private void postTaskEquipment(String equipmentID,String TaskEquipment_ID,int status) {
 
         HttpParams params = new HttpParams();
 
         JsonObjectElement taskEquepment=new JsonObjectElement();
 //创建任务提交数据：任务创建人，任务类型“T01”那些，几台号（数组），
-        taskEquepment.set(Task.TASK_ID,0);
+        taskEquepment.set(Task.TASK_ID,taskId);
         //  taskDetail.set(Task.TASK_TYPE,TaskType);
-        taskEquepment.set("TaskEquipment_ID", 0);
-        taskEquepment.set("Task_ID", taskId);
-        taskEquepment.set("Equipment_ID", equipmentID);
 
+        //若任务未有设备，则输入为0，表示添加
+        taskEquepment.set("TaskEquipment_ID",TaskEquipment_ID);
+       //若已有设备，申请状态变更
+        taskEquepment.set("Equipment_ID", "123213");
+        //taskEquepment.set("Equipment_ID", equipmentID);
+        taskEquepment.set("Status",status);
 
         params.putJsonParams(taskEquepment.toJson());
 

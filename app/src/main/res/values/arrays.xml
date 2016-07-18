@@ -20,4 +20,12 @@
         <item>子任务管理</item>
         <item>故障总结</item>
     </string-array>
+    <string-array name="equip_status">
+        <item>查看历史任务</item>
+        <item>暂停</item>
+        <item>开始</item>
+        <item>领料</item>
+        <item>待料</item>
+    </string-array>
+
 </resources>

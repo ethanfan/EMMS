@@ -12,8 +12,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.datastore_android_sdk.datastore.ObjectElement;
 import com.emms.R;
 import com.emms.bean.AwaitRepair;
+import com.emms.util.DataUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +26,15 @@ import java.util.Map;
  * Created by jaffer.deng on 2016/7/16.
  */
 public class MultiAdapter extends BaseAdapter {
-    private List<AwaitRepair> listItems;
+    public List<ObjectElement> getListItems() {
+        return listItems;
+    }
+
+    public void setListItems(List<ObjectElement> listItems) {
+        this.listItems = listItems;
+    }
+
+    private List<ObjectElement> listItems;
 
     private Context ctx;
     /** 标记CheckBox是否被选中 **/
@@ -34,7 +44,7 @@ public class MultiAdapter extends BaseAdapter {
 
     @SuppressLint("UseSparseArrays")
     private Map<Integer, View> viewMap = new HashMap<Integer, View>();
-    public MultiAdapter(Context context, List<AwaitRepair> listItems) {
+    public MultiAdapter(Context context, List<ObjectElement> listItems) {
         // TODO Auto-generated constructor stub
         this.ctx = context;
         this.listItems = listItems;
@@ -90,7 +100,7 @@ public class MultiAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return listItems.get(position);
     }
 
     @Override
@@ -109,7 +119,8 @@ public class MultiAdapter extends BaseAdapter {
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         View rowView = this.viewMap.get(position);
-        AwaitRepair awaitRepair =  listItems.get(position);
+      //  AwaitRepair awaitRepair =  listItems.get(position);
+        ObjectElement Operator=listItems.get(position);
         if (rowView == null) {
             LayoutInflater inflater = ((Activity) ctx).getLayoutInflater();
             rowView = inflater.inflate(R.layout.item_invitor, null);
@@ -117,9 +128,13 @@ public class MultiAdapter extends BaseAdapter {
             TextView tech = (TextView)rowView.findViewById(R.id.id_tech);
             ImageView status = (ImageView) rowView.findViewById(R.id.workstatus);
 
-            workname.setText(awaitRepair.getWg());
-            tech.setText(awaitRepair.getGrd());
-            if(1 == awaitRepair.getStatus()){
+
+            workname.setText(DataUtil.isDataElementNull(Operator.get("Name")));
+           // tech.setText(DataUtil.isDataElementNull(Operator.get("Name")));
+           // status.setText(DataUtil.isDataElementNull(Operator.get("Name")));
+     /*      workname.setText(awaitRepair.getWg());
+            tech.setText(awaitRepair.getGrd());*/
+            if(DataUtil.isDataElementNull(Operator.get("Status")).equals("1")){
                 status.setImageResource(R.mipmap.busy);
             }else {
                 status.setImageResource(R.mipmap.idle);

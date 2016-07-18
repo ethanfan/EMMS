@@ -166,8 +166,7 @@ public class LinkedOrdersFragment extends Fragment{
         HttpParams params=new HttpParams();
         String s=SharedPreferenceManager.getLoginData(mContext);
         JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
-        int operator_id=jsonObjectElement.get("ds").asArrayElement().get(0).asObjectElement().
-                get("Operator_ID").valueAsInt();
+        String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
         params.put("operator_id",operator_id);
         params.put("status",2);
         params.put("taskClass","T01");
