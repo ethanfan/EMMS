@@ -147,7 +147,8 @@ public class ProcessingFragment extends Fragment {
         String s=SharedPreferenceManager.getLoginData(mContext);
         //params.put("Operator_id",);
         JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
-        int operator_id=jsonObjectElement.get("Operator_ID").valueAsInt();
+        int operator_id=jsonObjectElement.get("ds").asArrayElement().get(0).asObjectElement().
+                get("Operator_ID").valueAsInt();
         params.put("operator_id",4673);
         params.put("status",1);//状态1，即处理中任务
         params.put("taskClass","T01");

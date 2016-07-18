@@ -29,6 +29,7 @@ import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Task;
+import com.emms.util.DataUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -56,6 +57,8 @@ public class CustomDialog extends Dialog {
     private final String DATA_KEY_WORK_INFO = "workInfo";
 
     private static final int MSG_UPDATE_WORK_INFO = 10;
+    private ObjectElement modifySubTask=null;
+
 
     public CustomDialog(Context context, int layout, int style) {
         super(context, style);
@@ -72,6 +75,11 @@ public class CustomDialog extends Dialog {
         work_description = (TextView) findViewById(R.id.work_description);//根据work_num从数据库中查出
         sub_task_equipment_num = (DropEditText) findViewById(R.id.sub_task_equipment_num);//机台号，用列表中选择，列表数据从任务详细列表中传入
         comfirm_button = (TextView) findViewById(R.id.comfirm);//确定按钮，提交信息
+        //若为修改状态，则有初始数据
+        if(modifySubTask!=null){
+           // work_num.setText(DataUtil.isDataElementNull(modifySubTask.get()));
+        }
+
         work_num.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -97,7 +105,10 @@ public class CustomDialog extends Dialog {
     }
 
     public void comfirm_button_event() {
-        if (work_num.getText().equals("") || approved_working_hours.getText().equals("")) {
+        if (work_num.getText()==null
+                ||approved_working_hours.getText()==null||
+                work_num.getText().toString().trim().equals("") ||
+                approved_working_hours.getText().toString().trim().equals("")) {
             //判断数据为空，提示用户数据不能为空，拒绝提交
             Toast.makeText(context, "请输入数据", Toast.LENGTH_LONG).show();
             return;
@@ -240,6 +251,8 @@ public class CustomDialog extends Dialog {
                 EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
         return elemt;
     }
-
+    private void setData(ObjectElement objectElement){
+        modifySubTask=objectElement;
+    }
 
 }

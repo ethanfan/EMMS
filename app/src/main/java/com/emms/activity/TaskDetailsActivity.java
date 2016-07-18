@@ -292,7 +292,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 }
             }
         });
-        popMenuTaskDetail = new PopMenuTaskDetail(this, 300) {
+        popMenuTaskDetail = new PopMenuTaskDetail(this, 300, TaskDetail) {
 
             @Override
             public void onEventDismiss() {

@@ -139,7 +139,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         HttpParams params=new HttpParams();
        String loginData=SharedPreferenceManager.getLoginData(this);
        final JsonObjectElement jsonObjectElement=new JsonObjectElement(loginData);
-       String Operator_ID=jsonObjectElement.get("Operator_ID").valueAsString();
+       String Operator_ID=jsonObjectElement.get("ds").
+               asArrayElement().get(0).asObjectElement().get("Operator_ID").valueAsString();
       params.put("id",Operator_ID);
       // String s=SharedPreferenceManager.getUserName(this);
         HttpUtils.get(this, "TaskNum", params, new HttpCallback() {

@@ -131,7 +131,8 @@ public class PendingOrdersFragment extends Fragment{
         HttpParams params=new HttpParams();
         String s=SharedPreferenceManager.getLoginData(mContext);
         JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
-        int operator_id=jsonObjectElement.get("Operator_ID").valueAsInt();
+        int operator_id=jsonObjectElement.get("ds").asArrayElement().get(0).asObjectElement().
+                get("Operator_ID").valueAsInt();
         params.put("operator_id",4673);
         params.put("status",0);
         params.put("taskClass","T01");

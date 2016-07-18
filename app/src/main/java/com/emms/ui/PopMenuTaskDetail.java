@@ -21,6 +21,8 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
 import com.emms.activity.InvitorActivity;
 import com.emms.activity.SubTaskManageActivity;
@@ -36,12 +38,14 @@ public abstract class PopMenuTaskDetail {
 	private PopupWindow popupWindow;
 	private ListView listView;
 	private PopAdapter popAdapter;
-    private Long TaskId;
+    private ObjectElement TaskDetail;
+	private Long TaskId;
 	// private OnItemClickListener listener;
-	public PopMenuTaskDetail(Context context, int width) {
+	public PopMenuTaskDetail(Context context, int width,String taskDetail) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
-
+		this.TaskDetail=new JsonObjectElement(taskDetail);
+		TaskId=TaskDetail.get(Task.TASK_ID).valueAsLong();
 		itemList = new ArrayList<String>(5);
 		View view = LayoutInflater.from(context)
 				.inflate(R.layout.popmenu, null);
@@ -238,12 +242,14 @@ public abstract class PopMenuTaskDetail {
 	private void InviteHelp(){
 
 		Intent intent=new Intent(context, InvitorActivity.class);
+		intent.putExtra(Task.TASK_ID,TaskId);
 		context.startActivity(intent);
 
 	}
 	private void SubTaskManage(){
 		Intent intent=new Intent(context, SubTaskManageActivity.class);
 		//intent.putExtra(Task.TASK_ID,TaskId);
+		intent.putExtra("TaskDetail",TaskDetail.toString());
 		context.startActivity(intent);
 	}
 	private void FailureSummary(){

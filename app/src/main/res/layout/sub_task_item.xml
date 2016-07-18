@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="70dp"
         android:id="@+id/two">
         <TextView
             android:layout_width="wrap_content"
@@ -41,8 +41,27 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/three"
+        android:id="@+id/six"
         android:layout_below="@+id/one"
+        android:layout_marginTop="5dp"
+        android:layout_alignLeft="@id/one">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/equipment_num_tag"
+            android:text="@string/equipment_num"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/equipment_num"
+            android:paddingLeft="10dp"
+            android:layout_toRightOf="@id/equipment_num_tag"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/three"
+        android:layout_below="@+id/six"
         android:layout_marginTop="5dp"
         android:layout_alignLeft="@id/one">
         <TextView
@@ -95,23 +114,5 @@
             android:paddingLeft="10dp"
             android:layout_toRightOf="@id/work_description_tag"/>
     </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/six"
-        android:layout_below="@+id/four"
-        android:layout_marginTop="5dp"
-        android:layout_alignLeft="@id/four">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/equipment_num_tag"
-            android:text="@string/equipment_num"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/equipment_num"
-            android:paddingLeft="10dp"
-            android:layout_toRightOf="@id/equipment_num_tag"/>
-    </RelativeLayout>
+
 </RelativeLayout>
