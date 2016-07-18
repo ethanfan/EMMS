@@ -41,6 +41,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         getTaskCountFromServer();
         getNewDataFromServer(); //下载DB文件
     }
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        getTaskCountFromServer();
+    }
 
     private void initView() {
         btn_exit = (Button) findViewById(R.id.btn_exit);

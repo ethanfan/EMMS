@@ -454,7 +454,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         if (!isSearchview) {
             teamId = mTeamNamelist.get(group.getSelectPosition()).get("Team_ID").valueAsString();
         }
-        String rawQuery ="select distinct EquipmentName from Equipment where UseTeam_ID ="+teamId+" and EquipmentName is not null";
+        String rawQuery ="select distinct EquipmentName from Equipment where Organise_ID_use ="+teamId+" and EquipmentName is not null";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -992,6 +992,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                     @Override
                     public void run() {
                         Toast.makeText(CreateTaskActivity.this, "任务创建成功", Toast.LENGTH_SHORT).show();
+                        finish();
                     }
                 });
             }

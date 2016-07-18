@@ -126,10 +126,10 @@ public class PushService {
                     logs = "Failed with errorCode = " + code;
                     Log.e(TAG, logs);
             }
-
-            if(StringUtils.isNotBlank(logs)){
-                MessageUtils.showToast(logs, applicationContext);
-            }
+//
+//            if(code != 0){
+//                MessageUtils.showToast(logs, applicationContext);
+//            }
         }
 
     };
@@ -161,9 +161,9 @@ public class PushService {
                     Log.e(TAG, logs);
             }
 
-            if(code != 0){
-                MessageUtils.showToast(logs, applicationContext);
-            }
+//            if(code != 0){
+//                MessageUtils.showToast(logs, applicationContext);
+//            }
         }
 
     };

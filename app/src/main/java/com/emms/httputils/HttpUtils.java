@@ -4,6 +4,7 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.emms.util.BuildConfig;
+import com.emms.util.Md5Utils;
 import com.emms.util.SharedPreferenceManager;
 import com.datastore_android_sdk.rxvolley.RxVolley;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
@@ -27,7 +28,7 @@ public  class HttpUtils {
 
         HttpParams params = new HttpParams();
        params.put("UserName", userName);
-        params.put("Password", passWord);
+        params.put("Password", Md5Utils.md5(passWord).toUpperCase());
        // params.put("UserName", "Max Ooi");
       // params.put("Password", "99295219CBAD91205AFD9A5629910AC2");
         params.put("AutoLogin", "true");
