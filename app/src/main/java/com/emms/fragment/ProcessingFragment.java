@@ -129,7 +129,6 @@ public class ProcessingFragment extends Fragment {
                 intent.putExtra(Task.TASK_ID,datas.get(position-1).get(Task.TASK_ID).valueAsString());
                 intent.putExtra("TaskDetail",datas.get(position-1).toString());
                 startActivity(intent);
-                //startActivity(new Intent(mContext, TaskDetailsActivity.class));
             }
         });
         return v;
@@ -150,7 +149,7 @@ public class ProcessingFragment extends Fragment {
         JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
         int operator_id=jsonObjectElement.get("Operator_ID").valueAsInt();
         params.put("operator_id",4673);
-        params.put("status",1);
+        params.put("status",1);//状态1，即处理中任务
         params.put("taskClass","T01");
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
             @Override

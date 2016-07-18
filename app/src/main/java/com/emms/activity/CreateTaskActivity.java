@@ -127,6 +127,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private String teamId ="";
     private String equipmentName ="";
 
+    private JsonObjectElement UserData;
     private HashMap<String,String> task_type_class=new HashMap<String, String>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,7 +142,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
         mDialog = new AlertDialog.Builder(this).setNeutralButton("Ok", null).create();
 
-
+       //若为登录进入，获取用户信息
+        UserData=new JsonObjectElement(SharedPreferenceManager.getLoginData(this));
+        //若非则为空
     }
 
     private void initSearchView() {
@@ -932,7 +935,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         if(task_subtype!=null){
             TaskType=TaskSubType;
         }
-        //创建任务提交数据:创建人ID，任务类型"T01,T02"等，机台号（数组），任务描述；
+        //创建任务提交数据:创建人ID，任务类型"T01,T02"等，机台号（数组），任务描述，组别
         JsonObjectElement task=new JsonObjectElement();
         JsonObjectElement taskDetail=new JsonObjectElement();
         //获取创建人ID

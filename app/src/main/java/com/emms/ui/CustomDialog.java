@@ -62,6 +62,7 @@ public class CustomDialog extends Dialog {
         this.context = context;
         setContentView(layout);
         initview();
+        setCanceledOnTouchOutside(true);
     }
 
     public void initview() {
@@ -96,7 +97,7 @@ public class CustomDialog extends Dialog {
     }
 
     public void comfirm_button_event() {
-        if (work_num.getText() == null && approved_working_hours.getText() == null && sub_task_equipment_num.getText() == null) {
+        if (work_num.getText().equals("") || approved_working_hours.getText().equals("")) {
             //判断数据为空，提示用户数据不能为空，拒绝提交
             Toast.makeText(context, "请输入数据", Toast.LENGTH_LONG).show();
             return;

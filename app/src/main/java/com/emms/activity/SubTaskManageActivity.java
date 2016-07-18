@@ -16,6 +16,7 @@ import com.emms.R;
 import com.emms.adapter.SubTaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.ui.CustomDialog;
+import com.emms.util.DataUtil;
 
 import java.util.ArrayList;
 
@@ -45,7 +46,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onClick(View v) {
                 //添加子任务
-                CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,0);
+                CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog);
                 customDialog.show();
             }
         });
@@ -66,12 +67,12 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
                 } else {
                     holder = (SubTaskAdapter.TaskViewHolder) convertView.getTag();
                 }
-                holder.work_num.setText(datas.get(position).get("TaskItem_ID").valueAsString());
+                holder.work_num.setText(DataUtil.isDataElementNull(datas.get(position).get("TaskItem_ID")));
            //     holder.approve_work_hours.setText(datas.get(position).get("approve_work_hours").valueAsString());
-                holder.work_name.setText(datas.get(position).get("TaskItemName").valueAsString());
-                holder.status.setText(datas.get(position).get("Status").valueAsString());
-                holder.work_description.setText(datas.get(position).get("TaskItemDesc").valueAsString());
-                holder.equipment_num.setText(datas.get(position).get("Equipment_ID").valueAsString());
+                holder.work_name.setText(DataUtil.isDataElementNull(datas.get(position).get("TaskItemName")));
+                holder.status.setText(DataUtil.isDataElementNull(datas.get(position).get("Status")));
+                holder.work_description.setText(DataUtil.isDataElementNull(datas.get(position).get("TaskItemDesc")));
+                holder.equipment_num.setText(DataUtil.isDataElementNull(datas.get(position).get("Equipment_ID")));
                 return convertView;
             }
         };

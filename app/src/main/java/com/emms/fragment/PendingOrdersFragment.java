@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
@@ -26,6 +27,7 @@ import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 import com.emms.util.LongToDate;
 import com.emms.util.SharedPreferenceManager;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
@@ -51,6 +53,30 @@ public class PendingOrdersFragment extends Fragment{
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
+        listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+                //上拉加载更多
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        listView.onRefreshComplete();
+                        Toast.makeText(mContext,"dadada",Toast.LENGTH_SHORT).show();
+                    }
+                },2000);
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        listView.onRefreshComplete();
+                        Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
+                    }
+                },2000);
+            }
+        });
         return v;
     }
 

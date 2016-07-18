@@ -50,6 +50,7 @@ import com.emms.ui.ScrollViewWithListView;
 import com.emms.util.AnimateFirstDisplayListener;
 import com.emms.util.Bimp;
 import com.emms.util.BuildConfig;
+import com.emms.util.DataUtil;
 import com.emms.util.FileUtils;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
@@ -237,14 +238,6 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     }
 
     private void initDatas() {
-   /*     datas = new ArrayList<TaskBean>() {
-            {
-                add(new TaskBean("何邵勃", "0115", "平车", 0, 144400000, 199900000));
-                add(new TaskBean(null, "0115", "平车", 1, 144400000, 199900000));
-                add(new TaskBean("何邵勃", "0115", "平车", 1, 144400000, 199900000));
-            }
-        };*/
-
         // for test
         taskId = 93L;
 
@@ -272,7 +265,13 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         dealCountTextView = (TextView) findViewById(R.id.deal_count);
         noScrollgridview = (ExpandGridView) findViewById(R.id.picture_containt);
         noScrollgridview.setSelector(new ColorDrawable(Color.TRANSPARENT));
-
+        JsonObjectElement taskDetail=new JsonObjectElement(TaskDetail);
+        ((TextView)findViewById(R.id.task_group)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.ORGANISE_NAME)));
+        ((TextView)findViewById(R.id.task_ID)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.TASK_ID)));
+        ((TextView)findViewById(R.id.task_start_time)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.START_TIME)));
+        ((TextView)findViewById(R.id.task_create_time)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT_TIME)));
+        ((TextView)findViewById(R.id.task_creater)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT)));
+        ((TextView)findViewById(R.id.task_description)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.TASK_DESCRIPTION)));
         adapter = new GridAdapter(this);
 //        adapter.update1();
         noScrollgridview.setAdapter(adapter);

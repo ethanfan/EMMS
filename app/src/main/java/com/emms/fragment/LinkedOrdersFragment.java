@@ -11,7 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
@@ -28,6 +30,7 @@ import com.emms.util.DataUtil;
 import com.emms.util.SharedPreferenceManager;
 import com.flyco.tablayout.SegmentTabLayout;
 import com.flyco.tablayout.listener.OnTabSelectListener;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.util.ArrayList;
@@ -54,6 +57,30 @@ public class LinkedOrdersFragment extends Fragment{
         tabLayout_1 = (SegmentTabLayout) v.findViewById(R.id.tl_1);
         tabLayout_1.setVisibility(View.VISIBLE);
         listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
+        listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+                //上拉加载更多
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        listView.onRefreshComplete();
+                        Toast.makeText(mContext,"dadada",Toast.LENGTH_SHORT).show();
+                    }
+                },2000);
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        listView.onRefreshComplete();
+                        Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
+                    }
+                },2000);
+            }
+        });
         return v;
     }
 
