@@ -204,15 +204,15 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get(Equipment.EQUIPMENT_ID)));
                 holder.tv_device_name.setText(DataUtil.isDataElementNull(datas.get(position).get(Equipment.EQUIPMENT_NAME)));
                 //String createTime = LongToDate.longPointDate(datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsLong());
-                String createTime = DataUtil.isDataElementNull(datas.get(position).get("CreateTime"));
+                String createTime = DataUtil.isDataElementNull(datas.get(position).get("StartTime"));
                 holder.tv_create_time.setText(createTime);
                 //String endTime = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsLong());
 
-                String equipmentStatus = DataUtil.isDataElementNull(datas.get(position).get(Equipment.STATUS));
+                String equipmentStatus = DataUtil.isDataElementNull(datas.get(position).get("DataName"));
 
                 String endTime = "";
                 if (!STATUS_DONE.equals(equipmentStatus)) {
-                    endTime = DataUtil.isDataElementNull(datas.get(position).get("StatusTime"));
+                    endTime = DataUtil.isDataElementNull(datas.get(position).get("FinishTime"));
                 }
                 holder.tv_end_time.setText(endTime);
 

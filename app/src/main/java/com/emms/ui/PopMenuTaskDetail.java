@@ -36,6 +36,7 @@ public abstract class PopMenuTaskDetail {
 	private ArrayList<String> itemList;
 	private Context context;
 	private PopupWindow popupWindow;
+	PopMenuTaskDetail popMenuTaskDetail=this;
 	private ListView listView;
 	private PopAdapter popAdapter;
     private ObjectElement TaskDetail;
@@ -100,7 +101,7 @@ public abstract class PopMenuTaskDetail {
 				}else if(position==2){
 
 				}else if(position==3){
-
+					ExChangeOrder();
 				}else if(position==4){
 					InviteHelp();
 				}else if(position==5){
@@ -108,6 +109,7 @@ public abstract class PopMenuTaskDetail {
 				}else if(position==6){
 
 				}
+				popMenuTaskDetail.dismiss();
 			}
 		});
 
@@ -237,12 +239,16 @@ public abstract class PopMenuTaskDetail {
 
 	}
 	private void ExChangeOrder(){
-
+		Intent intent=new Intent(context, InvitorActivity.class);
+		intent.putExtra(Task.TASK_ID,TaskId);
+		intent.putExtra("isExChangeOrder",true);
+		context.startActivity(intent);
 	}
 	private void InviteHelp(){
 
 		Intent intent=new Intent(context, InvitorActivity.class);
 		intent.putExtra(Task.TASK_ID,TaskId);
+		intent.putExtra("isInviteHelp",true);
 		context.startActivity(intent);
 
 	}

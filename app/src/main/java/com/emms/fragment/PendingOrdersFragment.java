@@ -134,7 +134,7 @@ public class PendingOrdersFragment extends Fragment{
         JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
         int operator_id=jsonObjectElement.get("ds").asArrayElement().get(0).asObjectElement().
                 get("Operator_ID").valueAsInt();
-        params.put("operator_id",4673);
+        params.put("operator_id",operator_id);
         params.put("status",0);
         params.put("taskClass","T01");
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
