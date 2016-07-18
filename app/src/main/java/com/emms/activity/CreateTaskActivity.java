@@ -404,7 +404,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         }
         try {
             String rawQuery = "SELECT * FROM Equipment WHERE EquipmentName=" + "'" + equipmentName
-                    + "'" + " AND UseTeam_ID =" + teamId ;
+                    + "'" + " AND Organise_ID_use =" + teamId ;
             ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                     EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
             Futures.addCallback(elemt, new FutureCallback<DataElement>() {
