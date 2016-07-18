@@ -46,19 +46,19 @@ import java.util.Map;
 public class CustomDialog extends Dialog {
     private CustomDialog dialog = this;
     private Context context;
-    private EditText work_num, approved_working_hours;
+    private EditText  approved_working_hours;
     private TextView work_name, work_description;
     private TextView comfirm_button;
-    private DropEditText sub_task_equipment_num;
+    private DropEditText work_num,sub_task_equipment_num;
     private RelativeLayout relativelayout;
     private RelativeLayout IknowButtonLayout;
-
     private Map<String, Object> dataMap = new HashMap<String, Object>();
     private final String DATA_KEY_WORK_INFO = "workInfo";
 
     private static final int MSG_UPDATE_WORK_INFO = 10;
     private ObjectElement modifySubTask=null;
 
+    private String TaskId;
 
     public CustomDialog(Context context, int layout, int style) {
         super(context, style);
@@ -66,10 +66,17 @@ public class CustomDialog extends Dialog {
         setContentView(layout);
         initview();
         setCanceledOnTouchOutside(true);
+
     }
 
     public void initview() {
-        work_num = (EditText) findViewById(R.id.work_num);//添加情况下用户输入，修改情况下获取
+        findViewById(R.id.dismissView).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+        work_num = (DropEditText) findViewById(R.id.work_num);//添加情况下用户输入，修改情况下获取
         approved_working_hours = (EditText) findViewById(R.id.approved_working_hours);//根据work_num从数据库中查出
         work_name = (TextView) findViewById(R.id.work_name);//根据work_num从数据库中查出
         work_description = (TextView) findViewById(R.id.work_description);//根据work_num从数据库中查出
@@ -77,7 +84,11 @@ public class CustomDialog extends Dialog {
         comfirm_button = (TextView) findViewById(R.id.comfirm);//确定按钮，提交信息
         //若为修改状态，则有初始数据
         if(modifySubTask!=null){
-           // work_num.setText(DataUtil.isDataElementNull(modifySubTask.get()));
+            work_num.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItem_ID")));//待修改
+           // approved_working_hours.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItem_ID")));
+            sub_task_equipment_num.setText(DataUtil.isDataElementNull(modifySubTask.get("Equipment_ID")));
+            work_name.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItemName")));
+            work_description.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItemName")));
         }
 
         work_num.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -120,10 +131,19 @@ public class CustomDialog extends Dialog {
     public void submitSubTaskData() {
         HttpParams params = new HttpParams();
         JsonObjectElement jsonObjectElement = new JsonObjectElement();
-        //jsonObjectElement.set(Task.TASK_ID,);
-        //jsonObjectElement.set(TaskItemName,);
-        // jsonObjectElement.set(TaskItemDesc,);
-        // jsonObjectElement.set(Equipment_ID,);
+        //如果是修改任务，传子任务ID,若添加子任务,传子任务ID=0
+        if(modifySubTask==null){
+        jsonObjectElement.set("TaskItem_ID",0);}
+        else {
+            jsonObjectElement.set("TaskItem_ID",modifySubTask.get("TaskItem_ID").toString());
+        }
+        jsonObjectElement.set(Task.TASK_ID,TaskId);
+
+        jsonObjectElement.set("TaskItemName",work_name.getText().toString());
+         jsonObjectElement.set("TaskItemDesc",work_description.getText().toString());
+         jsonObjectElement.set("Equipment_ID",sub_task_equipment_num.getText().toString());
+        jsonObjectElement.set("work_num",work_num.getText().toString());
+        jsonObjectElement.set("WorkTime",approved_working_hours.getText().toString());
         params.putJsonParams(jsonObjectElement.toJson());
         HttpUtils.post(context, "TaskItem", params, new HttpCallback() {
             @Override
@@ -251,8 +271,16 @@ public class CustomDialog extends Dialog {
                 EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
         return elemt;
     }
-    private void setData(ObjectElement objectElement){
+    public void setData(ObjectElement objectElement){
         modifySubTask=objectElement;
     }
+    public String getTaskId() {
+        return TaskId;
+    }
+
+    public void setTaskId(String taskId) {
+        TaskId = taskId;
+    }
+
 
 }

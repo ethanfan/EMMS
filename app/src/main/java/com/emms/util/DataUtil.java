@@ -7,6 +7,9 @@ import com.datastore_android_sdk.datastore.DataElement;
  */
 public class DataUtil {
     public static String isDataElementNull(DataElement s){
+        if(s==null){
+            return "";
+        }
         if(!s.isNull()){
             return s.valueAsString();
         }

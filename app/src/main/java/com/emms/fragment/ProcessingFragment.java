@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +76,7 @@ public class ProcessingFragment extends Fragment {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        getProcessingDataFromServer();
                         listView.onRefreshComplete();
                         Toast.makeText(mContext,"dadada",Toast.LENGTH_SHORT).show();
                     }
@@ -149,7 +151,7 @@ public class ProcessingFragment extends Fragment {
         JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
         int operator_id=jsonObjectElement.get("ds").asArrayElement().get(0).asObjectElement().
                 get("Operator_ID").valueAsInt();
-        params.put("operator_id",4673);
+        params.put("operator_id",operator_id);
         params.put("status",1);//状态1，即处理中任务
         params.put("taskClass","T01");
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
@@ -183,6 +185,9 @@ public class ProcessingFragment extends Fragment {
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
+             Toast toast=Toast.makeText(mContext,"获取任务列表失败，请检查网络",Toast.LENGTH_LONG);
+              toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
             }
         });
     }

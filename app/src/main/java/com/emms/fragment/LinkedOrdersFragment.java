@@ -64,6 +64,7 @@ public class LinkedOrdersFragment extends Fragment{
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        getCompleteTaskDataFromServer(data);
                         listView.onRefreshComplete();
                         Toast.makeText(mContext,"dadada",Toast.LENGTH_SHORT).show();
                     }
@@ -167,7 +168,7 @@ public class LinkedOrdersFragment extends Fragment{
         JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
         int operator_id=jsonObjectElement.get("ds").asArrayElement().get(0).asObjectElement().
                 get("Operator_ID").valueAsInt();
-        params.put("operator_id",4673);
+        params.put("operator_id",operator_id);
         params.put("status",2);
         params.put("taskClass","T01");
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
@@ -182,6 +183,7 @@ public class LinkedOrdersFragment extends Fragment{
                  //  datas1.clear();
                  //   datas2.clear();
                  //   datas3.clear();
+                    data.clear();
                     for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
                         data.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                     }
