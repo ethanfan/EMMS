@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.emms.schema.AlertRule;
+import com.emms.schema.BaseOrganise;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.DataType;
 import com.emms.schema.Department;
@@ -51,6 +52,8 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 			Equipment.class).getTableName();
 	public static final String SCHEMA_MAINTAIN = Schema.getAttributes(
 			Maintain.class).getTableName();
+	public static final String SCHEMA_BASE_ORGANISE = Schema.getAttributes(
+			BaseOrganise.class).getTableName();
 
 
 	/**
@@ -131,6 +134,7 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 		schema.put(SCHEMA_FACTORY, Factory.class);
 		schema.put(SCHEMA_EQUIPMENT, Equipment.class);
 		schema.put(SCHEMA_MAINTAIN,Maintain.class);
+		schema.put(SCHEMA_BASE_ORGANISE,BaseOrganise.class);
 	}
 
 }

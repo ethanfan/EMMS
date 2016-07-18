@@ -503,20 +503,52 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
         } else {
             create_task.setText(operator.getName());  //创建人名
-            teamIDStr = operator.getTeamId();
 
-            teamIDStr = "468,490";
-            teamNameStr = "team1,team2";
+            String rawQuery = "select Organise_ID Team_ID,OrganiseName TeamName  from BaseOrganise where Organise_ID in(" + operator.getTranches() + ")";
+            ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+                    EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE, null);
+            Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+
+                @Override
+                public void onSuccess(DataElement dataElement) {
+                    mTeamNamelist = new ArrayList<ObjectElement>();
+                    if (dataElement != null && dataElement.isArray()
+                            && dataElement.asArrayElement().size() > 0) {
+                        for (int i = 0; i < dataElement.asArrayElement().size(); i++) {
+                            mTeamNamelist.add(dataElement.asArrayElement().get(i).asObjectElement());
+                        }
+                    } else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(mContext, "未找到操作员的分组", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+                    throwable.printStackTrace();
+                    System.out.println(throwable.getMessage());
+                }
+            });
         }
-        String teamID[] = teamIDStr.split(",");
-        String teamName[] = teamNameStr.split(",");
-        List<ObjectElement> array = new ArrayList<ObjectElement>();
-        for(int i=0;i<teamID.length;i++){
-            ObjectElement objectElement =  new JsonObjectElement();
-            objectElement.set(Team.TEAM_ID, teamID[i]);
-            objectElement.set(Team.TEAMNAME, teamName[i]);
-            mTeamNamelist.add(objectElement);
-        }
+
+
+
+
+//        String teamID[] = teamIDStr.split(",");
+//        String teamName[] = teamNameStr.split(",");
+//        List<ObjectElement> array = new ArrayList<ObjectElement>();
+//        for(int i=0;i<teamID.length;i++){
+//            ObjectElement objectElement =  new JsonObjectElement();
+//            objectElement.set(Team.TEAM_ID, teamID[i]);
+//            objectElement.set(Team.TEAMNAME, teamName[i]);
+//            mTeamNamelist.add(objectElement);
+//        }
 
 
 
