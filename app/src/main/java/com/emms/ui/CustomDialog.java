@@ -116,16 +116,16 @@ public class CustomDialog extends Dialog {
     }
 
     public void comfirm_button_event() {
-        if (work_num.getText()==null
+     /*   if (work_num.getText()==null
                 ||approved_working_hours.getText()==null||
                 work_num.getText().toString().trim().equals("") ||
                 approved_working_hours.getText().toString().trim().equals("")) {
             //判断数据为空，提示用户数据不能为空，拒绝提交
             Toast.makeText(context, "请输入数据", Toast.LENGTH_LONG).show();
             return;
-        } else {
+        } else {*/
             submitSubTaskData();
-        }
+      //  }
     }
 
     public void submitSubTaskData() {
@@ -139,11 +139,13 @@ public class CustomDialog extends Dialog {
         }
         jsonObjectElement.set(Task.TASK_ID,TaskId);
 
-        jsonObjectElement.set("TaskItemName",work_name.getText().toString());
-         jsonObjectElement.set("TaskItemDesc",work_description.getText().toString());
-         jsonObjectElement.set("Equipment_ID",sub_task_equipment_num.getText().toString());
-        jsonObjectElement.set("work_num",work_num.getText().toString());
-        jsonObjectElement.set("WorkTime",approved_working_hours.getText().toString());
+     //   jsonObjectElement.set("TaskItemName",work_name.getText().toString());
+     //    jsonObjectElement.set("TaskItemDesc",work_description.getText().toString());
+        jsonObjectElement.set("TaskItem_ID",0);
+        // jsonObjectElement.set("Equipment_ID",sub_task_equipment_num.getText().toString());
+        jsonObjectElement.set("Equipment_ID","124124");
+        jsonObjectElement.set("WorkTimeCode",work_num.getText().toString());
+        jsonObjectElement.set("PlanManhour",approved_working_hours.getText().toString());
         params.putJsonParams(jsonObjectElement.toJson());
         HttpUtils.post(context, "TaskItem", params, new HttpCallback() {
             @Override

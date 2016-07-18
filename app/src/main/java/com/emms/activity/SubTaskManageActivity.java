@@ -2,6 +2,7 @@ package com.emms.activity;
 
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
@@ -17,6 +19,7 @@ import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.SubTaskAdapter;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Equipment;
 import com.emms.schema.Task;
 import com.emms.ui.CustomDialog;
 import com.emms.util.DataUtil;
@@ -35,6 +38,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
     private String taskId;
     private ObjectElement TaskDetail;
     private HashMap<String,String> Status_Colors=new HashMap<String,String>();
+    private ArrayList<String> EquipmentList=new ArrayList<String>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
         taskId=TaskDetail.get(Task.TASK_ID).valueAsString();
         initView();
+        getTaskEquipmentFromServer();
     }
 
     private void initView() {
@@ -135,4 +140,41 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             }
         });
     }
+    public void getTaskEquipmentFromServer(){
+            if (null == taskId) {
+                return;
+            }
+
+            HttpParams params = new HttpParams();
+            params.put("task_id", taskId.toString());
+            //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
+            HttpUtils.get(this, "TaskDetailList", params, new HttpCallback() {
+                @Override
+                public void onSuccess(String t) {
+                    super.onSuccess(t);
+                    Log.e("returnString", t);
+                    if (t != null) {
+                        JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                        if (!jsonObjectElement.get("PageData").isNull()) {
+                            ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
+
+                            if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
+
+                                int dealDeviceCount = 0;
+                                for (int i = 0; i < jsonArrayElement.size(); i++) {
+                                    EquipmentList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
+                                }
+                            }
+                        }
+                    }
+                }
+                @Override
+                public void onFailure(int errorNo, String strMsg) {
+
+                    super.onFailure(errorNo, strMsg);
+                }
+            });
+
+    }
+
 }

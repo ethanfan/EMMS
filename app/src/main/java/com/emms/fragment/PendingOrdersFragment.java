@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -132,8 +133,7 @@ public class PendingOrdersFragment extends Fragment{
         HttpParams params=new HttpParams();
         String s=SharedPreferenceManager.getLoginData(mContext);
         JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
-        int operator_id=jsonObjectElement.get("ds").asArrayElement().get(0).asObjectElement().
-                get("Operator_ID").valueAsInt();
+        String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
         params.put("operator_id",operator_id);
         params.put("status",0);
         params.put("taskClass","T01");
@@ -166,9 +166,51 @@ public class PendingOrdersFragment extends Fragment{
             }
         });
     }
-    public void acceptTask(int position){
-       taskAdapter.getDatas().remove(position);
-        taskAdapter.notifyDataSetChanged();
+    public void acceptTask(final int position){
+        //HttpParams params=new HttpParams();
+        //params.put();
+       // taskAdapter.getDatas()
+       // datas.get(position).
+        JsonObjectElement task=new JsonObjectElement();
+        task.set(Task.TASK_ID,DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_ID)));
+        task.set("Status",1);
+        JsonObjectElement operator=new JsonObjectElement();
+
+        operator.set("Operator_ID",new JsonObjectElement(SharedPreferenceManager.getLoginData(mContext))
+                .get("Operator_ID").valueAsString());
+        JsonObjectElement SubData=new JsonObjectElement();
+        SubData.set("Task",task);
+        SubData.set("TaskOperator",operator);
+        HttpParams params=new HttpParams();
+        params.putJsonParams(SubData.toJson());
+        HttpUtils.post(mContext, "TaskCollection", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null) {
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                     if(jsonObjectElement!=null){
+                         if(jsonObjectElement.get("Success").valueAsBoolean()){
+                             //成功，通知用户接单成功
+                             Toast toast=Toast.makeText(mContext,"接单成功",Toast.LENGTH_LONG);
+                             toast.setGravity(Gravity.CENTER,0,0);
+                             toast.show();
+                         }else{
+                             //失败，通知用户接单失败，单已经被接
+                         }
+                         datas.remove(position);
+                         taskAdapter.setDatas(datas);
+                         taskAdapter.notifyDataSetChanged();
+                     }
+                }
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+            }
+        });
+
     }
 
 }

@@ -74,10 +74,10 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
      //   tabLayout_2.showMsg(2, 9);         //消息数量和位置
      //   tabLayout_2.setMsgMargin(2, 12, 10);
 
-        tabLayout_2.showMsg(1, Integer.valueOf(taskNum[1]));
+        tabLayout_2.showMsg(1, Integer.valueOf(taskNum[0]));
         tabLayout_2.setMsgMargin(1, 12, 10);
 
-        tabLayout_2.showMsg(0, Integer.valueOf(taskNum[0]));
+        tabLayout_2.showMsg(0, Integer.valueOf(taskNum[1]));
         tabLayout_2.setMsgMargin(0, 12, 10);
         //getSupportFragmentManager().
     }
