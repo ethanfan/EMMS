@@ -53,6 +53,7 @@ import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -66,6 +67,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -112,6 +114,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private ArrayList<ObjectElement> mTeamNamelist = new ArrayList<>();
     private ArrayList<ObjectElement> mDeviceNamelist = new ArrayList<>();
     private ArrayList<ObjectElement> mDeviceNumlist = new ArrayList<>();
+    private String creatorId;
 
 
     private NFCDialog nfcDialog;
@@ -122,8 +125,6 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
     private String teamId ="";
     private String equipmentName ="";
-
-    private JsonObjectElement UserData;
     private HashMap<String,String> task_type_class=new HashMap<String, String>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,9 +139,6 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
         mDialog = new AlertDialog.Builder(this).setNeutralButton("Ok", null).create();
 
-       //若为登录进入，获取用户信息
-        UserData=new JsonObjectElement(SharedPreferenceManager.getLoginData(this));
-        //若非则为空
     }
 
     private void initSearchView() {
@@ -171,10 +169,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 } else {
                     emptyView.setVisibility(View.GONE);
                     mResultAdapter.changeData(result, itemName);
-
                 }
-
-
             }
         });
         mResultAdapter = new ResultListAdapter(this);
@@ -185,7 +180,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 isSearchview = true ;
                 final int inPosition = position;
                 String itemNam = mResultAdapter.getItemName();
-                final String searchResult =mResultAdapter.getItem(position).get(itemNam).toString();
+                final String searchResult =mResultAdapter.getItem(position).get(itemNam).valueAsString();
                 if (!searchResult.equals("")) {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -494,63 +489,44 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private void initLoginData() {
         Operator operator = getLoginInfo();
         if(null !=  operator){
+            creatorId = String.valueOf(operator.getId());
             getTeamId(String.valueOf(operator.getId()));
         }
     }
     private void getTeamId(String operatorId) {
 
         Operator operator = getLoginInfo();
-        String teamID = "";
+        String teamIDStr = "";
+        String teamNameStr = "";
         if (null == operator) {
             //get userData from server
 
         } else {
             create_task.setText(operator.getName());  //创建人名
-            teamID = operator.getTeamId();
+            teamIDStr = operator.getTeamId();
+
+            teamIDStr = "468,490";
+            teamNameStr = "team1,team2";
         }
-
-
-        String a[] = teamID.split(",");
-        StringBuffer conditionSql = new StringBuffer();
-        for (int i = 0; i < a.length; i++) {
-            conditionSql = conditionSql.append("Team_ID =" + "\"" + a[i] + "\"");
-            if (i == a.length - 1) {
-                conditionSql.append(" ");
-            } else {
-                conditionSql.append(" or ");
-            }
+        String teamID[] = teamIDStr.split(",");
+        String teamName[] = teamNameStr.split(",");
+        List<ObjectElement> array = new ArrayList<ObjectElement>();
+        for(int i=0;i<teamID.length;i++){
+            ObjectElement objectElement =  new JsonObjectElement();
+            objectElement.set(Team.TEAM_ID, teamID[i]);
+            objectElement.set(Team.TEAMNAME, teamName[i]);
+            mTeamNamelist.add(objectElement);
         }
-        String rawQuery1 = "select distinct Team_ID,TeamName from Team where " + conditionSql;
-        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery1,
-                EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
-        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
-
-            @Override
-            public void onSuccess(DataElement dataElement) {
-                System.out.println(dataElement);
-                if (dataElement != null && dataElement.isArray()
-                        && dataElement.asArrayElement().size() > 0) {
-                    for (int j = 0; j < dataElement.asArrayElement().size(); j++) {
-                        mTeamNamelist.add(dataElement.asArrayElement().get(j).asObjectElement());
-                    }
-
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                System.out.println(throwable.getMessage());
-            }
-        });
 
 
 
     }
 
+
     private void getTaskType() {
 
         String rawQuery = "select * from DataDictionary " +
-                "where DataType = \"TaskClass\" and PData_ID is null";
+                "where DataType = 'TaskClass' and PData_ID = 0";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -636,7 +612,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             }
             String pdataid = mTaskType.get(pos).get(DataDictionary.DATA_ID).valueAsString();
             String rawQuery = "select * from DataDictionary where " +
-                    "DataType = \"TaskClass\" and PData_ID=" + pdataid;
+                    "DataType = 'TaskClass' and PData_ID=" + pdataid;
             ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                     EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
             Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -652,6 +628,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         mSubType.clear();
                         for (int i = 0; i < element.asArrayElement().size(); i++) {
                             mSubType.add(element.asArrayElement().get(i).asObjectElement());
+                            task_type_class.put(element.asArrayElement().get(i).asObjectElement().get("DataName").valueAsString(),
+                                    element.asArrayElement().get(i).asObjectElement().get("DataCode").valueAsString());
                         }
                         runOnUiThread(new Runnable() {
                             @Override
@@ -738,6 +716,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 String teamName = group.getText();
                 String deviceName = device_name.getText();
                 String createTask = create_task.getText().toString();
+
                 String taskDesc = task_description.getText().toString();
                 String deviceNum = device_num.getText().toString();
                 String taskSubType = null;
@@ -948,32 +927,24 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private void submitTask(String TaskType,String TaskSubType,String teamId,String equipmentName
             ,String MachineCode,String TaskDescription){
         HttpParams params=new HttpParams();
-        if(task_subtype!=null){
+        if(StringUtils.isNotBlank(TaskSubType)){
             TaskType=TaskSubType;
         }
         //创建任务提交数据:创建人ID，任务类型"T01,T02"等，机台号（数组），任务描述，组别
         JsonObjectElement task=new JsonObjectElement();
         JsonObjectElement taskDetail=new JsonObjectElement();
         //获取创建人ID
-        String userData= SharedPreferenceManager.getLoginData(this);
-        JsonObjectElement jsonObjectElement=new JsonObjectElement(userData);
-        taskDetail.set("Applicant",jsonObjectElement.get("Operator_ID").valueAsString());
-
+        taskDetail.set("Applicant",creatorId);
 
         taskDetail.set("TaskDescr",TaskDescription);
-        taskDetail.set("TaskClass",task_type_class.get(TaskType));
+        taskDetail.set("TaskClass", task_type_class.get(TaskType));
 
-       //机台号处理
-        MachineCode="123";
-        String  MachineCode2="312";
 
         JsonArray jsonArray=new JsonArray();
         JsonObject JsonObject=new JsonObject();
-        JsonObject.addProperty("Equipment_ID",MachineCode);
-        JsonObject JsonObject2=new JsonObject();
-        JsonObject2.addProperty("Equipment_ID",MachineCode2);
+        JsonObject.addProperty("Equipment_ID", MachineCode);
         jsonArray.add(JsonObject);
-        jsonArray.add(JsonObject2);
+
 
        //包装数据
         task.set("Task",taskDetail);
