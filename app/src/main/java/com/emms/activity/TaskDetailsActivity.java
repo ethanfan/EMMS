@@ -126,8 +126,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         setContentView(R.layout.activity_task_detail);
         mContext = this;
         //获取任务详细信息
-         ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
-         changeEquipmentDialog.show();
+
         TaskDetail = getIntent().getStringExtra("TaskDetail");
 
         taskId = getTaskId(TaskDetail);
@@ -211,15 +210,15 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 holder.tv_create_time.setText(createTime);
                 //String endTime = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsLong());
 
-                String equipmentStatus = DataUtil.isDataElementNull(datas.get(position).get("DataName"));
+                String equipmentStatus = DataUtil.isDataElementNull(datas.get(position).get("Status"));
 
                 String endTime = "";
-                if (!STATUS_DONE.equals(equipmentStatus)) {
+                if (STATUS_DONE.equals(equipmentStatus)) {
                     endTime = DataUtil.isDataElementNull(datas.get(position).get("FinishTime"));
                 }
                 holder.tv_end_time.setText(endTime);
-
-                holder.tv_task_state.setText(taskEquipmentStatus.get(equipmentStatus));
+              //  holder.tv_task_state.setText(equipmentStatus);
+               holder.tv_task_state.setText(taskEquipmentStatus.get(equipmentStatus));
 
                 //设备数数
                 deviceCountTextView.setText(String.valueOf(deviceCountMap.get("deviceCount")));
@@ -242,7 +241,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
     private void initDatas() {
         // for test
-        taskId = 93L;
+      //  taskId = 93L;
 
         getTaskEquipmentFromServerByTaskId();
         if (null == datas) {
@@ -703,7 +702,6 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
         HttpParams params = new HttpParams();
         // params.put("id", taskId.toString());
-        params.put("t", String.valueOf(new Date().getTime()));
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
         HttpUtils.get(mContext, "TaskImgsList/" + taskId.toString(), params, new HttpCallback() {
             @Override
@@ -764,6 +762,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private void addTaskEquipment(String iccardID) {
      //   ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
      //  changeEquipmentDialog.show();
+        ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
+        changeEquipmentDialog.setTaskEquipmentData(null);
+        changeEquipmentDialog.show();
         postTaskEquipment("aaaa","0",0);
         String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='" + iccardID + "'";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
@@ -810,7 +811,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         //  taskDetail.set(Task.TASK_TYPE,TaskType);
 
         //若任务未有设备，则输入为0，表示添加
-        taskEquepment.set("TaskEquipment_ID",TaskEquipment_ID);
+        taskEquepment.set("TaskEquipment_ID",0);
        //若已有设备，申请状态变更
         taskEquepment.set("Equipment_ID", "123213");
         //taskEquepment.set("Equipment_ID", equipmentID);
@@ -822,6 +823,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                Toast.makeText(TaskDetailsActivity.this, "添加设备成功", Toast.LENGTH_SHORT).show();
             }
 
             @Override

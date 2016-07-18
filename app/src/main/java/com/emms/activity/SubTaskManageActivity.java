@@ -140,6 +140,8 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             }
         });
     }
+
+
     public void getTaskEquipmentFromServer(){
             if (null == taskId) {
                 return;
