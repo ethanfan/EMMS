@@ -47,7 +47,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                 JsonObjectElement json = new JsonObjectElement(userData);
                 operator.setId(Long.valueOf(json.get("Operator_ID").valueAsString()));
                 operator.setTeamId(json.get("Team_ID").valueAsString());
-
+                operator.setTeamName(json.get("TeamName").valueAsString());
+                operator.setName(json.get("Name").valueAsString());
 //                operator = Operator.fromJson(userData, null, Operator.class);
 
             }catch (Exception e){

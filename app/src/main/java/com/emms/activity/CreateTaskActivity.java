@@ -499,68 +499,42 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     }
     private void getTeamId(String operatorId) {
 
-        String rawQuery = "select Name,Team_ID,TeamName from Operator where Operator_ID=" + operatorId;
-       // String rawQuery = "select Name,Team_ID,TeamName from Operator where Operator_ID=" +"\""+ operatorId+"\"";
-        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+        Operator operator = getLoginInfo();
+        String teamID = "";
+        if (null == operator) {
+            //get userData from server
+
+        } else {
+            create_task.setText(operator.getName());  //创建人名
+            teamID = operator.getTeamId();
+        }
+
+
+        String a[] = teamID.split(",");
+        StringBuffer conditionSql = new StringBuffer();
+        for (int i = 0; i < a.length; i++) {
+            conditionSql = conditionSql.append("Team_ID =" + "\"" + a[i] + "\"");
+            if (i == a.length - 1) {
+                conditionSql.append(" ");
+            } else {
+                conditionSql.append(" or ");
+            }
+        }
+        String rawQuery1 = "select distinct Team_ID,TeamName from Team where " + conditionSql;
+        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery1,
                 EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
 
             @Override
-            public void onSuccess(final DataElement element) {
-                System.out.println(element);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-//                        String name = element.asArrayElement().get(0)
-//                                .asObjectElement().get(Operator.NAME).valueAsString();
-//                        if (name != null) {
-//                            create_task.setText(name);  //创建人名
-//                        }
+            public void onSuccess(DataElement dataElement) {
+                System.out.println(dataElement);
+                if (dataElement != null && dataElement.isArray()
+                        && dataElement.asArrayElement().size() > 0) {
+                    for (int j = 0; j < dataElement.asArrayElement().size(); j++) {
+                        mTeamNamelist.add(dataElement.asArrayElement().get(j).asObjectElement());
                     }
-                });
-                mTeamNamelist = new ArrayList<ObjectElement>();
-                if (element != null && element.isArray()
-                        && element.asArrayElement().size() > 0) {
-                    mTeamNamelist.clear();
-                    String teamName = element.asArrayElement().get(0)
-                            .asObjectElement().get(Operator.TEAM_ID).valueAsString();
-                    String a[] = teamName.split(",");
-                    StringBuffer conditionSql = new StringBuffer();
-                    for (int i = 0; i < a.length; i++) {
-                        conditionSql = conditionSql.append("Team_ID ="+"\""+a[i]+"\"");
-                        if (i == a.length-1){
-                            conditionSql.append(" ");
-                        }else {
-                            conditionSql.append(" or ");
-                        }
-                    }
-                    String rawQuery1 = "select distinct Team_ID,TeamName from Team where " +conditionSql;
-                    ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery1,
-                            EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
-                    Futures.addCallback(elemt, new FutureCallback<DataElement>() {
 
-                        @Override
-                        public void onSuccess(DataElement dataElement) {
-                            System.out.println(dataElement);
-                            if (dataElement != null && dataElement.isArray()
-                                    && dataElement.asArrayElement().size() > 0) {
-                                for (int j = 0; j < dataElement.asArrayElement().size(); j++) {
-                                    mTeamNamelist.add(dataElement.asArrayElement().get(j).asObjectElement());
-                                }
-
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Throwable throwable) {
-                            System.out.println(throwable.getMessage());
-                        }
-                    });
-
-                } else {
-                    Toast.makeText(mContext, "程序数据库出错，请重新登陆", Toast.LENGTH_SHORT).show();
                 }
-
             }
 
             @Override
@@ -568,6 +542,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 System.out.println(throwable.getMessage());
             }
         });
+
+
+
     }
 
     private void getTaskType() {
