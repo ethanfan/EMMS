@@ -85,7 +85,7 @@ import java.util.Map;
 /**
  * Created by jaffer.deng on 2016/6/22.
  */
-public class HTaskDetailsActivity extends NfcActivity implements View.OnClickListener {
+public class TaskDetailsActivity extends NfcActivity implements View.OnClickListener {
 
     public class ViewHolder {
         TextView deviceCountTextView;
@@ -697,7 +697,7 @@ public class HTaskDetailsActivity extends NfcActivity implements View.OnClickLis
                             //在这里刷新设备汇总数据
                             Message message = new Message();
                             message.what = MSG_UPDATE_DEVICE_SUM_INFO;
-                            mHandler.endMessage(message);
+                            mHandler.sendMessage(message);
                         }
                     }
                 }
