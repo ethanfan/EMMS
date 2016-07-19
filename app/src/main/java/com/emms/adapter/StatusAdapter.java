@@ -55,7 +55,7 @@ public abstract class StatusAdapter extends BaseAdapter{
     }
     public abstract View getCustomView(View convertView,int position ,ViewGroup parent );
     public static   class ViewHolder {
-        public  TextView status;
+        public  TextView statu;
 
     }
 }

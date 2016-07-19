@@ -1,16 +1,25 @@
 package com.emms.ui;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.DrawerLayout;
+import android.text.Editable;
 import android.text.StaticLayout;
+import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -24,11 +33,14 @@ import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.emms.R;
 import com.emms.activity.AppAplication;
+import com.emms.adapter.ResultListAdapter;
 import com.emms.bean.WorkInfo;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.DataDictionary;
+import com.emms.schema.Equipment;
 import com.emms.schema.Task;
+import com.emms.schema.Team;
 import com.emms.util.DataUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -51,24 +63,45 @@ public class CustomDialog extends Dialog {
     private TextView comfirm_button;
     private DropEditText work_num,sub_task_equipment_num;
     private Map<String, Object> dataMap = new HashMap<String, Object>();
-    private ArrayList<String> taskEquipment;
+    private ArrayList<ObjectElement> taskEquipment;
     private final String DATA_KEY_WORK_INFO = "workInfo";
 
     private static final int MSG_UPDATE_WORK_INFO = 10;
     private ObjectElement modifySubTask=null;
-
+    private ResultListAdapter mResultAdapter;
+    private ListView mResultListView;
     private String TaskId;
-
+    private TextView menuSearchTitle;
+    private EditText searchBox;
+    private ImageView clearBtn;
+    private ViewGroup emptyView;
+    private boolean isSearchview ;
+    private int  searchtag =0;
+    private DrawerLayout mDrawer_layout;
+    private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
+    private ArrayList<ObjectElement> workNumList=new ArrayList<ObjectElement>();
     public CustomDialog(Context context, int layout, int style) {
         super(context, style);
         this.context = context;
         setContentView(layout);
         initview();
         setCanceledOnTouchOutside(true);
-
+        initSearchView();
+    }
+    public CustomDialog(Context context, int layout, int style,ObjectElement objectElement,ArrayList<ObjectElement> list) {
+        super(context, style);
+        this.context = context;
+        this.modifySubTask=objectElement;
+        this.taskEquipment=list;
+        setContentView(layout);
+        initview();
+        setCanceledOnTouchOutside(true);
+        initSearchView();
     }
 
     public void initview() {
+
+        ((ViewGroup)findViewById(R.id.viewGroup)).setVisibility(View.GONE);
         findViewById(R.id.dismissView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,10 +117,10 @@ public class CustomDialog extends Dialog {
         //若为修改状态，则有初始数据
         if(modifySubTask!=null){
             work_num.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItem_ID")));//待修改
-           // approved_working_hours.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItem_ID")));
+           approved_working_hours.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkTime")));
             sub_task_equipment_num.setText(DataUtil.isDataElementNull(modifySubTask.get("Equipment_ID")));
-            work_name.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItemName")));
-            work_description.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItemName")));
+            work_name.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkName")));
+            work_description.setText(DataUtil.isDataElementNull(modifySubTask.get("DataDescr")));
         }
 
         work_num.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -111,20 +144,20 @@ public class CustomDialog extends Dialog {
             }
         });
         //修改子任务的情况下调用
-        setViewData();
+        //setViewData();
     }
 
     public void comfirm_button_event() {
-     /*   if (work_num.getText()==null
+       if (work_num.getText()==null
                 ||approved_working_hours.getText()==null||
                 work_num.getText().toString().trim().equals("") ||
                 approved_working_hours.getText().toString().trim().equals("")) {
             //判断数据为空，提示用户数据不能为空，拒绝提交
             Toast.makeText(context, "请输入数据", Toast.LENGTH_LONG).show();
             return;
-        } else {*/
+        } else {
             submitSubTaskData();
-      //  }
+        }
     }
 
     public void submitSubTaskData() {
@@ -289,13 +322,200 @@ public class CustomDialog extends Dialog {
         TaskId = taskId;
     }
 
-    public ArrayList<String> getTaskEquipment() {
+    public ArrayList<ObjectElement> getTaskEquipment() {
         return taskEquipment;
     }
 
-    public void setTaskEquipment(ArrayList<String> taskEquipment) {
+    public void setTaskEquipment(ArrayList<ObjectElement> taskEquipment) {
         this.taskEquipment = taskEquipment;
     }
 
+
+    private void initSearchView() {
+        initWorkNumListData();
+        mDrawer_layout = ((DrawerLayout) findViewById(R.id.main_drawer_layout));
+        mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        menuSearchTitle = (TextView) findViewById(R.id.left_title);
+        clearBtn = (ImageView) findViewById(R.id.iv_search_clear);
+        searchBox = (EditText) findViewById(R.id.et_search);
+        emptyView = (ViewGroup) findViewById(R.id.empty_view);
+        mResultListView = (ListView) findViewById(R.id.listview_search_result);
+        mResultAdapter = new ResultListAdapter(context);
+        mResultListView.setAdapter(mResultAdapter);
+        mResultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                isSearchview = true ;
+                final int inPosition = position;
+                String itemNam = mResultAdapter.getItemName();
+                final String searchResult =mResultAdapter.getItem(position).get(itemNam).valueAsString();
+                if (!searchResult.equals("")) {
+                    ((Activity)context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            switch (searchtag) {
+                                case 1:
+                                    work_num.getmEditText().setText(searchResult);
+                                    break;
+                                case 2:
+                                    sub_task_equipment_num.getmEditText().setText(searchResult);
+                                    break;
+                            }
+                            mDrawer_layout.closeDrawer(Gravity.RIGHT);
+                        }
+                    });
+                } else {
+                    Toast.makeText(context, "出错了", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        initDropSearchView(null, work_num.getmEditText(), context.getResources().
+                        getString(R.string.work_num), DataDictionary.DATA_CODE,
+                1, "获取数据失败");
+        initDropSearchView(null, sub_task_equipment_num.getmEditText(), context.getResources().
+                        getString(R.string.title_search_equipment_nun), Equipment.EQUIPMENT_ID,
+                2, "获取数据失败");
+        findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        searchBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String keyword = s.toString();
+                clearBtn.setVisibility(View.VISIBLE);
+                mResultListView.setVisibility(View.VISIBLE);
+                String itemName = mResultAdapter.getItemName();
+                ArrayList<ObjectElement> result = search(keyword, itemName);
+                if (result == null || result.size() == 0) {
+                    emptyView.setVisibility(View.VISIBLE);
+                } else {
+                    emptyView.setVisibility(View.GONE);
+                    mResultAdapter.changeData(result, itemName);
+                }
+            }
+        });
+
+
+        clearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchBox.setText("");
+                clearBtn.setVisibility(View.GONE);
+            }
+        });
+    }
+    private ArrayList<ObjectElement> search(String keyword,String  tagString) {
+        ArrayList<ObjectElement> reDatas = new ArrayList<>();
+        for (int i = 0; i < searchDataLists.size(); i++) {
+            if (searchDataLists.get(i).get(tagString).valueAsString().toUpperCase().contains(keyword.toUpperCase())) {
+                reDatas.add(searchDataLists.get(i));
+            }
+        }
+        return reDatas;
+    }
+
+    private void initDropSearchView(
+            final EditText condition,EditText subEditText,
+            final String searchTitle,final String searchName,final int searTag ,final String tips){
+        subEditText.
+                setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                ((Activity)context).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        searchDataLists.clear();
+                                        switch (searTag){
+                                            case 1:
+                                                searchDataLists.addAll(workNumList);
+                                                break;
+                                            case 2:
+                                                searchDataLists.addAll(taskEquipment);
+                                                break;
+
+                                        }
+                                        searchtag = searTag;
+                                                if (condition != null) {
+                                                    if (!condition.getText().toString().equals("") && searchDataLists.size() > 0) {
+                                                        mDrawer_layout.openDrawer(Gravity.RIGHT);
+                                                        mResultAdapter.changeData(searchDataLists, searchName);
+                                                        menuSearchTitle.setText(searchTitle);
+
+                                                    } else {
+                                                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                                                    }
+                                                } else {
+                                                    if (searchDataLists.size() > 0) {
+                                                        mDrawer_layout.openDrawer(Gravity.RIGHT);
+                                                        mResultAdapter.changeData(searchDataLists, searchName);
+                                                        menuSearchTitle.setText(searchTitle);
+
+                                                    } else {
+                                                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                                                    }
+                                                }
+
+
+
+                                    }
+                                });
+
+                            }
+                        }
+
+                );
+    }
+    private void initWorkNumListData(){
+        try {
+            String rawQuery = "select * from DataDictionary where DataType='WorkTime' And DataCode like 'OHZK%' order by Data_ID asc";
+            ListenableFuture<DataElement> elemt = ((AppAplication) ((Activity)context).getApplication()).getSqliteStore().performRawQuery(rawQuery,
+                    EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, null);
+            Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+                @Override
+                public void onSuccess(DataElement dataElement) {
+                    workNumList.clear();
+                    if (dataElement != null && dataElement.isArray()
+                            && dataElement.asArrayElement().size() > 0) {
+                        for (int i = 0; i < dataElement.asArrayElement().size(); i++) {
+                            workNumList.add(dataElement.asArrayElement().get(i).asObjectElement());
+                        }
+                    } else {
+                        ((Activity)context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context, "目前该设备没有工作编号", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Throwable throwable) {
+
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+            ((Activity)context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, "目前该设备没有工作编号", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
 
 }

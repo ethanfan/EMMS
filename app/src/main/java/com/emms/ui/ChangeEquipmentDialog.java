@@ -79,11 +79,11 @@ public class ChangeEquipmentDialog extends Dialog {
                 View v;
                 v = LayoutInflater.from(context).inflate(
                             R.layout.change_equipment_status_dialog_item, null);
-                    holder = new StatusAdapter.ViewHolder();
-                    holder.status = (TextView) convertView
+                holder = new StatusAdapter.ViewHolder();
+                holder.statu = (TextView) v
                             .findViewById(R.id.status);
-                holder.status.setText(status.get(position));
-                holder.status.setOnClickListener(new View.OnClickListener() {
+                holder.statu.setText(status.get(position));
+                holder.statu.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if(position==0){
