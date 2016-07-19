@@ -127,6 +127,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
     private String teamId ="";
     private String equipmentName ="";
+    private String equipmentID = "";
     private HashMap<String,String> task_type_class=new HashMap<String, String>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -206,6 +207,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                     break;
                                 case DEVICE_NUM:
                                     device_num.setText(searchResult);
+                                    equipmentID=mResultAdapter.getItem(inPosition).get(Equipment.EQUIPMENT_ID).valueAsString();
                                     break;
                             }
                             mDrawer_layout.closeDrawer(Gravity.RIGHT);
@@ -756,7 +758,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 String createTask = create_task.getText().toString();
 
                 String taskDesc = task_description.getText().toString();
-                String deviceNum = device_num.getText().toString();
+                String deviceNum = equipmentID;
                 String taskSubType = null;
                 String description = task_description.getText().toString();
                 if (View.VISIBLE == task_subtype.getVisibility()) {
@@ -973,7 +975,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         JsonObjectElement taskDetail=new JsonObjectElement();
         //获取创建人ID
         taskDetail.set("Applicant",creatorId);
-
+        taskDetail.set("Task_ID",0);
         taskDetail.set("TaskDescr",TaskDescription);
         taskDetail.set("TaskClass", task_type_class.get(TaskType));
 
@@ -981,6 +983,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         JsonArray jsonArray=new JsonArray();
         JsonObject JsonObject=new JsonObject();
         JsonObject.addProperty("Equipment_ID", MachineCode);
+        JsonObject.addProperty("TaskEquipment_ID", 0);
         jsonArray.add(JsonObject);
 
 
