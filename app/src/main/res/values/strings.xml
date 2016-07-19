@@ -26,7 +26,7 @@
     <string name="create_task">创建任务</string>
     <string name="repair_tag">维修</string>
     <string name="maintenance">维护</string>
-    <string name="team_status">班组人员状态查询</string>
+    <string name="team_status">班组人员状态</string>
     <string name="select">请下拉</string>
     <string name="pleaseInputOrSelect">请点击或下拉</string>
     <string name="scan">请扫描</string>

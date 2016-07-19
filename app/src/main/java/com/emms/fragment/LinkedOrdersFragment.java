@@ -66,7 +66,7 @@ public class LinkedOrdersFragment extends Fragment{
                     public void run() {
                         getCompleteTaskDataFromServer(data);
                         listView.onRefreshComplete();
-                        Toast.makeText(mContext,"dadada",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
                     }
                 },2000);
             }
@@ -77,7 +77,7 @@ public class LinkedOrdersFragment extends Fragment{
                     @Override
                     public void run() {
                         listView.onRefreshComplete();
-                        Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
                     }
                 },2000);
             }

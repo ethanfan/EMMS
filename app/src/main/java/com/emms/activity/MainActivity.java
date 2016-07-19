@@ -76,7 +76,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         int id = v.getId();
         if (id == R.id.btn_exit){
             HttpParams params = new HttpParams();
-            HttpUtils.post(this, "Token/Delete", params, new HttpCallback() {
+            HttpUtils.delete(this, "Token", params, new HttpCallback() {
                 @Override
                 public void onSuccess(String t) {
                     super.onSuccess(t);

@@ -52,6 +52,8 @@ public class ChangeEquipmentDialog extends Dialog {
     private StatusAdapter taskAdapter;
     private String TaskId;
     private ArrayList<String> status=new ArrayList<String>();
+
+    private ObjectElement TaskEquipmentData;
     public ChangeEquipmentDialog(Context context, int layout, int style) {
         super(context, style);
         this.context = context;
@@ -70,7 +72,7 @@ public class ChangeEquipmentDialog extends Dialog {
         change_Equipment_status=(ListView)findViewById(R.id.status_list);
         taskAdapter=new StatusAdapter(status) {
             @Override
-            public View getCustomView(View convertView, int position, ViewGroup parent) {
+            public View getCustomView(View convertView, final int position, ViewGroup parent) {
                 StatusAdapter.ViewHolder holder;
                 if(convertView==null){
                     convertView = LayoutInflater.from(context).inflate(
@@ -86,6 +88,22 @@ public class ChangeEquipmentDialog extends Dialog {
                     holder = (StatusAdapter.ViewHolder) convertView.getTag();
                 }
                 holder.status.setText(status.get(position));
+                holder.status.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(position==0){
+
+                        }else if (position==1){
+                            postTaskEquipment(1);
+                        }else if (position==2){
+                            postTaskEquipment(0);
+                        }else if (position==3){
+                            postTaskEquipment(2);
+                        }else if (position==4){
+                            postTaskEquipment(3);
+                        }
+                    }
+                });
                 return convertView;
             }
         };
@@ -117,7 +135,46 @@ public class ChangeEquipmentDialog extends Dialog {
             }
         });
     }
+    private void postTaskEquipment(int status) {
 
+        HttpParams params = new HttpParams();
+
+        JsonObjectElement taskEquepment=new JsonObjectElement();
+//创建任务提交数据：任务创建人，任务类型“T01”那些，几台号（数组），
+        taskEquepment.set(Task.TASK_ID,TaskId);
+        //  taskDetail.set(Task.TASK_TYPE,TaskType);
+
+        //若任务未有设备，则输入为0，表示添加
+        taskEquepment.set("TaskEquipment_ID",67386);
+        //若已有设备，申请状态变更
+        taskEquepment.set("Equipment_ID", "123213");
+        //taskEquepment.set("Equipment_ID", equipmentID);
+        taskEquepment.set("Status",status);
+
+        params.putJsonParams(taskEquepment.toJson());
+
+        HttpUtils.post(context, "TaskEquipment", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                        Toast.makeText(context, "修改设备状态失败", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+
+    public ObjectElement getTaskEquipmentData() {
+        return TaskEquipmentData;
+    }
+
+    public void setTaskEquipmentData(ObjectElement taskEquipmentData) {
+        TaskEquipmentData = taskEquipmentData;
+    }
 
 
 }
