@@ -762,9 +762,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private void addTaskEquipment(String iccardID) {
      //   ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
      //  changeEquipmentDialog.show();
-        ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
-        changeEquipmentDialog.setTaskEquipmentData(null);
-        changeEquipmentDialog.show();
+
         postTaskEquipment("aaaa","0",0);
         String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='" + iccardID + "'";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
@@ -780,6 +778,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     //进行判断，若任务未有该设备号，添加
                     postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),"0",0);
                     //若已有该设备号，弹出对话框，申请进行状态变更
+                    ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(TaskDetailsActivity.this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
+                    changeEquipmentDialog.setTaskEquipmentData(null);
+                    changeEquipmentDialog.show();
 
                 } else {
                     runOnUiThread(new Runnable() {
@@ -816,7 +817,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         taskEquepment.set("Equipment_ID", "123213");
         //taskEquepment.set("Equipment_ID", equipmentID);
         taskEquepment.set("Status",status);
-
+        //taskEquepment.set();
         params.putJsonParams(taskEquepment.toJson());
 
         HttpUtils.post(this, "TaskEquipment", params, new HttpCallback() {

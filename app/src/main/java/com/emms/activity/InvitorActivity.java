@@ -158,6 +158,8 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
         }
     }
     public void postInviteDataToServer(){
-
+      HttpParams httpParams=new HttpParams();
+        //httpParams
+      //  HttpUtils.post(this,);
     }
 }
