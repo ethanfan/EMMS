@@ -101,7 +101,7 @@ public class CustomDialog extends Dialog {
 
     public void initview() {
 
-        ((ViewGroup)findViewById(R.id.viewGroup)).setVisibility(View.GONE);
+      //  ((ViewGroup)findViewById(R.id.viewGroup)).setVisibility(View.GONE);
         findViewById(R.id.dismissView).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -333,7 +333,7 @@ public class CustomDialog extends Dialog {
 
     private void initSearchView() {
         initWorkNumListData();
-        mDrawer_layout = ((DrawerLayout) findViewById(R.id.main_drawer_layout));
+        mDrawer_layout = (DrawerLayout) findViewById(R.id.search_page);
         mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         menuSearchTitle = (TextView) findViewById(R.id.left_title);
         clearBtn = (ImageView) findViewById(R.id.iv_search_clear);
@@ -452,6 +452,8 @@ public class CustomDialog extends Dialog {
                                                         mDrawer_layout.openDrawer(Gravity.RIGHT);
                                                         mResultAdapter.changeData(searchDataLists, searchName);
                                                         menuSearchTitle.setText(searchTitle);
+                                                        menuSearchTitle.postInvalidate();
+                                                        mDrawer_layout.postInvalidate();
 
                                                     } else {
                                                         Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
@@ -461,6 +463,8 @@ public class CustomDialog extends Dialog {
                                                         mDrawer_layout.openDrawer(Gravity.RIGHT);
                                                         mResultAdapter.changeData(searchDataLists, searchName);
                                                         menuSearchTitle.setText(searchTitle);
+                                                        menuSearchTitle.postInvalidate();
+                                                        mDrawer_layout.postInvalidate();
 
                                                     } else {
                                                         Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
