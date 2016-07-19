@@ -11,11 +11,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             >
-            <include layout="@layout/activity_search"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/viewGroup"
-                android:layout_gravity="end"/>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -193,6 +188,8 @@
 
 
     </FrameLayout>
+
+
     <include layout="@layout/activity_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

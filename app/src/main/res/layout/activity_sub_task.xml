@@ -105,12 +105,12 @@
                 android:text="@string/add"/>
         </LinearLayout>
     </RelativeLayout>
-    <ListView
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/vvvvvv"
         android:layout_above="@id/bbb"
         android:layout_marginBottom="5dp"
         android:id="@+id/sub_task_list">
-    </ListView>
+    </com.handmark.pulltorefresh.library.PullToRefreshListView>
 </RelativeLayout>
