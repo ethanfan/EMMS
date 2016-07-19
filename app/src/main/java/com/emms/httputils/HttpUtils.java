@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -121,7 +122,8 @@ public  class HttpUtils {
         if (cookie !=null) {
             params.putHeaders("Origin", "http://EMMSAPP");
             params.putHeaders("Referer", "http://EMMSAPP");
-            params.putHeaders("Cookie",cookie);
+            params.putHeaders("Cookie", cookie);
+            params.put("T", String.valueOf(new Date().getTime()));
             RxVolley.setContext(context);
             new RxVolley.Builder()
                     .url(BuildConfig.getServerAPIEndPoint() +table) //接口地址

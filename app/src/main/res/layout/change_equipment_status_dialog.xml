@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <View
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:id="@+id/dismissView"
             android:layout_height="0dp"
             android:background="@color/transparent"
@@ -35,7 +35,7 @@
              android:layout_marginBottom="5dp"
              android:layout_above="@+id/status"></View>
          <TextView
-             android:layout_width="wrap_content"
+             android:layout_width="fill_parent"
              android:layout_height="wrap_content"
              android:background="#FFFFFFFF"
              android:gravity="center"

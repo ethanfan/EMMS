@@ -181,6 +181,7 @@ public class PendingOrdersFragment extends Fragment{
         JsonObjectElement SubData=new JsonObjectElement();
         SubData.set("Task",task);
         SubData.set("TaskOperator",operator);
+        SubData.set("isChangeTaskItem","1");
         HttpParams params=new HttpParams();
         params.putJsonParams(SubData.toJson());
         HttpUtils.post(mContext, "TaskCollection", params, new HttpCallback() {

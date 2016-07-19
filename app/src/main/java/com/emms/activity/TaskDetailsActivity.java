@@ -836,6 +836,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         taskEquepment.set("Equipment_ID", equipmentID);
         //taskEquepment.set("Equipment_ID", equipmentID);
         taskEquepment.set("Status",0);
+        taskEquepment.set("Operator_ID",getLoginInfo().getId());
         //taskEquepment.set();
         params.putJsonParams(taskEquepment.toJson());
 

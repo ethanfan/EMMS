@@ -186,7 +186,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                     break;
                                 case DEVICE_NAME:
                                     equipmentName =mResultAdapter.getItem(inPosition).get(Equipment.EQUIPMENT_NAME).valueAsString();
-                                    device_name.getmEditText().setSingleLine(true);
+//                                    device_name.getmEditText().setSingleLine(true);
                                     device_name.getmEditText().setText(searchResult);
                                     break;
                                 case DEVICE_NUM:
@@ -383,7 +383,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
         initDropSearchView(device_name.getmEditText(), device_num,
                 getResources().
-                        getString(R.string.title_search_equipment_nun), Equipment.ASSETSID, DEVICE_NUM, "请先选择设备名称，或刷设备卡获取机台号");
+                        getString(R.string.title_search_equipment_nun), Equipment.ORACLE_ID, DEVICE_NUM, "请先选择设备名称，或刷设备卡获取机台号");
 
     }
 
@@ -655,8 +655,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                             //   task_subtype.setVisibility(View.VISIBLE);
-                            //    task_subtype_name_desc.setVisibility(View.VISIBLE);
+                                task_subtype.setVisibility(View.VISIBLE);
+                                task_subtype_name_desc.setVisibility(View.VISIBLE);
                                 findViewById(R.id.subTask).setVisibility(View.VISIBLE);
                                 task_subtype.setDatas(mContext, mSubType, DataDictionary.DATA_NAME);
 
@@ -666,8 +666,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                             //   task_subtype.setVisibility(View.GONE);
-                             //   task_subtype_name_desc.setVisibility(View.GONE);
+                                task_subtype.setVisibility(View.GONE);
+                                task_subtype_name_desc.setVisibility(View.GONE);
                                 findViewById(R.id.subTask).setVisibility(View.GONE);
                             }
                         });
@@ -681,8 +681,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 }
             });
         } catch (Exception e) {
-          //  task_subtype.setVisibility(View.GONE);
-           // task_subtype_name_desc.setVisibility(View.GONE);
+            task_subtype.setVisibility(View.GONE);
+            task_subtype_name_desc.setVisibility(View.GONE);
             findViewById(R.id.subTask).setVisibility(View.GONE);
             e.printStackTrace();
         }
@@ -777,6 +777,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
                 if (taskDesc.equals("")) {
                     Toast.makeText(mContext, getResources().getString(R.string.tips_task_desc_post), Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 hud.show();
                 submitTask(taskType, taskSubType, teamId, deviceName, deviceNum, description);
@@ -962,7 +963,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         taskDetail.set("Task_ID",0);
         taskDetail.set("TaskDescr",TaskDescription);
         taskDetail.set("TaskClass", task_type_class.get(TaskType));
-
+        taskDetail.set("TaskApplicantOrg",teamId);
 
         JsonArray jsonArray=new JsonArray();
         JsonObject JsonObject=new JsonObject();
