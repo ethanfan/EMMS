@@ -71,6 +71,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import org.apache.commons.io.output.TaggedOutputStream;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -691,6 +693,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
+               Toast toast=Toast.makeText(TaskDetailsActivity.this,"获取设备列表失败，服务器返回异常",Toast.LENGTH_LONG);
+               toast.setGravity(Gravity.CENTER,0,0);
+               toast.show();
             }
         });
     }

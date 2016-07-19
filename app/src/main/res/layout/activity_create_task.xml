@@ -63,6 +63,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="16dp"
                         android:layout_marginTop="10dp"
+                        android:id="@+id/subTask"
                         android:orientation="horizontal">
 
                         <TextView
@@ -327,6 +328,7 @@
                         android:layout_marginTop="20dp"
                         android:background="@color/yellow"
                         android:padding="2dp"
+                        android:textSize="22sp"
                         android:text="@string/warning_message_confirm"
                         android:textColor="@android:color/white" />
                 </LinearLayout>

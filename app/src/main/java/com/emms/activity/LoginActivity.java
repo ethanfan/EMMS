@@ -8,16 +8,22 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.rxvolley.client.ProgressListener;
+import com.datastore_android_sdk.rxvolley.http.VolleyError;
 import com.emms.ConfigurationManager;
 import com.emms.R;
 import com.emms.httputils.HttpUtils;
 import com.emms.push.PushService;
 import com.emms.ui.KProgressHUD;
+import com.emms.util.BuildConfig;
 import com.emms.util.Constants;
 import com.emms.util.SharedPreferenceManager;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
@@ -26,6 +32,7 @@ import com.datastore_android_sdk.rxvolley.toolbox.Loger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +58,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 //        //透明导航栏
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         initView();
+        getNewDataFromServer();
     }
 
     private void initView() {
@@ -196,5 +204,42 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
        // String[] cookievalues = cookies[0].split("=");
         SharedPreferenceManager.setCookie(LoginActivity.this,cookies[0]);
 
+    }
+    //下载DB文件
+    private void getNewDataFromServer() {
+
+        File dbFile = new File(getExternalFilesDir(null),"/test.db");
+        if(dbFile.exists()){
+
+            return;
+        }
+
+        String savepath = dbFile.getParentFile().getAbsolutePath();
+        final LinearLayout progress=(LinearLayout)findViewById(R.id.downloadProgress);
+        progress.setVisibility(View.VISIBLE);
+        HttpUtils.download(LoginActivity.this, savepath, BuildConfig.getConfigurationDownload(), new ProgressListener() {
+            @Override
+            public void onProgress(long transferredBytes, long totalSize) {
+                ((ProgressBar)findViewById(R.id.progress)).setProgress((int)transferredBytes/(int)totalSize);
+                if(transferredBytes>=totalSize){
+                    progress.setVisibility(View.GONE);
+                }
+            }
+        }, new HttpCallback() {
+            @Override
+            public void onSuccessInAsync(byte[] t) {
+                super.onSuccessInAsync(t);
+            }
+
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+            }
+
+            @Override
+            public void onFailure(VolleyError error) {
+                super.onFailure(error);
+            }
+        });
     }
 }

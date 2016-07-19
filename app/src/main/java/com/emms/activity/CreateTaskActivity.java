@@ -70,6 +70,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.transform.TransformerFactory;
+
 /**
  * Created by jaffer.deng on 2016/6/7.
  */
@@ -199,6 +201,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                     break;
                                 case DEVICE_NAME:
                                     equipmentName =mResultAdapter.getItem(inPosition).get(Equipment.EQUIPMENT_NAME).valueAsString();
+                                    device_name.getmEditText().setSingleLine(true);
                                     device_name.getmEditText().setText(searchResult);
                                     break;
                                 case DEVICE_NUM:
@@ -666,8 +669,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                task_subtype.setVisibility(View.VISIBLE);
-                                task_subtype_name_desc.setVisibility(View.VISIBLE);
+                             //   task_subtype.setVisibility(View.VISIBLE);
+                            //    task_subtype_name_desc.setVisibility(View.VISIBLE);
+                                findViewById(R.id.subTask).setVisibility(View.VISIBLE);
                                 task_subtype.setDatas(mContext, mSubType, DataDictionary.DATA_NAME);
 
                             }
@@ -676,8 +680,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                task_subtype.setVisibility(View.GONE);
-                                task_subtype_name_desc.setVisibility(View.GONE);
+                             //   task_subtype.setVisibility(View.GONE);
+                             //   task_subtype_name_desc.setVisibility(View.GONE);
+                                findViewById(R.id.subTask).setVisibility(View.GONE);
                             }
                         });
                     }
@@ -690,8 +695,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 }
             });
         } catch (Exception e) {
-            task_subtype.setVisibility(View.GONE);
-            task_subtype_name_desc.setVisibility(View.GONE);
+          //  task_subtype.setVisibility(View.GONE);
+           // task_subtype_name_desc.setVisibility(View.GONE);
+            findViewById(R.id.subTask).setVisibility(View.GONE);
             e.printStackTrace();
         }
     }

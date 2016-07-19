@@ -157,6 +157,8 @@ public class ChangeEquipmentDialog extends Dialog {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                Toast.makeText(context, "修改设备状态成功", Toast.LENGTH_SHORT).show();
+                dismiss();
             }
 
             @Override
