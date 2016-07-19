@@ -1,6 +1,7 @@
 package com.emms.activity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -39,6 +40,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
     private ImageView sureImageView;
     private boolean isExChangeOrder=false;
     private boolean isInviteHelp=false;
+    private String taskId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +48,8 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
         //标识，判断当前界面操作是转单还是邀请协助，若为转单，只能选一人，若为邀请协助，可多选
         isExChangeOrder=getIntent().getBooleanExtra("isExChangeOrder",false);
         isInviteHelp=getIntent().getBooleanExtra("isInviteHelp",false);
-          postInviteDataToServer();
+       taskId=getIntent().getStringExtra(Task.TASK_ID) ;
+
         mListView = (ListView) findViewById(R.id.id_wait_list);
         mGroupListView = (ListView) findViewById(R.id.group_list);
         mGroupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -85,6 +88,9 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                     JsonObjectElement json=new JsonObjectElement(t);
                     if(json.get("PageData")!=null&&json.get("PageData").asArrayElement().size()>0){
                         listItems.clear();
+                        if(adapter!=null){
+                            adapter.notifyDataSetChanged();
+                        }
                         for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
                             listItems.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
@@ -160,40 +166,32 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
     }
     public void postInviteDataToServer(){
         HttpParams params = new HttpParams();
+        JsonObjectElement jsonObjectElement=new JsonObjectElement();
+        jsonObjectElement.set(Task.TASK_ID,taskId);
+        if(isInviteHelp){
+            jsonObjectElement.set("ChangeType",0);}
+        else {
+            jsonObjectElement.set("ChangeType",1);
+        }
+        List<String> a=new ArrayList<String>();
+        a.add("aaa");
+        a.add("bbb");
+       // Object[]b=a.toArray();
+        jsonObjectElement.set("Operator_IDS",a.toString());
+        Log.e("daf",a.toString());
+        params.putJsonParams(jsonObjectElement.toJson());
+        HttpUtils.post(this, "TaskOperatorChange", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                Toast.makeText(InvitorActivity.this,"邀请成功",Toast.LENGTH_LONG).show();
+            }
 
-//        JsonObjectElement taskEquepment = new JsonObjectElement();
-////创建任务提交数据：任务创建人，任务类型“T01”那些，几台号（数组），
-//        taskEquepment.set(Task.TASK_ID, taskId);
-//        //  taskDetail.set(Task.TASK_TYPE,TaskType);
-//
-//        //若任务未有设备，则输入为0，表示添加
-//        taskEquepment.set("TaskEquipment_ID", 0);
-//        //若已有设备，申请状态变更
-//        taskEquepment.set("Equipment_ID", equipmentID);
-//        //taskEquepment.set("Equipment_ID", equipmentID);
-//        taskEquepment.set("Status",0);
-//        taskEquepment.set("Operator_ID",getLoginInfo().getId());
-//        //taskEquepment.set();
-//        params.putJsonParams(taskEquepment.toJson());
-//
-//        HttpUtils.post(this, "TaskEquipment", params, new HttpCallback() {
-//            @Override
-//            public void onSuccess(String t) {
-//                super.onSuccess(t);
-//                Toast.makeText(TaskDetailsActivity.this, "添加设备成功", Toast.LENGTH_SHORT).show();
-//                getTaskEquipmentFromServerByTaskId();
-//            }
-//
-//            @Override
-//            public void onFailure(int errorNo, String strMsg) {
-//                super.onFailure(errorNo, strMsg);
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Toast.makeText(TaskDetailsActivity.this, getResources().getString(R.string.err_add_task_equipment), Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//            }
-//        });
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+            }
+        });
+
     }
 }

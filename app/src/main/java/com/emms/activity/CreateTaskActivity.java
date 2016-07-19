@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -44,8 +45,12 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import net.minidev.json.JSONArray;
 
 import org.apache.commons.lang.StringUtils;
+import org.restlet.representation.Representation;
 
 import java.nio.charset.Charset;
 import java.text.DateFormat;
@@ -976,7 +981,13 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         JsonObject.addProperty("TaskEquipment_ID", 0);
         jsonArray.add(JsonObject);
 
+        JSONArray jsonArray1=new JSONArray();
+        jsonArray1.add(JsonObject);
 
+        JsonArrayElement jsonArrayElement=new JsonArrayElement(jsonArray);
+        for(int i=0;i<jsonArrayElement.size();i++){
+
+        }
        //包装数据
         task.set("Task",taskDetail);
         task.set("TaskEquipment",jsonArray.toString());
