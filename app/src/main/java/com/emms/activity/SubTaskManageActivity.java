@@ -29,6 +29,7 @@ import com.emms.util.DataUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.zip.Inflater;
 
 /**
  * Created by jaffer.deng on 2016/6/6.
@@ -64,9 +65,9 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onClick(View v) {
                 //添加子任务
-            //   CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog,null,EquipmentList);
-           //    customDialog.setTaskId(taskId);
-           //     customDialog.show();
+               CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog,null,EquipmentList);
+               customDialog.setTaskId(taskId);
+                customDialog.show();
             /*    Intent intent=new Intent(SubTaskManageActivity.this,AddSubTaskActivity.class);
                 intent.putExtra("taskId",taskId);
                 ArrayList<String> list=new ArrayList<String>();
@@ -75,6 +76,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
                 }
                 intent.putExtra("taskEquipmentList",list);
                 startActivity(intent);*/
+               // LayoutInflater.from(SubTaskManageActivity.this).inflate(R.layout.activity_search, null, false);
             }
         });
         adapter=new SubTaskAdapter(datas) {

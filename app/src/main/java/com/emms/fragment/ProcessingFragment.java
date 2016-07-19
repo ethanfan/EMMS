@@ -163,7 +163,7 @@ public class ProcessingFragment extends Fragment {
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
                     int RecCount=jsonObjectElement.get("RecCount").valueAsInt();
-                    if(jsonObjectElement.get("PageData").asArrayElement().size()==0){
+                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()==0){
                       //提示没有处理中的任务
                     }
                     datas.clear();

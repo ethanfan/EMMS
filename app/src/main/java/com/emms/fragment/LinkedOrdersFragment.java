@@ -177,7 +177,7 @@ public class LinkedOrdersFragment extends Fragment{
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
                     int RecCount=jsonObjectElement.get("RecCount").valueAsInt();
-                    if(jsonObjectElement.get("PageData").asArrayElement().size()==0){
+                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()==0){
                     }
                  //  datas1.clear();
                  //   datas2.clear();
