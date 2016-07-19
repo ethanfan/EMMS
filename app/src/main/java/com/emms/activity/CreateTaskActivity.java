@@ -134,7 +134,12 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         searchBox = (EditText) findViewById(R.id.et_search);
         emptyView = (ViewGroup) findViewById(R.id.empty_view);
         mResultListView = (ListView) findViewById(R.id.listview_search_result);
+        findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
         searchBox.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

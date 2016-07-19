@@ -1,6 +1,7 @@
 package com.emms.activity;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -40,7 +41,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
     private String taskId;
     private ObjectElement TaskDetail;
     private HashMap<String,String> Status_Colors=new HashMap<String,String>();
-    private ArrayList<String> EquipmentList=new ArrayList<String>();
+    private ArrayList<ObjectElement> EquipmentList=new ArrayList<ObjectElement>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,10 +64,17 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onClick(View v) {
                 //添加子任务
-                CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog);
-                customDialog.setTaskEquipment(EquipmentList);
-                customDialog.setTaskId(taskId);
-                customDialog.show();
+            //   CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog,null,EquipmentList);
+           //    customDialog.setTaskId(taskId);
+           //     customDialog.show();
+            /*    Intent intent=new Intent(SubTaskManageActivity.this,AddSubTaskActivity.class);
+                intent.putExtra("taskId",taskId);
+                ArrayList<String> list=new ArrayList<String>();
+                for(int i=0;i<EquipmentList.size();i++){
+                    list.add(EquipmentList.get(i).toString());
+                }
+                intent.putExtra("taskEquipmentList",list);
+                startActivity(intent);*/
             }
         });
         adapter=new SubTaskAdapter(datas) {
@@ -99,9 +107,8 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
         sub_task_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog);
-                customDialog.setData(datas.get(position-1));
-                customDialog.setTaskEquipment(EquipmentList);
+                CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog,
+                        datas.get(position),EquipmentList);
                 customDialog.setTaskId(taskId);
                 customDialog.show();
             }
@@ -168,7 +175,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
 
                                 int dealDeviceCount = 0;
                                 for (int i = 0; i < jsonArrayElement.size(); i++) {
-                                    EquipmentList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
+                                    EquipmentList.add(jsonArrayElement.get(i).asObjectElement());
                                 }
                             }
                         }

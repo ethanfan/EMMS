@@ -56,7 +56,10 @@
             android:name=".activity.MachineActivity"
             android:screenOrientation="portrait" >
         </activity>
-
+        <activity
+            android:name=".activity.AddSubTaskActivity"
+            android:screenOrientation="portrait" >
+        </activity>
         <activity
             android:name=".activity.SearchRecordActivity"
             android:screenOrientation="portrait" >
