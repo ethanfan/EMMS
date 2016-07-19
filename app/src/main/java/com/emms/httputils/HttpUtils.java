@@ -2,10 +2,13 @@ package com.emms.httputils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import com.emms.R;
+import com.emms.ui.KProgressHUD;
 import com.emms.util.BuildConfig;
 import com.emms.util.Md5Utils;
 import com.emms.util.SharedPreferenceManager;
@@ -172,19 +175,36 @@ public  class HttpUtils {
             Toast.makeText(context,"请重新登录",Toast.LENGTH_SHORT).show();
         }
     }
+   private static boolean tag=true;
     public static void downloadData(File fileName, String m_url, final Context context) {
         String result="";
         OutputStream outputStream=null;
         try {
+
+            final KProgressHUD hud=KProgressHUD.create(context)
+                    .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                    .setLabel(context.getResources().getString(R.string.DownloadDataBase))
+                    .setCancellable(true).setAutoDismiss(true);
+            //final boolean tag=true;
+    /*        Runnable runnable=new Runnable() {
+                @Override
+                public void run() {
+                    if (tag){
+                    hud.show();
+                    tag=false;}
+                }
+            };
+
+            ((Activity)context).runOnUiThread(runnable);*/
+
             ((Activity)context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast toast=Toast.makeText(context,"数据文件下载中，请稍后",Toast.LENGTH_LONG);
+                      Toast toast=Toast.makeText(context,R.string.DownloadDataBase,Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER,0,0);
                     toast.show();
                 }
             });
-
             URL url = new URL("https://cloud.linkgoo.cn/app/emms/EMMS.zip");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -207,11 +227,13 @@ public  class HttpUtils {
             ((Activity)context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast toast=Toast.makeText(context,"数据文件下载完毕，请使用",Toast.LENGTH_LONG);
+                    Toast toast=Toast.makeText(context,"数据文件下载完毕",Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER,0,0);
                     toast.show();
                 }
             });
+        //    hud.dismiss();
+
             upZipFile(fileName,fileName.getParentFile().getAbsolutePath(),context);
         } catch (Exception e) {
             System.out.println("error！" + e);
@@ -246,14 +268,6 @@ public  class HttpUtils {
                 while ((realLength = in.read(buffer)) > 0) {
                     out.write(buffer, 0, realLength);
                 }
-                ((Activity)context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast toast=Toast.makeText(context,"文件解压成功",Toast.LENGTH_SHORT);
-                        toast.setGravity(Gravity.CENTER,0,0);
-                        toast.show();
-                    }
-                });
             }
         } finally {
             if (in != null)

@@ -11,34 +11,33 @@
       <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:textColor="@color/black"
           android:id="@+id/work_num_tag"
           android:text="@string/work_num"/>
       <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:textColor="@color/black"
           android:id="@+id/work_num"
           android:paddingLeft="10dp"
           android:layout_toRightOf="@id/work_num_tag"/>
   </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="70dp"
-        android:id="@+id/two">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:id="@+id/approve_work_hours_tag"
+            android:layout_toLeftOf="@+id/approve_work_hours"
             android:text="@string/approved_working_hours"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:id="@+id/approve_work_hours"
-            android:paddingLeft="10dp"
-            android:layout_toRightOf="@id/approve_work_hours_tag"/>
-    </RelativeLayout>
+            android:layout_alignParentRight="true"
+            android:paddingRight="30dp"/>
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,15 +48,35 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:id="@+id/equipment_num_tag"
             android:text="@string/sub_task_equipment_num"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/equipment_num"
+            android:textColor="@color/black"
             android:paddingLeft="10dp"
             android:layout_toRightOf="@id/equipment_num_tag"/>
     </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/status_tag"
+            android:layout_alignTop="@+id/six"
+            android:layout_alignLeft="@+id/approve_work_hours_tag"
+            android:textColor="@color/black"
+            android:text="@string/work_status"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/status"
+            android:textColor="@color/black"
+            android:paddingLeft="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/status_tag"
+            android:layout_toRightOf="@id/status_tag"/>
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -69,33 +88,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/work_name_tag"
+            android:textColor="@color/black"
             android:text="@string/work_name"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/work_name"
+            android:textColor="@color/black"
             android:paddingLeft="10dp"
             android:layout_toRightOf="@id/work_name_tag"/>
     </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/four"
-        android:layout_below="@+id/two"
-        android:layout_marginTop="5dp"
-        android:layout_alignLeft="@id/two">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/status_tag"
-            android:text="@string/work_status"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/status"
-            android:paddingLeft="10dp"
-            android:layout_toRightOf="@id/status_tag"/>
-    </RelativeLayout>
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -107,12 +110,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:id="@+id/work_description_tag"
             android:text="@string/work_description"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/work_description"
+            android:textColor="@color/black"
             android:paddingLeft="10dp"
             android:layout_toRightOf="@id/work_description_tag"/>
     </RelativeLayout>

@@ -76,25 +76,17 @@ public class ChangeEquipmentDialog extends Dialog {
             @Override
             public View getCustomView(View convertView, final int position, ViewGroup parent) {
                 StatusAdapter.ViewHolder holder;
-                if(convertView==null){
-                    convertView = LayoutInflater.from(context).inflate(
+                View v;
+                v = LayoutInflater.from(context).inflate(
                             R.layout.change_equipment_status_dialog_item, null);
                     holder = new StatusAdapter.ViewHolder();
-
-                    convertView.setTag(holder);
-
                     holder.status = (TextView) convertView
                             .findViewById(R.id.status);
-
-                } else {
-                    holder = (StatusAdapter.ViewHolder) convertView.getTag();
-                }
                 holder.status.setText(status.get(position));
                 holder.status.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if(position==0){
-
                         }else if (position==1){
                             postTaskEquipment(1);
                         }else if (position==2){
@@ -106,7 +98,7 @@ public class ChangeEquipmentDialog extends Dialog {
                         }
                     }
                 });
-                return convertView;
+                return v;
             }
         };
         change_Equipment_status.setAdapter(taskAdapter);

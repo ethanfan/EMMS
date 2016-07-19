@@ -772,7 +772,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
      //   ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
      //  changeEquipmentDialog.show();
 
-        postTaskEquipment("aaaa","0",0);
+       // postTaskEquipment("aaaa","0",0);
         String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='" + iccardID + "'";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);

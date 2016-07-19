@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
-            android:text="@string/group_type"
+            android:text="@string/grouptype"
             android:textSize="17sp"/>
         <TextView
             android:id="@+id/group"
@@ -92,11 +92,11 @@
             android:id="@+id/id_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
             android:text="@string/task_state"
-            android:layout_alignTop="@+id/Warranty_person_tag"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/Warranty_person_tag"
+            android:layout_alignParentLeft="true"
             android:textColor="@color/text_color"
-            android:layout_toRightOf="@+id/Warranty_person"
             android:textSize="17sp"/>
 
         <TextView
@@ -105,9 +105,9 @@
             android:layout_height="wrap_content"
             android:text="进行中 "
             android:textColor="@color/text_color"
+            android:layout_toRightOf="@+id/id_status"
             android:textSize="17sp"
-            android:layout_alignTop="@+id/id_status"
-            android:layout_toRightOf="@+id/id_status" />
+            android:layout_alignTop="@+id/id_status" />
         <TextView
             android:id="@+id/id_Warranty_time_description"
             android:layout_width="wrap_content"
@@ -115,7 +115,7 @@
             android:layout_marginTop="5dp"
             android:text="@string/repair_time"
             android:textColor="@color/text_color"
-            android:layout_below="@+id/Warranty_person_tag"
+            android:layout_below="@+id/id_status"
             android:layout_alignParentLeft="true"
             android:textSize="17sp"/>
 
@@ -163,7 +163,6 @@
             android:id="@+id/tv_end_time_process"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2016.05.05 10:22 "
             android:textColor="@color/text_color"
             android:layout_alignTop="@+id/id_end_time_description"
             android:layout_toRightOf="@+id/id_end_time_description"
