@@ -31,9 +31,9 @@
     <string name="pleaseInputOrSelect">请点击或下拉</string>
     <string name="scan">请扫描</string>
     <string name="task_type">任务类型: </string>
-    <string name="creater"> 创   建  人: </string>
-    <string name="equipment_num"> 机 台 号: </string>
-    <string name="group">组&#160;&#160;&#160;&#160;&#160;别: </string>
+    <string name="creater"> 创建人: </string>
+    <string name="equipment_num"> 机台号: </string>
+    <string name="group">组别: </string>
     <string name="equipment_name"> 设备名称: </string>
     <string name="task_subtype_name"> 任务子类型: </string>
     <string name="task_description"> 任务描述:</string>
@@ -128,6 +128,8 @@
     <string name="tech">技能：&#160;</string>
     <string name="task_descr">任务描述：</string>
     <string name="err_add_task_equipment">增加任务设备失败</string>
+    <string name="UserName">姓名:</string>
+    <string name="WorkNum">工号:</string>
 
 
 

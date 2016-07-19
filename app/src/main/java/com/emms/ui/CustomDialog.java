@@ -50,9 +50,8 @@ public class CustomDialog extends Dialog {
     private TextView work_name, work_description;
     private TextView comfirm_button;
     private DropEditText work_num,sub_task_equipment_num;
-    private RelativeLayout relativelayout;
-    private RelativeLayout IknowButtonLayout;
     private Map<String, Object> dataMap = new HashMap<String, Object>();
+    private ArrayList<String> taskEquipment;
     private final String DATA_KEY_WORK_INFO = "workInfo";
 
     private static final int MSG_UPDATE_WORK_INFO = 10;
@@ -161,7 +160,13 @@ public class CustomDialog extends Dialog {
     }
 
     public void setViewData() {
-
+        if(modifySubTask!=null){
+            work_num.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkCode")));
+            approved_working_hours.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkTime")));
+            work_name.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkName")));
+            work_description.setText(DataUtil.isDataElementNull(modifySubTask.get("DataDescr")));
+            sub_task_equipment_num.setText(DataUtil.isDataElementNull(modifySubTask.get("Equipment_ID")));
+        }
     }
 
     private void setWorkInfo(String workCode) {
@@ -282,6 +287,14 @@ public class CustomDialog extends Dialog {
 
     public void setTaskId(String taskId) {
         TaskId = taskId;
+    }
+
+    public ArrayList<String> getTaskEquipment() {
+        return taskEquipment;
+    }
+
+    public void setTaskEquipment(ArrayList<String> taskEquipment) {
+        this.taskEquipment = taskEquipment;
     }
 
 

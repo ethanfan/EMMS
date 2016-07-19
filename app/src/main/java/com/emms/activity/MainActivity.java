@@ -3,10 +3,14 @@ package com.emms.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.rxvolley.client.ProgressListener;
 import com.emms.R;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Operator;
@@ -39,7 +43,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
         initView();
         getTaskCountFromServer();
-        getNewDataFromServer(); //下载DB文件
+       // getNewDataFromServer(); //下载DB文件
     }
     @Override
     protected void onRestart() {
@@ -68,7 +72,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         maintain_msg=(MsgView)findViewById(R.id.maintian_tip);
         move_car_msg=(MsgView)findViewById(R.id.move_car_tip);
         other_msg=(MsgView)findViewById(R.id.other_tip);
-        repair_msg.setText("aaaaaa");
+
+
+        //显示用户人名，工号
+        ((TextView)findViewById(R.id.UserName)).setText(getLoginInfo().getName());
+        ((TextView)findViewById(R.id.WorkNum)).setText(getLoginInfo().getOperator_no());
     }
 
     @Override
@@ -113,34 +121,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         }
     }
 
-    //下载DB文件
-    private void getNewDataFromServer() {
 
-        File dbFile = new File(getExternalFilesDir(null),"/test.db");
-        if(dbFile.exists()){
-
-            return;
-        }
-
-        String savepath = dbFile.getParentFile().getAbsolutePath();
-
-        HttpUtils.download(MainActivity.this, savepath, BuildConfig.getConfigurationDownload(), null, new HttpCallback() {
-            @Override
-            public void onSuccessInAsync(byte[] t) {
-                super.onSuccessInAsync(t);
-            }
-
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-            }
-
-            @Override
-            public void onFailure(VolleyError error) {
-                super.onFailure(error);
-            }
-        });
-    }
    private void getTaskCountFromServer(){
         HttpParams params=new HttpParams();
 

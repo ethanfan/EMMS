@@ -3,6 +3,7 @@ package com.emms.activity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
@@ -62,6 +64,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             public void onClick(View v) {
                 //添加子任务
                 CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog);
+                customDialog.setTaskEquipment(EquipmentList);
                 customDialog.setTaskId(taskId);
                 customDialog.show();
             }
@@ -98,6 +101,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog);
                 customDialog.setData(datas.get(position-1));
+                customDialog.setTaskEquipment(EquipmentList);
                 customDialog.setTaskId(taskId);
                 customDialog.show();
             }
@@ -174,6 +178,9 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
                 public void onFailure(int errorNo, String strMsg) {
 
                     super.onFailure(errorNo, strMsg);
+                   Toast toast=Toast.makeText(SubTaskManageActivity.this,"获取设备信息失败,请检查网络",Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.show();
                 }
             });
 

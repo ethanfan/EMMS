@@ -130,5 +130,32 @@
         android:layout_height="1dp"
         android:layout_above="@id/buttondecrisp"
         android:background="@color/bg_line" />
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00FFFFFF"
+        android:visibility="gone"
+        android:id="@+id/downloadProgress">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:layout_centerInParent="true"
+            android:paddingTop="30dp"
+            android:id="@+id/aaa"
+            android:text="数据文件下载中，请稍后..."/>
+        <ProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginBottom="10dp"
+            android:id="@+id/progress"
+            android:layout_below="@+id/aaa"
+            style="@android:style/Widget.ProgressBar.Horizontal"    >
 
+        </ProgressBar>
+    </RelativeLayout>
 </RelativeLayout>

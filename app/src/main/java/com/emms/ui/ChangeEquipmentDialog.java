@@ -51,6 +51,8 @@ public class ChangeEquipmentDialog extends Dialog {
     private ListView change_Equipment_status;
     private StatusAdapter taskAdapter;
     private String TaskId;
+    private String EquipmentId;
+    private String TaskEquipmentId;
     private ArrayList<String> status=new ArrayList<String>();
 
     private ObjectElement TaskEquipmentData;
@@ -142,12 +144,10 @@ public class ChangeEquipmentDialog extends Dialog {
         JsonObjectElement taskEquepment=new JsonObjectElement();
 //创建任务提交数据：任务创建人，任务类型“T01”那些，几台号（数组），
         taskEquepment.set(Task.TASK_ID,TaskId);
-        //  taskDetail.set(Task.TASK_TYPE,TaskType);
-
         //若任务未有设备，则输入为0，表示添加
-        taskEquepment.set("TaskEquipment_ID",67386);
+        taskEquepment.set("TaskEquipment_ID",TaskEquipmentId);
         //若已有设备，申请状态变更
-        taskEquepment.set("Equipment_ID", "123213");
+        taskEquepment.set("Equipment_ID", EquipmentId);
         //taskEquepment.set("Equipment_ID", equipmentID);
         taskEquepment.set("Status",status);
 
@@ -157,6 +157,8 @@ public class ChangeEquipmentDialog extends Dialog {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                Toast.makeText(context, "修改设备状态成功", Toast.LENGTH_SHORT).show();
+                dismiss();
             }
 
             @Override
@@ -175,6 +177,10 @@ public class ChangeEquipmentDialog extends Dialog {
     public void setTaskEquipmentData(ObjectElement taskEquipmentData) {
         TaskEquipmentData = taskEquipmentData;
     }
-
+   public void setDatas(String taskId,String equipmentId,String taskEquipmentId){
+       this.TaskId=taskId;
+       this.EquipmentId=equipmentId;
+       this.TaskEquipmentId=taskEquipmentId;
+   }
 
 }

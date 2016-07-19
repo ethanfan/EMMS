@@ -71,6 +71,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import org.apache.commons.io.output.TaggedOutputStream;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -102,7 +104,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     Long taskId = null;
     private List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
     private Map<String, Object> deviceCountMap = new HashMap<String, Object>();
-
+    private ArrayList<String> TaskDeviceIdList=new ArrayList<String>();
+    private Map<String,String> Task_DeviceId_TaskEquipmentId=new HashMap<String, String>();
     //0-开始，1-暂停，2-领料，3-待料，4-结束
 
     private final String STATUS_DONE = "4";
@@ -664,11 +667,14 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
 
                     if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
-
+                        datas.clear();
+                        TaskDeviceIdList.clear();
                         int dealDeviceCount = 0;
                         for (int i = 0; i < jsonArrayElement.size(); i++) {
                             datas.add(jsonArrayElement.get(i).asObjectElement());
-
+                            TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
+                            Task_DeviceId_TaskEquipmentId.put(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)),
+                                    DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("TaskEquipment_ID")));
                             String equipmentStatus = DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("status"));
                             if (STATUS_DONE.equals(equipmentStatus)) {
                                 dealDeviceCount++;
@@ -691,6 +697,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
+               Toast toast=Toast.makeText(TaskDetailsActivity.this,"获取设备列表失败，服务器返回异常",Toast.LENGTH_LONG);
+               toast.setGravity(Gravity.CENTER,0,0);
+               toast.show();
             }
         });
     }
@@ -776,11 +785,16 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         && dataElement.asArrayElement().size() > 0) {
                     ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
                     //进行判断，若任务未有该设备号，添加
-                    postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),"0",0);
-                    //若已有该设备号，弹出对话框，申请进行状态变更
-                    ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(TaskDetailsActivity.this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
-                    changeEquipmentDialog.setTaskEquipmentData(null);
-                    changeEquipmentDialog.show();
+                    if(!TaskDeviceIdList.contains(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))){
+                    postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),"0",0);}
+                    else{
+                        //若已有该设备号，弹出对话框，申请进行状态变更
+                        ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(TaskDetailsActivity.this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
+                        changeEquipmentDialog.setDatas(String.valueOf(taskId),objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
+                                Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
+                        changeEquipmentDialog.show();
+                    }
+
 
                 } else {
                     runOnUiThread(new Runnable() {
@@ -814,9 +828,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         //若任务未有设备，则输入为0，表示添加
         taskEquepment.set("TaskEquipment_ID",0);
        //若已有设备，申请状态变更
-        taskEquepment.set("Equipment_ID", "123213");
+        taskEquepment.set("Equipment_ID", equipmentID);
         //taskEquepment.set("Equipment_ID", equipmentID);
-        taskEquepment.set("Status",status);
+        taskEquepment.set("Status",0);
         //taskEquepment.set();
         params.putJsonParams(taskEquepment.toJson());
 
@@ -825,6 +839,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 Toast.makeText(TaskDetailsActivity.this, "添加设备成功", Toast.LENGTH_SHORT).show();
+                getTaskEquipmentFromServerByTaskId();
             }
 
             @Override

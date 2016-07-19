@@ -237,6 +237,7 @@ public class Operator extends Model<Operator, Long> implements Identity<Long> {
 
 
 
+
 	@Override
 	public int hashCode() {
 		return id.hashCode();

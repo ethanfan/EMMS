@@ -197,6 +197,9 @@ public class PendingOrdersFragment extends Fragment{
                              toast.show();
                          }else{
                              //失败，通知用户接单失败，单已经被接
+                             Toast toast=Toast.makeText(mContext,"该单已被接",Toast.LENGTH_LONG);
+                             toast.setGravity(Gravity.CENTER,0,0);
+                             toast.show();
                          }
                          datas.remove(position);
                          taskAdapter.setDatas(datas);
