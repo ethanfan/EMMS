@@ -18,6 +18,7 @@ import com.emms.adapter.MultiAdapter;
 import com.emms.bean.AwaitRepair;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
+import com.emms.util.DataUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,7 +76,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
     private void getListItems(ObjectElement objectElement) {
         HttpParams params=new HttpParams();
 
-        params.put("org_id",objectElement.get("Organise_ID").valueAsString());
+        params.put("org_id", DataUtil.isDataElementNull(objectElement.get("Organise_ID")));
         HttpUtils.get(this, "OperatorStatus", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {

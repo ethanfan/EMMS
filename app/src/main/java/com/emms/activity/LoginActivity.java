@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -75,7 +76,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         machine.setOnClickListener(this);
         hud = KProgressHUD.create(this)
                 .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
-                .setLabel(getResources().getString(R.string.logining))
+        .setLabel(getResources().getString(R.string.logining))
                 .setCancellable(true);
     }
 
@@ -212,15 +213,17 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private void getNewDataFromServer() {
 
        final File dbFile = new File(getExternalFilesDir(null), "/EMMS.zip");
-      //      if(dbFile.exists()){
+           if(dbFile.exists()){
 
-     //          return;
-     //       }
+             return;
+          }
        // String savepath = dbFile.getParentFile().getAbsolutePath();
         new Thread(new Runnable() {
             @Override
             public void run() {
+                Looper.prepare();
                 HttpUtils.downloadData(dbFile, "",LoginActivity.this);
+                Looper.loop();
             }
         }).start();
       //  HttpUtils.downloadData(dbFile, "");

@@ -63,7 +63,7 @@ public class ProcessingFragment extends Fragment {
     private Handler handler=new Handler();
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
@@ -78,7 +78,7 @@ public class ProcessingFragment extends Fragment {
                     public void run() {
                         getProcessingDataFromServer();
                         listView.onRefreshComplete();
-                        Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
+                      //  Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
                     }
                 },2000);
             }
@@ -102,6 +102,8 @@ public class ProcessingFragment extends Fragment {
                     convertView = LayoutInflater.from(mContext).inflate(R.layout.item_fr_process, parent, false);
                     holder = new TaskViewHolder();
                     //显示6个内容，组别，报修人，状态，保修时间,开始时间，任务描述
+                    convertView.findViewById(R.id.id_end_time_description).setVisibility(View.GONE);
+                    convertView.findViewById(R.id.tv_end_time_process).setVisibility(View.GONE);
                     holder.tv_group = (TextView) convertView.findViewById(R.id.group);
                     holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);
                     holder.tv_task_state = (TextView) convertView.findViewById(R.id.tv_task_state);

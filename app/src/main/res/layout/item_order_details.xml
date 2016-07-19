@@ -119,7 +119,7 @@
             android:id="@+id/textView20"
             android:layout_marginTop="5dp"
             android:paddingLeft="20dp"
-            android:layout_toRightOf="@+id/tv_task_state_details"
+            android:layout_toLeftOf="@+id/id_participant"
             android:layout_below="@+id/tv_end_time_details"/>
         <TextView
             android:layout_width="wrap_content"
@@ -128,8 +128,9 @@
             android:text="何邵勃"
             android:textSize="17sp"
             android:id="@+id/id_participant"
+            android:paddingRight="30dp"
+            android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/tv_task_state_details"
-            android:layout_toRightOf="@+id/textView20"
            />
     </RelativeLayout>
 </RelativeLayout>

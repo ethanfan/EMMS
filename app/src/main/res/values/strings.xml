@@ -56,6 +56,7 @@
     <string name="working">进行中</string>
     <string name="paused">已暂停</string>
     <string name="group_type">组别：</string>
+    <string name="grouptype">&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;组别：</string>
     <string name="device_num">设备编号：&#160;&#160;</string>
     <string name="device_name">设备名称：&#160;&#160; </string>
     <string name="task_state">任务状态：&#160;&#160; </string>
@@ -105,9 +106,9 @@
     <string name="add">添加</string>
     <string name="delete">删除</string>
     <string name="sub_task">子任务</string>
-    <string name="sub_task_equipment_num">机台号:&#160;&#160;&#160;&#160;</string>
+    <string name="sub_task_equipment_num">&#160;&#160;&#160;&#160;机台号:</string>
     <string name="sure">确定</string>
-    <string name="warranty_person">报修人:</string>
+    <string name="warranty_person">&#160;&#160;&#160;&#160;&#160;&#160;报修人:</string>
     <!--<string name="error">Error</string>-->
     <!--<string name="no_nfc">No NFC found on this device</string>-->
     <!--<string name="nfc_disabled">NFC is not enabled. Please go to the wireless settings to enable it.</string>-->
@@ -130,6 +131,7 @@
     <string name="err_add_task_equipment">增加任务设备失败</string>
     <string name="UserName">姓名:</string>
     <string name="WorkNum">工号:</string>
+    <string name="DownloadDataBase">数据文件下载中，请稍候</string>
 
 
 
