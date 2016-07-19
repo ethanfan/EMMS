@@ -19,7 +19,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/creater"
-            android:layout_alignRight="@id/textView7"
             android:textColor="@color/text_color"
             android:textSize="17sp" />
 
@@ -56,9 +55,9 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
             android:layout_below="@+id/textView6"
             android:layout_marginTop="4dp"
-            android:layout_alignRight="@id/textView7"
             android:text="@string/group_type"
             android:textColor="@color/text_color"
             android:textSize="17sp" />

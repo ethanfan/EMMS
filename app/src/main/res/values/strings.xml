@@ -31,7 +31,7 @@
     <string name="pleaseInputOrSelect">请点击或下拉</string>
     <string name="scan">请扫描</string>
     <string name="task_type">任务类型: </string>
-    <string name="creater"> 创建人: </string>
+    <string name="creater">创建人: </string>
     <string name="equipment_num"> 机台号: </string>
     <string name="group">组别: </string>
     <string name="equipment_name"> 设备名称: </string>
