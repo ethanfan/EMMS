@@ -58,8 +58,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         machine = (TextView) findViewById(R.id.machine);
         inputPassWord = (EditText) findViewById(R.id.inputPassWord);
         inputname = (EditText) findViewById(R.id.inputUserName);
-       inputname.setText("GET0259106");
+        inputname.setText("GET0259106");
         inputPassWord.setText("888888");
+//        inputname.setText("GET0006236");
+//        inputPassWord.setText("888888");
         login.setOnClickListener(this);
         machine.setOnClickListener(this);
         hud = KProgressHUD.create(this)
