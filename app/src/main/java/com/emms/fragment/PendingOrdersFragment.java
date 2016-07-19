@@ -28,6 +28,8 @@ import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 import com.emms.util.LongToDate;
 import com.emms.util.SharedPreferenceManager;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.datastore_android_sdk.datastore.ObjectElement;
@@ -173,14 +175,21 @@ public class PendingOrdersFragment extends Fragment{
        // datas.get(position).
         JsonObjectElement task=new JsonObjectElement();
         task.set(Task.TASK_ID,DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_ID)));
-        task.set("Status",1);
+        task.set("Status", 1);
         JsonObjectElement operator=new JsonObjectElement();
 
-        operator.set("Operator_ID",new JsonObjectElement(SharedPreferenceManager.getLoginData(mContext))
+        operator.set("Operator_ID", new JsonObjectElement(SharedPreferenceManager.getLoginData(mContext))
                 .get("Operator_ID").valueAsString());
+
+        JsonArray jsonArray=new JsonArray();
+        JsonObject JsonObject=new JsonObject();
+        JsonObject.addProperty("Operator_ID", new JsonObjectElement(SharedPreferenceManager.getLoginData(mContext))
+                .get("Operator_ID").valueAsString());
+        jsonArray.add(JsonObject);
+
         JsonObjectElement SubData=new JsonObjectElement();
         SubData.set("Task",task);
-        SubData.set("TaskOperator",operator);
+        SubData.set("TaskOperator",jsonArray.toString());
         SubData.set("isChangeTaskItem","1");
         HttpParams params=new HttpParams();
         params.putJsonParams(SubData.toJson());

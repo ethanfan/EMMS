@@ -159,8 +159,41 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
         }
     }
     public void postInviteDataToServer(){
-      HttpParams httpParams=new HttpParams();
-        //httpParams
-      //  HttpUtils.post(this,);
+        HttpParams params = new HttpParams();
+
+//        JsonObjectElement taskEquepment = new JsonObjectElement();
+////创建任务提交数据：任务创建人，任务类型“T01”那些，几台号（数组），
+//        taskEquepment.set(Task.TASK_ID, taskId);
+//        //  taskDetail.set(Task.TASK_TYPE,TaskType);
+//
+//        //若任务未有设备，则输入为0，表示添加
+//        taskEquepment.set("TaskEquipment_ID", 0);
+//        //若已有设备，申请状态变更
+//        taskEquepment.set("Equipment_ID", equipmentID);
+//        //taskEquepment.set("Equipment_ID", equipmentID);
+//        taskEquepment.set("Status",0);
+//        taskEquepment.set("Operator_ID",getLoginInfo().getId());
+//        //taskEquepment.set();
+//        params.putJsonParams(taskEquepment.toJson());
+//
+//        HttpUtils.post(this, "TaskEquipment", params, new HttpCallback() {
+//            @Override
+//            public void onSuccess(String t) {
+//                super.onSuccess(t);
+//                Toast.makeText(TaskDetailsActivity.this, "添加设备成功", Toast.LENGTH_SHORT).show();
+//                getTaskEquipmentFromServerByTaskId();
+//            }
+//
+//            @Override
+//            public void onFailure(int errorNo, String strMsg) {
+//                super.onFailure(errorNo, strMsg);
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(TaskDetailsActivity.this, getResources().getString(R.string.err_add_task_equipment), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//        });
     }
 }
