@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.datastore_android_sdk.rxvolley.client.ProgressListener;
@@ -71,6 +72,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         maintain_msg=(MsgView)findViewById(R.id.maintian_tip);
         move_car_msg=(MsgView)findViewById(R.id.move_car_tip);
         other_msg=(MsgView)findViewById(R.id.other_tip);
+
+
+        //显示用户人名，工号
+        ((TextView)findViewById(R.id.UserName)).setText(getLoginInfo().getName());
+        ((TextView)findViewById(R.id.WorkNum)).setText(getLoginInfo().getOperator_no());
     }
 
     @Override

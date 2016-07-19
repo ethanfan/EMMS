@@ -128,6 +128,8 @@
     <string name="tech">技能：&#160;</string>
     <string name="task_descr">任务描述：</string>
     <string name="err_add_task_equipment">增加任务设备失败</string>
+    <string name="UserName">姓名:</string>
+    <string name="WorkNum">工号:</string>
 
 
 
