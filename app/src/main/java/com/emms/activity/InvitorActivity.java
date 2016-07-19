@@ -51,7 +51,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
         mGroupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                getListItems(listGroup.get(position-1));
+                getListItems(listGroup.get(position));
             }
         });
         bcakImageView = (ImageView) findViewById(R.id.btn_bar_left_action);

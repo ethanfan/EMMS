@@ -772,7 +772,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
      //   ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
      //  changeEquipmentDialog.show();
 
-        postTaskEquipment("aaaa","0",0);
+//        postTaskEquipment("aaaa","0",0);
         String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='" + iccardID + "'";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
@@ -783,16 +783,21 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
                 if (dataElement != null && dataElement.isArray()
                         && dataElement.asArrayElement().size() > 0) {
-                    ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
+                    final ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
                     //进行判断，若任务未有该设备号，添加
                     if(!TaskDeviceIdList.contains(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))){
                     postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),"0",0);}
                     else{
-                        //若已有该设备号，弹出对话框，申请进行状态变更
-                        ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(TaskDetailsActivity.this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
-                        changeEquipmentDialog.setDatas(String.valueOf(taskId),objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
-                                Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
-                        changeEquipmentDialog.show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //若已有该设备号，弹出对话框，申请进行状态变更
+                                ChangeEquipmentDialog changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.change_equipment_status_dialog, R.style.MyDialog);
+                                changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
+                                        Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
+                                changeEquipmentDialog.show();
+                            }
+                        });
                     }
 
 
