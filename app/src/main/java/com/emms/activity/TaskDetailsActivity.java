@@ -679,7 +679,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                 TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
                                 Task_DeviceId_TaskEquipmentId.put(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)),
                                         DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("TaskEquipment_ID")));
-                                String equipmentStatus = DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.STATUS));
+                                String equipmentStatus = DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("status"));
                                 if (STATUS_DONE.equals(equipmentStatus)) {
                                     dealDeviceCount++;
                                 }
