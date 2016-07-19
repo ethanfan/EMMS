@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -208,18 +209,25 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     //下载DB文件
     private void getNewDataFromServer() {
 
-        File dbFile = new File(getExternalFilesDir(null),"/test.db");
-        if(dbFile.exists()){
+       final File dbFile = new File(getExternalFilesDir(null), "/EMMS.zip");
+      //      if(dbFile.exists()){
 
-            return;
-        }
-
-        String savepath = dbFile.getParentFile().getAbsolutePath();
-        final LinearLayout progress=(LinearLayout)findViewById(R.id.downloadProgress);
+     //          return;
+     //       }
+       // String savepath = dbFile.getParentFile().getAbsolutePath();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HttpUtils.downloadData(dbFile, "",LoginActivity.this);
+            }
+        }).start();
+      //  HttpUtils.downloadData(dbFile, "");
+  /*      final RelativeLayout progress=(RelativeLayout)findViewById(R.id.downloadProgress);
         progress.setVisibility(View.VISIBLE);
         HttpUtils.download(LoginActivity.this, savepath, BuildConfig.getConfigurationDownload(), new ProgressListener() {
             @Override
             public void onProgress(long transferredBytes, long totalSize) {
+                int a=(int)totalSize;
                 ((ProgressBar)findViewById(R.id.progress)).setProgress((int)transferredBytes/(int)totalSize);
                 if(transferredBytes>=totalSize){
                     progress.setVisibility(View.GONE);
@@ -241,5 +249,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 super.onFailure(error);
             }
         });
+    }*/
     }
 }

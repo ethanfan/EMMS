@@ -1,6 +1,9 @@
 package com.emms.httputils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.emms.util.BuildConfig;
@@ -11,8 +14,22 @@ import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.datastore_android_sdk.rxvolley.client.ProgressListener;
 
-import java.util.Map;
+import org.apache.http.protocol.HTTP;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by jaffer.deng on 2016/6/3.
@@ -126,7 +143,7 @@ public  class HttpUtils {
     public static void download(Context context,String storeFilePath, String url, ProgressListener
             progressListener, HttpCallback callback){
         RxVolley.setContext(context);
-        RxVolley.download(storeFilePath,url,progressListener,callback);
+        RxVolley.download(storeFilePath,"https://cloud.linkgoo.cn/app/emms/EMMS.zip",progressListener,callback);
     }
     public static void delete( final Context context,final String table, final HttpParams params,final HttpCallback callback){
 
@@ -155,5 +172,94 @@ public  class HttpUtils {
             Toast.makeText(context,"请重新登录",Toast.LENGTH_SHORT).show();
         }
     }
+    public static void downloadData(File fileName, String m_url, final Context context) {
+        String result="";
+        OutputStream outputStream=null;
+        try {
+            ((Activity)context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast toast=Toast.makeText(context,"数据文件下载中，请稍后",Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.show();
+                }
+            });
 
+            URL url = new URL("https://cloud.linkgoo.cn/app/emms/EMMS.zip");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+            conn.setUseCaches(false);
+            conn.setRequestProperty("connection", "Keep-Alive");
+            conn.setRequestProperty("Charsert", "UTF-8");
+            conn.setRequestProperty("Content-Type", "multipart/form-data");
+            InputStream inputStream=conn.getInputStream();
+            outputStream=new FileOutputStream(fileName);
+            byte[] buffer=new byte[1024];
+            int len;
+            while((len=inputStream.read(buffer))!=-1){
+                outputStream.write(buffer,0,len);}
+            Log.e("正在下载","??");
+            outputStream.flush();
+            outputStream.close();
+            conn.disconnect();
+            ((Activity)context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast toast=Toast.makeText(context,"数据文件下载完毕，请使用",Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.show();
+                }
+            });
+            upZipFile(fileName,fileName.getParentFile().getAbsolutePath(),context);
+        } catch (Exception e) {
+            System.out.println("error！" + e);
+            e.printStackTrace();
+        }
+    }
+    public static void upZipFile(File zipFile, String folderPath, final Context context) throws ZipException, IOException {
+        File desDir = new File(folderPath);
+        if (!desDir.exists()) {
+            desDir.mkdirs();
+        }
+        ZipFile zf = new ZipFile(zipFile);
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            for (Enumeration<?> entries = zf.entries(); entries.hasMoreElements();) {
+                ZipEntry entry = ((ZipEntry) entries.nextElement());
+                in = zf.getInputStream(entry);
+                String str = folderPath + File.separator + entry.getName();
+                str = new String(str.getBytes("8859_1"), HTTP.UTF_8);
+                File desFile = new File(str);
+                if (!desFile.exists()) {
+                    File fileParentDir = desFile.getParentFile();
+                    if (!fileParentDir.exists()) {
+                        fileParentDir.mkdirs();
+                    }
+                    desFile.createNewFile();
+                }
+                out = new FileOutputStream(desFile);
+                byte buffer[] = new byte[1024];
+                int realLength;
+                while ((realLength = in.read(buffer)) > 0) {
+                    out.write(buffer, 0, realLength);
+                }
+                ((Activity)context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast toast=Toast.makeText(context,"文件解压成功",Toast.LENGTH_SHORT);
+                        toast.setGravity(Gravity.CENTER,0,0);
+                        toast.show();
+                    }
+                });
+            }
+        } finally {
+            if (in != null)
+                in.close();
+            if (out != null)
+                out.close();
+        }
+    }
 }

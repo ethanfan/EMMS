@@ -134,7 +134,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/transparent"
+        android:background="#00FFFFFF"
         android:visibility="gone"
         android:id="@+id/downloadProgress">
         <TextView
@@ -152,6 +152,7 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginBottom="10dp"
+            android:id="@+id/progress"
             android:layout_below="@+id/aaa"
             style="@android:style/Widget.ProgressBar.Horizontal"    >
 
