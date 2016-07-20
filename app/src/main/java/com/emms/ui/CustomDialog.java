@@ -3,6 +3,7 @@ package com.emms.ui;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
@@ -77,7 +78,7 @@ public class CustomDialog extends Dialog {
     private ViewGroup emptyView;
     private boolean isSearchview ;
     private int  searchtag =0;
-    private DrawerLayout mDrawer_layout;
+    private CustomDrawerLayout mDrawer_layout;
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
     private ArrayList<ObjectElement> workNumList=new ArrayList<ObjectElement>();
     public CustomDialog(Context context, int layout, int style) {
@@ -116,7 +117,7 @@ public class CustomDialog extends Dialog {
         comfirm_button = (TextView) findViewById(R.id.comfirm);//确定按钮，提交信息
         //若为修改状态，则有初始数据
         if(modifySubTask!=null){
-            work_num.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItem_ID")));//待修改
+            work_num.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkCode")));//待修改
            approved_working_hours.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkTime")));
             sub_task_equipment_num.setText(DataUtil.isDataElementNull(modifySubTask.get("Equipment_ID")));
             work_name.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkName")));
@@ -361,8 +362,9 @@ public class CustomDialog extends Dialog {
 
     private void initSearchView() {
         initWorkNumListData();
-        mDrawer_layout = (DrawerLayout) findViewById(R.id.search_page);
+        mDrawer_layout = (CustomDrawerLayout) findViewById(R.id.search_page);
         mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        mDrawer_layout.setBackgroundColor(Color.parseColor("#00000000"));
         menuSearchTitle = (TextView) findViewById(R.id.left_title);
         clearBtn = (ImageView) findViewById(R.id.iv_search_clear);
         searchBox = (EditText) findViewById(R.id.et_search);

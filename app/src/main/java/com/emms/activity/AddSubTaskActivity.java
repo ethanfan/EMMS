@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
@@ -42,6 +43,8 @@ import com.emms.schema.Equipment;
 import com.emms.schema.Operator;
 import com.emms.schema.Task;
 import com.emms.schema.Team;
+import com.emms.ui.CustomDialog;
+import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.NFCDialog;
@@ -88,12 +91,12 @@ public class AddSubTaskActivity extends BaseActivity implements View.OnClickList
         private ViewGroup emptyView;
         private boolean isSearchview ;
         private int  searchtag =0;
-        private DrawerLayout mDrawer_layout;
+        private CustomDrawerLayout mDrawer_layout;
         private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
         private ArrayList<ObjectElement> workNumList=new ArrayList<ObjectElement>();
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.add_sub_task_dialog);
+        setContentView(R.layout.activity_add_sub_task);
        // this.modifySubTask=new JsonObjectElement(getIntent().getStringExtra("subTaskData"));
         ArrayList<String> list=getIntent().getStringArrayListExtra("taskEquipmentList");
         for(int i=0;i<list.size();i++){
@@ -109,12 +112,6 @@ public class AddSubTaskActivity extends BaseActivity implements View.OnClickList
 
         public void initview() {
 
-            ((ViewGroup)findViewById(R.id.viewGroup)).setVisibility(View.GONE);
-            findViewById(R.id.dismissView).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                }
-            });
             work_num = (DropEditText) findViewById(R.id.work_num);//添加情况下用户输入，修改情况下获取
             approved_working_hours = (EditText) findViewById(R.id.approved_working_hours);//根据work_num从数据库中查出
             work_name = (TextView) findViewById(R.id.work_name);//根据work_num从数据库中查出
@@ -123,7 +120,7 @@ public class AddSubTaskActivity extends BaseActivity implements View.OnClickList
             comfirm_button = (TextView) findViewById(R.id.comfirm);//确定按钮，提交信息
             //若为修改状态，则有初始数据
             if(modifySubTask!=null){
-                work_num.setText(DataUtil.isDataElementNull(modifySubTask.get("TaskItem_ID")));//待修改
+                work_num.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkTimeCode")));//待修改
                 approved_working_hours.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkTime")));
                 sub_task_equipment_num.setText(DataUtil.isDataElementNull(modifySubTask.get("Equipment_ID")));
                 work_name.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkName")));
@@ -141,6 +138,22 @@ public class AddSubTaskActivity extends BaseActivity implements View.OnClickList
                         setWorkInfo(work_num.getText().toString());
                     }
 
+
+                }
+            });
+            work_num.getmEditText().addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    setWorkInfo(work_num.getText().toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
 
                 }
             });
@@ -182,7 +195,8 @@ public class AddSubTaskActivity extends BaseActivity implements View.OnClickList
             //    jsonObjectElement.set("TaskItemDesc",work_description.getText().toString());
             jsonObjectElement.set("TaskItem_ID",0);
             // jsonObjectElement.set("Equipment_ID",sub_task_equipment_num.getText().toString());
-            jsonObjectElement.set("Equipment_ID","124124");
+            if(sub_task_equipment_num.getText()!=null){
+            jsonObjectElement.set("Equipment_ID",sub_task_equipment_num.getText().toString());}
             jsonObjectElement.set("WorkTimeCode",work_num.getText().toString());
             jsonObjectElement.set("PlanManhour",approved_working_hours.getText().toString());
             params.putJsonParams(jsonObjectElement.toJson());
@@ -336,8 +350,9 @@ public class AddSubTaskActivity extends BaseActivity implements View.OnClickList
 
         private void initSearchView() {
             initWorkNumListData();
-            mDrawer_layout = ((DrawerLayout) findViewById(R.id.main_drawer_layout));
+            mDrawer_layout = ((CustomDrawerLayout) findViewById(R.id.search_page));
             mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+            mDrawer_layout.setBackgroundColor(Color.parseColor("#00000000"));
             menuSearchTitle = (TextView) findViewById(R.id.left_title);
             clearBtn = (ImageView) findViewById(R.id.iv_search_clear);
             searchBox = (EditText) findViewById(R.id.et_search);

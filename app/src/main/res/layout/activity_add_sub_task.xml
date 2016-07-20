@@ -1,44 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:id="@+id/main_drawer_layout"
-    android:layout_height="match_parent">
+<com.emms.ui.CustomDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:id="@+id/search_page"
+    android:background="#00000000"
+    android:layout_height="wrap_content">
     <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="wrap_content"
+        android:background="#00000000"
+        android:layout_height="wrap_content">
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:drop="http://schemas.android.com/apk/res-auto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="#00000000"
             >
-            <include layout="@layout/activity_search"
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:id="@+id/button"
+                android:layout_marginTop="10dp"
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:id="@+id/comfirm"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="20dp"
+                    android:background="#FCC900"
+                    android:gravity="center"
+                    android:text="@string/sure"
+                    android:textSize="23sp"
+                    android:textColor="@color/white"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="20dp"/>
+            </RelativeLayout>
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/viewGroup"
-                android:layout_gravity="end"/>
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <View
+                android:layout_above="@+id/button"
+                android:layout_alignLeft="@+id/four"
+                android:id="@+id/five"
+                android:layout_marginTop="10dp">
+                <TextView
                     android:layout_width="wrap_content"
-                    android:id="@+id/dismissView"
-                    android:layout_height="0dp"
-                    android:background="@color/transparent"
-                    android:layout_weight="80"></View>
-                <RelativeLayout
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:id="@+id/work_description_tag"
+                    android:text="@string/work_description"
+                    android:layout_centerVertical="true"/>
+                <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:background="#FFFFFFFF"
-                    android:layout_alignParentBottom="true"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/work_description_tag"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    >
+                    android:id="@+id/work_description"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/five"
+                android:layout_alignLeft="@+id/three"
+                android:layout_marginTop="10dp"
+                android:id="@+id/four">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="10dp"
+                    android:id="@+id/work_name_tag"
+                    android:text="@string/work_name"
+                    android:layout_centerVertical="true"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/work_name_tag"
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/work_name"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/four"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:id="@+id/three"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/sub_task_equipment_num_tag"
+                    android:text="@string/sub_task_equipment_num"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/black"
+                    android:layout_centerVertical="true"/>
+                <com.emms.ui.DropEditText
+                    android:id="@+id/sub_task_equipment_num"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_toRightOf="@+id/sub_task_equipment_num_tag"
+                    android:layout_weight="3"
+                    drop:drawableRight="@mipmap/drop_down"
+                    drop:dropMode="flow_parent"
+                    drop:hint="@string/pleaseInputOrSelect"
+                    drop:hintColor="@color/hint_color" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/three"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:id="@+id/two"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/approved_working_hours_tag"
+                    android:text="@string/approved_working_hours"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/black"
+                    android:layout_centerVertical="true"/>
+                <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="20dp"
+                    android:textColor="@color/black"
+                    android:layout_toRightOf="@+id/approved_working_hours_tag"
+                    android:id="@+id/approved_working_hours"
+                    android:layout_centerVertical="true"/>
+
+            </RelativeLayout>
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
+                        android:layout_above="@+id/two"
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="10dp"
                         android:id="@+id/one"
@@ -49,6 +153,7 @@
                             android:id="@+id/work_num_tag"
                             android:text="@string/work_num"
                             android:paddingLeft="10dp"
+                            android:textColor="@color/black"
                             android:layout_centerVertical="true"/>
                         <com.emms.ui.DropEditText
                             android:id="@+id/work_num"
@@ -64,135 +169,20 @@
                             drop:hintColor="@color/hint_color" />
 
                     </RelativeLayout>
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/one"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="10dp"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"
-                        android:id="@+id/two"
-                        >
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/approved_working_hours_tag"
-                            android:text="@string/approved_working_hours"
-                            android:paddingLeft="10dp"
-                            android:layout_centerVertical="true"/>
-                        <EditText
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentRight="true"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="20dp"
-                            android:textColor="@color/black"
-                            android:layout_toRightOf="@+id/approved_working_hours_tag"
-                            android:id="@+id/approved_working_hours"
-                            android:layout_centerVertical="true"/>
 
-                    </RelativeLayout>
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/two"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="10dp"
-                        android:id="@+id/three"
-                        >
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/sub_task_equipment_num_tag"
-                            android:text="@string/sub_task_equipment_num"
-                            android:paddingLeft="10dp"
-                            android:layout_centerVertical="true"/>
-                        <com.emms.ui.DropEditText
-                            android:id="@+id/sub_task_equipment_num"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="20dp"
-                            android:layout_toRightOf="@+id/sub_task_equipment_num_tag"
-                            android:layout_weight="3"
-                            drop:drawableRight="@mipmap/drop_down"
-                            drop:dropMode="flow_parent"
-                            drop:hint="@string/pleaseInputOrSelect"
-                            drop:hintColor="@color/hint_color" />
 
-                    </RelativeLayout>
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/three"
-                        android:layout_alignLeft="@+id/three"
-                        android:layout_marginTop="10dp"
-                        android:id="@+id/four">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingLeft="10dp"
-                            android:id="@+id/work_name_tag"
-                            android:text="@string/work_name"
-                            android:layout_centerVertical="true"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_toRightOf="@+id/work_name_tag"
-                            android:layout_marginLeft="10dp"
-                            android:id="@+id/work_name"
-                            android:layout_centerVertical="true"/>
-                    </RelativeLayout>
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/four"
-                        android:layout_alignLeft="@+id/four"
-                        android:id="@+id/five"
-                        android:layout_marginTop="10dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingLeft="10dp"
-                            android:id="@+id/work_description_tag"
-                            android:text="@string/work_description"
-                            android:layout_centerVertical="true"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_toRightOf="@+id/work_description_tag"
-                            android:layout_marginLeft="10dp"
-                            android:id="@+id/work_description"
-                            android:layout_centerVertical="true"/>
-                    </RelativeLayout>
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/five"
-                        android:layout_marginTop="10dp"
-                        >
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:id="@+id/comfirm"
-                            android:layout_height="50dp"
-                            android:layout_marginLeft="20dp"
-                            android:background="#FCC900"
-                            android:gravity="center"
-                            android:text="@string/sure"
-                            android:textSize="23sp"
-                            android:textColor="@color/white"
-                            android:layout_marginRight="20dp"
-                            android:layout_marginBottom="20dp"/>
-                    </RelativeLayout>
+
+
+
                 </RelativeLayout>
 
-            </LinearLayout>
 
-        </RelativeLayout>
+
     </FrameLayout>
+
+
     <include layout="@layout/activity_search"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="end"/>
-</android.support.v4.widget.DrawerLayout>
+</com.emms.ui.CustomDrawerLayout>

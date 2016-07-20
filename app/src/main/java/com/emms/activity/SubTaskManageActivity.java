@@ -94,10 +94,10 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onClick(View v) {
                 //添加子任务
-               CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog,null,EquipmentList);
+              CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog,null,EquipmentList);
                customDialog.setTaskId(taskId);
                 customDialog.show();
-            /*    Intent intent=new Intent(SubTaskManageActivity.this,AddSubTaskActivity.class);
+             /*   Intent intent=new Intent(SubTaskManageActivity.this,AddSubTaskActivity.class);
                 intent.putExtra("taskId",taskId);
                 ArrayList<String> list=new ArrayList<String>();
                 for(int i=0;i<EquipmentList.size();i++){
@@ -139,7 +139,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog,
-                        datas.get(position),EquipmentList);
+                        datas.get(position-1),EquipmentList);
                 customDialog.setTaskId(taskId);
                 customDialog.show();
             }
