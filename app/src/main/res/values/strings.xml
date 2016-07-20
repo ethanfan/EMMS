@@ -99,6 +99,7 @@
     <string name="tips_device_num_post">机台号不能为空</string>
     <string name="tips_task_desc_post">任务描述不能为空</string>
     <string name="work_num">工作编号:</string>
+    <string name="work_num_dialog">工作编号</string>
     <string name="work_name">工作名称:</string>
     <string name="work_status">状态:</string>
     <string name="work_description">工作描述:</string>
@@ -106,7 +107,7 @@
     <string name="add">添加</string>
     <string name="delete">删除</string>
     <string name="sub_task">子任务</string>
-    <string name="sub_task_equipment_num">机台号:</string>
+    <string name="sub_task_equipment_num">机台号:&#160;&#160;&#160;&#160;</string>
     <string name="sure">确定</string>
     <string name="warranty_person">报修人:</string>
     <!--<string name="error">Error</string>-->

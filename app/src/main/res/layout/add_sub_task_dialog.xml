@@ -44,6 +44,7 @@
                             android:id="@+id/work_num_tag"
                             android:text="@string/work_num"
                             android:paddingLeft="10dp"
+                            android:textColor="@color/black"
                             android:layout_centerVertical="true"/>
                         <com.emms.ui.DropEditText
                             android:id="@+id/work_num"
@@ -75,6 +76,7 @@
                             android:id="@+id/approved_working_hours_tag"
                             android:text="@string/approved_working_hours"
                             android:paddingLeft="10dp"
+                            android:textColor="@color/black"
                             android:layout_centerVertical="true"/>
                         <EditText
                             android:layout_width="wrap_content"
@@ -102,6 +104,7 @@
                             android:id="@+id/sub_task_equipment_num_tag"
                             android:text="@string/sub_task_equipment_num"
                             android:paddingLeft="10dp"
+                            android:textColor="@color/black"
                             android:layout_centerVertical="true"/>
                         <com.emms.ui.DropEditText
                             android:id="@+id/sub_task_equipment_num"

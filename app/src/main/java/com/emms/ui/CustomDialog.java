@@ -122,8 +122,8 @@ public class CustomDialog extends Dialog {
             work_name.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkName")));
             work_description.setText(DataUtil.isDataElementNull(modifySubTask.get("DataDescr")));
         }
-
-        work_num.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+       //work_num.
+   /*     work_num.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
@@ -134,6 +134,22 @@ public class CustomDialog extends Dialog {
                     setWorkInfo(work_num.getText().toString());
                 }
 
+
+            }
+        });*/
+        work_num.getmEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                setWorkInfo(work_num.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
 
             }
         });
@@ -171,11 +187,11 @@ public class CustomDialog extends Dialog {
         }
         jsonObjectElement.set(Task.TASK_ID,TaskId);
 
-     //   jsonObjectElement.set("TaskItemName",work_name.getText().toString());
-     //    jsonObjectElement.set("TaskItemDesc",work_description.getText().toString());
-        jsonObjectElement.set("TaskItem_ID",0);
-        // jsonObjectElement.set("Equipment_ID",sub_task_equipment_num.getText().toString());
-        jsonObjectElement.set("Equipment_ID","124124");
+        jsonObjectElement.set("TaskItemName",work_name.getText().toString());
+         jsonObjectElement.set("TaskItemDesc",work_description.getText().toString());
+      //  jsonObjectElement.set("TaskItem_ID",0);
+        jsonObjectElement.set("Equipment_ID",sub_task_equipment_num.getText().toString());
+      //  jsonObjectElement.set("Equipment_ID","124124");
         jsonObjectElement.set("WorkTimeCode",work_num.getText().toString());
         jsonObjectElement.set("PlanManhour",approved_working_hours.getText().toString());
         params.putJsonParams(jsonObjectElement.toJson());
@@ -184,6 +200,7 @@ public class CustomDialog extends Dialog {
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 Toast toast=Toast.makeText(context,"创建子任务成功",Toast.LENGTH_SHORT);
+                dismiss();
                 toast.setGravity(Gravity.CENTER,0,0);
                 toast.show();
             }
@@ -232,12 +249,20 @@ public class CustomDialog extends Dialog {
                     WorkInfo workInfo = new WorkInfo();
                     if (null != workInfolist && !workInfolist.isEmpty()) {
                         ObjectElement dataElement = workInfolist.get(0);
-                        JsonObjectElement jsonObjectElement = new JsonObjectElement(dataElement.toJson());
+                       final  JsonObjectElement jsonObjectElement = new JsonObjectElement(dataElement.toJson());
 
                         workInfo.setWorkCode(nullToEmptyString(jsonObjectElement.get(DataDictionary.DATA_CODE)));
                         workInfo.setWorkName(nullToEmptyString(jsonObjectElement.get(DataDictionary.DATA_NAME)));
                         workInfo.setApprovedWorkingHours(nullToEmptyString(jsonObjectElement.get(DataDictionary.DATA_VALUE1)));
                         workInfo.setWorkDescr(nullToEmptyString(jsonObjectElement.get(DataDictionary.DATA_DESCR)));
+                        ((Activity)context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                approved_working_hours.setText(nullToEmptyString(jsonObjectElement.get(DataDictionary.DATA_VALUE1)));
+                                work_name.setText(nullToEmptyString(jsonObjectElement.get(DataDictionary.DATA_NAME)));
+                                work_description.setText(nullToEmptyString(jsonObjectElement.get(DataDictionary.DATA_DESCR)));
+                            }
+                        });
                     }
 
                     dataMap.put(DATA_KEY_WORK_INFO, workInfo);
@@ -373,7 +398,7 @@ public class CustomDialog extends Dialog {
             }
         });
         initDropSearchView(null, work_num.getmEditText(), context.getResources().
-                        getString(R.string.work_num), DataDictionary.DATA_CODE,
+                        getString(R.string.work_num_dialog), DataDictionary.DATA_CODE,
                 1, "获取数据失败");
         initDropSearchView(null, sub_task_equipment_num.getmEditText(), context.getResources().
                         getString(R.string.title_search_equipment_nun), Equipment.EQUIPMENT_ID,
