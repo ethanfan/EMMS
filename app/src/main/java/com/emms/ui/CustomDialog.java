@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -81,6 +82,9 @@ public class CustomDialog extends Dialog {
     private CustomDrawerLayout mDrawer_layout;
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
     private ArrayList<ObjectElement> workNumList=new ArrayList<ObjectElement>();
+    public interface RefreshDataInterface{
+        void refreshData();
+    }
     public CustomDialog(Context context, int layout, int style) {
         super(context, style);
         this.context = context;
@@ -123,6 +127,31 @@ public class CustomDialog extends Dialog {
             work_name.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkName")));
             work_description.setText(DataUtil.isDataElementNull(modifySubTask.get("DataDescr")));
         }
+     /*   approved_working_hours.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    // 此处为得到焦点时的处理内容
+                    //？禁用标准工时输入框
+                } else {
+                    // 此处为失去焦点时的处理内容
+                    InputMethodManager imm =
+                            (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                   imm.hideSoftInputFromWindow(approved_working_hours.getWindowToken(),0);
+                }
+            }
+        });*/
+        findViewById(R.id.dialog_view_to_show).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                InputMethodManager imm =
+                        (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                imm.hideSoftInputFromWindow(approved_working_hours.getWindowToken(),0);
+            }
+        });
+       // dialog_view_to_show
        //work_num.
    /*     work_num.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -201,6 +230,7 @@ public class CustomDialog extends Dialog {
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 Toast toast=Toast.makeText(context,"创建子任务成功",Toast.LENGTH_SHORT);
+
                 dismiss();
                 toast.setGravity(Gravity.CENTER,0,0);
                 toast.show();
@@ -551,5 +581,7 @@ public class CustomDialog extends Dialog {
             });
         }
     }
+    //refreshData(){
 
+    //}
 }

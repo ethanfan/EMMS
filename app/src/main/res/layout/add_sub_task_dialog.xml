@@ -27,6 +27,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:background="#FFFFFFFF"
+                    android:id="@+id/dialog_view_to_show"
                     android:layout_alignParentBottom="true"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
