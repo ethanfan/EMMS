@@ -148,11 +148,11 @@ public class ProcessingFragment extends Fragment {
        // params.put("id", SharedPreferenceManager.getUserName(mContext));
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
        // Log.e("returnString","dd");
-        String s=SharedPreferenceManager.getLoginData(mContext);
+      //  String s=SharedPreferenceManager.getLoginData(mContext);
         //params.put("Operator_id",);
-        JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
-        String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
-        params.put("operator_id",operator_id);
+      //  JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
+       // String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
+      //  params.put("operator_id",operator_id);
         params.put("status",1);//状态1，即处理中任务
         params.put("taskClass","T01");
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {

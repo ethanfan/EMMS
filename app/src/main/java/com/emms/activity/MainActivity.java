@@ -138,8 +138,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                        for (int i = 0; i < json.get("PageData").asArrayElement().size(); i++) {
                            //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
                            //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
-                           String taskNumToShow = json.get("PageData").asArrayElement().get(i).asObjectElement().get("T0").valueAsString() + "/" +
-                                   json.get("PageData").asArrayElement().get(i).asObjectElement().get("T1").valueAsString();
+                           String taskNumToShow = json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0").valueAsString() + "/" +
+                                   json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1").valueAsString();
                            taskNum.put(i, taskNumToShow);
                        }
 

@@ -164,10 +164,10 @@ public class LinkedOrdersFragment extends Fragment{
     }
     private void getCompleteTaskDataFromServer(ArrayList<ObjectElement> list ){
         HttpParams params=new HttpParams();
-        String s=SharedPreferenceManager.getLoginData(mContext);
-        JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
-        String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
-        params.put("operator_id",operator_id);
+      //  String s=SharedPreferenceManager.getLoginData(mContext);
+       // JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
+       // String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
+       // params.put("operator_id",operator_id);
         params.put("status",2);
         params.put("taskClass","T01");
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
