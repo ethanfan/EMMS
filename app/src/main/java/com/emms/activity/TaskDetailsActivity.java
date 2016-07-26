@@ -615,6 +615,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             jsonObjectElement.set(Task.TASK_ID, taskId);
             jsonObjectElement.set("TaskAttachment_ID", 0);
             jsonObjectElement.set("ImgBase64", base64);
+            jsonObjectElement.set("AttachmentType", "jpg");
 
             //      jsonObjectElement.set("",);
             String t = SharedPreferenceManager.getLoginData(this);
@@ -636,11 +637,22 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
                 @Override
                 public void onSuccess(String t) {
-                    super.onSuccess(t);
 
-                    Toast toast = Toast.makeText(TaskDetailsActivity.this, "上传图片成功", Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER, 0, 0);
-                    toast.show();
+                    JsonObjectElement json = new JsonObjectElement(t);
+                    if(json.get("Success").valueAsBoolean()){
+                        super.onSuccess(t);
+                        Toast toast = Toast.makeText(TaskDetailsActivity.this, "上传图片成功", Toast.LENGTH_SHORT);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toast.show();
+                    }else{
+
+                        Toast toast = Toast.makeText(TaskDetailsActivity.this, "上传图片失败", Toast.LENGTH_LONG);
+                        toast.setGravity(Gravity.CENTER, 0, 0);
+                        toast.show();
+                    }
+
+
+
 
                 }
             });
@@ -722,7 +734,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         HttpParams params = new HttpParams();
         // params.put("id", taskId.toString());
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
-        HttpUtils.get(mContext, "TaskImgsList/" + taskId.toString(), params, new HttpCallback() {
+        params.put("taskID",taskId.toString());
+        HttpUtils.get(mContext, "TaskImgsList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

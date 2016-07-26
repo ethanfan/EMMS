@@ -841,6 +841,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             String iccardID = NfcUtils.dumpTagData(tag);
 
 
+
+
             if (iccardID == null) {
                 return;
             } else if (iccardID.equals("")) {
