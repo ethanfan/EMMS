@@ -62,6 +62,17 @@ public  class HttpUtils {
         RxVolley.post(BuildConfig.getConfigurationEndPoint(),params,callback);
     }
 
+    public static void getToken(Context context,String iccardID,HttpCallback callback ){
+
+        HttpParams params = new HttpParams();
+        params.put("ICCardID", iccardID);
+
+        params.putHeaders("Origin", "http://EMMSAPP");
+        params.putHeaders("Referer", "http://EMMSAPP");
+        RxVolley.setContext(context);
+        RxVolley.get(BuildConfig.getConfigurationEndPoint(),params,callback);
+    }
+
     public static void getCookie(final Context context,HttpCallback callback){
         String userName = SharedPreferenceManager.getUserName(context);
         String passWord =SharedPreferenceManager.getPassWord(context);

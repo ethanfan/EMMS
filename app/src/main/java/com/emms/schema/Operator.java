@@ -66,7 +66,8 @@ public class Operator extends Model<Operator, Long> implements Identity<Long> {
 	public static final String WX_USER_GROUPID ="WX_User_GroupId";
 	public static final String WX_USER_SYSUSERLOGINID = "WX_User_SysUserLoginId";
     public static final String KY_UPDATE_LOG_DATE = "Ky_update_log_date";
-	public static final String TRANCHES = "Tranches";
+	public static final String ORGANISE_ID = "Organise_ID";
+
 
 
 	@DatabaseField(id = true,
@@ -230,10 +231,12 @@ public class Operator extends Model<Operator, Long> implements Identity<Long> {
 	@Expose
 	private Date ky_update_log_date;
 
-	@DatabaseField(columnName = TRANCHES, canBeNull = false)
-	@SerializedName(TRANCHES)
+	@DatabaseField(columnName = OPERATOR_ID, canBeNull = false)
+	@SerializedName(OPERATOR_ID)
 	@Expose
-	private String tranches;
+	private String organiseID;
+
+
 
 
 
@@ -509,11 +512,11 @@ public class Operator extends Model<Operator, Long> implements Identity<Long> {
 		this.ky_update_log_date = ky_update_log_date;
 	}
 
-	public String getTranches() {
-		return tranches;
+	public String getOrganiseID() {
+		return organiseID;
 	}
 
-	public void setTranches(String tranches) {
-		this.tranches = tranches;
+	public void setOrganiseID(String organiseID) {
+		this.organiseID = organiseID;
 	}
 }
