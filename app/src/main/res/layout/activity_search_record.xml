@@ -26,6 +26,7 @@
                 android:drawableLeft="@mipmap/search"
                 android:padding="12dp"
                 android:text="@string/task_history_query"
+                android:id="@+id/TaskHistroyQuery"
                 android:textColor="@color/text_color"
                 android:textSize="18sp" />
         </LinearLayout>
@@ -51,6 +52,7 @@
                     android:padding="6dp"
                     android:gravity="center"
                     android:text="@string/repair"
+                    android:id="@+id/repair_task"
                     android:textColor="@color/text_color"
                     android:textSize="18sp" />
             </LinearLayout>
@@ -69,6 +71,7 @@
                     android:drawablePadding="3dp"
                     android:drawableLeft="@mipmap/tag_move_car"
                     android:padding="6dp"
+                    android:id="@+id/move_car_task"
                     android:text="@string/move_car"
                     android:textColor="@color/text_color"
                     android:textSize="18sp" />
@@ -87,6 +90,7 @@
                     android:drawablePadding="3dp"
                     android:drawableLeft="@mipmap/tag_other"
                     android:padding="6dp"
+                    android:id="@+id/other_task"
                     android:text="@string/other"
                     android:textColor="@color/text_color"
                     android:textSize="18sp" />

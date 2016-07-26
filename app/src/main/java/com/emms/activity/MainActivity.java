@@ -124,8 +124,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
    private void getTaskCountFromServer(){
         HttpParams params=new HttpParams();
-
-        params.put("id",String.valueOf(getLoginInfo().getId()));
+      //params.put("id",String.valueOf(getLoginInfo().getId()));
       // String s=SharedPreferenceManager.getUserName(this);
        HttpUtils.get(this, "TaskNum", params, new HttpCallback() {
            @Override

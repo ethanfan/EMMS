@@ -779,11 +779,11 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                     return;
                 }
 
-                if (deviceName.equals("")) {
+             /*   if (deviceName.equals("")) {
                     Toast.makeText(mContext, getResources().getString(R.string.tips_device_name_post), Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+              */
 
                 if (taskDesc.equals("")) {
                     Toast.makeText(mContext, getResources().getString(R.string.tips_task_desc_post), Toast.LENGTH_SHORT).show();
