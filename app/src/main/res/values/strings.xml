@@ -133,6 +133,15 @@
     <string name="UserName">姓名:</string>
     <string name="WorkNum">工号:</string>
     <string name="DownloadDataBase">数据文件下载中，请稍候</string>
+    <string name="task_create_time">任务发出时间:</string>
+    <string name="task_accept_time">任务接单时间:</string>
+    <string name="task_complete_time">任务完成时间:</string>
+    <string name="task_id">任务单号:</string>
+    <string name="response_speed">响应速度:</string>
+    <string name="service_attitude">服务态度:</string>
+    <string name="repair_speed">维修速度:</string>
+    <string name="command_standard">评分标准：1-5星，5星最高</string>
+
 
 
 
