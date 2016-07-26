@@ -618,11 +618,11 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             jsonObjectElement.set("AttachmentType", "jpg");
 
             //      jsonObjectElement.set("",);
-            String t = SharedPreferenceManager.getLoginData(this);
-            JsonObjectElement json = new JsonObjectElement(t);
-            String operatorId = json.get("Operator_ID").valueAsString();
+        //    String t = SharedPreferenceManager.getLoginData(this);
+       //     JsonObjectElement json = new JsonObjectElement(t);
+       //     String operatorId = json.get("Operator_ID").valueAsString();
 
-            jsonObjectElement.set("UploadOperator", operatorId);
+       //     jsonObjectElement.set("UploadOperator", operatorId);
 
             params.putJsonParams(jsonObjectElement.toJson());
             HttpUtils.post(this, "TaskAttachment", params, new HttpCallback() {

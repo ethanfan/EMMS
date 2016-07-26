@@ -18,6 +18,17 @@
             <option value="$PROJECT_DIR$/universal-image-loader" />
           </set>
         </option>
+        <option name="myModules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/FlycoTabLayout_Lib" />
+            <option value="$PROJECT_DIR$/PullToRefresh" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/datastore_android_sdk" />
+            <option value="$PROJECT_DIR$/gesture-imageview" />
+            <option value="$PROJECT_DIR$/universal-image-loader" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>
