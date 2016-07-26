@@ -32,14 +32,18 @@ import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
+import com.emms.push.PushService;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
 import com.emms.schema.Operator;
+import com.emms.schema.Task;
 import com.emms.schema.Team;
 import com.emms.ui.DropEditText;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.NFCDialog;
 import com.emms.util.BuildConfig;
+import com.emms.util.Constants;
+import com.emms.util.SharedPreferenceManager;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -50,6 +54,8 @@ import com.google.gson.JsonParser;
 import net.minidev.json.JSONArray;
 
 import org.apache.commons.lang.StringUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.restlet.representation.Representation;
 
 import java.nio.charset.Charset;
@@ -57,7 +63,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.xml.transform.TransformerFactory;
 
@@ -489,12 +497,12 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         Operator operator = getLoginInfo();
         if(null !=  operator){
             creatorId = String.valueOf(operator.getId());
-            getTeamId(String.valueOf(operator.getId()));
+            getTeamId(operator);
         }
     }
-    private void getTeamId(String operatorId) {
+    private void getTeamId(Operator operator) {
 
-        Operator operator = getLoginInfo();
+
         String teamIDStr = "";
         String teamNameStr = "";
         if (null == operator) {
@@ -503,7 +511,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         } else {
             create_task.setText(operator.getName());  //创建人名
 
-            String rawQuery = "select Organise_ID Team_ID,OrganiseName TeamName  from BaseOrganise where Organise_ID in(" + operator.getTranches() + ")";
+            String rawQuery = "select Organise_ID Team_ID,OrganiseName TeamName  from BaseOrganise where Organise_ID in(" + operator.getOrganiseID() + ")";
             ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                     EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE, null);
             Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -841,19 +849,44 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             if (nfctag == CREATER) {
                 nfctag = 0;
                 HttpParams params = new HttpParams();
-                params.putHeaders("ICCardID", iccardID);
-                HttpUtils.get(mContext, BuildConfig.getConfigurationEndPoint(), params,
-                        new HttpCallback() {
-                            @Override
-                            public void onSuccess(String t) {
-                                super.onSuccess(t);
-                            }
+                params.put("ICCardID", iccardID);
 
-                            @Override
-                            public void onFailure(int errorNo, String strMsg) {
-                                super.onFailure(errorNo, strMsg);
+                HttpUtils.get(this, "Token", params, new HttpCallback() {
+                    @Override
+                    public void onSuccess(String t) {
+                        super.onSuccess(t);
+                        try {
+                            JSONObject jsonObject = new JSONObject(t);
+                            int code = Integer.parseInt(jsonObject.get("Result").toString());
+                            boolean isSuccess = jsonObject.get("Success").equals(true);
+                            if ((code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS ||
+                                    code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) && isSuccess) {
+
+                                String data=jsonObject.getString("Data");
+                                Operator operator = getLoginInfo(data);
+                                if(null !=  operator){
+                                    creatorId = String.valueOf(operator.getId());
+                                    getTeamId(operator);
+                                }
+
+
+                            } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
+                                Toast.makeText(mContext, getResources().getString(R.string.warning_message_frozen), Toast.LENGTH_SHORT).show();
+                            } else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
+                                Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();
                             }
-                        });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int errorNo, String strMsg) {
+                        super.onFailure(errorNo, strMsg);
+                    }
+                });
+
 
                 nfcDialog.dismiss();
                 Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();

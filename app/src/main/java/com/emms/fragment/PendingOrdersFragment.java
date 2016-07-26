@@ -187,9 +187,11 @@ public class PendingOrdersFragment extends Fragment{
                 .get("Operator_ID").valueAsString());
         jsonArray.add(JsonObject);
 
+        JsonArrayElement arrayElement = new JsonArrayElement(jsonArray.toString());
+
         JsonObjectElement SubData=new JsonObjectElement();
         SubData.set("Task",task);
-        SubData.set("TaskOperator",jsonArray.toString());
+        SubData.set("TaskOperator",arrayElement);
         SubData.set("isChangeTaskItem","1");
         HttpParams params=new HttpParams();
         params.putJsonParams(SubData.toJson());
