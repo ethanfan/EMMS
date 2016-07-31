@@ -140,6 +140,8 @@ public class PendingOrdersFragment extends Fragment{
       //  params.put("operator_id",operator_id);
         params.put("status",0);
         params.put("taskClass",TaskClass);
+        params.put("pageSize",10);
+        params.put("pageIndex",1);
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {

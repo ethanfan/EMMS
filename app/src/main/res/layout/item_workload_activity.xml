@@ -16,6 +16,7 @@
         android:id="@+id/name"
         android:paddingLeft="10dp"
         android:textSize="17sp"
+        android:textColor="@color/black"
         android:layout_toRightOf="@+id/name_tag"
         android:layout_alignTop="@+id/name_tag"/>
     <TextView
@@ -88,10 +89,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/workload"
+        android:background="@drawable/bg_edit_normal"
+        android:paddingTop="5dp"
+        android:focusable="true"
+        android:paddingLeft="10dp"
+        android:paddingBottom="5dp"
         android:layout_toRightOf="@+id/workload_tag"
         android:layout_alignTop="@+id/workload_tag"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="10dp"/>
+        android:layout_marginRight="40dp"
+        android:layout_marginLeft="20dp"/>
 </RelativeLayout>
 </RelativeLayout>

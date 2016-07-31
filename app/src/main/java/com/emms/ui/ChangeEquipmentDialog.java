@@ -2,6 +2,7 @@ package com.emms.ui;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -53,10 +54,9 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     private String EquipmentId;
     private String TaskEquipmentId;
     //private ArrayList<String> status=new ArrayList<String>();
+    private int tag=1;
    private Button change_equipment_operator_status,change_equipment_status;
-    private Button equipment_operator_resume,equipment_operator_complete,equipment_operator_wait_material,equipment_operator_material_requisition,equipment_operator_quit,
-            equipment_operator_pause,equipment_operator_start;
-    private Button equipment_resume,equipment_complete,equipment_wait_material,equipment_pause,equipment_start;
+    private Button equipment_resume,equipment_complete,equipment_wait_material,equipment_pause,equipment_start,quit,material_requisition;
     private ObjectElement TaskEquipmentData;
     public ChangeEquipmentDialog(Context context, int layout, int style) {
         super(context, style);
@@ -74,7 +74,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                 dismiss();
             }
         });
-        initEquipmentOperatorTagView();
+        initTagButton();
         initEquipmentTagView();
     }
 
@@ -112,7 +112,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 
         params.putJsonParams(taskEquepment.toJson());
 
-        HttpUtils.post(context, "TaskEquipment", params, new HttpCallback() {
+        HttpUtils.post(context, "TaskEquipmentStatus", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -141,21 +141,41 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
        this.EquipmentId=equipmentId;
        this.TaskEquipmentId=taskEquipmentId;
    }
-    private void initEquipmentOperatorTagView(){
-        equipment_operator_resume=(Button)findViewById(R.id.equipment_resume);
-        equipment_operator_complete=(Button)findViewById(R.id.equipment_resume);
-        equipment_operator_wait_material=(Button)findViewById(R.id.equipment_resume);
-        equipment_operator_material_requisition=(Button)findViewById(R.id.equipment_resume);
-        equipment_operator_quit=(Button)findViewById(R.id.equipment_resume);
-        equipment_operator_pause=(Button)findViewById(R.id.equipment_resume);
-        equipment_operator_start=(Button)findViewById(R.id.equipment_resume);
-    }
     private void initEquipmentTagView(){
         equipment_resume=(Button)findViewById(R.id.equipment_resume);
         equipment_complete=(Button)findViewById(R.id.equipment_complete);
         equipment_wait_material=(Button)findViewById(R.id.equipment_wait_material);
         equipment_pause=(Button)findViewById(R.id.equipment_pause);
         equipment_start=(Button)findViewById(R.id.equipment_start);
+        quit=(Button)findViewById(R.id.quit);
+        material_requisition=(Button)findViewById(R.id.material_requisition);
+        equipment_resume.setOnClickListener(this);
+        equipment_complete.setOnClickListener(this);
+        equipment_wait_material.setOnClickListener(this);
+        equipment_pause.setOnClickListener(this);
+        equipment_start.setOnClickListener(this);
+        quit.setOnClickListener(this);
+        material_requisition.setOnClickListener(this);
+    }
+    private void TagView(int tag){
+        if(tag==1){
+            equipment_resume.setVisibility(View.VISIBLE);
+            equipment_complete.setVisibility(View.VISIBLE);
+            equipment_wait_material.setVisibility(View.VISIBLE);
+            equipment_pause.setVisibility(View.VISIBLE);
+            equipment_start.setVisibility(View.VISIBLE);
+            quit.setVisibility(View.VISIBLE);
+            material_requisition.setVisibility(View.VISIBLE);
+        }
+        else{
+            equipment_resume.setVisibility(View.VISIBLE);
+            equipment_complete.setVisibility(View.VISIBLE);
+            equipment_wait_material.setVisibility(View.VISIBLE);
+            equipment_pause.setVisibility(View.VISIBLE);
+            equipment_start.setVisibility(View.VISIBLE);
+            quit.setVisibility(View.GONE);
+            material_requisition.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -163,25 +183,95 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         int id=v.getId();
         switch (id){
             case R.id.equipment_resume:{
-                postTaskEquipment(1);
+                if(tag==1){
+                    postTaskOperatorEquipment(0);
+                }else {
+                    postTaskEquipment(1);
+                }
                 break;
             }
             case R.id.equipment_complete:{
-                postTaskEquipment(4);
+                if(tag==1){
+                    postTaskOperatorEquipment(5);
+                }else{
+                    postTaskEquipment(4);
+                }
                 break;
             }
             case R.id.equipment_wait_material:{
-                postTaskEquipment(3);
+                if(tag==1){
+                    postTaskOperatorEquipment(4);
+                }else{
+                    postTaskEquipment(3);
+                }
                 break;
             }
             case R.id.equipment_pause:{
-                postTaskEquipment(2);
+                if(tag==1){
+                    postTaskOperatorEquipment(1);
+                }else{
+                    postTaskEquipment(2);
+                }
                 break;
             }
             case R.id.equipment_start:{
-                postTaskEquipment(1);
+                if(tag==1){
+                    postTaskOperatorEquipment(0);
+                }
+                else{
+                    postTaskEquipment(1);
+                }
+                break;
+            }
+            case R.id.quit:{
+                postTaskOperatorEquipment(2);
+                break;
+            }
+            case R.id.material_requisition:{
+                postTaskOperatorEquipment(3);
                 break;
             }
         }
+    }
+    private void initTagButton(){
+        change_equipment_operator_status=(Button)findViewById(R.id.change_equipment_operator_status);
+        change_equipment_operator_status.setBackgroundColor(Color.RED);
+        change_equipment_operator_status.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tag=1;
+
+                change_equipment_status.setBackgroundColor(Color.WHITE);
+                change_equipment_operator_status.setBackgroundColor(Color.RED);
+                TagView(tag);
+            }
+        });
+        change_equipment_status=(Button)findViewById(R.id.change_equipment_status);
+        change_equipment_status.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tag=2;
+                change_equipment_operator_status.setBackgroundColor(Color.WHITE);
+                change_equipment_status.setBackgroundColor(Color.RED);
+                TagView(tag);
+            }
+        });
+    }
+    private void postTaskOperatorEquipment(int status){
+      HttpParams params=new HttpParams();
+        params.put("task_id",TaskId);
+        params.put("equipment_id",EquipmentId);
+        params.put("status",status);
+        HttpUtils.post(context, "TaskOperatorStatus", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+            }
+        });
     }
 }

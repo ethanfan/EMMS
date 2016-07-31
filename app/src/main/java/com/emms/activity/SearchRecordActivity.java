@@ -4,23 +4,29 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rxvolley.RxVolley;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.datastore_android_sdk.rxvolley.http.VolleyError;
 import com.emms.R;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Equipment;
+import com.emms.schema.Task;
 import com.emms.ui.NFCDialog;
 import com.emms.util.BuildConfig;
+import com.emms.util.SharedPreferenceManager;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -29,20 +35,14 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import org.restlet.service.TaskService;
 import org.w3c.dom.Text;
 
+import java.util.Map;
+
 /**
  * Created by jaffer.deng on 2016/5/24.
  */
 public class SearchRecordActivity extends NfcActivity implements View.OnClickListener{
    private TextView repair_task,move_car_task,other_task;
     private int nfctag = 0;
-    public final static int TASK_TYPE = 1;
-    public final static int TASK_SUBTYPE = 2;
-    public final static int DEVICE_NAME =5;
-    public final static int GROUP = 4;
-    public final static int CREATER = 3;
-    public final static int DEVICE_NUM = 6;
-    public final static int TASK_DESCRIPTION = 7;
-    private NFCDialog nfcDialog;
     private Context mContext=this;
     private String TaskClass=null;
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,34 +68,38 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
         switch (id){
             case R.id.repair_task:
             {   TaskClass="T01";
-                getTaskHistory(TaskClass);
                 break;
             }
             case R.id.move_car_task:
             {   TaskClass="T03";
-                getTaskHistory(TaskClass);
                 break;
             }
             case R.id.other_task:
             {   TaskClass="T04";
-                getTaskHistory(TaskClass);
                 break;
             }
         }
     }
     public void getTaskHistory(String TaskClass){
-        HttpParams params=new HttpParams();
-        HttpUtils.get(this, "TaskHistoryList", params, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-            }
-
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-            }
-        });
+        if(TaskClass==null){
+            Toast toast=Toast.makeText(this,getResources().getString(R.string.pleaseSelectTaskClass),Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+            return;
+        }else {
+            HttpParams params = new HttpParams();
+            params.put(Task.TASK_CLASS, TaskClass);
+            HttpUtils.get(this, "TaskHistoryList", params, new HttpCallback() {
+                @Override
+                public void onSuccess(String t) {
+                    super.onSuccess(t);
+                }
+                @Override
+                public void onFailure(int errorNo, String strMsg) {
+                    super.onFailure(errorNo, strMsg);
+                }
+            });
+        }
     }
 
 
@@ -107,7 +111,41 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
             Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             String iccardID = NfcUtils.dumpTagData(tag);
-
+           getOperatorInfoFromServer(iccardID);
         }
+    }
+    public void getOperatorInfoFromServer(String iccardID){
+        HttpParams httpParams=new HttpParams();
+        httpParams.put("ICCardID",Integer.valueOf(iccardID));
+        HttpUtils.getWithoutCookies(this, "Token", httpParams, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                getTaskHistory(TaskClass);
+            }
+
+            @Override
+            public void onSuccess(Map<String, String> headers, byte[] t) {
+                super.onSuccess(headers, t);
+                SaveCookies(headers);
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+            }
+        });
+    }
+    public void SaveCookies( Map<String, String> headers)
+    {
+
+        if (headers == null)
+            return;
+
+        String cookie=headers.get("Set-Cookie");
+        String[]cookies=cookie.split(";");
+        // String[] cookievalues = cookies[0].split("=");
+        SharedPreferenceManager.setCookie(SearchRecordActivity.this,cookies[0]);
+
     }
 }

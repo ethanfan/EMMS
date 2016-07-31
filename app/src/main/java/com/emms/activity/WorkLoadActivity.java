@@ -2,15 +2,19 @@ package com.emms.activity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -23,6 +27,7 @@ import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 
 import java.util.ArrayList;
+import java.util.DuplicateFormatFlagsException;
 
 /**
  * Created by Administrator on 2016/7/29.
@@ -30,7 +35,7 @@ import java.util.ArrayList;
 public class WorkLoadActivity extends BaseActivity{
     private TextView group,task_id,total_worktime;
     private ListView list;
-    private RelativeLayout comfirm;
+    private Button comfirm;
     private ObjectElement TaskDetail;
     private Context context=this;
     private WorkloadAdapter workloadAdapter;
@@ -47,16 +52,16 @@ public class WorkLoadActivity extends BaseActivity{
     private void initView(){
         workloadAdapter=new WorkloadAdapter(datas) {
             @Override
-            public View getCustomView(View convertView, int position, ViewGroup parent) {
-                WorkloadAdapter.ViewHolder holder;
+            public View getCustomView(View convertView, final int position, ViewGroup parent) {
+                final WorkloadAdapter.ViewHolder holder;
                 if (convertView == null) {
                     convertView = LayoutInflater.from(context).inflate(R.layout.item_workload_activity, parent, false);
                     holder = new WorkloadAdapter.ViewHolder();
-                    holder.name=(TextView)findViewById(R.id.name) ;
-                    holder.skill=(TextView)findViewById(R.id.skill) ;
-                    holder.startTime=(TextView)findViewById(R.id.start_time) ;
-                    holder.endTime=(TextView)findViewById(R.id.end_time) ;
-                    holder.workload=(EditText)findViewById(R.id.workload) ;
+                    holder.name=(TextView)convertView.findViewById(R.id.name) ;
+                    holder.skill=(TextView)convertView.findViewById(R.id.skill) ;
+                    holder.startTime=(TextView)convertView.findViewById(R.id.start_time) ;
+                    holder.endTime=(TextView)convertView.findViewById(R.id.end_time) ;
+                    holder.workload=(EditText)convertView.findViewById(R.id.workload) ;
                     convertView.setTag(holder);
                 } else {
                     holder = (WorkloadAdapter.ViewHolder) convertView.getTag();
@@ -65,7 +70,23 @@ public class WorkLoadActivity extends BaseActivity{
                 holder.skill.setText(DataUtil.isDataElementNull(datas.get(position).get("Skill")));
                 holder.startTime.setText(DataUtil.isDataElementNull(datas.get(position).get("StartTime")));
                 holder.endTime.setText(DataUtil.isDataElementNull(datas.get(position).get("FinishTime")));
-                holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Workload"))+getResources().getString(R.string.hours));
+                holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Workload")));
+                holder.workload.addTextChangedListener(new TextWatcher() {
+                   @Override
+                   public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                   }
+
+                   @Override
+                   public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                   }
+
+                   @Override
+                   public void afterTextChanged(Editable s) {
+                              datas.get(position).set("Workload",holder.workload.getText().toString());
+                   }
+               });
                 return convertView;
             }
 
@@ -75,7 +96,7 @@ public class WorkLoadActivity extends BaseActivity{
         total_worktime=(TextView)findViewById(R.id.total_worktime);
         list=(ListView)findViewById(R.id.listView);
         list.setAdapter(workloadAdapter);
-        comfirm=(RelativeLayout)findViewById(R.id.comfirm);
+        comfirm=(Button)findViewById(R.id.comfirm);
         comfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,9 +143,25 @@ public class WorkLoadActivity extends BaseActivity{
       HttpParams httpParams=new HttpParams();
       ArrayList<ObjectElement> submitWorkloadData=new ArrayList<ObjectElement>();
       for (int i=0;i<workloadAdapter.getDatas().size();i++){
+          ObjectElement obj=workloadAdapter.getDatas().get(i);
           JsonObjectElement jsonObjectElement=new JsonObjectElement();
-          jsonObjectElement.set("TaskOperator_ID", DataUtil.isDataElementNull(workloadAdapter.getDatas().get(i).get("TaskOperator_ID")));
-
+          jsonObjectElement.set("TaskOperator_ID", DataUtil.isDataElementNull(obj.get("TaskOperator_ID")));
+          jsonObjectElement.set("Workload",DataUtil.isDataElementNull(obj.get("Workload")));
+          submitWorkloadData.add(jsonObjectElement);
       }
+        JsonArrayElement submitData=new JsonArrayElement(submitWorkloadData.toString());
+        httpParams.putJsonParams(submitData.toJson());
+        HttpUtils.post(this, "TaskWorkload", httpParams, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+            }
+        });
+
     }
 }

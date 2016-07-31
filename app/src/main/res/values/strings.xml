@@ -158,9 +158,10 @@
     <string name="fault_description">故障描述:</string>
     <string name="repair_status">维修情况:</string>
     <string name="faultType">故障类型</string>
-    <string name="total_worktime">总工时</string>
+    <string name="total_worktime">总工时:</string>
     <string name="workload">工作量:</string>
     <string name="change_equipment_operator_status">修改操作员状态</string>
     <string name="change_equipment_status">修改设备状态</string>
     <string name="hours">小时</string>
+    <string name="pleaseSelectTaskClass">请选择任务类型</string>
 </resources>

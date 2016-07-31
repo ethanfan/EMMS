@@ -103,7 +103,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private ArrayList<ObjectElement> datas;
     private Context mContext;
     private PopMenuTaskDetail popMenuTaskDetail;
-
+    private ChangeEquipmentDialog changeEquipmentDialog;
     String TaskDetail = null;
 
     Long taskId = null;
@@ -671,6 +671,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
         HttpParams params = new HttpParams();
         params.put("task_id", taskId.toString());
+        params.put("pageSize",10);
+        params.put("pageIndex",1);
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
         Log.e("returnString", "dd");
         HttpUtils.get(mContext, "TaskDetailList", params, new HttpCallback() {
@@ -818,10 +820,17 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                             @Override
                             public void run() {
                                 //若已有该设备号，弹出对话框，申请进行状态变更
-                                ChangeEquipmentDialog changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.change_equipment_status_dialog, R.style.MyDialog);
-                                changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get("AssetsID").valueAsString(),
-                                        Task_DeviceId_TaskEquipmentId.get(objectElement.get("AssetsID").valueAsString()));
-                                changeEquipmentDialog.show();
+                                if(changeEquipmentDialog==null) {
+                                    changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.change_equipment_status_dialog, R.style.MyDialog);
+                                    changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get("AssetsID").valueAsString(),
+                                            Task_DeviceId_TaskEquipmentId.get(objectElement.get("AssetsID").valueAsString()));
+                                    changeEquipmentDialog.show();
+                                }else {
+                                    changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get("AssetsID").valueAsString(),
+                                            Task_DeviceId_TaskEquipmentId.get(objectElement.get("AssetsID").valueAsString()));
+                                   if(!changeEquipmentDialog.isShowing()){
+                                    changeEquipmentDialog.show();}
+                                }
                             }
                         });
                     }

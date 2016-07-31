@@ -68,13 +68,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/comfirm"
+        android:id="@+id/aaabbb"
         android:layout_alignParentBottom="true">
         <Button
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="#FCC900"
             android:gravity="center"
+            android:id="@+id/comfirm"
             android:text="@string/sure"
             android:textSize="23sp"
             android:textColor="@color/white"
@@ -86,7 +87,7 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/comfirm"
+        android:layout_above="@+id/aaabbb"
         android:layout_below="@+id/aaa"
         android:id="@+id/listView">
     </ListView>

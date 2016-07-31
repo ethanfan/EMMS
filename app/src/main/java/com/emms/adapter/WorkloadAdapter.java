@@ -21,7 +21,7 @@ public abstract class WorkloadAdapter extends BaseAdapter{
     }
 
     private ArrayList<ObjectElement> datas;
-
+    private boolean tag=true;
     public WorkloadAdapter(ArrayList<ObjectElement> datas) {
         this.datas = datas;
     }
