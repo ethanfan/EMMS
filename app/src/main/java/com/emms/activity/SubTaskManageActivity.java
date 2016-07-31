@@ -128,7 +128,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
                 holder.work_num.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkCode")));
                 holder.approve_work_hours.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkTime")));
                 holder.work_name.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkName")));
-                holder.status.setText(DataUtil.isDataElementNull(datas.get(position).get("DataName")));
+                holder.status.setText(DataUtil.isDataElementNull(datas.get(position).get("Status")));
                 holder.work_description.setText(DataUtil.isDataElementNull(datas.get(position).get("DataDescr")));
                 holder.equipment_num.setText(DataUtil.isDataElementNull(datas.get(position).get("Equipment_ID")));
                 return convertView;

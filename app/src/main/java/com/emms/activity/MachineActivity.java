@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.emms.R;
+import com.emms.schema.Task;
 
 public class MachineActivity extends BaseActivity implements View.OnClickListener{
 	@Override
@@ -17,10 +18,34 @@ public class MachineActivity extends BaseActivity implements View.OnClickListene
 //        //透明导航栏
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         findViewById(R.id.searh_oldrecord).setOnClickListener(this);
+        findViewById(R.id.repair).setOnClickListener(this);
+        findViewById(R.id.move_car).setOnClickListener(this);
+        findViewById(R.id.other).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        startActivity(new Intent(MachineActivity.this,SearchRecordActivity.class));
+        int id=v.getId();
+        switch (id){
+            case R.id.searh_oldrecord:
+                startActivity(new Intent(MachineActivity.this,SearchRecordActivity.class));
+                break;
+            case R.id.repair:
+            {  Intent intent=new Intent(this,CreateTaskActivity.class);
+                intent.putExtra(Task.TASK_CLASS,Task.REPAIR_TASK);
+                startActivity(intent);
+                break;}
+            case R.id.move_car:
+            {Intent intent=new Intent(this,CreateTaskActivity.class);
+                intent.putExtra(Task.TASK_CLASS,Task.MOVE_CAR_TASK);
+                startActivity(intent);
+                break;}
+            case R.id.other:
+            { Intent intent=new Intent(this,CreateTaskActivity.class);
+                intent.putExtra(Task.TASK_CLASS,Task.OTHER_TASK);
+                startActivity(intent);
+                break;}
+        }
+
     }
 }

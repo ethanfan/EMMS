@@ -3,28 +3,20 @@ package com.emms.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.datastore_android_sdk.rxvolley.client.ProgressListener;
 import com.emms.R;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Operator;
-import com.emms.util.BuildConfig;
+import com.emms.schema.Task;
 import com.emms.util.SharedPreferenceManager;
-import com.flyco.tablayout.utils.UnreadMsgUtils;
 import com.flyco.tablayout.widget.MsgView;
-import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
-import com.datastore_android_sdk.rxvolley.http.VolleyError;
 
-import java.io.File;
 import java.util.HashMap;
 
 /**
@@ -36,6 +28,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private CardView create_task,repair_tag,maintain_tag,move_car_tag,other_tag,team_status_tag;
     private MsgView repair_msg,maintain_msg,move_car_msg,other_msg;
     private HashMap<Integer,String> taskNum=new HashMap<Integer,String>();
+    private static String TASK_NUM="TaskNum";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,22 +95,47 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
             Intent intent=new Intent(MainActivity.this,CreateTaskActivity.class);
             startActivity(intent);
         }else if (id == R.id.repair_tag){
-            Intent intent=new Intent(MainActivity.this,RepairTaskACtivity.class);
+            Intent intent=new Intent(MainActivity.this,TaskListActivity.class);
             if(taskNum.get(0)!=null){
-            intent.putExtra("TaskNum",taskNum.get(0));}
+            intent.putExtra(TASK_NUM,taskNum.get(0));}
             else {
-                intent.putExtra("TaskNum","0/0");
+                intent.putExtra(TASK_NUM,"0/0");
             }
+            intent.putExtra(Task.TASK_CLASS,Task.REPAIR_TASK);
             startActivity(intent);
 //            Toast.makeText(MainActivity.this,"该模块正在开发",Toast.LENGTH_SHORT).show();
         }else if (id == R.id.maintain_tag){
-            Toast.makeText(MainActivity.this,"该模块正在开发",Toast.LENGTH_SHORT).show();
+            Intent intent=new Intent(MainActivity.this,TaskListActivity.class);
+            if(taskNum.get(1)!=null){
+                intent.putExtra(TASK_NUM,taskNum.get(1));}
+            else {
+                intent.putExtra(TASK_NUM,"0/0");
+            }
+            intent.putExtra(Task.TASK_CLASS,Task.MAINTAIN_TASK);
+            startActivity(intent);
+            //Toast.makeText(MainActivity.this,"该模块正在开发",Toast.LENGTH_SHORT).show();
         }else if (id == R.id.move_car_tag){
-            Toast.makeText(MainActivity.this,"该模块正在开发",Toast.LENGTH_SHORT).show();
+            Intent intent=new Intent(MainActivity.this,TaskListActivity.class);
+            if(taskNum.get(2)!=null){
+                intent.putExtra(TASK_NUM,taskNum.get(2));}
+            else {
+                intent.putExtra(TASK_NUM,"0/0");
+            }
+            intent.putExtra(Task.TASK_CLASS,Task.MOVE_CAR_TASK);
+            startActivity(intent);
+            //Toast.makeText(MainActivity.this,"该模块正在开发",Toast.LENGTH_SHORT).show();
         }else if (id == R.id.other_tag){
-            Toast.makeText(MainActivity.this,"该模块正在开发",Toast.LENGTH_SHORT).show();
+            Intent intent=new Intent(MainActivity.this,TaskListActivity.class);
+            if(taskNum.get(3)!=null){
+                intent.putExtra(TASK_NUM,taskNum.get(3));}
+            else {
+                intent.putExtra(TASK_NUM,"0/0");
+            }
+            intent.putExtra(Task.TASK_CLASS,Task.OTHER_TASK);
+            startActivity(intent);
+           // Toast.makeText(MainActivity.this,"该模块正在开发",Toast.LENGTH_SHORT).show();
         }else if (id == R.id.team_status_tag){
-            Toast.makeText(MainActivity.this,"该模块正在开发",Toast.LENGTH_SHORT).show();
+           Toast.makeText(MainActivity.this,"该模块正在开发",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -126,7 +144,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         HttpParams params=new HttpParams();
       //params.put("id",String.valueOf(getLoginInfo().getId()));
       // String s=SharedPreferenceManager.getUserName(this);
-       HttpUtils.get(this, "TaskNum", params, new HttpCallback() {
+       HttpUtils.get(this, TASK_NUM, params, new HttpCallback() {
            @Override
            public void onSuccess(String t) {
                super.onSuccess(t);

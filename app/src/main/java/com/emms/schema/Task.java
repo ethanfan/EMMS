@@ -16,4 +16,8 @@ public class Task {
     public static final String ORGANISE_NAME="TaskApplicantOrg";
     public static final String  TASK_DESCRIPTION= "TaskDescr";
     public static final String  TASK_STATUS= "DataName";
+    public static final String  REPAIR_TASK= "T01";
+    public static final String  MAINTAIN_TASK= "T02";
+    public static final String  MOVE_CAR_TASK= "T03";
+    public static final String  OTHER_TASK= "T04";
 }

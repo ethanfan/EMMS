@@ -7,6 +7,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -45,76 +46,36 @@ import java.util.Map;
  * 自定义对话框
  * Created by laomingfeng on 2016/5/24.
  */
-public class ChangeEquipmentDialog extends Dialog {
+public class ChangeEquipmentDialog extends Dialog implements View.OnClickListener{
     private ChangeEquipmentDialog dialog = this;
     private Context context;
-    private ListView change_Equipment_status;
-    private StatusAdapter taskAdapter;
     private String TaskId;
     private String EquipmentId;
     private String TaskEquipmentId;
-    private ArrayList<String> status=new ArrayList<String>();
-
+    //private ArrayList<String> status=new ArrayList<String>();
+   private Button change_equipment_operator_status,change_equipment_status;
+    private Button equipment_operator_resume,equipment_operator_complete,equipment_operator_wait_material,equipment_operator_material_requisition,equipment_operator_quit,
+            equipment_operator_pause,equipment_operator_start;
+    private Button equipment_resume,equipment_complete,equipment_wait_material,equipment_pause,equipment_start;
     private ObjectElement TaskEquipmentData;
     public ChangeEquipmentDialog(Context context, int layout, int style) {
         super(context, style);
         this.context = context;
         setContentView(layout);
-        Collections.addAll(status,context.getResources().getStringArray(R.array.equip_status));
+      //  Collections.addAll(status,context.getResources().getStringArray(R.array.equip_status));
         initview();
     }
 
     public void initview() {
-        findViewById(R.id.dismissView).setOnClickListener(new View.OnClickListener() {
+        ((TextView)findViewById(R.id.cancle)).setText(R.string.cancel);
+        findViewById(R.id.cancle).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dismiss();
             }
         });
-        change_Equipment_status=(ListView)findViewById(R.id.status_list);
-        taskAdapter=new StatusAdapter(status) {
-            @Override
-            public View getCustomView(View convertView, final int position, ViewGroup parent) {
-                StatusAdapter.ViewHolder holder;
-
-                if (convertView == null){
-                    convertView = LayoutInflater.from(context).inflate(
-                            R.layout.change_equipment_status_dialog_item, null);
-                    holder = new StatusAdapter.ViewHolder();
-                    holder.statu = (TextView) convertView
-                            .findViewById(R.id.status);
-                    convertView.setTag(holder);
-
-                }else{
-                    holder = (StatusAdapter.ViewHolder) convertView.getTag();
-                }
-                holder.statu.setText(status.get(position));
-                holder.statu.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(position==0){
-                        }else if (position==1){
-                            postTaskEquipment(1);
-                        }else if (position==2){
-                            postTaskEquipment(0);
-                        }else if (position==3){
-                            postTaskEquipment(2);
-                        }else if (position==4){
-                            postTaskEquipment(3);
-                        }
-                    }
-                });
-                return convertView;
-            }
-        };
-        change_Equipment_status.setAdapter(taskAdapter);
-        ((TextView)findViewById(R.id.status)).setText(R.string.cancel);
-        findViewById(R.id.status).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        initEquipmentOperatorTagView();
+        initEquipmentTagView();
     }
 
 
@@ -145,7 +106,7 @@ public class ChangeEquipmentDialog extends Dialog {
         //若任务未有设备，则输入为0，表示添加
         taskEquepment.set("TaskEquipment_ID",TaskEquipmentId);
         //若已有设备，申请状态变更
-        taskEquepment.set("Equipment_ID", EquipmentId);
+        taskEquepment.set("AssetsID", EquipmentId);
         //taskEquepment.set("Equipment_ID", equipmentID);
         taskEquepment.set("Status",status);
 
@@ -180,5 +141,47 @@ public class ChangeEquipmentDialog extends Dialog {
        this.EquipmentId=equipmentId;
        this.TaskEquipmentId=taskEquipmentId;
    }
+    private void initEquipmentOperatorTagView(){
+        equipment_operator_resume=(Button)findViewById(R.id.equipment_resume);
+        equipment_operator_complete=(Button)findViewById(R.id.equipment_resume);
+        equipment_operator_wait_material=(Button)findViewById(R.id.equipment_resume);
+        equipment_operator_material_requisition=(Button)findViewById(R.id.equipment_resume);
+        equipment_operator_quit=(Button)findViewById(R.id.equipment_resume);
+        equipment_operator_pause=(Button)findViewById(R.id.equipment_resume);
+        equipment_operator_start=(Button)findViewById(R.id.equipment_resume);
+    }
+    private void initEquipmentTagView(){
+        equipment_resume=(Button)findViewById(R.id.equipment_resume);
+        equipment_complete=(Button)findViewById(R.id.equipment_complete);
+        equipment_wait_material=(Button)findViewById(R.id.equipment_wait_material);
+        equipment_pause=(Button)findViewById(R.id.equipment_pause);
+        equipment_start=(Button)findViewById(R.id.equipment_start);
+    }
 
+    @Override
+    public void onClick(View v) {
+        int id=v.getId();
+        switch (id){
+            case R.id.equipment_resume:{
+                postTaskEquipment(1);
+                break;
+            }
+            case R.id.equipment_complete:{
+                postTaskEquipment(4);
+                break;
+            }
+            case R.id.equipment_wait_material:{
+                postTaskEquipment(3);
+                break;
+            }
+            case R.id.equipment_pause:{
+                postTaskEquipment(2);
+                break;
+            }
+            case R.id.equipment_start:{
+                postTaskEquipment(1);
+                break;
+            }
+        }
+    }
 }

@@ -8,7 +8,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -20,6 +22,7 @@ import com.emms.bean.AwaitRepair;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -155,9 +158,16 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        postInviteDataToServer();
-                        Toast.makeText(InvitorActivity.this, "你选择了："
-                                + adapter.getlistItemID().toString(), Toast.LENGTH_SHORT).show();
+                        if(adapter.getListItems()!=null){
+                            ArrayList<String> invitorList=new ArrayList<String>();
+                        for(int i=0;i<adapter.getListItems().size();i++){
+                            invitorList.add(DataUtil.isDataElementNull(adapter.getListItems().get(i).get("Operator_ID")));
+                        }
+                            postInviteDataToServer();
+                        //    Toast.makeText(InvitorActivity.this, "你选择了："
+                         //           + adapter.getlistItemID().toString(), Toast.LENGTH_SHORT).show();
+                        }
+
                     }
                 });
 
@@ -167,23 +177,23 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
     public void postInviteDataToServer(){
         HttpParams params = new HttpParams();
         JsonObjectElement jsonObjectElement=new JsonObjectElement();
-        jsonObjectElement.set(Task.TASK_ID,taskId);
+        jsonObjectElement.set(Task.TASK_ID,331);
         if(isInviteHelp){
-            jsonObjectElement.set("ChangeType",0);}
+            jsonObjectElement.set("OperatorType",0);}
         else {
-            jsonObjectElement.set("ChangeType",1);
+            jsonObjectElement.set("OperatorType",1);
         }
-        List<String> a=new ArrayList<String>();
-        a.add("aaa");
-        a.add("bbb");
-       // Object[]b=a.toArray();
-        jsonObjectElement.set("Operator_IDS",a.toString());
+        List<Integer> a=new ArrayList<Integer>();
+        a.add(4667);
+        JsonArrayElement jsonArrayElement=new JsonArrayElement(a.toString());
+        jsonObjectElement.set("Operator_IDS",jsonArrayElement);
         Log.e("daf",a.toString());
         params.putJsonParams(jsonObjectElement.toJson());
         HttpUtils.post(this, "TaskOperatorChange", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+
                 Toast.makeText(InvitorActivity.this,"邀请成功",Toast.LENGTH_LONG).show();
             }
 

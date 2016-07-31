@@ -17,6 +17,7 @@ import com.emms.fragment.LinkedOrdersFragment;
 import com.emms.fragment.PendingOrdersFragment;
 import com.emms.fragment.ProcessingFragment;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Task;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ViewFindUtils;
 import com.flyco.tablayout.SlidingTabLayout;
@@ -33,30 +34,30 @@ import java.util.ArrayList;
 /**
  * Created by jaffer.deng on 2016/6/20.
  */
-public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListener,View.OnClickListener{
+public class TaskListActivity extends BaseActivity implements OnTabSelectListener,View.OnClickListener{
     private Context mContext ;
     private ArrayList<Fragment> mFragments = new ArrayList<>();
     private  String[] mTitles ;
     private MyPagerAdapter mAdapter;
     private ArrayList<ObjectElement> RepairTask=new ArrayList<ObjectElement>();
     private Handler handler;
+    private String TaskClass;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_repair_task);
         mContext = this;
-
+        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         initView();
         getRepairTaskFromServer();
         mTitles =getResources().getStringArray(R.array.select_tab_status);
         for (int i =0;i< mTitles.length;i++) {
             if (i==0) {
-                ProcessingFragment processingFragment=new ProcessingFragment();
-                mFragments.add(processingFragment);
+                mFragments.add(ProcessingFragment.newInstance(TaskClass));
             }else if (i ==1){
-                mFragments.add(new PendingOrdersFragment());
+                mFragments.add(PendingOrdersFragment.newInstance(TaskClass));
             }else if (i ==2){
-                mFragments.add(new LinkedOrdersFragment());
+                mFragments.add(LinkedOrdersFragment.newInstance(TaskClass));
             }
         }
 
@@ -84,7 +85,25 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
 
     private void initView() {
         findViewById(R.id.btn_right_action).setOnClickListener(this);
-        ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.repair_task));
+       switch (TaskClass){
+           case Task.REPAIR_TASK:{
+               ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.repair_task));
+               break;
+           }
+           case Task.MAINTAIN_TASK:{
+               ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.maintain_task));
+               break;
+           }
+           case Task.MOVE_CAR_TASK:{
+               ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.move_car_task));
+               break;
+           }
+           case Task.OTHER_TASK:{
+               ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.other_task));
+               break;
+           }
+       }
+
     }
 
     @Override
@@ -169,7 +188,7 @@ public class RepairTaskACtivity extends BaseActivity implements OnTabSelectListe
                runOnUiThread(new Runnable() {
                    @Override
                    public void run() {
-                       Toast.makeText(RepairTaskACtivity.this,"获取维修任务信息失败，请重新获取",Toast.LENGTH_SHORT).show();
+                       Toast.makeText(TaskListActivity.this,"获取维修任务信息失败，请重新获取",Toast.LENGTH_SHORT).show();
                    }
                });
             }

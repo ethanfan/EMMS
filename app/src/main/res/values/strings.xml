@@ -53,6 +53,9 @@
     <string name="nfc_disabled">NFC没有启用。请转到无线设置来启用.</string>
 
     <string name="repair_task">维修任务</string>
+    <string name="maintain_task">维护任务</string>
+    <string name="move_car_task">搬车任务</string>
+    <string name="other_task">其它任务</string>
     <string name="working">进行中</string>
     <string name="paused">已暂停</string>
     <string name="group_type">组别：</string>
@@ -141,8 +144,23 @@
     <string name="service_attitude">服务态度:</string>
     <string name="repair_speed">维修速度:</string>
     <string name="command_standard">评分标准：1-5星，5星最高</string>
-
-
-
-
+    <string name="start">处理中</string>
+    <string name="pause">暂停</string>
+    <string name="resume">恢复</string>
+    <string name="wait_material">待料</string>
+    <string name="material_requisition">领料</string>
+    <string name="quit">退出</string>
+    <string name="complete">完成</string>
+    <string name="checkHistoryRecord">查看历史记录</string>
+    <string name="please_select">请选择</string>
+    <string name="fault_summary">故障总结</string>
+    <string name="fault_type">故障类型:</string>
+    <string name="fault_description">故障描述:</string>
+    <string name="repair_status">维修情况:</string>
+    <string name="faultType">故障类型</string>
+    <string name="total_worktime">总工时</string>
+    <string name="workload">工作量:</string>
+    <string name="change_equipment_operator_status">修改操作员状态</string>
+    <string name="change_equipment_status">修改设备状态</string>
+    <string name="hours">小时</string>
 </resources>

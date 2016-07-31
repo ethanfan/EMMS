@@ -433,7 +433,7 @@ public class CustomDialog extends Dialog {
                         getString(R.string.work_num_dialog), DataDictionary.DATA_CODE,
                 1, "获取数据失败");
         initDropSearchView(null, sub_task_equipment_num.getmEditText(), context.getResources().
-                        getString(R.string.title_search_equipment_nun), Equipment.EQUIPMENT_ID,
+                        getString(R.string.title_search_equipment_nun), "AssetsID",
                 2, "该任务没有添加机台");
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override

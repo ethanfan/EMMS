@@ -26,6 +26,8 @@ import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
 import com.emms.activity.InvitorActivity;
 import com.emms.activity.SubTaskManageActivity;
+import com.emms.activity.SummaryActivity;
+import com.emms.activity.WorkLoadActivity;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.ListViewUtility;
@@ -107,7 +109,7 @@ public abstract class PopMenuTaskDetail {
 				}else if(position==5){
 					SubTaskManage();
 				}else if(position==6){
-
+                    FaultSummary();
 				}
 				popMenuTaskDetail.dismiss();
 			}
@@ -230,7 +232,10 @@ public abstract class PopMenuTaskDetail {
 		}
 	}
 	private void WorkloadInput(){
-
+		Intent intent=new Intent(context, WorkLoadActivity.class);
+		//intent.putExtra(Task.TASK_ID,TaskId);
+		intent.putExtra("TaskDetail",TaskDetail.toString());
+		context.startActivity(intent);
 	}
     private void MissionComplete(){
 
@@ -263,6 +268,12 @@ public abstract class PopMenuTaskDetail {
 	}
 	private void setTaskIdFromActivity(Long taskId){
 		this.TaskId=taskId;
+	}
+	private void FaultSummary(){
+		Intent intent=new Intent(context, SummaryActivity.class);
+		//intent.putExtra(Task.TASK_ID,TaskId);
+		intent.putExtra("TaskDetail",TaskDetail.toString());
+		context.startActivity(intent);
 	}
 
 }

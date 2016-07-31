@@ -49,6 +49,7 @@ public class LinkedOrdersFragment extends Fragment{
     private String[] mTitles ;
     private ArrayList<ObjectElement> data;
     private Handler handler=new Handler();
+    private String TaskClass;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,6 +89,7 @@ public class LinkedOrdersFragment extends Fragment{
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+       TaskClass=this.getArguments().getString(Task.TASK_CLASS);
         mTitles = getResources().getStringArray(R.array.select_tab_time);
         tabLayout_1.setTabData(mTitles);
         datas1 =new ArrayList<ObjectElement>();
@@ -169,7 +171,7 @@ public class LinkedOrdersFragment extends Fragment{
        // String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
        // params.put("operator_id",operator_id);
         params.put("status",2);
-        params.put("taskClass","T01");
+        params.put("taskClass",TaskClass);
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -204,5 +206,11 @@ public class LinkedOrdersFragment extends Fragment{
             }
         });
     }
-
+    public static Fragment newInstance(String TaskClass){
+        LinkedOrdersFragment fragment = new LinkedOrdersFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(Task.TASK_CLASS, TaskClass);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
 }

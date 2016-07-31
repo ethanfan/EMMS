@@ -213,7 +213,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 }
 
 
-                holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get(Equipment.EQUIPMENT_ID)));
+              //  holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get(Equipment.EQUIPMENT_ID)));
+                holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get("AssetsID")));
                 holder.tv_device_name.setText(DataUtil.isDataElementNull(datas.get(position).get(Equipment.EQUIPMENT_NAME)));
                 //String createTime = LongToDate.longPointDate(datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsLong());
                 String createTime = DataUtil.isDataElementNull(datas.get(position).get("StartTime"));
@@ -637,10 +638,10 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
                 @Override
                 public void onSuccess(String t) {
-
+                    super.onSuccess(t);
                     JsonObjectElement json = new JsonObjectElement(t);
                     if(json.get("Success").valueAsBoolean()){
-                        super.onSuccess(t);
+
                         Toast toast = Toast.makeText(TaskDetailsActivity.this, "上传图片成功", Toast.LENGTH_SHORT);
                         toast.setGravity(Gravity.CENTER, 0, 0);
                         toast.show();
@@ -688,8 +689,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                             int dealDeviceCount = 0;
                             for (int i = 0; i < jsonArrayElement.size(); i++) {
                                 datas.add(jsonArrayElement.get(i).asObjectElement());
-                                TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
-                                Task_DeviceId_TaskEquipmentId.put(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)),
+                               // TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
+                                TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("AssetsID")));
+                                Task_DeviceId_TaskEquipmentId.put(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("AssetsID")),
                                         DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("TaskEquipment_ID")));
                                 String equipmentStatus = DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("status"));
                                 if (STATUS_DONE.equals(equipmentStatus)) {
@@ -808,7 +810,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         && dataElement.asArrayElement().size() > 0) {
                     final ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
                     //进行判断，若任务未有该设备号，添加
-                    if(!TaskDeviceIdList.contains(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))){
+                  //  if(!TaskDeviceIdList.contains(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))){
+                    if(!TaskDeviceIdList.contains(DataUtil.isDataElementNull(objectElement.get("AssetsID")))){
                     postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),"0",0);}
                     else{
                         runOnUiThread(new Runnable() {
@@ -816,8 +819,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                             public void run() {
                                 //若已有该设备号，弹出对话框，申请进行状态变更
                                 ChangeEquipmentDialog changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.change_equipment_status_dialog, R.style.MyDialog);
-                                changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
-                                        Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
+                                changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get("AssetsID").valueAsString(),
+                                        Task_DeviceId_TaskEquipmentId.get(objectElement.get("AssetsID").valueAsString()));
                                 changeEquipmentDialog.show();
                             }
                         });

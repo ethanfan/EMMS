@@ -58,12 +58,14 @@ public class ProcessingFragment extends Fragment {
   //      taskAdapter.setDatas(objectElements);
   //  }
     //private ArrayList<TaskBean> datas;
+
     private ArrayList<ObjectElement> datas=new ArrayList<ObjectElement>();
     private Context mContext;
     private Handler handler=new Handler();
-
+    private String TaskClass;
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+        TaskClass=this.getArguments().getString(Task.TASK_CLASS);
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
@@ -154,7 +156,7 @@ public class ProcessingFragment extends Fragment {
        // String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
       //  params.put("operator_id",operator_id);
         params.put("status",1);//状态1，即处理中任务
-        params.put("taskClass","T01");
+        params.put("taskClass",TaskClass);
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -194,7 +196,12 @@ public class ProcessingFragment extends Fragment {
 
 
     }
-
-
+    public static Fragment newInstance(String TaskClass){
+        ProcessingFragment fragment = new ProcessingFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(Task.TASK_CLASS, TaskClass);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
 
 }

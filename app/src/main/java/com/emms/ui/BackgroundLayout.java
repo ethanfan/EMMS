@@ -24,8 +24,7 @@ import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
 import com.emms.R;
-;
-class BackgroundLayout extends LinearLayout {
+public class BackgroundLayout extends LinearLayout {
 
     private float mCornerRadius;
     private int mBackgroundColor;

@@ -49,7 +49,7 @@ public class PendingOrdersFragment extends Fragment{
     private ArrayList<ObjectElement> datas;
     private Context mContext;
     private Handler handler=new Handler();
-
+    private String TaskClass;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,6 +87,7 @@ public class PendingOrdersFragment extends Fragment{
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        TaskClass=this.getArguments().getString(Task.TASK_CLASS);
         datas =new ArrayList<ObjectElement>();
         taskAdapter = new TaskAdapter(datas) {
             @Override
@@ -138,7 +139,7 @@ public class PendingOrdersFragment extends Fragment{
       //  String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
       //  params.put("operator_id",operator_id);
         params.put("status",0);
-        params.put("taskClass","T01");
+        params.put("taskClass",TaskClass);
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -189,7 +190,7 @@ public class PendingOrdersFragment extends Fragment{
 
         JsonObjectElement SubData=new JsonObjectElement();
         SubData.set("Task",task);
-     //   SubData.set("TaskOperator",jsonArray.toString());
+       // SubData.set("TaskOperator",jsonArray.toString());
      //   SubData.set("isChangeTaskItem","1");
         HttpParams params=new HttpParams();
         params.putJsonParams(SubData.toJson());
@@ -225,5 +226,11 @@ public class PendingOrdersFragment extends Fragment{
         });
 
     }
-
+    public static Fragment newInstance(String TaskClass){
+        PendingOrdersFragment fragment = new PendingOrdersFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString(Task.TASK_CLASS, TaskClass);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
 }

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.rxvolley.http.DefaultRetryPolicy;
 import com.datastore_android_sdk.rxvolley.http.RetryPolicy;
 import com.datastore_android_sdk.rxvolley.http.VolleyError;
 import com.emms.R;
@@ -100,22 +101,7 @@ public  class HttpUtils {
                     .httpMethod(RxVolley.Method.POST) //default GET or POST/PUT/DELETE/HEAD/OPTIONS/TRACE/PATCH
                     .contentType(RxVolley.ContentType.JSON)//default FORM or JSON
                     .params(params)
-                    .retryPolicy(new RetryPolicy() {
-                        @Override
-                        public int getCurrentTimeout() {
-                            return 10000;
-                        }
-
-                        @Override
-                        public int getCurrentRetryCount() {
-                            return 0;
-                        }
-
-                        @Override
-                        public void retry(VolleyError error) throws VolleyError {
-                      Log.e("111","111");
-                        }
-                    })
+                    .retryPolicy(new DefaultRetryPolicy(5000,0,1f))
                     .callback(callback)
                     .encoding("UTF-8") //default
                     .doTask();
