@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
@@ -25,6 +26,11 @@ import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.DuplicateFormatFlagsException;
@@ -66,11 +72,11 @@ public class WorkLoadActivity extends BaseActivity{
                 } else {
                     holder = (WorkloadAdapter.ViewHolder) convertView.getTag();
                 }
-                holder.name.setText(DataUtil.isDataElementNull(datas.get(position).get("name")));
+                holder.name.setText(DataUtil.isDataElementNull(datas.get(position).get("Name")));
                 holder.skill.setText(DataUtil.isDataElementNull(datas.get(position).get("Skill")));
                 holder.startTime.setText(DataUtil.isDataElementNull(datas.get(position).get("StartTime")));
                 holder.endTime.setText(DataUtil.isDataElementNull(datas.get(position).get("FinishTime")));
-                holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Workload")));
+                holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Coefficient")));
                 holder.workload.addTextChangedListener(new TextWatcher() {
                    @Override
                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -115,7 +121,8 @@ public class WorkLoadActivity extends BaseActivity{
                    runOnUiThread(new Runnable() {
                        @Override
                        public void run() {
-                      SetViewData(t);
+                           JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                      SetViewData(jsonObjectElement);
                        }
                    });
                 }
@@ -127,16 +134,16 @@ public class WorkLoadActivity extends BaseActivity{
             }
         });
     }
-    private void SetViewData(String t){
-        JsonObjectElement ViewData=new JsonObjectElement(t);
+    private void SetViewData(ObjectElement ViewData){
         group.setText(DataUtil.isDataElementNull(ViewData.get("TaskApplicantOrg")));
         task_id.setText(DataUtil.isDataElementNull(ViewData.get(Task.TASK_ID)));
         total_worktime.setText(DataUtil.isDataElementNull(ViewData.get("Workload"))+getResources().getString(R.string.hours));
-        if(ViewData.get("TaskOperator")!=null&&ViewData.get("TaskOperator").asArrayElement().size()>0){
-            for(int i=0;i<ViewData.get("TaskOperator").asArrayElement().size();i++){
-                datas.add(ViewData.get("TaskOperator").asArrayElement().get(i).asObjectElement());
-            }
+        if(ViewData.get("TaskOperator")!=null&&ViewData.get("TaskOperator").asArrayElement().size()>0) {
+                for (int i = 0; i < ViewData.get("TaskOperator").asArrayElement().size(); i++) {
+                    datas.add(ViewData.get("TaskOperator").asArrayElement().get(i).asObjectElement());
+                }
             workloadAdapter.notifyDataSetChanged();
+
         }
     }
     private void submitWorkLoadToServer(){

@@ -111,6 +111,7 @@
         android:id="@+id/response_speed_tag"
         android:textSize="20sp"
         />
+        <!--
     <GridView
         android:layout_width="wrap_content"
         android:layout_height="30dp"
@@ -119,6 +120,15 @@
         android:numColumns="5"
         android:id="@+id/response_speed"
         android:layout_toRightOf="@+id/response_speed_tag"></GridView>
+        -->
+        <com.emms.ui.HorizontalListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_alignTop="@+id/response_speed_tag"
+            android:id="@+id/response_speed"
+            android:layout_toRightOf="@+id/response_speed_tag">
+            ></com.emms.ui.HorizontalListView>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -129,6 +139,15 @@
         android:id="@+id/service_attitude_tag"
         android:textSize="20sp"
         />
+        <com.emms.ui.HorizontalListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_alignTop="@+id/service_attitude_tag"
+            android:id="@+id/service_attitude"
+            android:layout_toRightOf="@+id/service_attitude_tag">
+            ></com.emms.ui.HorizontalListView>
+        <!--
     <GridView
         android:layout_width="wrap_content"
         android:layout_height="30dp"
@@ -137,6 +156,7 @@
         android:numColumns="5"
         android:id="@+id/service_attitude"
         android:layout_toRightOf="@+id/service_attitude_tag"></GridView>
+        -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -147,6 +167,22 @@
         android:id="@+id/repair_speed_tag"
         android:textSize="20sp"
         />
+        <com.emms.ui.HorizontalListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_alignTop="@+id/repair_speed_tag"
+            android:id="@+id/repair_speed"
+            android:layout_toRightOf="@+id/repair_speed_tag">
+            ></com.emms.ui.HorizontalListView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:text="@string/command_standard"
+            android:layout_below="@+id/repair_speed_tag"/>
+        <!--
     <GridView
         android:layout_width="wrap_content"
         android:layout_height="30dp"
@@ -155,17 +191,9 @@
         android:numColumns="5"
         android:id="@+id/repair_speed"
         android:layout_toRightOf="@+id/repair_speed_tag"></GridView>
+        -->
     </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/layout1">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="20dp"
-            android:text="@string/command_standard"/>
+
         <Button
             android:layout_width="match_parent"
             android:id="@+id/comfirm"
@@ -179,5 +207,4 @@
             android:layout_marginRight="20dp"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="20dp"/>
-    </RelativeLayout>
 </RelativeLayout>

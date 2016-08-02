@@ -259,8 +259,8 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     }
     private void postTaskOperatorEquipment(int status){
       HttpParams params=new HttpParams();
-        params.put("task_id",TaskId);
-        params.put("equipment_id",EquipmentId);
+        params.put("task_id",Integer.valueOf(TaskId));
+        params.put("equipment_id",Integer.valueOf(EquipmentId));
         params.put("status",status);
         HttpUtils.post(context, "TaskOperatorStatus", params, new HttpCallback() {
             @Override

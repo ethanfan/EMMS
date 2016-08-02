@@ -80,7 +80,10 @@
         android:name=".activity.SummaryActivity"
         android:screenOrientation="portrait" >
     </activity>
-
+        <activity
+            android:name=".activity.CommandActivity"
+            android:screenOrientation="portrait" >
+        </activity>
         <activity
             android:name=".activity.searchActivity"
             android:screenOrientation="portrait" >

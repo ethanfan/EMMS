@@ -88,7 +88,9 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
             return;
         }else {
             HttpParams params = new HttpParams();
-            params.put(Task.TASK_CLASS, TaskClass);
+            params.put("task_class", TaskClass);
+            params.put("pageSize",10);
+            params.put("pageIndex",1);
             HttpUtils.get(this, "TaskHistoryList", params, new HttpCallback() {
                 @Override
                 public void onSuccess(String t) {

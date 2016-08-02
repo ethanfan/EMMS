@@ -47,6 +47,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
     private Handler handler=new Handler();
     private HashMap<String,String> Status_Colors=new HashMap<String,String>();
     private ArrayList<ObjectElement> EquipmentList=new ArrayList<ObjectElement>();
+    private int index=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,6 +174,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
                         for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
                             datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
+                        index++;
                         adapter.setDatas(datas);
                         adapter.notifyDataSetChanged();
                     }
@@ -194,6 +196,8 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
 
             HttpParams params = new HttpParams();
             params.put("task_id", taskId.toString());
+        params.put("pageSize",10);
+        params.put("pageIndex",1);
             //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
             HttpUtils.get(this, "TaskDetailList", params, new HttpCallback() {
                 @Override

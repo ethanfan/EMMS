@@ -692,8 +692,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                             for (int i = 0; i < jsonArrayElement.size(); i++) {
                                 datas.add(jsonArrayElement.get(i).asObjectElement());
                                // TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
-                                TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("AssetsID")));
-                                Task_DeviceId_TaskEquipmentId.put(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("AssetsID")),
+                                TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
+                                Task_DeviceId_TaskEquipmentId.put(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)),
                                         DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("TaskEquipment_ID")));
                                 String equipmentStatus = DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("status"));
                                 if (STATUS_DONE.equals(equipmentStatus)) {
@@ -813,7 +813,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     final ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
                     //进行判断，若任务未有该设备号，添加
                   //  if(!TaskDeviceIdList.contains(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))){
-                    if(!TaskDeviceIdList.contains(DataUtil.isDataElementNull(objectElement.get("AssetsID")))){
+                    if(!TaskDeviceIdList.contains(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))){
                     postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),"0",0);}
                     else{
                         runOnUiThread(new Runnable() {
@@ -822,20 +822,18 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                 //若已有该设备号，弹出对话框，申请进行状态变更
                                 if(changeEquipmentDialog==null) {
                                     changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.change_equipment_status_dialog, R.style.MyDialog);
-                                    changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get("AssetsID").valueAsString(),
-                                            Task_DeviceId_TaskEquipmentId.get(objectElement.get("AssetsID").valueAsString()));
+                                    changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
+                                            Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
                                     changeEquipmentDialog.show();
                                 }else {
-                                    changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get("AssetsID").valueAsString(),
-                                            Task_DeviceId_TaskEquipmentId.get(objectElement.get("AssetsID").valueAsString()));
+                                    changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
+                                            Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
                                    if(!changeEquipmentDialog.isShowing()){
                                     changeEquipmentDialog.show();}
                                 }
                             }
                         });
                     }
-
-
                 } else {
                     runOnUiThread(new Runnable() {
                         @Override

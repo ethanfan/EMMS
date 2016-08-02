@@ -14,15 +14,15 @@ public class BuildConfig {
 	public static final ServerEndPoint endPoint = ServerEndPoint.UAT;
 
 	
-	private static final String productionAPIEndPoint = "http://devazure.esquel.cn:80/EMMS/api/";
-	private static final String productionConfigurationEndPoint = "http://devazure.esquel.cn:80/EMMS/api/Token";
-	private static final String productionContentServerEndPoint = "http://devazure.esquel.cn/EMMS//api/DataBase";
-	private static final String productionContentServerDownload = "http://devazure.esquel.cn/EMMS//api/DataBase";
+//	private static final String productionAPIEndPoint = "http://devazure.esquel.cn:80/EMMS/api/";
+//	private static final String productionConfigurationEndPoint = "http://devazure.esquel.cn:80/EMMS/api/Token";
+//	private static final String productionContentServerEndPoint = "http://devazure.esquel.cn/EMMS//api/DataBase";
+//	private static final String productionContentServerDownload = "http://devazure.esquel.cn/EMMS//api/DataBase";
 
-//	private static final String productionAPIEndPoint = "http://42.159.202.12:80/WebAPI/api/";
-//	private static final String productionConfigurationEndPoint = "http://42.159.202.12:80/WebAPI/api/Token";
-//	private static final String productionContentServerEndPoint = "http://42.159.202.12:80/WebAPI/api/DataBase";
-//	private static final String productionContentServerDownload = "http://42.159.202.12:80/WebAPI/api/DataBase";
+	private static final String productionAPIEndPoint = "http://42.159.202.12:80/EMMSWebAPI/api/";
+	private static final String productionConfigurationEndPoint = "http://42.159.202.12:80/EMMSWebAPI/api/Token";
+	private static final String productionContentServerEndPoint = "http://42.159.202.12:80/EMMSWebAPI/api/DataBase";
+	private static final String productionContentServerDownload = "http://42.159.202.12:80/EMMSWebAPI/api/DataBase";
 
 	public static String getConfigurationEndPoint() {
 

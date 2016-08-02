@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
+import com.emms.activity.CommandActivity;
 import com.emms.activity.InvitorActivity;
 import com.emms.activity.SubTaskManageActivity;
 import com.emms.activity.SummaryActivity;
@@ -99,7 +100,7 @@ public abstract class PopMenuTaskDetail {
 				if (position == 0) {
 					WorkloadInput();
 				}else if (position == 1) {
-
+                    TaskComplete();
 				}else if(position==2){
 
 				}else if(position==3){
@@ -271,6 +272,12 @@ public abstract class PopMenuTaskDetail {
 	}
 	private void FaultSummary(){
 		Intent intent=new Intent(context, SummaryActivity.class);
+		//intent.putExtra(Task.TASK_ID,TaskId);
+		intent.putExtra("TaskDetail",TaskDetail.toString());
+		context.startActivity(intent);
+	}
+	private void TaskComplete(){
+		Intent intent=new Intent(context, CommandActivity.class);
 		//intent.putExtra(Task.TASK_ID,TaskId);
 		intent.putExtra("TaskDetail",TaskDetail.toString());
 		context.startActivity(intent);

@@ -82,7 +82,9 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
     private void getListItems(ObjectElement objectElement) {
         HttpParams params=new HttpParams();
 
-        params.put("org_id", DataUtil.isDataElementNull(objectElement.get("Organise_ID")));
+        params.put("team_id", DataUtil.isDataElementNull(objectElement.get("Organise_ID")));
+        params.put("pageSize",10);
+        params.put("pageIndex",1);
         HttpUtils.get(this, "OperatorStatus", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
