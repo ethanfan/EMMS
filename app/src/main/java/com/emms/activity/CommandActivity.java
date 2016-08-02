@@ -90,10 +90,25 @@ public class CommandActivity extends NfcActivity  {
                 postTaskCommandToServer();
             }
         });
+        //initTopToolbar
         findViewById(R.id.btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+        ((TextView)findViewById(R.id.tv_title)).setText(R.string.task_command);
+        //initFooterToolbar
+        findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        findViewById(R.id.nextStep).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //待写
             }
         });
     }

@@ -3,7 +3,9 @@ package com.emms.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -60,10 +62,18 @@ public class SummaryActivity extends BaseActivity{
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
         getSummaryFromServer();
         initView();
-      //  initSearchView();
+        initSearchView();
 
     }
     public void initView(){
+        //initTopToolbar
+        ((TextView)findViewById(R.id.tv_title)).setText(R.string.fault_summary);
+        findViewById(R.id.btn_right_action).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         type=(DropEditText)findViewById(R.id.type);
         description=(EditText)findViewById(R.id.description);
         repair_status=(EditText)findViewById(R.id.repair_status);
@@ -72,6 +82,19 @@ public class SummaryActivity extends BaseActivity{
             @Override
             public void onClick(View v) {
                 submitFaultSummaryToServer();
+            }
+        });
+        //initFooterToolbar
+        findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        findViewById(R.id.nextStep).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //待写
             }
         });
     }
@@ -111,6 +134,7 @@ public class SummaryActivity extends BaseActivity{
                 }
             }
         });
+        getFaultType();
         initDropSearchView(null, type.getmEditText(), context.getResources().
                         getString(R.string.faultType), DataDictionary.DATA_CODE,
                 1, "获取数据失败");
@@ -215,7 +239,7 @@ public class SummaryActivity extends BaseActivity{
     }
     private void submitFaultSummaryToServer(){
       HttpParams httpParams=new HttpParams();
-        JsonObjectElement FaultSummary=new JsonObjectElement();
+        JsonObjectElement  FaultSummary=new JsonObjectElement();
         FaultSummary.set(Task.TASK_ID,DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
 
         //如果存在TaskTrouble_ID则填对应，否则填0
@@ -257,5 +281,23 @@ public class SummaryActivity extends BaseActivity{
                 super.onFailure(errorNo, strMsg);
             }
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            JsonObjectElement FaultSummary=new JsonObjectElement();
+            FaultSummary.set("TaskTrouble_ID",0);
+            FaultSummary.set("TroubleType",type.getText().toString());
+            FaultSummary.set("TroubleDescribe",description.getText().toString());
+            FaultSummary.set("MaintainDescribe",repair_status.getText().toString());
+            outPersistentState.putString("submitData",FaultSummary.toJson());
+            outPersistentState.putString("TaskDetail",TaskDetail.toJson());
+        }
+        super.onSaveInstanceState(outState, outPersistentState);
+    }
+    private void getFaultType(){
+
+       // typeList
     }
 }

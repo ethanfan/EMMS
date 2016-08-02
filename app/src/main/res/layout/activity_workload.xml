@@ -64,12 +64,15 @@
         android:id="@+id/aaa"
         android:layout_below="@+id/total_worktime_tag">
     </View>
-
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/aaabbb"
+    android:orientation="vertical"
+    android:layout_alignParentBottom="true">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/aaabbb"
-        android:layout_alignParentBottom="true">
+        android:layout_height="wrap_content">
         <Button
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -84,6 +87,15 @@
             android:layout_marginBottom="20dp"
             android:layout_marginTop="20dp"/>
     </RelativeLayout>
+ <RelativeLayout
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:id="@+id/footer_toolbar"
+     android:visibility="gone">
+  <include layout="@layout/footer_toolbar">
+  </include>
+ </RelativeLayout>
+</LinearLayout>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

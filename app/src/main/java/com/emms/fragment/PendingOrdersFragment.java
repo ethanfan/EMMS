@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.datastore_android_sdk.rest.JsonObjectElement;
+import com.datastore_android_sdk.rxvolley.RxVolley;
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.adapter.TaskAdapter;
@@ -36,6 +37,8 @@ import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
+
+import org.restlet.engine.header.ContentType;
 
 import java.util.ArrayList;
 
@@ -114,7 +117,8 @@ public class PendingOrdersFragment extends Fragment{
                 holder.acceptTaskButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        acceptTask(position);
+                       // acceptTask(position);
+                        taskReceive(position);
                     }
                 });
                 return convertView;
@@ -227,6 +231,40 @@ public class PendingOrdersFragment extends Fragment{
             }
         });
 
+    }
+    public void taskReceive(final int position){
+        HttpParams params=new HttpParams();
+      //  params.put("task_id",Integer.valueOf(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_ID))));
+        HttpUtils.post(mContext,"TaskRecieve?task_id="+DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_ID)), params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null) {
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    if(jsonObjectElement!=null){
+                        if(jsonObjectElement.get("Success").valueAsBoolean()){
+                            //成功，通知用户接单成功
+                            Toast toast=Toast.makeText(mContext,"接单成功",Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER,0,0);
+                            toast.show();
+                        }else{
+                            //失败，通知用户接单失败，单已经被接
+                            Toast toast=Toast.makeText(mContext,"该单已被接",Toast.LENGTH_LONG);
+                            toast.setGravity(Gravity.CENTER,0,0);
+                            toast.show();
+                        }
+                        datas.remove(position);
+                        taskAdapter.setDatas(datas);
+                        taskAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+            }
+        });
     }
     public static Fragment newInstance(String TaskClass){
         PendingOrdersFragment fragment = new PendingOrdersFragment();

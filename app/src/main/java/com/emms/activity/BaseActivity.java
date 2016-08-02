@@ -7,7 +7,9 @@ import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.sqlite.SqliteStore;
+import com.emms.R;
 import com.emms.schema.Operator;
+import com.emms.ui.KProgressHUD;
 import com.emms.util.SharedPreferenceManager;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,7 +20,7 @@ import cn.jpush.android.api.JPushInterface;
  * Created by jaffer.deng on 2016/6/17.
  */
 public abstract class BaseActivity extends AppCompatActivity {
-
+    private KProgressHUD hud;
     protected void onResume() {
         super.onResume();
         JPushInterface.onResume(this);
@@ -32,6 +34,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hud=KProgressHUD.create(this);
 
     }
     protected SqliteStore getSqliteStore() {
@@ -81,5 +84,21 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         return operator;
     }
-
+    public KProgressHUD initCustomDialog(int resId) {
+         hud.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(getResources().getString(resId))
+                .setCancellable(true);
+        return  hud;
+    }
+    public void showCustomDialog(int resId){
+        initCustomDialog(resId);
+        if(hud!=null&&!hud.isShowing()){
+            hud.show();
+        }
+    }
+    public void dismissCustomDialog(){
+        if(hud!=null&&hud.isShowing()){
+            hud.dismiss();
+        }
+    }
 }

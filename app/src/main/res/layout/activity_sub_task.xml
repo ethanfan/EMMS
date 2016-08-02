@@ -79,24 +79,25 @@
         android:layout_below="@id/abc"
         android:background="#DFDFDF"
         android:id="@+id/vvvvvv"></View>
-
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/bbb"
         android:paddingBottom="10dp"
+        android:orientation="vertical"
         android:layout_alignParentBottom="true">
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/add_sub_task"
+            android:layout_gravity="center"
             android:layout_centerInParent="true">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:paddingBottom="10dp"
-            android:src="@mipmap/add"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingBottom="10dp"
+                android:src="@mipmap/add"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -105,13 +106,21 @@
                 android:paddingBottom="10dp"
                 android:text="@string/add"/>
         </LinearLayout>
-    </RelativeLayout>
-    <com.handmark.pulltorefresh.library.PullToRefreshListView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/vvvvvv"
-        android:layout_above="@id/bbb"
-        android:layout_marginBottom="5dp"
-        android:id="@+id/sub_task_list">
-    </com.handmark.pulltorefresh.library.PullToRefreshListView>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+        <include layout="@layout/footer_toolbar"
+            android:id="@+id/footer_toolbar"
+            ></include>
+        </LinearLayout>
+    </LinearLayout>
+<com.handmark.pulltorefresh.library.PullToRefreshListView
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_below="@id/vvvvvv"
+android:layout_above="@id/bbb"
+android:layout_marginBottom="5dp"
+android:id="@+id/sub_task_list">
+</com.handmark.pulltorefresh.library.PullToRefreshListView>
 </RelativeLayout>

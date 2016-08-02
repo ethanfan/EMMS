@@ -15,4 +15,11 @@ public class DataUtil {
         }
         return "";
     }
+    public static String getDate(String date){
+        if(date.contains("T")){
+            date.replace("T","  ");
+            return date;
+        }
+        return date;
+    }
 }

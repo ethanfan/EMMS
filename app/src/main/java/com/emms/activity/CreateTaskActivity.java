@@ -131,6 +131,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
         mContext = CreateTaskActivity.this;
+        getEquipmentClassTaskDescription();
         initView();
         initSearchView();
         initEvent();
@@ -1053,6 +1054,21 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         Toast.makeText(CreateTaskActivity.this,"任务创建失败",Toast.LENGTH_SHORT).show();
                     }
                 });
+            }
+        });
+    }
+    private void getEquipmentClassTaskDescription(){
+        HttpParams params=new HttpParams();
+        params.put("EquipmentClass","01AM");
+        HttpUtils.get(this, "TaskTroubleDesc", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
             }
         });
     }

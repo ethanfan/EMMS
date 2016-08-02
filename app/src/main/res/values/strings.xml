@@ -160,9 +160,13 @@
     <string name="faultType">故障类型</string>
     <string name="total_worktime">总工时:</string>
     <string name="workload">工作量:</string>
+    <string name="entering_workload">工作量录入</string>
     <string name="change_equipment_operator_status">修改操作员状态</string>
     <string name="change_equipment_status">修改设备状态</string>
     <string name="hours">小时</string>
     <string name="pleaseSelectTaskClass">请选择任务类型</string>
     <string name="getCommandFail">获取任务评价失败，请检查网络</string>
+    <string name="preStep">上一步</string>
+    <string name="nextStep">下一步</string>
+    <string name="task_command">任务评价</string>
 </resources>

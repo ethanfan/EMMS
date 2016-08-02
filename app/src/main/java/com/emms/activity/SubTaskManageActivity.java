@@ -59,6 +59,19 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
     }
 
     private void initView() {
+        //initFooterToolbar
+        findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        findViewById(R.id.nextStep).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //待写
+            }
+        });
         findViewById(R.id.btn_right_action).setOnClickListener(this);
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.sub_task);
         ((TextView)findViewById(R.id.group_type)).setText(DataUtil.isDataElementNull(TaskDetail.get(Task.ORGANISE_NAME)));

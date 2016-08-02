@@ -108,7 +108,19 @@
             android:layout_marginRight="20dp"
             android:layout_marginTop="30dp"
             android:layout_marginBottom="20dp"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/footer_toolbar"
+            android:visibility="gone"
+            android:layout_alignParentBottom="true">
+            <include layout="@layout/footer_toolbar"></include>
+        </RelativeLayout>
     </RelativeLayout>
         </RelativeLayout>
         </FrameLayout>
+    <include layout="@layout/activity_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"/>
 </com.emms.ui.CustomDrawerLayout>

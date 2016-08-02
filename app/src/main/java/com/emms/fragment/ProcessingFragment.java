@@ -195,8 +195,6 @@ public class ProcessingFragment extends Fragment {
                 toast.show();
             }
         });
-
-
     }
     public static Fragment newInstance(String TaskClass){
         ProcessingFragment fragment = new ProcessingFragment();

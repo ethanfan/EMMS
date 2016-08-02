@@ -259,10 +259,13 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     }
     private void postTaskOperatorEquipment(int status){
       HttpParams params=new HttpParams();
-        params.put("task_id",Integer.valueOf(TaskId));
-        params.put("equipment_id",Integer.valueOf(EquipmentId));
-        params.put("status",status);
-        HttpUtils.post(context, "TaskOperatorStatus", params, new HttpCallback() {
+       // JsonObjectElement TaskOperatorDataToSubmit=new JsonObjectElement();
+     //   TaskOperatorDataToSubmit.set("task_id",Integer.valueOf(TaskId));
+     //   TaskOperatorDataToSubmit.set("equipment_id",Integer.valueOf(EquipmentId));
+     //   TaskOperatorDataToSubmit.set("TaskEquipment_ID",Integer.valueOf(TaskEquipmentId));
+     //   TaskOperatorDataToSubmit.set("status",status);
+     //   params.putJsonParams(TaskOperatorDataToSubmit.toJson());
+        HttpUtils.post(context, "TaskOperatorStatus？task_id="+TaskId+"&equipment_id="+EquipmentId+"&status"+status, params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

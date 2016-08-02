@@ -1,7 +1,9 @@
 package com.emms.activity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -43,6 +45,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
     private ImageView sureImageView;
     private boolean isExChangeOrder=false;
     private boolean isInviteHelp=false;
+    private Context context=this;
     private String taskId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +94,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                 super.onSuccess(t);
                 if(t!=null){
                     JsonObjectElement json=new JsonObjectElement(t);
+                    if(json.get("Success").valueAsBoolean()){
                     if(json.get("PageData")!=null&&json.get("PageData").asArrayElement().size()>0){
                         listItems.clear();
                         if(adapter!=null){
@@ -107,6 +111,11 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                         adapter.notifyDataSetChanged();}
                     }
                     // if(json!=null)
+                }
+                else{
+                    Toast toast=Toast.makeText(context,"获取数据失败",Toast.LENGTH_LONG);
+                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.show();}
                 }
             }
 

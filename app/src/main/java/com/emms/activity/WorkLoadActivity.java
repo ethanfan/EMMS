@@ -109,6 +109,27 @@ public class WorkLoadActivity extends BaseActivity{
                 submitWorkLoadToServer();
             }
         });
+        //initTopToolbar
+        ((TextView)findViewById(R.id.tv_title)).setText(R.string.entering_workload);
+        findViewById(R.id.btn_right_action).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        //initFooterToolBar
+        findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        findViewById(R.id.nextStep).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //待写
+            }
+        });
     }
     private void getWorkLoadFromServer(){
         HttpParams httpParams=new HttpParams();
