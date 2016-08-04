@@ -25,6 +25,7 @@ import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.emms.R;
 import com.emms.activity.AppAplication;
 import com.emms.activity.TaskDetailsActivity;
+import com.emms.activity.dialogOnSubmitInterface;
 import com.emms.adapter.StatusAdapter;
 import com.emms.adapter.TaskAdapter;
 import com.emms.bean.WorkInfo;
@@ -65,7 +66,11 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
       //  Collections.addAll(status,context.getResources().getStringArray(R.array.equip_status));
         initview();
     }
+    public void setOnSubmitInterface(dialogOnSubmitInterface onSubmitInterface) {
+        this.onSubmitInterface = onSubmitInterface;
+    }
 
+    private dialogOnSubmitInterface onSubmitInterface=null;
     public void initview() {
         ((TextView)findViewById(R.id.cancle)).setText(R.string.cancel);
         findViewById(R.id.cancle).setOnClickListener(new View.OnClickListener() {
@@ -80,22 +85,6 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 
 
 
-    public void submitSubTaskData() {
-        HttpParams params = new HttpParams();
-        JsonObjectElement jsonObjectElement = new JsonObjectElement();
-
-        HttpUtils.post(context, "TaskItem", params, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-            }
-
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-            }
-        });
-    }
     private void postTaskEquipment(int status) {
 
         HttpParams params = new HttpParams();
@@ -106,7 +95,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         //若任务未有设备，则输入为0，表示添加
         taskEquepment.set("TaskEquipment_ID",TaskEquipmentId);
         //若已有设备，申请状态变更
-        taskEquepment.set("AssetsID", EquipmentId);
+        taskEquepment.set("OracleID", EquipmentId);
         //taskEquepment.set("Equipment_ID", equipmentID);
         taskEquepment.set("Status",status);
 
@@ -118,6 +107,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                 super.onSuccess(t);
                 Toast.makeText(context, "修改设备状态成功", Toast.LENGTH_SHORT).show();
                 dismiss();
+                onSubmitInterface.onsubmit();
             }
 
             @Override
@@ -265,10 +255,11 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
      //   TaskOperatorDataToSubmit.set("TaskEquipment_ID",Integer.valueOf(TaskEquipmentId));
      //   TaskOperatorDataToSubmit.set("status",status);
      //   params.putJsonParams(TaskOperatorDataToSubmit.toJson());
-        HttpUtils.post(context, "TaskOperatorStatus？task_id="+TaskId+"&equipment_id="+EquipmentId+"&status"+status, params, new HttpCallback() {
+        HttpUtils.post(context, "TaskOperatorStatus?task_id="+TaskId+"&equipment_id="+EquipmentId+"&status="+status, params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                onSubmitInterface.onsubmit();
             }
 
             @Override

@@ -169,4 +169,11 @@
     <string name="preStep">上一步</string>
     <string name="nextStep">下一步</string>
     <string name="task_command">任务评价</string>
+    <string name="equipment_tag_number">设备标识号:</string>
+    <string name="iccard_id">ICCard_ID:</string>
+    <string name="entering_equipment">录入设备</string>
+    <string name="loadingData">数据加载中，请稍候</string>
+    <string name="submitData">数据提交中，请稍候</string>
+    <string name="exchangeOrderToOnePerson">只能转单给一人</string>
+    <string name="exchangeOrder">转单</string>
 </resources>

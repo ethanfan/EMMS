@@ -23,6 +23,10 @@ public class BuildConfig {
 	private static final String productionConfigurationEndPoint = "http://42.159.202.12:80/EMMSWebAPI/api/Token";
 	private static final String productionContentServerEndPoint = "http://42.159.202.12:80/EMMSWebAPI/api/DataBase";
 	private static final String productionContentServerDownload = "http://42.159.202.12:80/EMMSWebAPI/api/DataBase";
+//DB下载地址
+//	https://edpazure.esquel.cn/apps/hrcampus/prod/EMMS.zip
+
+
 
 	public static String getConfigurationEndPoint() {
 

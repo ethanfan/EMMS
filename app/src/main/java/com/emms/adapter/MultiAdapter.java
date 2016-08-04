@@ -26,12 +26,31 @@ import java.util.Map;
  * Created by jaffer.deng on 2016/7/16.
  */
 public class MultiAdapter extends BaseAdapter {
+    public List<Integer> getListItemID() {
+        return listItemID;
+    }
+
+    public void setListItemID(List<Integer> listItemID) {
+        this.listItemID = listItemID;
+    }
+
     public List<ObjectElement> getListItems() {
         return listItems;
     }
 
     public void setListItems(List<ObjectElement> listItems) {
         this.listItems = listItems;
+        if(mChecked!=null){
+            mChecked.clear();
+            for (int i = 0; i < listItems.size(); i++) {// 遍历且设置CheckBox默认状态为未选中
+                mChecked.add(false);
+            }}
+        ((Activity)ctx).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                notifyDataSetChanged();
+            }
+        });
     }
 
     private List<ObjectElement> listItems;
@@ -107,42 +126,32 @@ public class MultiAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return position;
     }
-    public int getItemViewType(int position) {
-        // TODO Auto-generated method stub
-        return position;
-    }
-    public int getViewTypeCount() {
-        // TODO Auto-generated method stub
-        return listItems.size();
-    }
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
 
-        View rowView = this.viewMap.get(position);
-      //  AwaitRepair awaitRepair =  listItems.get(position);
-        ObjectElement Operator=listItems.get(position);
-        if (rowView == null) {
+        //  View rowView = this.viewMap.get(position);
+        //  AwaitRepair awaitRepair =  listItems.get(position);
+        ObjectElement Operator = listItems.get(position);
+        if (convertView == null) {
             LayoutInflater inflater = ((Activity) ctx).getLayoutInflater();
-            rowView = inflater.inflate(R.layout.item_invitor, null);
-            TextView workname = (TextView)rowView.findViewById(R.id.id_worknum);
-            TextView tech = (TextView)rowView.findViewById(R.id.id_tech);
-            ImageView status = (ImageView) rowView.findViewById(R.id.workstatus);
-
+            convertView = inflater.inflate(R.layout.item_invitor, null);
+            TextView workname = (TextView) convertView.findViewById(R.id.id_worknum);
+            TextView tech = (TextView) convertView.findViewById(R.id.id_tech);
+            ImageView status = (ImageView) convertView.findViewById(R.id.workstatus);
+            final ImageView select = (ImageView) convertView.findViewById(R.id.select);
+            LinearLayout multi_item = (LinearLayout) convertView.findViewById(R.id.multi_item);
 
             workname.setText(DataUtil.isDataElementNull(Operator.get("Name")));
-           // tech.setText(DataUtil.isDataElementNull(Operator.get("Name")));
-           // status.setText(DataUtil.isDataElementNull(Operator.get("Name")));
+            // tech.setText(DataUtil.isDataElementNull(Operator.get("Name")));
+            // status.setText(DataUtil.isDataElementNull(Operator.get("Name")));
      /*      workname.setText(awaitRepair.getWg());
             tech.setText(awaitRepair.getGrd());*/
-            if(DataUtil.isDataElementNull(Operator.get("Status")).equals("1")){
+            if (DataUtil.isDataElementNull(Operator.get("Status")).equals("1")) {
                 status.setImageResource(R.mipmap.busy);
-            }else {
+            } else {
                 status.setImageResource(R.mipmap.idle);
             }
 
-            final ImageView select = (ImageView) rowView.findViewById(R.id.select);
-
-            LinearLayout multi_item = (LinearLayout) rowView.findViewById(R.id.multi_item);
             multi_item.setOnClickListener(new View.OnClickListener() {
 
                 @Override
@@ -168,16 +177,18 @@ public class MultiAdapter extends BaseAdapter {
                     }
 
 
-                    ClickResult(ctx);
+                   ClickResult(ctx);
 
                 }
 
             });
 
-            viewMap.put(position, rowView);
+            viewMap.put(position, convertView);
 
         }
-        return rowView;
+
+            return convertView;
+
 
 
     }

@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.DataElement;
@@ -54,9 +55,13 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
         //标识，判断当前界面操作是转单还是邀请协助，若为转单，只能选一人，若为邀请协助，可多选
         isExChangeOrder=getIntent().getBooleanExtra("isExChangeOrder",false);
         isInviteHelp=getIntent().getBooleanExtra("isInviteHelp",false);
+        if(isExChangeOrder){
+            ((TextView)findViewById(R.id.tv_title)).setText(R.string.exchangeOrder);
+        }
        taskId=getIntent().getStringExtra(Task.TASK_ID) ;
-
+        adapter=new MultiAdapter(InvitorActivity.this,listItems);
         mListView = (ListView) findViewById(R.id.id_wait_list);
+        mListView.setAdapter(adapter);
         mGroupListView = (ListView) findViewById(R.id.group_list);
         mGroupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -83,6 +88,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
      * 初始化信息
      */
     private void getListItems(ObjectElement objectElement) {
+        showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
 
         params.put("team_id", DataUtil.isDataElementNull(objectElement.get("Organise_ID")));
@@ -97,36 +103,30 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                     if(json.get("Success").valueAsBoolean()){
                     if(json.get("PageData")!=null&&json.get("PageData").asArrayElement().size()>0){
                         listItems.clear();
-                        if(adapter!=null){
-                            adapter.notifyDataSetChanged();
-                        }
                         for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
                             listItems.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
-                        if(adapter==null){
-                        adapter=new MultiAdapter(InvitorActivity.this,listItems);
-                        mListView.setAdapter(adapter);}
-                        else {
-                        adapter.setListItems(listItems);
-                        adapter.notifyDataSetChanged();}
+                         adapter.setListItems(listItems);
                     }
-                    // if(json!=null)
                 }
                 else{
                     Toast toast=Toast.makeText(context,"获取数据失败",Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER,0,0);
                     toast.show();}
                 }
+                dismissCustomDialog();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
             }
         });
     }
 
     public void getGroupData() {
+        showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
         params.put(Task.OPERATOR_ID,String.valueOf(getLoginInfo().getId()));
         HttpUtils.get(this, "BaseOrganiseTeam", params, new HttpCallback() {
@@ -152,6 +152,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
             }
         });
 
@@ -170,11 +171,11 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                     @Override
                     public void run() {
                         if(adapter.getListItems()!=null){
-                            ArrayList<String> invitorList=new ArrayList<String>();
-                        for(int i=0;i<adapter.getListItems().size();i++){
-                            invitorList.add(DataUtil.isDataElementNull(adapter.getListItems().get(i).get("Operator_ID")));
+                            ArrayList<Integer> invitorList=new ArrayList<Integer>();
+                        for(int i=0;i<adapter.getlistItemID().size();i++){
+                            invitorList.add(Integer.valueOf(DataUtil.isDataElementNull(adapter.getListItems().get(adapter.getListItemID().get(i)).get("Operator_ID"))));
                         }
-                            postInviteDataToServer();
+                            postInviteDataToServer(invitorList);
                         //    Toast.makeText(InvitorActivity.this, "你选择了："
                          //           + adapter.getlistItemID().toString(), Toast.LENGTH_SHORT).show();
                         }
@@ -185,32 +186,43 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                 break;
         }
     }
-    public void postInviteDataToServer(){
+    public void postInviteDataToServer(ArrayList<Integer> submitData){
+        if(isExChangeOrder){
+            if(submitData.size()>1){
+                Toast toast=Toast.makeText(this,R.string.exchangeOrderToOnePerson,Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
+                return;
+            }
+        }
+        showCustomDialog(R.string.submitData);
         HttpParams params = new HttpParams();
         JsonObjectElement jsonObjectElement=new JsonObjectElement();
-        jsonObjectElement.set(Task.TASK_ID,331);
+        jsonObjectElement.set(Task.TASK_ID,taskId);
         if(isInviteHelp){
             jsonObjectElement.set("OperatorType",0);}
         else {
             jsonObjectElement.set("OperatorType",1);
         }
-        List<Integer> a=new ArrayList<Integer>();
-        a.add(4667);
-        JsonArrayElement jsonArrayElement=new JsonArrayElement(a.toString());
+    //    List<Integer> a=new ArrayList<Integer>();
+   //     a.add(4667);
+        JsonArrayElement jsonArrayElement=new JsonArrayElement(submitData.toString());
         jsonObjectElement.set("Operator_IDS",jsonArrayElement);
-        Log.e("daf",a.toString());
+       // Log.e("daf",a.toString());
         params.putJsonParams(jsonObjectElement.toJson());
         HttpUtils.post(this, "TaskOperatorChange", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-
+                dismissCustomDialog();
                 Toast.makeText(InvitorActivity.this,"邀请成功",Toast.LENGTH_LONG).show();
+                finish();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
             }
         });
 

@@ -3,6 +3,7 @@ package com.emms.ui;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
@@ -35,6 +36,7 @@ import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.emms.R;
 import com.emms.activity.AppAplication;
+import com.emms.activity.dialogOnSubmitInterface;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.bean.WorkInfo;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
@@ -82,9 +84,20 @@ public class CustomDialog extends Dialog {
     private CustomDrawerLayout mDrawer_layout;
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
     private ArrayList<ObjectElement> workNumList=new ArrayList<ObjectElement>();
-    public interface RefreshDataInterface{
-        void refreshData();
+    private String EquipmentId=null;
+
+    public dialogOnSubmitInterface getDialogOnSubmit() {
+        return dialogOnSubmit;
     }
+
+    public void setDialogOnSubmit(dialogOnSubmitInterface dialogOnSubmit) {
+        this.dialogOnSubmit = dialogOnSubmit;
+    }
+
+    public dialogOnSubmitInterface dialogOnSubmit=null;
+  //  public interface RefreshDataInterface{
+  //      void refreshData();
+  //  }
     public CustomDialog(Context context, int layout, int style) {
         super(context, style);
         this.context = context;
@@ -123,7 +136,8 @@ public class CustomDialog extends Dialog {
         if(modifySubTask!=null){
             work_num.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkCode")));//待修改
            approved_working_hours.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkTime")));
-            sub_task_equipment_num.setText(DataUtil.isDataElementNull(modifySubTask.get("Equipment_ID")));
+            EquipmentId=DataUtil.isDataElementNull(modifySubTask.get("Equipment_ID"));
+            sub_task_equipment_num.setText(DataUtil.isDataElementNull(modifySubTask.get("OracleID")));
             work_name.setText(DataUtil.isDataElementNull(modifySubTask.get("WorkName")));
             work_description.setText(DataUtil.isDataElementNull(modifySubTask.get("DataDescr")));
         }
@@ -213,14 +227,16 @@ public class CustomDialog extends Dialog {
         if(modifySubTask==null){
         jsonObjectElement.set("TaskItem_ID",0);}
         else {
-            jsonObjectElement.set("TaskItem_ID",modifySubTask.get("TaskItem_ID").toString());
+            jsonObjectElement.set("TaskItem_ID",modifySubTask.get("TaskItem_ID").valueAsString());
         }
         jsonObjectElement.set(Task.TASK_ID,TaskId);
 
         jsonObjectElement.set("TaskItemName",work_name.getText().toString());
          jsonObjectElement.set("TaskItemDesc",work_description.getText().toString());
       //  jsonObjectElement.set("TaskItem_ID",0);
-        jsonObjectElement.set("Equipment_ID",sub_task_equipment_num.getText().toString());
+        if(EquipmentId!=null){
+        jsonObjectElement.set("Equipment_ID",EquipmentId);}
+       // jsonObjectElement.set("Equipment_ID",sub_task_equipment_num.getText().toString());
       //  jsonObjectElement.set("Equipment_ID","124124");
         jsonObjectElement.set("WorkTimeCode",work_num.getText().toString());
         jsonObjectElement.set("PlanManhour",approved_working_hours.getText().toString());
@@ -229,11 +245,17 @@ public class CustomDialog extends Dialog {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                Toast toast=Toast.makeText(context,"创建子任务成功",Toast.LENGTH_SHORT);
 
                 dismiss();
+                if(modifySubTask!=null){
+                Toast toast=Toast.makeText(context,"创建子任务成功",Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER,0,0);
-                toast.show();
+                toast.show();}else{
+                    Toast toast=Toast.makeText(context,"修改子任务成功",Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.show();
+                }
+                dialogOnSubmit.onsubmit();
             }
 
             @Override
@@ -404,7 +426,7 @@ public class CustomDialog extends Dialog {
         mResultListView.setAdapter(mResultAdapter);
         mResultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 isSearchview = true ;
                 final int inPosition = position;
                 String itemNam = mResultAdapter.getItemName();
@@ -419,6 +441,7 @@ public class CustomDialog extends Dialog {
                                     break;
                                 case 2:
                                     sub_task_equipment_num.getmEditText().setText(searchResult);
+                                    EquipmentId=mResultAdapter.getItem(position).get(Equipment.EQUIPMENT_ID).valueAsString();
                                     break;
                             }
                             mDrawer_layout.closeDrawer(Gravity.RIGHT);
@@ -433,7 +456,7 @@ public class CustomDialog extends Dialog {
                         getString(R.string.work_num_dialog), DataDictionary.DATA_CODE,
                 1, "获取数据失败");
         initDropSearchView(null, sub_task_equipment_num.getmEditText(), context.getResources().
-                        getString(R.string.title_search_equipment_nun), "AssetsID",
+                        getString(R.string.title_search_equipment_nun), "OracleID",
                 2, "该任务没有添加机台");
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override

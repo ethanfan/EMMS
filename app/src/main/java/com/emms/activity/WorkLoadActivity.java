@@ -132,6 +132,7 @@ public class WorkLoadActivity extends BaseActivity{
         });
     }
     private void getWorkLoadFromServer(){
+        showCustomDialog(R.string.loadingData);
         HttpParams httpParams=new HttpParams();
         httpParams.put("task_id", DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
         HttpUtils.get(this, "TaskWorkload", httpParams, new HttpCallback() {
@@ -147,11 +148,13 @@ public class WorkLoadActivity extends BaseActivity{
                        }
                    });
                 }
+                dismissCustomDialog();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
             }
         });
     }
@@ -168,6 +171,7 @@ public class WorkLoadActivity extends BaseActivity{
         }
     }
     private void submitWorkLoadToServer(){
+        showCustomDialog(R.string.submitData);
       HttpParams httpParams=new HttpParams();
       ArrayList<ObjectElement> submitWorkloadData=new ArrayList<ObjectElement>();
       for (int i=0;i<workloadAdapter.getDatas().size();i++){
@@ -183,11 +187,13 @@ public class WorkLoadActivity extends BaseActivity{
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                dismissCustomDialog();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
             }
         });
 

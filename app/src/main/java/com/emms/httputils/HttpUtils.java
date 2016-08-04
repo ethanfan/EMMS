@@ -222,7 +222,8 @@ public  class HttpUtils {
                     toast.show();
                 }
             });
-            URL url = new URL("https://cloud.linkgoo.cn/app/emms/EMMS.zip");
+          //  URL url = new URL("https://cloud.linkgoo.cn/app/emms/EMMS.zip");
+            URL url = new URL("https://edpazure.esquel.cn/apps/hrcampus/prod/EMMS.zip");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);

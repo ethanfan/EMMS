@@ -998,6 +998,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private void submitTask(String TaskType,String TaskSubType,String teamId,String equipmentName
             ,String MachineCode,String TaskDescription){
         btn_sure.setEnabled(false);
+        showCustomDialog(R.string.submitData);
         HttpParams params=new HttpParams();
         if(StringUtils.isNotBlank(TaskSubType)){
             TaskType=TaskSubType;
@@ -1035,6 +1036,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                dismissCustomDialog();
                 btn_sure.setEnabled(true);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -1047,6 +1049,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
                 btn_sure.setEnabled(true);
                 runOnUiThread(new Runnable() {
                     @Override

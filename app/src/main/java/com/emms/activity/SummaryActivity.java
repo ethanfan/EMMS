@@ -99,7 +99,6 @@ public class SummaryActivity extends BaseActivity{
         });
     }
     private void initSearchView() {
-        initWorkNumListData();
         mDrawer_layout = (CustomDrawerLayout) findViewById(R.id.search_page);
         mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mDrawer_layout.setBackgroundColor(Color.parseColor("#00000000"));
@@ -238,6 +237,7 @@ public class SummaryActivity extends BaseActivity{
                 );
     }
     private void submitFaultSummaryToServer(){
+        showCustomDialog(R.string.submitData);
       HttpParams httpParams=new HttpParams();
         JsonObjectElement  FaultSummary=new JsonObjectElement();
         FaultSummary.set(Task.TASK_ID,DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
@@ -253,18 +253,19 @@ public class SummaryActivity extends BaseActivity{
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                dismissCustomDialog();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
             }
         });
     }
-    private void initWorkNumListData(){
 
-    }
     private void getSummaryFromServer(){
+        showCustomDialog(R.string.loadingData);
         HttpParams httpParams=new HttpParams();
         httpParams.put("task_id", DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
         HttpUtils.get(this, "TaskTroubleContent", httpParams, new HttpCallback() {
@@ -272,13 +273,15 @@ public class SummaryActivity extends BaseActivity{
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null){
-
+                    setFaultData(t);
+                 dismissCustomDialog();
                 }
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
             }
         });
     }
@@ -299,5 +302,19 @@ public class SummaryActivity extends BaseActivity{
     private void getFaultType(){
 
        // typeList
+    }
+    private void setFaultData(String data){
+        JsonObjectElement jsonObjectElement=new JsonObjectElement(data);
+        if(jsonObjectElement!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
+           final ObjectElement faultData=jsonObjectElement.get("PageData").asArrayElement().get(0).asObjectElement();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    type.setText(DataUtil.isDataElementNull(faultData.get("TroubleType")));
+                    description.setText(DataUtil.isDataElementNull(faultData.get("TroubleDescribe")));
+                    repair_status.setText(DataUtil.isDataElementNull(faultData.get("MaintainDescribe")));
+                }
+            });
+        }
     }
 }

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <include layout="@layout/toolbar"></include>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/aaaa"
+        android:layout_marginTop="40dp">
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="40dp"
+    android:layout_marginLeft="10dp"
+    android:paddingTop="8dp"
+    android:id="@+id/equipment_tag"
+    android:textSize="25sp"
+    android:text="@string/equipment_tag_number"/>
+
+        <ImageButton
+            android:layout_width="43dp"
+            android:layout_height="43dp"
+            android:layout_alignTop="@+id/equipment_tag"
+            android:src="@mipmap/scan"
+            android:id="@+id/equipment_id_scan"
+            android:background="@color/transparent"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/equipment_tag"
+            android:layout_toLeftOf="@+id/equipment_id_scan"
+            android:layout_alignTop="@+id/equipment_tag"
+            android:layout_alignBottom="@+id/equipment_id_scan"
+            android:background="@drawable/bg_edit_normal"
+            android:id="@+id/equipment_id"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:paddingTop="8dp"
+            android:layout_marginLeft="10dp"
+            android:layout_alignRight="@+id/equipment_tag"
+            android:layout_below="@+id/equipment_tag"
+            android:id="@+id/iccard_tag"
+            android:textSize="25sp"
+            android:text="@string/iccard_id"/>
+
+        <ImageButton
+            android:layout_width="43dp"
+            android:layout_height="43dp"
+            android:src="@mipmap/scan"
+            android:id="@+id/iccard_scan"
+            android:layout_alignTop="@+id/iccard_tag"
+            android:layout_marginRight="5dp"
+            android:background="@color/transparent"
+            android:layout_alignParentRight="true"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/iccard_tag"
+            android:layout_toLeftOf="@+id/iccard_scan"
+            android:layout_alignTop="@+id/iccard_tag"
+            android:layout_alignBottom="@+id/iccard_scan"
+            android:background="@drawable/bg_edit_normal"
+            android:id="@+id/iccard_id"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_below="@+id/iccard_id"
+            android:layout_marginBottom="30dp">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="#FCC900"
+            android:gravity="center"
+            android:id="@+id/comfirm"
+            android:text="@string/sure"
+            android:textSize="23sp"
+            android:textColor="@color/white"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</LinearLayout>

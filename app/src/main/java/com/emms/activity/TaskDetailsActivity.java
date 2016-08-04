@@ -200,7 +200,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 } else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
-                String creater = DataUtil.isDataElementNull(datas.get(position).get("StatusOperator"));
+                String creater = DataUtil.isDataElementNull(datas.get(position).get("Name"));
                 if (creater != null) {
                     if (!creater.equals("")) {
                         holder.tv_creater.setText(creater);
@@ -214,7 +214,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
 
               //  holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get(Equipment.EQUIPMENT_ID)));
-                holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get("AssetsID")));
+                holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get("OracleID")));
                 holder.tv_device_name.setText(DataUtil.isDataElementNull(datas.get(position).get(Equipment.EQUIPMENT_NAME)));
                 //String createTime = LongToDate.longPointDate(datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsLong());
                 String createTime = DataUtil.isDataElementNull(datas.get(position).get("StartTime"));
@@ -665,6 +665,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
 
     private void getTaskEquipmentFromServerByTaskId() {
+        showCustomDialog(R.string.loadingData);
         if (null == taskId) {
             return;
         }
@@ -717,12 +718,14 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         }
                     }
                 }
+                dismissCustomDialog();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
                 Toast toast = Toast.makeText(TaskDetailsActivity.this, "获取设备列表失败，服务器返回异常", Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
@@ -824,6 +827,12 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                     changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.change_equipment_status_dialog, R.style.MyDialog);
                                     changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
                                             Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
+                                    changeEquipmentDialog.setOnSubmitInterface(new dialogOnSubmitInterface() {
+                                        @Override
+                                        public void onsubmit() {
+                                            getTaskEquipmentFromServerByTaskId();
+                                        }
+                                    });
                                     changeEquipmentDialog.show();
                                 }else {
                                     changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),

@@ -110,6 +110,12 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
                 //添加子任务
               CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog,null,EquipmentList);
                customDialog.setTaskId(taskId);
+                customDialog.setDialogOnSubmit(new dialogOnSubmitInterface() {
+                    @Override
+                    public void onsubmit() {
+                        getSubTaskDataFromServer();
+                    }
+                });
                 customDialog.show();
              /*   Intent intent=new Intent(SubTaskManageActivity.this,AddSubTaskActivity.class);
                 intent.putExtra("taskId",taskId);
@@ -144,7 +150,8 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
                 holder.work_name.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkName")));
                 holder.status.setText(DataUtil.isDataElementNull(datas.get(position).get("Status")));
                 holder.work_description.setText(DataUtil.isDataElementNull(datas.get(position).get("DataDescr")));
-                holder.equipment_num.setText(DataUtil.isDataElementNull(datas.get(position).get("Equipment_ID")));
+                //holder.equipment_num.setText(DataUtil.isDataElementNull(datas.get(position).get("Equipment_ID")));
+                holder.equipment_num.setText(DataUtil.isDataElementNull(datas.get(position).get("OracleID")));
                 return convertView;
             }
         };
@@ -154,6 +161,12 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog,
                         datas.get(position-1),EquipmentList);
+                customDialog.setDialogOnSubmit(new dialogOnSubmitInterface() {
+                    @Override
+                    public void onsubmit() {
+                        getSubTaskDataFromServer();
+                    }
+                });
                 customDialog.setTaskId(taskId);
                 customDialog.show();
             }
@@ -171,6 +184,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
 
     }
     private void getSubTaskDataFromServer(){
+        showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
         params.put("task_id",taskId);
         params.put("pageSize",10);
@@ -192,11 +206,13 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
                         adapter.notifyDataSetChanged();
                     }
                 }
+                dismissCustomDialog();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
             }
         });
     }
