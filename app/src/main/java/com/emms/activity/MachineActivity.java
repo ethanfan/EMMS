@@ -21,6 +21,13 @@ public class MachineActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.repair).setOnClickListener(this);
         findViewById(R.id.move_car).setOnClickListener(this);
         findViewById(R.id.other).setOnClickListener(this);
+
+        findViewById(R.id.btn_right_action).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override

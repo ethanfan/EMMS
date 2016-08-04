@@ -32,6 +32,7 @@ import com.emms.activity.WorkLoadActivity;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.ListViewUtility;
+import com.emms.util.ToastUtil;
 
 import java.util.ArrayList;
 
@@ -39,17 +40,19 @@ public abstract class PopMenuTaskDetail {
 	private ArrayList<String> itemList;
 	private Context context;
 	private PopupWindow popupWindow;
-	PopMenuTaskDetail popMenuTaskDetail=this;
+	private PopMenuTaskDetail popMenuTaskDetail=this;
 	private ListView listView;
 	private PopAdapter popAdapter;
     private ObjectElement TaskDetail;
 	private Long TaskId;
+	private String TaskClass;
 	// private OnItemClickListener listener;
-	public PopMenuTaskDetail(Context context, int width,String taskDetail) {
+	public PopMenuTaskDetail(Context context, int width,String taskDetail,String taskClass) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		this.TaskDetail=new JsonObjectElement(taskDetail);
 		TaskId=TaskDetail.get(Task.TASK_ID).valueAsLong();
+		TaskClass=taskClass;
 		itemList = new ArrayList<String>(5);
 		View view = LayoutInflater.from(context)
 				.inflate(R.layout.popmenu, null);
@@ -271,15 +274,20 @@ public abstract class PopMenuTaskDetail {
 		this.TaskId=taskId;
 	}
 	private void FaultSummary(){
+		if(TaskClass.equals(Task.REPAIR_TASK)){
 		Intent intent=new Intent(context, SummaryActivity.class);
 		//intent.putExtra(Task.TASK_ID,TaskId);
 		intent.putExtra("TaskDetail",TaskDetail.toString());
-		context.startActivity(intent);
+		context.startActivity(intent);}else {
+			ToastUtil.showToastLong(R.string.judgeTaskClass,context);
+		}
 	}
 	private void TaskComplete(){
-		Intent intent=new Intent(context, CommandActivity.class);
+		Intent intent=new Intent(context, SubTaskManageActivity.class);
 		//intent.putExtra(Task.TASK_ID,TaskId);
 		intent.putExtra("TaskDetail",TaskDetail.toString());
+		intent.putExtra("TaskComplete",true);
+		intent.putExtra(Task.TASK_CLASS,TaskClass);
 		context.startActivity(intent);
 	}
 

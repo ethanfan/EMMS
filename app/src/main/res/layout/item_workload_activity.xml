@@ -85,19 +85,31 @@
         android:text="@string/workload"
         android:layout_marginTop="5dp"
         android:textSize="17sp"/>
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/workload"
-        android:background="@drawable/bg_edit_normal"
-        android:paddingTop="5dp"
-        android:focusable="true"
-        android:paddingLeft="10dp"
-        android:paddingBottom="5dp"
-        android:layout_toRightOf="@+id/workload_tag"
-        android:layout_alignTop="@+id/workload_tag"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="40dp"
-        android:layout_marginLeft="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/percent"
+            android:layout_alignTop="@+id/workload_tag"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_alignParentRight="true"
+            android:textSize="17sp"
+            android:text="@string/percent"
+            />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/workload"
+            android:background="@drawable/bg_edit_normal"
+            android:paddingTop="5dp"
+            android:focusable="true"
+            android:paddingLeft="5dp"
+            android:paddingBottom="5dp"
+            android:layout_toRightOf="@+id/workload_tag"
+            android:layout_alignTop="@+id/workload_tag"
+            android:layout_toLeftOf="@+id/percent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="5dp"/>
 </RelativeLayout>
 </RelativeLayout>

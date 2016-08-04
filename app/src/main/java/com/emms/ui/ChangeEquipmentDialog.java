@@ -34,6 +34,7 @@ import com.emms.httputils.HttpUtils;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
+import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -259,12 +260,21 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                onSubmitInterface.onsubmit();
+                if(t!=null){
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    if(jsonObjectElement.get("Success").valueAsBoolean()){
+                        onSubmitInterface.onsubmit();
+                        dismiss();
+                    }else {
+                        ToastUtil.showToastLong("不允许修改状态",context);
+                    }
+                }
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.failToChangeStatus,context);
             }
         });
     }

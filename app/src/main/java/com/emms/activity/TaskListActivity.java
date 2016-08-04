@@ -3,6 +3,7 @@ package com.emms.activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -49,7 +50,7 @@ public class TaskListActivity extends BaseActivity implements OnTabSelectListene
         mContext = this;
         TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         initView();
-        getRepairTaskFromServer();
+        //getRepairTaskFromServer();
         mTitles =getResources().getStringArray(R.array.select_tab_status);
         for (int i =0;i< mTitles.length;i++) {
             if (i==0) {
@@ -63,6 +64,7 @@ public class TaskListActivity extends BaseActivity implements OnTabSelectListene
 
         View decorView = getWindow().getDecorView();
         ViewPager vp = ViewFindUtils.find(decorView, R.id.vp);
+        vp.setOffscreenPageLimit(2);
         mAdapter = new MyPagerAdapter(getSupportFragmentManager());
         vp.setAdapter(mAdapter);
         String[] taskNum=getIntent().getStringExtra("TaskNum").split("/");
@@ -148,6 +150,7 @@ public class TaskListActivity extends BaseActivity implements OnTabSelectListene
     private void getRepairTaskNumber(){
 
     }
+    /*
     private void getRepairTaskFromServer(){
         HttpParams params=new HttpParams();
      //   params.put("Operator_ID", SharedPreferenceManager.getUserName(this));
@@ -165,8 +168,13 @@ public class TaskListActivity extends BaseActivity implements OnTabSelectListene
                 super.onFailure(errorNo, strMsg);
             }
         });
+    }*/
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
     }
- //  private ListenableFuture<DataElement> getRepairTaskContent(String status) {
+    //  private ListenableFuture<DataElement> getRepairTaskContent(String status) {
         // RepairTask.clear();
    //     String rawQuery = "SELECT * FROM MAINTAIN WHERE STATUS=" + "\""+status+"\"";
   //      return  getSqliteStore().performRawQuery(rawQuery,

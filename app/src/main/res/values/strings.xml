@@ -176,4 +176,15 @@
     <string name="submitData">数据提交中，请稍候</string>
     <string name="exchangeOrderToOnePerson">只能转单给一人</string>
     <string name="exchangeOrder">转单</string>
+    <string name="exchangeOrderSuccess">转单成功</string>
+    <string name="inviteSuccess">邀请成功</string>
+    <string name="taskHistory">任务历史</string>
+    <string name="scanICCardSuccess">刷卡成功</string>
+    <string name="scanICCardFail">刷卡失败</string>
+    <string name="percent">(单位：%)</string>
+    <string name="noMoreData">没有更多数据了</string>
+    <string name="judgeWorkloadSum">工作量总和不等于100%，提交失败</string>
+    <string name="submitSuccess">提交成功</string>
+    <string name="failToChangeStatus">修改状态失败，请检查网络</string>
+    <string name="judgeTaskClass">只有维修任务能进行故障总结</string>
 </resources>

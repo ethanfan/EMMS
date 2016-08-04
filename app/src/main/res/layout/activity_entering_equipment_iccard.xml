@@ -3,21 +3,35 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/toolbar"></include>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp">
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="AssetsID"
+            android:layout_weight="1"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="OracleID"
+            android:layout_weight="1"/>
+    </LinearLayout>
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/aaaa"
-        android:layout_marginTop="40dp">
+        android:id="@+id/aaaa">
 <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginTop="40dp"
+    android:layout_marginTop="10dp"
     android:layout_marginLeft="10dp"
     android:paddingTop="8dp"
     android:id="@+id/equipment_tag"
     android:textSize="25sp"
     android:text="@string/equipment_tag_number"/>
-
+<!--
         <ImageButton
             android:layout_width="43dp"
             android:layout_height="43dp"
@@ -27,15 +41,17 @@
             android:background="@color/transparent"
             android:layout_marginRight="5dp"
             android:layout_alignParentRight="true"/>
+            -->
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_toRightOf="@+id/equipment_tag"
-            android:layout_toLeftOf="@+id/equipment_id_scan"
+            android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/equipment_tag"
-            android:layout_alignBottom="@+id/equipment_id_scan"
+            android:layout_alignBottom="@+id/equipment_tag"
             android:background="@drawable/bg_edit_normal"
+            android:layout_marginRight="10dp"
             android:id="@+id/equipment_id"/>
         <TextView
             android:layout_width="wrap_content"

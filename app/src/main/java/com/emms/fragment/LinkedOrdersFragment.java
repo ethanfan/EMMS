@@ -38,7 +38,7 @@ import java.util.ArrayList;
 /**
  * Created by jaffer.deng on 2016/6/21.
  */
-public class LinkedOrdersFragment extends Fragment{
+public class LinkedOrdersFragment extends BaseFragment{
     private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
     private ArrayList<ObjectElement> datas1;
@@ -160,11 +160,13 @@ public class LinkedOrdersFragment extends Fragment{
                 Intent intent=new Intent(mContext,TaskDetailsActivity.class);
                 intent.putExtra(Task.TASK_ID,data.get(position-1).get(Task.TASK_ID).valueAsString());
                 intent.putExtra("TaskDetail",data.get(position-1).asObjectElement().toString());
+                intent.putExtra(Task.TASK_CLASS,TaskClass);
                 startActivity(intent);
             }
         });
     }
     private void getCompleteTaskDataFromServer(ArrayList<ObjectElement> list ){
+        showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
       //  String s=SharedPreferenceManager.getLoginData(mContext);
        // JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
@@ -200,11 +202,13 @@ public class LinkedOrdersFragment extends Fragment{
                         }
                     });
                 }
+                dismissCustomDialog();
             }
             @Override
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
             }
         });
     }

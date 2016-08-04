@@ -2,6 +2,7 @@ package com.emms.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -55,11 +56,13 @@ public class SummaryActivity extends BaseActivity{
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
     private ArrayList<ObjectElement> typeList=new ArrayList<ObjectElement>();
     private ObjectElement TaskDetail;
+    private boolean TaskComplete=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
+        TaskComplete=getIntent().getBooleanExtra("TaskComplete",false);
         getSummaryFromServer();
         initView();
         initSearchView();
@@ -84,19 +87,26 @@ public class SummaryActivity extends BaseActivity{
                 submitFaultSummaryToServer();
             }
         });
-        //initFooterToolbar
-        findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        findViewById(R.id.nextStep).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //待写
-            }
-        });
+        if(TaskComplete) {
+            findViewById(R.id.footer_toolbar).setVisibility(View.VISIBLE);
+            //initFooterToolbar
+            findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+            findViewById(R.id.nextStep).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //待写
+                    Intent intent=new Intent(context,CommandActivity.class);
+                    intent.putExtra("TaskComplete",true);
+                    intent.putExtra("TaskDetail",TaskDetail.toString());
+                    startActivity(intent);
+                }
+            });
+        }
     }
     private void initSearchView() {
         mDrawer_layout = (CustomDrawerLayout) findViewById(R.id.search_page);

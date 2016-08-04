@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -44,7 +45,7 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
    private TextView repair_task,move_car_task,other_task;
     private int nfctag = 0;
     private Context mContext=this;
-    private String TaskClass=null;
+    private String TaskClass="T01";
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_record);
@@ -53,12 +54,19 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
 
     private void initView() {
        // TaskHistroyQuery=(TextView)findViewById(R.id.TaskHistroyQuery);
+        findViewById(R.id.btn_right_action).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         repair_task=(TextView)findViewById(R.id.repair_task);
         move_car_task=(TextView)findViewById(R.id.move_car_task);
         other_task=(TextView)findViewById(R.id.other_task);
         repair_task.setOnClickListener(this);
         move_car_task.setOnClickListener(this);
         other_task.setOnClickListener(this);
+        repair_task.setTextColor(Color.RED);
       //  TaskHistroyQuery.setOnClickListener(this);
     }
 
@@ -68,40 +76,37 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
         switch (id){
             case R.id.repair_task:
             {   TaskClass="T01";
+                {
+                    repair_task.setTextColor(Color.RED);
+                    move_car_task.setTextColor(Color.BLACK);
+                    other_task.setTextColor(Color.BLACK);
+                }
                 break;
             }
             case R.id.move_car_task:
             {   TaskClass="T03";
+                {
+                    repair_task.setTextColor(Color.BLACK);
+                    move_car_task.setTextColor(Color.RED);
+                    other_task.setTextColor(Color.BLACK);
+                }
                 break;
             }
             case R.id.other_task:
             {   TaskClass="T04";
+                {
+                    repair_task.setTextColor(Color.BLACK);
+                    move_car_task.setTextColor(Color.BLACK);
+                    other_task.setTextColor(Color.RED);
+                }
                 break;
             }
         }
     }
     public void getTaskHistory(String TaskClass){
-        if(TaskClass==null){
-            Toast toast=Toast.makeText(this,getResources().getString(R.string.pleaseSelectTaskClass),Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER,0,0);
-            toast.show();
-            return;
-        }else {
-            HttpParams params = new HttpParams();
-            params.put("task_class", TaskClass);
-            params.put("pageSize",10);
-            params.put("pageIndex",1);
-            HttpUtils.get(this, "TaskHistoryList", params, new HttpCallback() {
-                @Override
-                public void onSuccess(String t) {
-                    super.onSuccess(t);
-                }
-                @Override
-                public void onFailure(int errorNo, String strMsg) {
-                    super.onFailure(errorNo, strMsg);
-                }
-            });
-        }
+            Intent intent=new Intent(this,TaskHistory.class);
+            intent.putExtra(Task.TASK_CLASS,TaskClass);
+            startActivity(intent);
     }
 
 
@@ -117,13 +122,18 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
         }
     }
     public void getOperatorInfoFromServer(String iccardID){
+        showCustomDialog(R.string.loadingData);
         HttpParams httpParams=new HttpParams();
         httpParams.put("ICCardID",Integer.valueOf(iccardID));
         HttpUtils.getWithoutCookies(this, "Token", httpParams, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                Toast toast=Toast.makeText(mContext,R.string.scanICCardSuccess,Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
                 getTaskHistory(TaskClass);
+                dismissCustomDialog();
             }
 
             @Override
@@ -135,6 +145,10 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                Toast toast=Toast.makeText(mContext,R.string.scanICCardFail,Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
+                dismissCustomDialog();
             }
         });
     }

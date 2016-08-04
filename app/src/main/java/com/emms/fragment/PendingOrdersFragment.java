@@ -45,7 +45,7 @@ import java.util.ArrayList;
 /**
  * Created by jaffer.deng on 2016/6/21.
  */
-public class PendingOrdersFragment extends Fragment{
+public class PendingOrdersFragment extends BaseFragment{
 
     private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
@@ -66,7 +66,7 @@ public class PendingOrdersFragment extends Fragment{
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        getCompleteTaskDataFromServer();
+                        getPendingOrderTaskDataFromServer();
                         listView.onRefreshComplete();
                      //   Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
                     }
@@ -125,18 +125,20 @@ public class PendingOrdersFragment extends Fragment{
             }
         };
         listView.setAdapter(taskAdapter);
-        getCompleteTaskDataFromServer();
+        getPendingOrderTaskDataFromServer();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent=new Intent(mContext,TaskDetailsActivity.class);
                 intent.putExtra(Task.TASK_ID,datas.get(position-1).get(Task.TASK_ID).valueAsString());
                 intent.putExtra("TaskDetail",datas.get(position-1).asObjectElement().toString());
+                intent.putExtra(Task.TASK_CLASS,TaskClass);
                 startActivity(intent);
             }
         });
     }
-    private void getCompleteTaskDataFromServer(){
+    private void getPendingOrderTaskDataFromServer(){
+        showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
      //   String s=SharedPreferenceManager.getLoginData(mContext);
       //  JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
@@ -167,11 +169,13 @@ public class PendingOrdersFragment extends Fragment{
                         }
                     });
                 }
+                dismissCustomDialog();
             }
             @Override
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
             }
         });
     }
@@ -233,6 +237,7 @@ public class PendingOrdersFragment extends Fragment{
 
     }
     public void taskReceive(final int position){
+        showCustomDialog(R.string.submitData);
         HttpParams params=new HttpParams();
       //  params.put("task_id",Integer.valueOf(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_ID))));
         HttpUtils.post(mContext,"TaskRecieve?task_id="+DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_ID)), params, new HttpCallback() {
@@ -258,11 +263,13 @@ public class PendingOrdersFragment extends Fragment{
                         taskAdapter.notifyDataSetChanged();
                     }
                 }
+                dismissCustomDialog();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
             }
         });
     }

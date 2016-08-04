@@ -2,6 +2,7 @@ package com.emms.activity;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -26,19 +27,22 @@ import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 import com.google.gson.JsonObject;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by jaffer.deng on 2016/7/15.
  */
 public class InvitorActivity extends BaseActivity implements View.OnClickListener{
-    ListView mListView;
-    ListView mGroupListView;
-    MultiAdapter adapter=null;
-    GroupAdapter groupAdapter;
+    private PullToRefreshListView mListView;
+    private ListView mGroupListView;
+    private MultiAdapter adapter=null;
+    private GroupAdapter groupAdapter;
     private ArrayList<ObjectElement> listItems=new ArrayList<ObjectElement>();
     private ArrayList<ObjectElement> listGroup=new ArrayList<ObjectElement>();
     // private HashMap<ObjectElement,ArrayList<ObjectElement>> List_Group_Items=new HashMap<ObjectElement,ArrayList<ObjectElement>>();
@@ -48,6 +52,11 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
     private boolean isInviteHelp=false;
     private Context context=this;
     private String taskId;
+    private static int PAGE_SIZE=10;
+    private int pageIndex=1;
+    private int RecCount=0;
+    private Handler handler=new Handler();
+    private ObjectElement groupData=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,13 +69,16 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
         }
        taskId=getIntent().getStringExtra(Task.TASK_ID) ;
         adapter=new MultiAdapter(InvitorActivity.this,listItems);
-        mListView = (ListView) findViewById(R.id.id_wait_list);
+        mListView = (PullToRefreshListView) findViewById(R.id.id_wait_list);
         mListView.setAdapter(adapter);
         mGroupListView = (ListView) findViewById(R.id.group_list);
         mGroupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                getListItems(listGroup.get(position));
+                pageIndex=1;
+                RecCount=0;
+                groupData=listGroup.get(position);
+                getListItems();
             }
         });
         bcakImageView = (ImageView) findViewById(R.id.btn_bar_left_action);
@@ -82,18 +94,50 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
 
         bcakImageView.setOnClickListener(this);
         sureImageView.setOnClickListener(this);
+        mListView.setMode(PullToRefreshListView.Mode.PULL_FROM_END);
+        mListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+                //上拉加载更多
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mListView.onRefreshComplete();
+                        //  Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
+                    }
+                },0);
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getListItems();
+                        mListView.onRefreshComplete();
+                        // Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
+                    }
+                },500);
+            }
+        });
     }
 
     /**
      * 初始化信息
      */
-    private void getListItems(ObjectElement objectElement) {
+    private void getListItems() {
+        if(RecCount!=0){
+        if(pageIndex*PAGE_SIZE>=RecCount){
+            Toast toast=Toast.makeText(this,R.string.noMoreData,Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER,0,0);
+            toast.show();
+            return;
+        }}
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
-
-        params.put("team_id", DataUtil.isDataElementNull(objectElement.get("Organise_ID")));
-        params.put("pageSize",10);
-        params.put("pageIndex",1);
+        params.put("team_id", DataUtil.isDataElementNull(groupData.get("Organise_ID")));
+        params.put("pageSize",PAGE_SIZE);
+        params.put("pageIndex",pageIndex);
         HttpUtils.get(this, "OperatorStatus", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -101,8 +145,12 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                 if(t!=null){
                     JsonObjectElement json=new JsonObjectElement(t);
                     if(json.get("Success").valueAsBoolean()){
+                        RecCount=json.get("RecCount").valueAsInt();
                     if(json.get("PageData")!=null&&json.get("PageData").asArrayElement().size()>0){
-                        listItems.clear();
+                        if(pageIndex==1){
+                            listItems.clear();
+                        }
+                        pageIndex++;
                         for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
                             listItems.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
@@ -140,7 +188,8 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                         for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
                             listGroup.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
-                       getListItems(listGroup.get(0));
+                       groupData=listGroup.get(0);
+                       getListItems();
                        groupAdapter.setDatas(listGroup);
                        groupAdapter.notifyDataSetChanged();
                     }
@@ -200,9 +249,9 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
         JsonObjectElement jsonObjectElement=new JsonObjectElement();
         jsonObjectElement.set(Task.TASK_ID,taskId);
         if(isInviteHelp){
-            jsonObjectElement.set("OperatorType",0);}
+            jsonObjectElement.set("OperatorType",1);}
         else {
-            jsonObjectElement.set("OperatorType",1);
+            jsonObjectElement.set("OperatorType",0);
         }
     //    List<Integer> a=new ArrayList<Integer>();
    //     a.add(4667);
@@ -215,7 +264,10 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 dismissCustomDialog();
-                Toast.makeText(InvitorActivity.this,"邀请成功",Toast.LENGTH_LONG).show();
+                if(isExChangeOrder){
+                    Toast.makeText(InvitorActivity.this,R.string.exchangeOrderSuccess,Toast.LENGTH_LONG).show();
+                }else{
+                Toast.makeText(InvitorActivity.this,R.string.inviteSuccess,Toast.LENGTH_LONG).show();}
                 finish();
             }
 

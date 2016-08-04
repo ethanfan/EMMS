@@ -19,7 +19,7 @@ public class DataUtil {
         if(date.contains("T")){
             date.replace("T","  ");
             return date;
-        }
-        return date;
+        }else{
+        return date;}
     }
 }

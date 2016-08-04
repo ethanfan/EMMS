@@ -51,11 +51,14 @@ public class CommandActivity extends NfcActivity  {
     private NFCDialog nfcDialog;
     private int nfctag=0;
     private static int TASK_COMPLETE=1;
+
+    private boolean TaskComplete=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_command);
         taskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
+        TaskComplete=getIntent().getBooleanExtra("TaskComplete",false);
         initCommandListData();
         initView();
     }
@@ -102,6 +105,8 @@ public class CommandActivity extends NfcActivity  {
             }
         });
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.task_command);
+        if(TaskComplete){
+            findViewById(R.id.footer_toolbar).setVisibility(View.VISIBLE);
         //initFooterToolbar
         findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,7 +119,7 @@ public class CommandActivity extends NfcActivity  {
             public void onClick(View v) {
                 //待写
             }
-        });
+        });}
         nfcDialog = new NFCDialog(context, R.style.MyDialog) {
             @Override
             public void dismissAction() {
@@ -149,11 +154,11 @@ public class CommandActivity extends NfcActivity  {
                             TaskEvaluation_ID=0;
                         }else if(CommandData.get("PageData").asArrayElement().size()>0){
                             TaskEvaluation_ID=CommandData.get("PageData").asArrayElement().get(0).asObjectElement().get("TaskEvaluation_ID").valueAsLong();
-                        }
                         ObjectElement objectElement=CommandData.get("PageData").asArrayElement().get(0).asObjectElement();
                         setCommandData(objectElement.get("RespondSpeed").valueAsInt(),"response_speed",response_speed_list,response_speed_adapter);
                         setCommandData(objectElement.get("ServiceAttitude").valueAsInt(),"service_attitude",service_attitude_list,service_attitude_adapter);
                         setCommandData(objectElement.get("MaintainSpeed").valueAsInt(),"repair_speed",repair_speed_list,repair_speed_adapter);
+                        }
                     }
                 }
             }
@@ -173,12 +178,6 @@ public class CommandActivity extends NfcActivity  {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-              /*  runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        nfcDialog.show();
-                    }
-                });*/
                 TaskComplete();
             }
 
@@ -202,42 +201,12 @@ public class CommandActivity extends NfcActivity  {
         response_speed.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-       /*         command.put("response_speed",position+1);
-                for(int i=0;i<5;i++){
-                    if(i<=position){
-                    response_speed_list.set(i,1);}
-                    else {
-                        response_speed_list.set(i,0);
-                    }
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        response_speed_adapter.setDatas(response_speed_list);
-                        response_speed_adapter.notifyDataSetChanged();
-                    }
-                });*/
                 setCommandData(position+1,"response_speed",response_speed_list,response_speed_adapter);
             }
         });
         service_attitude.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-          /*      command.put("service_attitude",position+1);
-                for(int i=0;i<5;i++){
-                    if(i<=position){
-                        service_attitude_list.set(i,1);}
-                    else {
-                        service_attitude_list.set(i,0);
-                    }
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        service_attitude_adapter.setDatas(service_attitude_list);
-                        service_attitude_adapter.notifyDataSetChanged();
-                    }
-                });*/
                 setCommandData(position+1,"service_attitude",service_attitude_list,service_attitude_adapter);
             }
         });

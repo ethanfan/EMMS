@@ -84,7 +84,7 @@ private void initView(){
     ((TextView)findViewById(R.id.tv_title)).setText(R.string.entering_equipment);
     findViewById(R.id.btn_right_action).setOnClickListener(this);
     findViewById(R.id.comfirm).setOnClickListener(this);
-    findViewById(R.id.equipment_id_scan).setOnClickListener(this);
+    //findViewById(R.id.equipment_id_scan).setOnClickListener(this);
     findViewById(R.id.iccard_scan).setOnClickListener(this);
 }
 
@@ -115,9 +115,9 @@ private void initView(){
                 submitEquipmentData();
                 break;
             }
-            case R.id.equipment_id_scan:{
-                break;
-            }
+//            case R.id.equipment_id_scan:{
+//                break;
+//            }
             case R.id.iccard_scan:{
                 break;
             }

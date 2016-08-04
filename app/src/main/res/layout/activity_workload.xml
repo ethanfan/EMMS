@@ -101,6 +101,7 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/aaabbb"
         android:layout_below="@+id/aaa"
+        android:descendantFocusability="beforeDescendants"
         android:id="@+id/listView">
     </ListView>
 </RelativeLayout>

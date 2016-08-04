@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,8 +20,10 @@ import com.emms.util.DataUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by jaffer.deng on 2016/7/16.
@@ -41,8 +44,7 @@ public class MultiAdapter extends BaseAdapter {
     public void setListItems(List<ObjectElement> listItems) {
         this.listItems = listItems;
         if(mChecked!=null){
-            mChecked.clear();
-            for (int i = 0; i < listItems.size(); i++) {// 遍历且设置CheckBox默认状态为未选中
+            for (; mChecked.size()<listItems.size();) {// 遍历且设置CheckBox默认状态为未选中
                 mChecked.add(false);
             }}
         ((Activity)ctx).runOnUiThread(new Runnable() {
@@ -60,7 +62,7 @@ public class MultiAdapter extends BaseAdapter {
     List<Boolean> mChecked;
 
     List<Integer> listItemID;
-
+    //HashSet<Integer> OperatorSet=new HashSet<Integer>();
     @SuppressLint("UseSparseArrays")
     private Map<Integer, View> viewMap = new HashMap<Integer, View>();
     public MultiAdapter(Context context, List<ObjectElement> listItems) {
@@ -132,60 +134,57 @@ public class MultiAdapter extends BaseAdapter {
         //  View rowView = this.viewMap.get(position);
         //  AwaitRepair awaitRepair =  listItems.get(position);
         ObjectElement Operator = listItems.get(position);
+        final ViewHolder holder;
         if (convertView == null) {
+            holder=new ViewHolder();
             LayoutInflater inflater = ((Activity) ctx).getLayoutInflater();
             convertView = inflater.inflate(R.layout.item_invitor, null);
-            TextView workname = (TextView) convertView.findViewById(R.id.id_worknum);
-            TextView tech = (TextView) convertView.findViewById(R.id.id_tech);
-            ImageView status = (ImageView) convertView.findViewById(R.id.workstatus);
-            final ImageView select = (ImageView) convertView.findViewById(R.id.select);
-            LinearLayout multi_item = (LinearLayout) convertView.findViewById(R.id.multi_item);
-
-            workname.setText(DataUtil.isDataElementNull(Operator.get("Name")));
-            // tech.setText(DataUtil.isDataElementNull(Operator.get("Name")));
-            // status.setText(DataUtil.isDataElementNull(Operator.get("Name")));
-     /*      workname.setText(awaitRepair.getWg());
-            tech.setText(awaitRepair.getGrd());*/
+            holder.workname = (TextView) convertView.findViewById(R.id.id_worknum);
+            holder.tech = (TextView) convertView.findViewById(R.id.id_tech);
+            holder.status = (ImageView) convertView.findViewById(R.id.workstatus);
+            holder.select = (ImageView) convertView.findViewById(R.id.select);
+            holder.multi_item = (LinearLayout) convertView.findViewById(R.id.multi_item);
+            convertView.setTag(holder);
+        }else{
+            holder = (ViewHolder)convertView.getTag();
+        }
+        holder.workname.setText(DataUtil.isDataElementNull(Operator.get("Name")));
+        holder.tech.setText(DataUtil.isDataElementNull(Operator.get("Skill")));
             if (DataUtil.isDataElementNull(Operator.get("Status")).equals("1")) {
-                status.setImageResource(R.mipmap.busy);
+                holder.status.setImageResource(R.mipmap.busy);
             } else {
-                status.setImageResource(R.mipmap.idle);
+                holder.status.setImageResource(R.mipmap.idle);
             }
-
-            multi_item.setOnClickListener(new View.OnClickListener() {
+           if(mChecked.get(position)){
+               holder.select.setVisibility(View.VISIBLE);
+           }
+            else{
+               holder.select.setVisibility(View.INVISIBLE);
+           }
+        holder.multi_item.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
 
-                    Log.e("click", String.valueOf(position) + String.valueOf(mChecked.get(position)));
                     if(mChecked.get(position))//当前已选中，点击后取消选中
                     {
-                        select.setVisibility(View.INVISIBLE);
+                        holder.select.setVisibility(View.INVISIBLE);
                         mChecked.set(position, false);
-
-//						Log.e("toast", item.get("name")+"取消选中".toString());
-
                     }
                     else
                     {
-                        select.setVisibility(View.VISIBLE);
-                        select.setImageResource(R.mipmap.select_pressed);
+                        holder.select.setVisibility(View.VISIBLE);
+                        holder.select.setImageResource(R.mipmap.select_pressed);
                         mChecked.set(position, true);
-
-//						Log.e("toast", item.get("name")+"被选中".toString());
                     }
-
-
                    ClickResult(ctx);
-
                 }
-
             });
 
             viewMap.put(position, convertView);
 
-        }
+
 
             return convertView;
 
@@ -195,5 +194,12 @@ public class MultiAdapter extends BaseAdapter {
     public boolean isEnabled(int position) {
         // TODO Auto-generated method stub
         return true;
+    }
+    public static   class ViewHolder {
+        TextView workname ;
+        TextView tech;
+        ImageView status;
+        ImageView select;
+        LinearLayout multi_item;
     }
 }

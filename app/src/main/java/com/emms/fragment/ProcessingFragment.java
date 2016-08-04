@@ -44,7 +44,7 @@ import android.os.Handler;
 /**
  * Created by jaffer.deng on 2016/6/20.
  */
-public class ProcessingFragment extends Fragment {
+public class ProcessingFragment extends BaseFragment {
 
     private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
@@ -64,7 +64,7 @@ public class ProcessingFragment extends Fragment {
     private Handler handler=new Handler();
     private String TaskClass;
     @Override
-    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         TaskClass=this.getArguments().getString(Task.TASK_CLASS);
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
@@ -121,7 +121,7 @@ public class ProcessingFragment extends Fragment {
                 holder.warranty_person.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
                 holder.tv_repair_time.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME)));
-                holder.tv_start_time.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME)));
+                holder.tv_start_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
                 return convertView;
             }
@@ -134,6 +134,7 @@ public class ProcessingFragment extends Fragment {
                 Intent intent=new Intent(mContext,TaskDetailsActivity.class);
                 intent.putExtra(Task.TASK_ID,datas.get(position-1).get(Task.TASK_ID).valueAsString());
                 intent.putExtra("TaskDetail",datas.get(position-1).toString());
+                intent.putExtra(Task.TASK_CLASS,TaskClass);
                 startActivity(intent);
             }
         });
@@ -146,6 +147,7 @@ public class ProcessingFragment extends Fragment {
 
     }
     private void getProcessingDataFromServer(){
+        showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
        // params.put("id", SharedPreferenceManager.getUserName(mContext));
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
@@ -163,7 +165,6 @@ public class ProcessingFragment extends Fragment {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                Log.e("returnString",t);
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
                     int RecCount=jsonObjectElement.get("RecCount").valueAsInt();
@@ -185,6 +186,7 @@ public class ProcessingFragment extends Fragment {
 
 
                 }
+                dismissCustomDialog();
             }
             @Override
             public void onFailure(int errorNo, String strMsg) {
@@ -193,6 +195,7 @@ public class ProcessingFragment extends Fragment {
              Toast toast=Toast.makeText(mContext,"获取任务列表失败，请检查网络",Toast.LENGTH_LONG);
               toast.setGravity(Gravity.CENTER,0,0);
                 toast.show();
+                dismissCustomDialog();
             }
         });
     }

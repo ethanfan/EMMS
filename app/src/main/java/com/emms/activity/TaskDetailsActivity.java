@@ -92,8 +92,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         TextView dealCountTextView;
     }
 
-    ViewHolder mHolder = new ViewHolder();
-
+    private ViewHolder mHolder = new ViewHolder();
     private ImageView menuImageView;
     private ScrollViewWithListView mListview;
     private ScrollView scrollview;
@@ -104,9 +103,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private Context mContext;
     private PopMenuTaskDetail popMenuTaskDetail;
     private ChangeEquipmentDialog changeEquipmentDialog;
-    String TaskDetail = null;
-
-    Long taskId = null;
+    private String TaskDetail = null;
+    private String TaskClass=null;
+    private Long taskId = null;
     private List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
     private Map<String, Object> deviceCountMap = new HashMap<String, Object>();
     private ArrayList<String> TaskDeviceIdList = new ArrayList<String>();
@@ -125,7 +124,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     }
 
     protected ImageLoader imageLoader = ImageLoader.getInstance();
-    DisplayImageOptions options; // DisplayImageOptions是用于设置图片显示的类
+    private DisplayImageOptions options; // DisplayImageOptions是用于设置图片显示的类
 
     private static final int MSG_UPDATE_DEVICE_SUM_INFO = 10;
 
@@ -137,7 +136,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         //获取任务详细信息
 
         TaskDetail = getIntent().getStringExtra("TaskDetail");
-
+        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         taskId = getTaskId(TaskDetail);
 
         //初始化imageLoader
@@ -302,7 +301,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 }
             }
         });
-        popMenuTaskDetail = new PopMenuTaskDetail(this, 300, TaskDetail) {
+        popMenuTaskDetail = new PopMenuTaskDetail(this, 300, TaskDetail,TaskClass) {
 
             @Override
             public void onEventDismiss() {
@@ -680,7 +679,6 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                Log.e("returnString", t);
                 if (t != null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
                     if (!jsonObjectElement.get("PageData").isNull()) {

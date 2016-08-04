@@ -1,6 +1,7 @@
 package com.emms.activity;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -48,18 +49,26 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
     private HashMap<String,String> Status_Colors=new HashMap<String,String>();
     private ArrayList<ObjectElement> EquipmentList=new ArrayList<ObjectElement>();
     private int index=1;
+    private boolean TaskComplete=false;
+    private Context context=this;
+    private String TaskClass=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub_task);
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
         taskId=TaskDetail.get(Task.TASK_ID).valueAsString();
+        TaskComplete=getIntent().getBooleanExtra("TaskComplete",false);
+        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         initView();
         getTaskEquipmentFromServer();
     }
 
     private void initView() {
         //initFooterToolbar
+        if(TaskComplete){
+            findViewById(R.id.footer_toolbar).setVisibility(View.VISIBLE);
+
         findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,8 +79,14 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onClick(View v) {
                 //待写
+                Intent intent=new Intent(context,WorkLoadActivity.class);
+                intent.putExtra("TaskComplete",true);
+                intent.putExtra("TaskDetail",TaskDetail.toString());
+                intent.putExtra(Task.TASK_CLASS,TaskClass);
+                startActivity(intent);
             }
         });
+        }
         findViewById(R.id.btn_right_action).setOnClickListener(this);
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.sub_task);
         ((TextView)findViewById(R.id.group_type)).setText(DataUtil.isDataElementNull(TaskDetail.get(Task.ORGANISE_NAME)));

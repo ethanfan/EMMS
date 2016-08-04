@@ -79,13 +79,13 @@
             android:layout_width="10dp">
 
         </View>
-        <ListView
+        <com.handmark.pulltorefresh.library.PullToRefreshListView
             android:layout_weight="7"
             android:id="@+id/id_wait_list"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center_horizontal">
-        </ListView>
+        </com.handmark.pulltorefresh.library.PullToRefreshListView>
     </LinearLayout>
 
 </LinearLayout>

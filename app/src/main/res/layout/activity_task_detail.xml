@@ -119,7 +119,7 @@
                     android:layout_height="0.5dp"
                     android:orientation="horizontal">
                 </LinearLayout>
-
+<!--
                 <LinearLayout
                     android:id="@+id/edit_reason"
                     android:layout_width="match_parent"
@@ -187,6 +187,7 @@
                         android:hint="@string/hint_task_note">
                     </EditText>
                 </LinearLayout>
+                -->
             </RelativeLayout>
 
         </LinearLayout>

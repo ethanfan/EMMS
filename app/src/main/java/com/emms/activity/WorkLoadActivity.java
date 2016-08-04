@@ -1,6 +1,8 @@
 package com.emms.activity;
 
 import android.content.Context;
+import android.content.Intent;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,6 +28,8 @@ import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
+import com.emms.util.ToastUtil;
+import com.google.common.primitives.Floats;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -34,6 +38,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.DuplicateFormatFlagsException;
+import java.util.HashMap;
 
 /**
  * Created by Administrator on 2016/7/29.
@@ -46,16 +51,49 @@ public class WorkLoadActivity extends BaseActivity{
     private Context context=this;
     private WorkloadAdapter workloadAdapter;
     private ArrayList<ObjectElement> datas=new ArrayList<ObjectElement>();
+    private HashMap<Integer,EditText> workloadMap=new HashMap<Integer, EditText>();
+    private boolean TaskComplete=false;
+    private ArrayList<Integer> workloadKeylist=new ArrayList<Integer>();
+    private String TaskClass;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workload);
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
+        TaskComplete=getIntent().getBooleanExtra("TaskComplete",false);
+        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         getWorkLoadFromServer();
         initView();
 
     }
     private void initView(){
+        if(TaskComplete){
+            findViewById(R.id.footer_toolbar).setVisibility(View.VISIBLE);
+            //initFooterToolBar
+            findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+            findViewById(R.id.nextStep).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //待写
+                    if(TaskClass.equals(Task.REPAIR_TASK)){
+                        Intent intent=new Intent(context,SummaryActivity.class);
+                        intent.putExtra("TaskComplete",true);
+                        intent.putExtra("TaskDetail",TaskDetail.toString());
+                        startActivity(intent);}
+                    else {
+                        Intent intent=new Intent(context,CommandActivity.class);
+                        intent.putExtra("TaskComplete",true);
+                        intent.putExtra("TaskDetail",TaskDetail.toString());
+                        startActivity(intent);
+                    }
+                }
+            });
+        }
         workloadAdapter=new WorkloadAdapter(datas) {
             @Override
             public View getCustomView(View convertView, final int position, ViewGroup parent) {
@@ -72,11 +110,12 @@ public class WorkLoadActivity extends BaseActivity{
                 } else {
                     holder = (WorkloadAdapter.ViewHolder) convertView.getTag();
                 }
-                holder.name.setText(DataUtil.isDataElementNull(datas.get(position).get("Name")));
+                holder.name.setText(DataUtil.isDataElementNull(datas.get(position).get("OperatorName")));
                 holder.skill.setText(DataUtil.isDataElementNull(datas.get(position).get("Skill")));
                 holder.startTime.setText(DataUtil.isDataElementNull(datas.get(position).get("StartTime")));
                 holder.endTime.setText(DataUtil.isDataElementNull(datas.get(position).get("FinishTime")));
-                holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Coefficient")));
+                holder.workload.setText(String.valueOf((int)(Float.valueOf(DataUtil.isDataElementNull(datas.get(position).get("Coefficient")))*100)));
+                workloadMap.put(position,holder.workload);
                 holder.workload.addTextChangedListener(new TextWatcher() {
                    @Override
                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -102,6 +141,7 @@ public class WorkLoadActivity extends BaseActivity{
         total_worktime=(TextView)findViewById(R.id.total_worktime);
         list=(ListView)findViewById(R.id.listView);
         list.setAdapter(workloadAdapter);
+
         comfirm=(Button)findViewById(R.id.comfirm);
         comfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,19 +157,7 @@ public class WorkLoadActivity extends BaseActivity{
                 finish();
             }
         });
-        //initFooterToolBar
-        findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        findViewById(R.id.nextStep).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //待写
-            }
-        });
+
     }
     private void getWorkLoadFromServer(){
         showCustomDialog(R.string.loadingData);
@@ -167,11 +195,28 @@ public class WorkLoadActivity extends BaseActivity{
                     datas.add(ViewData.get("TaskOperator").asArrayElement().get(i).asObjectElement());
                 }
             workloadAdapter.notifyDataSetChanged();
+       /*     workloadAdapter.unregisterDataSetObserver(new DataSetObserver() {
+                @Override
+                public void onChanged() {
+                    super.onChanged();
+                }
+            });*/
 
         }
     }
     private void submitWorkLoadToServer(){
+        workloadKeylist.clear();
+        workloadKeylist.addAll(workloadMap.keySet());
+        int sum=0;
+        for(int i=0;i<workloadKeylist.size();i++){
+            sum+=Integer.valueOf(workloadMap.get(workloadKeylist.get(i)).getText().toString());
+        }
+        if(sum!=100){
+            ToastUtil.showToastLong(R.string.judgeWorkloadSum,this);
+            return;
+        }
         showCustomDialog(R.string.submitData);
+        //if(workloadAdapter.)
       HttpParams httpParams=new HttpParams();
       ArrayList<ObjectElement> submitWorkloadData=new ArrayList<ObjectElement>();
       for (int i=0;i<workloadAdapter.getDatas().size();i++){
@@ -187,6 +232,7 @@ public class WorkLoadActivity extends BaseActivity{
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                ToastUtil.showToastLong(R.string.submitSuccess,context);
                 dismissCustomDialog();
             }
 
