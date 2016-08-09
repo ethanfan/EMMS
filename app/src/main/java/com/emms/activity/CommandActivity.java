@@ -2,7 +2,9 @@ package com.emms.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.ServiceCompat;
 import android.text.format.DateUtils;
 import android.view.Gravity;
@@ -26,6 +28,9 @@ import com.emms.schema.Task;
 import com.emms.ui.HorizontalListView;
 import com.emms.ui.NFCDialog;
 import com.emms.util.DataUtil;
+import com.emms.util.ToastUtil;
+
+import org.apache.http.conn.routing.RouteInfo;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -107,6 +112,7 @@ public class CommandActivity extends NfcActivity  {
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.task_command);
         if(TaskComplete){
             findViewById(R.id.footer_toolbar).setVisibility(View.VISIBLE);
+            comfirm.setVisibility(View.GONE);
         //initFooterToolbar
         findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,6 +124,7 @@ public class CommandActivity extends NfcActivity  {
             @Override
             public void onClick(View v) {
                 //待写
+                postTaskCommandToServer();
             }
         });}
         nfcDialog = new NFCDialog(context, R.style.MyDialog) {
@@ -130,7 +137,20 @@ public class CommandActivity extends NfcActivity  {
 
     @Override
     public void resolveNfcMessage(Intent intent) {
-
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+//
+            Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            String iccardID = NfcUtils.dumpTagData(tag);
+            if(nfctag==1){
+                TaskComplete(iccardID);
+                if(nfcDialog!=null&&nfcDialog.isShowing()){
+                    nfcDialog.dismiss();
+                }
+            }
+        }
     }
     private void getTaskCommandFromServer(){
         HttpParams params=new HttpParams();
@@ -165,6 +185,7 @@ public class CommandActivity extends NfcActivity  {
         });
     }
     private void postTaskCommandToServer(){
+        showCustomDialog(R.string.submitData);
         HttpParams params=new HttpParams();
         JsonObjectElement submitCommandData=new JsonObjectElement();
         submitCommandData.set(Task.TASK_ID,DataUtil.isDataElementNull(taskDetail.get(Task.TASK_ID)));
@@ -178,12 +199,16 @@ public class CommandActivity extends NfcActivity  {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                TaskComplete();
+                dismissCustomDialog();
+                ToastUtil.showToastLong(R.string.submitSuccess,context);
+                TaskCompleteScan();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.submitFail,context);
+                dismissCustomDialog();
             }
         });
     }
@@ -234,8 +259,27 @@ public class CommandActivity extends NfcActivity  {
             }
         });
     }
-    private void TaskComplete(){
-        HttpParams httpParams=new HttpParams();
+    private void TaskCompleteScan(){
+        //HttpParams httpParams=new HttpParams();
+        if(nfcDialog!=null&&!nfcDialog.isShowing()){
+        nfcDialog.show();}
+        nfctag=1;
+    }
+    private void TaskComplete(String iccardId){
+        HttpParams params=new HttpParams();
+        JsonObjectElement data=new JsonObjectElement();
+        data.set("Task_ID",task_id.getText().toString());
+        params.putJsonParams(data.toJson());
+        HttpUtils.post(this, "TaskFinish", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+            }
 
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+            }
+        });
     }
 }

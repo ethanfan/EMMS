@@ -69,6 +69,7 @@ public class WorkLoadActivity extends BaseActivity{
     private void initView(){
         if(TaskComplete){
             findViewById(R.id.footer_toolbar).setVisibility(View.VISIBLE);
+            findViewById(R.id.comfirm).setVisibility(View.GONE);
             //initFooterToolBar
             findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -80,17 +81,7 @@ public class WorkLoadActivity extends BaseActivity{
                 @Override
                 public void onClick(View v) {
                     //待写
-                    if(TaskClass.equals(Task.REPAIR_TASK)){
-                        Intent intent=new Intent(context,SummaryActivity.class);
-                        intent.putExtra("TaskComplete",true);
-                        intent.putExtra("TaskDetail",TaskDetail.toString());
-                        startActivity(intent);}
-                    else {
-                        Intent intent=new Intent(context,CommandActivity.class);
-                        intent.putExtra("TaskComplete",true);
-                        intent.putExtra("TaskDetail",TaskDetail.toString());
-                        startActivity(intent);
-                    }
+                    submitWorkLoadToServer();
                 }
             });
         }
@@ -112,8 +103,8 @@ public class WorkLoadActivity extends BaseActivity{
                 }
                 holder.name.setText(DataUtil.isDataElementNull(datas.get(position).get("OperatorName")));
                 holder.skill.setText(DataUtil.isDataElementNull(datas.get(position).get("Skill")));
-                holder.startTime.setText(DataUtil.isDataElementNull(datas.get(position).get("StartTime")));
-                holder.endTime.setText(DataUtil.isDataElementNull(datas.get(position).get("FinishTime")));
+                holder.startTime.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("StartTime"))));
+                holder.endTime.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("FinishTime"))));
                 holder.workload.setText(String.valueOf((int)(Float.valueOf(DataUtil.isDataElementNull(datas.get(position).get("Coefficient")))*100)));
                 workloadMap.put(position,holder.workload);
                 holder.workload.addTextChangedListener(new TextWatcher() {
@@ -223,7 +214,7 @@ public class WorkLoadActivity extends BaseActivity{
           ObjectElement obj=workloadAdapter.getDatas().get(i);
           JsonObjectElement jsonObjectElement=new JsonObjectElement();
           jsonObjectElement.set("TaskOperator_ID", DataUtil.isDataElementNull(obj.get("TaskOperator_ID")));
-          jsonObjectElement.set("Workload",DataUtil.isDataElementNull(obj.get("Workload")));
+          jsonObjectElement.set("Coefficient",Float.valueOf(DataUtil.isDataElementNull(obj.get("Workload")))/100.0f);
           submitWorkloadData.add(jsonObjectElement);
       }
         JsonArrayElement submitData=new JsonArrayElement(submitWorkloadData.toString());
@@ -234,12 +225,26 @@ public class WorkLoadActivity extends BaseActivity{
                 super.onSuccess(t);
                 ToastUtil.showToastLong(R.string.submitSuccess,context);
                 dismissCustomDialog();
+                if(TaskComplete){
+                    if(TaskClass.equals(Task.REPAIR_TASK)){
+                        Intent intent=new Intent(context,SummaryActivity.class);
+                        intent.putExtra("TaskComplete",true);
+                        intent.putExtra("TaskDetail",TaskDetail.toString());
+                        startActivity(intent);}
+                    else {
+                        Intent intent=new Intent(context,CommandActivity.class);
+                        intent.putExtra("TaskComplete",true);
+                        intent.putExtra("TaskDetail",TaskDetail.toString());
+                        startActivity(intent);
+                    }
+                }
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 dismissCustomDialog();
+                ToastUtil.showToastLong(R.string.submitFail,context);
             }
         });
 

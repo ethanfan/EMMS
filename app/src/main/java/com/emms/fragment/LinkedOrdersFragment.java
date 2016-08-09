@@ -24,6 +24,7 @@ import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
 import com.emms.schema.Maintain;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
@@ -58,6 +59,7 @@ public class LinkedOrdersFragment extends BaseFragment{
         tabLayout_1 = (SegmentTabLayout) v.findViewById(R.id.tl_1);
         tabLayout_1.setVisibility(View.VISIBLE);
         listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
+        listView.setMode(PullToRefreshListView.Mode.PULL_FROM_END);
         listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
@@ -65,11 +67,10 @@ public class LinkedOrdersFragment extends BaseFragment{
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        getCompleteTaskDataFromServer(data);
                         listView.onRefreshComplete();
                       //  Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
                     }
-                },2000);
+                },1000);
             }
 
             @Override
@@ -77,10 +78,11 @@ public class LinkedOrdersFragment extends BaseFragment{
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        getCompleteTaskDataFromServer(data);
                         listView.onRefreshComplete();
                        // Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
                     }
-                },2000);
+                },1000);
             }
         });
         return v;
@@ -116,9 +118,9 @@ public class LinkedOrdersFragment extends BaseFragment{
                 holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT)));
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_STATUS)));
-                holder.tv_repair_time.setText(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT_TIME)));
-                holder.tv_start_time.setText(DataUtil.isDataElementNull(data.get(position).get(Task.START_TIME)));
-                holder.tv_end_time.setText(DataUtil.isDataElementNull(data.get(position).get(Task.FINISH_TIME)));
+                holder.tv_repair_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT_TIME))));
+                holder.tv_start_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(data.get(position).get(Task.START_TIME))));
+                holder.tv_end_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(data.get(position).get(Task.FINISH_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_DESCRIPTION)));
                 return convertView;
             }

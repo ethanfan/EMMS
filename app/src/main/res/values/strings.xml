@@ -27,7 +27,7 @@
     <string name="repair_tag">维修</string>
     <string name="maintenance">维护</string>
     <string name="team_status">班组人员状态</string>
-    <string name="select">请下拉</string>
+    <string name="select">请点击</string>
     <string name="pleaseInputOrSelect">请点击或下拉</string>
     <string name="scan">请扫描</string>
     <string name="task_type">任务类型: </string>
@@ -185,6 +185,13 @@
     <string name="noMoreData">没有更多数据了</string>
     <string name="judgeWorkloadSum">工作量总和不等于100%，提交失败</string>
     <string name="submitSuccess">提交成功</string>
+    <string name="submitFail">数据提交失败，请检查网络</string>
+    <string name="loadingFail">数据获取失败，请检查网络</string>
     <string name="failToChangeStatus">修改状态失败，请检查网络</string>
     <string name="judgeTaskClass">只有维修任务能进行故障总结</string>
+    <string name="onlyTaskChargerCanChangeEquipmentStatus">只有任务主负责人可以修改设备状态</string>
+    <string name="pleaseInputEquipmentNum">请输入设备编号</string>
+    <string name="pleaseScanICcardNum">请扫描或输入ICCard号</string>
+    <string name="noSimpleDescriptionData">该设备无简要描述,请手动输入</string>
+    <string name="simpleDescription">简要描述</string>
 </resources>

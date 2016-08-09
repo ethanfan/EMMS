@@ -32,6 +32,7 @@ import com.emms.activity.WorkLoadActivity;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.ListViewUtility;
+import com.emms.util.RootUtil;
 import com.emms.util.ToastUtil;
 
 import java.util.ArrayList;
@@ -46,6 +47,12 @@ public abstract class PopMenuTaskDetail {
     private ObjectElement TaskDetail;
 	private Long TaskId;
 	private String TaskClass;
+
+	public void setIs_Main_person_in_charge_Operator_id(boolean is_Main_person_in_charge_Operator_id) {
+		this.is_Main_person_in_charge_Operator_id = is_Main_person_in_charge_Operator_id;
+	}
+
+	private boolean is_Main_person_in_charge_Operator_id=false;
 	// private OnItemClickListener listener;
 	public PopMenuTaskDetail(Context context, int width,String taskDetail,String taskClass) {
 		// TODO Auto-generated constructor stub
@@ -236,27 +243,29 @@ public abstract class PopMenuTaskDetail {
 		}
 	}
 	private void WorkloadInput(){
+
+		if(!is_Main_person_in_charge_Operator_id){
+			ToastUtil.showToastLong("只有主负责人可以录入工作量",context);
+			return;
+		}
 		Intent intent=new Intent(context, WorkLoadActivity.class);
 		//intent.putExtra(Task.TASK_ID,TaskId);
 		intent.putExtra("TaskDetail",TaskDetail.toString());
 		context.startActivity(intent);
-	}
-    private void MissionComplete(){
-
 	}
 	private void Scan(){
 
 	}
 	private void ExChangeOrder(){
 		Intent intent=new Intent(context, InvitorActivity.class);
-		intent.putExtra(Task.TASK_ID,TaskId);
+		intent.putExtra(Task.TASK_ID,String.valueOf(TaskId));
 		intent.putExtra("isExChangeOrder",true);
 		context.startActivity(intent);
 	}
 	private void InviteHelp(){
 
 		Intent intent=new Intent(context, InvitorActivity.class);
-		intent.putExtra(Task.TASK_ID,TaskId);
+		intent.putExtra(Task.TASK_ID,String.valueOf(TaskId));
 		intent.putExtra("isInviteHelp",true);
 		context.startActivity(intent);
 
@@ -274,7 +283,11 @@ public abstract class PopMenuTaskDetail {
 		this.TaskId=taskId;
 	}
 	private void FaultSummary(){
-		if(TaskClass.equals(Task.REPAIR_TASK)){
+		if(!is_Main_person_in_charge_Operator_id){
+			ToastUtil.showToastLong("只有主负责人可以进行故障总结",context);
+			return;
+		}
+		if(RootUtil.rootTaskClass(TaskClass,Task.REPAIR_TASK)){
 		Intent intent=new Intent(context, SummaryActivity.class);
 		//intent.putExtra(Task.TASK_ID,TaskId);
 		intent.putExtra("TaskDetail",TaskDetail.toString());
@@ -283,6 +296,10 @@ public abstract class PopMenuTaskDetail {
 		}
 	}
 	private void TaskComplete(){
+		if(!is_Main_person_in_charge_Operator_id){
+			ToastUtil.showToastLong("只有主负责人可以提交任务完成",context);
+			return;
+		}
 		Intent intent=new Intent(context, SubTaskManageActivity.class);
 		//intent.putExtra(Task.TASK_ID,TaskId);
 		intent.putExtra("TaskDetail",TaskDetail.toString());

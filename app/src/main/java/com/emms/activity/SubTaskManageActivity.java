@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -249,10 +250,10 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
                     super.onSuccess(t);
                     Log.e("returnString", t);
                     if (t != null) {
-                        JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                        if (!jsonObjectElement.get("PageData").isNull()) {
-                            ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
-
+                  //      JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                   //     if (!jsonObjectElement.get("PageData").isNull()) {
+                 //           ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
+                        ArrayElement jsonArrayElement=new JsonArrayElement(t);
                             if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
 
                                 int dealDeviceCount = 0;
@@ -261,7 +262,7 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
                                 }
                             }
                         }
-                    }
+
                 }
                 @Override
                 public void onFailure(int errorNo, String strMsg) {

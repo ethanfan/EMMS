@@ -29,6 +29,7 @@ import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 import com.emms.util.LongToDate;
 import com.emms.util.SharedPreferenceManager;
+import com.emms.util.ToastUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -40,6 +41,7 @@ import com.datastore_android_sdk.rxvolley.client.HttpParams;
 
 import org.restlet.engine.header.ContentType;
 
+import java.security.spec.RSAOtherPrimeInfo;
 import java.util.ArrayList;
 
 /**
@@ -53,12 +55,16 @@ public class PendingOrdersFragment extends BaseFragment{
     private Context mContext;
     private Handler handler=new Handler();
     private String TaskClass;
+    private static int PAGE_SIZE=10;
+    private int pageIndex=1;
+    private int RecCount=0;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
+        listView.setMode(PullToRefreshListView.Mode.PULL_FROM_END);
         listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
@@ -66,11 +72,10 @@ public class PendingOrdersFragment extends BaseFragment{
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        getPendingOrderTaskDataFromServer();
                         listView.onRefreshComplete();
                      //   Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
                     }
-                },2000);
+                },1000);
             }
 
             @Override
@@ -78,10 +83,11 @@ public class PendingOrdersFragment extends BaseFragment{
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        getPendingOrderTaskDataFromServer();
                         listView.onRefreshComplete();
                         //Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
                     }
-                },2000);
+                },1000);
             }
         });
         return v;
@@ -112,8 +118,8 @@ public class PendingOrdersFragment extends BaseFragment{
                 holder.tv_creater.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
                 holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
-                holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
-                holder.tv_create_time.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME)));
+                holder.tv_task_state.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS))));
+                holder.tv_create_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
                 holder.acceptTaskButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -138,6 +144,11 @@ public class PendingOrdersFragment extends BaseFragment{
         });
     }
     private void getPendingOrderTaskDataFromServer(){
+        if(RecCount!=0){
+            if(pageIndex*PAGE_SIZE>=RecCount){
+                ToastUtil.showToastLong(R.string.noMoreData,mContext);
+                return;
+            }}
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
      //   String s=SharedPreferenceManager.getLoginData(mContext);
@@ -146,18 +157,20 @@ public class PendingOrdersFragment extends BaseFragment{
       //  params.put("operator_id",operator_id);
         params.put("status",0);
         params.put("taskClass",TaskClass);
-        params.put("pageSize",10);
-        params.put("pageIndex",1);
+        params.put("pageSize",PAGE_SIZE);
+        params.put("pageIndex",pageIndex);
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    int RecCount=jsonObjectElement.get("RecCount").valueAsInt();
-                    if(jsonObjectElement.get("PageData").asArrayElement().size()==0){
+                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0)
+                    RecCount=jsonObjectElement.get("RecCount").valueAsInt();
+                    if(pageIndex==1){
+                        datas.clear();
                     }
-                    datas.clear();
+                    pageIndex++;
                     for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
                         datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                     }

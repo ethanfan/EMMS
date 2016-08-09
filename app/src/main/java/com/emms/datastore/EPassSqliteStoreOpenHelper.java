@@ -12,6 +12,7 @@ import com.emms.schema.Equipment;
 import com.emms.schema.Factory;
 import com.emms.schema.Maintain;
 import com.emms.schema.Operator;
+import com.emms.schema.TaskOrganiseRelation;
 import com.emms.schema.Team;
 import com.emms.schema.TeamService;
 import com.j256.ormlite.support.ConnectionSource;
@@ -54,6 +55,7 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 			Maintain.class).getTableName();
 	public static final String SCHEMA_BASE_ORGANISE = Schema.getAttributes(
 			BaseOrganise.class).getTableName();
+	public static final String SCHEMA_TASK_ORGANISE_RELATION=Schema.getAttributes(TaskOrganiseRelation.class).getTableName();
 
 
 	/**
@@ -135,6 +137,7 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 		schema.put(SCHEMA_EQUIPMENT, Equipment.class);
 		schema.put(SCHEMA_MAINTAIN,Maintain.class);
 		schema.put(SCHEMA_BASE_ORGANISE,BaseOrganise.class);
+		schema.put(SCHEMA_TASK_ORGANISE_RELATION,TaskOrganiseRelation.class);
 	}
 
 }

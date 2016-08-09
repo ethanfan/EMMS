@@ -1,5 +1,6 @@
 package com.emms.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -12,6 +13,7 @@ import com.emms.R;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.SharedPreferenceManager;
+import com.emms.util.ToastUtil;
 import com.flyco.tablayout.widget.MsgView;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
@@ -29,6 +31,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private MsgView repair_msg,maintain_msg,move_car_msg,other_msg;
     private HashMap<Integer,String> taskNum=new HashMap<Integer,String>();
     private static String TASK_NUM="TaskNum";
+    private Context context=this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +85,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 public void onSuccess(String t) {
                     super.onSuccess(t);
                     SharedPreferenceManager.setCookie(MainActivity.this,null);
+                    SharedPreferenceManager.setLoginData(MainActivity.this,null);
+                    SharedPreferenceManager.setUserData(MainActivity.this,null);
                     startActivity(new Intent(MainActivity.this, LoginActivity.class));
                     finish();
                 }
@@ -92,8 +97,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 }
             });
         }else if (id == R.id.create_taskcd){
-            Intent intent=new Intent(MainActivity.this,CreateTaskActivity.class);
-            startActivity(intent);
+            //后续删除此入口
+            //Intent intent=new Intent(MainActivity.this,CreateTaskActivity.class);
+            //startActivity(intent);
+            ToastUtil.showToastLong("目前只有公共机能创建任务",this);
         }else if (id == R.id.repair_tag){
             Intent intent=new Intent(MainActivity.this,TaskListActivity.class);
             if(taskNum.get(0)!=null){
@@ -141,6 +148,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
 
 
    private void getTaskCountFromServer(){
+       showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
       //params.put("id",String.valueOf(getLoginInfo().getId()));
       // String s=SharedPreferenceManager.getUserName(this);
@@ -151,7 +159,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                if (t != null) {
                    JsonObjectElement json = new JsonObjectElement(t);
                    //获取任务数目，Data_ID对应，1对应维修，2对应维护，3对应搬车，4对应其它
-                   if (json.get("PageData") != null && json.get("PageData").asArrayElement() != null) {
+                   if (json.get("PageData") != null && json.get("PageData").asArrayElement() != null&&json.get("PageData").asArrayElement().size()>0) {
                        for (int i = 0; i < json.get("PageData").asArrayElement().size(); i++) {
                            //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
                            //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
@@ -159,18 +167,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                                    json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1").valueAsString();
                            taskNum.put(i, taskNumToShow);
                        }
-
                        repair_msg.setText(taskNum.get(0));
                        maintain_msg.setText(taskNum.get(1));
                        move_car_msg.setText(taskNum.get(2));
                        other_msg.setText(taskNum.get(3));
                    }
                }
+               dismissCustomDialog();
            }
 
            @Override
            public void onFailure(int errorNo, String strMsg) {
                super.onFailure(errorNo, strMsg);
+               ToastUtil.showToastLong(R.string.loadingFail,context);
+               dismissCustomDialog();
            }
         });
     }

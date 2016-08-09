@@ -1,7 +1,9 @@
 package com.emms.ui;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
@@ -33,11 +35,13 @@ import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Task;
+import com.emms.util.ArrayWheelAdapter;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.j256.ormlite.field.types.IntegerObjectType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,15 +60,40 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     private String EquipmentId;
     private String TaskEquipmentId;
     //private ArrayList<String> status=new ArrayList<String>();
-    private int tag=1;
-   private Button change_equipment_operator_status,change_equipment_status;
-    private Button equipment_resume,equipment_complete,equipment_wait_material,equipment_pause,equipment_start,quit,material_requisition;
+    //private int tag=1;
+    private Button change_equipment_operator_status,change_equipment_status;
+ //   private Button equipment_resume,equipment_complete,equipment_wait_material,equipment_pause,equipment_start,quit,material_requisition;
     private ObjectElement TaskEquipmentData;
+    private boolean is_Main_person_in_charge_operator_id=false;
+
+    public void setOperator_Status(int operator_Status) {
+        Operator_Status = operator_Status;
+    }
+    private int Operator_Status=-1;
+    private WheelView Status;
+    private ArrayWheelAdapter<String> adapter;
+    private ArrayList<String> Equipment_Status_List=new ArrayList<String>();
+    private ArrayList<String> Equipment_Operator_Status_List=new ArrayList<String>();
+    private ArrayList<String> showList=new ArrayList<String>();
+    private HashMap<String,Integer> Equipment_Operator_Status_Name_ID_map=new HashMap<String, Integer>();
+    private HashMap<String,Integer> Equipment_Status_Name_ID_map=new HashMap<String, Integer>();
+    private int ViewTag=1;
+    /*
+    public HashMap<String, Integer> getEquipment_OperatorID_Status() {
+        return Equipment_OperatorID_Status;
+    }
+    public void setEquipment_OperatorID_Status(HashMap<String, Integer> equipment_OperatorID_Status) {
+        Equipment_OperatorID_Status = equipment_OperatorID_Status;
+    }*/
+   // private HashMap<String,Integer> Equipment_OperatorID_Status=new HashMap<String, Integer>();
     public ChangeEquipmentDialog(Context context, int layout, int style) {
         super(context, style);
         this.context = context;
         setContentView(layout);
+        //if(Equipment_OperatorID_Status.get())
       //  Collections.addAll(status,context.getResources().getStringArray(R.array.equip_status));
+        initMap();
+        initData();
         initview();
     }
     public void setOnSubmitInterface(dialogOnSubmitInterface onSubmitInterface) {
@@ -80,8 +109,26 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                 dismiss();
             }
         });
+        findViewById(R.id.comfirm).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ViewTag==1){
+                   postTaskOperatorEquipment(Equipment_Operator_Status_Name_ID_map.get(showList.get(Status.getCurrentItem())));
+                    }
+                    else if(ViewTag==2){
+                    postTaskEquipment(Equipment_Status_Name_ID_map.get(showList.get(Status.getCurrentItem())));
+                    }
+            }
+        });
+        Status=(WheelView)findViewById(R.id.list);
+        Status.setVisibleItems(5);
+        //Status.getCurrentItem();
+        Status.setDrawingCacheEnabled(false);
+        showList=Equipment_Operator_Status_List;
+        adapter=new ArrayWheelAdapter<>(showList);
+        Status.setAdapter(adapter);
         initTagButton();
-        initEquipmentTagView();
+   //     initEquipmentTagView();
     }
 
 
@@ -132,6 +179,10 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
        this.EquipmentId=equipmentId;
        this.TaskEquipmentId=taskEquipmentId;
    }
+    public void setMainPersonInChargeOperatorId(boolean is_Main_person_in_charge_operator_id){
+        this.is_Main_person_in_charge_operator_id=is_Main_person_in_charge_operator_id;
+    }
+    /*
     private void initEquipmentTagView(){
         equipment_resume=(Button)findViewById(R.id.equipment_resume);
         equipment_complete=(Button)findViewById(R.id.equipment_complete);
@@ -168,11 +219,11 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             material_requisition.setVisibility(View.GONE);
         }
     }
-
+*/
     @Override
     public void onClick(View v) {
-        int id=v.getId();
-        switch (id){
+        int id = v.getId();
+   /*     switch (id){
             case R.id.equipment_resume:{
                 if(tag==1){
                     postTaskOperatorEquipment(0);
@@ -222,29 +273,58 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                 postTaskOperatorEquipment(3);
                 break;
             }
-        }
+        }*/
+
     }
+
     private void initTagButton(){
         change_equipment_operator_status=(Button)findViewById(R.id.change_equipment_operator_status);
-        change_equipment_operator_status.setBackgroundColor(Color.RED);
+       // change_equipment_operator_status.setBackgroundColor(Color.RED);
+        change_equipment_operator_status.setTextColor(Color.parseColor("#C4647C"));
         change_equipment_operator_status.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tag=1;
+                ViewTag=1;
 
-                change_equipment_status.setBackgroundColor(Color.WHITE);
-                change_equipment_operator_status.setBackgroundColor(Color.RED);
-                TagView(tag);
+               // change_equipment_status.setBackgroundColor(Color.WHITE);
+              //  change_equipment_operator_status.setBackgroundColor(Color.RED);
+               change_equipment_status.setTextColor(Color.parseColor("#D2D2D2"));
+                change_equipment_operator_status.setTextColor(Color.parseColor("#C4647C"));
+                TagView(ViewTag);
             }
         });
         change_equipment_status=(Button)findViewById(R.id.change_equipment_status);
         change_equipment_status.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tag=2;
-                change_equipment_operator_status.setBackgroundColor(Color.WHITE);
-                change_equipment_status.setBackgroundColor(Color.RED);
-                TagView(tag);
+               if(is_Main_person_in_charge_operator_id){
+                   ViewTag=2;
+                //change_equipment_operator_status.setBackgroundColor(Color.WHITE);
+              //  change_equipment_status.setBackgroundColor(Color.RED);
+                   change_equipment_operator_status.setTextColor(Color.parseColor("#D2D2D2"));
+                   change_equipment_status.setTextColor(Color.parseColor("#C4647C"));
+                TagView(ViewTag);
+                   }
+                else {
+                   ToastUtil.showToastLong(R.string.onlyTaskChargerCanChangeEquipmentStatus,context);
+               }
+            }
+        });
+    }
+    private void TagView(final int tag){
+        ((Activity)context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(tag==1){
+                    showList=Equipment_Operator_Status_List;
+                    adapter.setList(showList);
+                   Status.invalidate();
+                   // Status.
+                }else if(tag==2){
+                    showList=Equipment_Status_List;
+                    adapter.setList(showList);
+                   Status.invalidate();
+                }
             }
         });
     }
@@ -277,5 +357,28 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                 ToastUtil.showToastLong(R.string.failToChangeStatus,context);
             }
         });
+    }
+    private void StatusControl(int Status){
+
+    }
+    public void initData(){
+        Collections.addAll(Equipment_Status_List,context.getResources().getStringArray(R.array.Equipment_Status));
+        Collections.addAll(Equipment_Operator_Status_List,context.getResources().getStringArray(R.array.Equipment_Operator_Status));
+    }
+    private void initMap(){
+        {
+            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.start), 0);
+            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.pause), 1);
+            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.quit), 2);
+            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.material_requisition), 3);
+            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.wait_material), 4);
+            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 5);
+        }
+        {
+            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.start), 1);
+            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.pause), 2);
+            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.wait_material), 3);
+            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 4);
+        }
     }
 }

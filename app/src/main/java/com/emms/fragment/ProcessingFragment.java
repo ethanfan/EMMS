@@ -1,12 +1,9 @@
 package com.emms.fragment;
 
-import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,19 +18,11 @@ import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Maintain;
-import com.emms.schema.Message;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
-import com.emms.util.SharedPreferenceManager;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 
@@ -82,7 +71,7 @@ public class ProcessingFragment extends BaseFragment {
                         listView.onRefreshComplete();
                       //  Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
                     }
-                },2000);
+                },1000);
             }
 
             @Override
@@ -93,7 +82,7 @@ public class ProcessingFragment extends BaseFragment {
                         listView.onRefreshComplete();
                         //Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
                     }
-                },2000);
+                },1000);
             }
         });
         taskAdapter = new TaskAdapter(datas) {
@@ -120,7 +109,7 @@ public class ProcessingFragment extends BaseFragment {
                holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
-                holder.tv_repair_time.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME)));
+                holder.tv_repair_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
                 holder.tv_start_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
                 return convertView;
@@ -135,6 +124,7 @@ public class ProcessingFragment extends BaseFragment {
                 intent.putExtra(Task.TASK_ID,datas.get(position-1).get(Task.TASK_ID).valueAsString());
                 intent.putExtra("TaskDetail",datas.get(position-1).toString());
                 intent.putExtra(Task.TASK_CLASS,TaskClass);
+                intent.putExtra("TaskStatus",1);
                 startActivity(intent);
             }
         });
@@ -167,10 +157,10 @@ public class ProcessingFragment extends BaseFragment {
                 super.onSuccess(t);
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    int RecCount=jsonObjectElement.get("RecCount").valueAsInt();
-                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()==0){
+                   // int RecCount=jsonObjectElement.get("RecCount").valueAsInt();
+                  //  if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()==0){
                       //提示没有处理中的任务
-                    }
+                  //  }
                     datas.clear();
                     for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
                         datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());

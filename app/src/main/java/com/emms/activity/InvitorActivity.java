@@ -67,7 +67,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
         if(isExChangeOrder){
             ((TextView)findViewById(R.id.tv_title)).setText(R.string.exchangeOrder);
         }
-       taskId=getIntent().getStringExtra(Task.TASK_ID) ;
+        taskId=getIntent().getStringExtra(Task.TASK_ID) ;
         adapter=new MultiAdapter(InvitorActivity.this,listItems);
         mListView = (PullToRefreshListView) findViewById(R.id.id_wait_list);
         mListView.setAdapter(adapter);
@@ -249,9 +249,9 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
         JsonObjectElement jsonObjectElement=new JsonObjectElement();
         jsonObjectElement.set(Task.TASK_ID,taskId);
         if(isInviteHelp){
-            jsonObjectElement.set("OperatorType",1);}
+            jsonObjectElement.set("OperatorType",0);}
         else {
-            jsonObjectElement.set("OperatorType",0);
+            jsonObjectElement.set("OperatorType",1);
         }
     //    List<Integer> a=new ArrayList<Integer>();
    //     a.add(4667);

@@ -22,6 +22,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.DatastoreException.DatastoreException;
+import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
@@ -43,7 +45,9 @@ import com.emms.ui.KProgressHUD;
 import com.emms.ui.NFCDialog;
 import com.emms.util.BuildConfig;
 import com.emms.util.Constants;
+import com.emms.util.DataUtil;
 import com.emms.util.SharedPreferenceManager;
+import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -76,7 +80,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
     private Context mContext;
 
-    private DropEditText task_type, task_subtype, group, device_name;
+    private DropEditText task_type, task_subtype, group, device_name,simple_description;
     private EditText create_task, task_description, device_num;
     private TextView task_subtype_name_desc;
     private TextView menuSearchTitle;
@@ -88,8 +92,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private Button btn_sure;
     private ImageView create_task_action, device_num_action;
     private KProgressHUD hud;
-
-
+    private String TaskClass;
+    private HashMap<String,String> Task_Class_Name=new HashMap<String, String>();
     private AlertDialog mDialog;
     private static final DateFormat TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
 
@@ -102,7 +106,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     public final static int GROUP = 4;
     public final static int CREATER = 3;
     public final static int DEVICE_NUM = 6;
-    public final static int TASK_DESCRIPTION = 7;
+    public final static int SIMPLE_DESCRIPTION = 7;
 
 
     private ArrayList<String> mDeviceTypelist;
@@ -113,6 +117,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private ArrayList<ObjectElement> mTeamNamelist = new ArrayList<>();
     private ArrayList<ObjectElement> mDeviceNamelist = new ArrayList<>();
     private ArrayList<ObjectElement> mDeviceNumlist = new ArrayList<>();
+    private ArrayList<ObjectElement> mSimpleDescriptionList=new ArrayList<>();
     private String creatorId;
 
 
@@ -131,7 +136,21 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
         mContext = CreateTaskActivity.this;
-        getEquipmentClassTaskDescription();
+        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
+        //getEquipmentClassTaskDescription();
+        {
+            Task_Class_Name.put(Task.REPAIR_TASK,getResources().getString(R.string.repair_tag));
+            Task_Class_Name.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintenance));
+            Task_Class_Name.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car));
+            Task_Class_Name.put(Task.OTHER_TASK,getResources().getString(R.string.other));
+        }
+        {
+            task_type_class.put(getResources().getString(R.string.repair_tag),Task.REPAIR_TASK);
+            task_type_class.put(getResources().getString(R.string.maintenance),Task.MAINTAIN_TASK);
+            task_type_class.put(getResources().getString(R.string.move_car),Task.MOVE_CAR_TASK);
+            task_type_class.put(getResources().getString(R.string.other),Task.OTHER_TASK);
+        }
+
         initView();
         initSearchView();
         initEvent();
@@ -212,6 +231,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                     device_num.setText(searchResult);
                                     equipmentID=mResultAdapter.getItem(inPosition).get(Equipment.EQUIPMENT_ID).valueAsString();
                                     break;
+                                case SIMPLE_DESCRIPTION:
+                                    simple_description.getmEditText().setText(searchResult);
+                                    break;
                             }
                             mDrawer_layout.closeDrawer(Gravity.RIGHT);
                         }
@@ -251,8 +273,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
     private void initEvent() {
 
-        initLoginData();
-
+       // initLoginData();
         getTaskType();//获取任务类型 基本不用改
         initDropSearchView(null, task_type.getmEditText(), getResources().
                         getString(R.string.title_search_task_type), DataDictionary.DATA_NAME,
@@ -303,7 +324,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
         initDropSearchView(group.getmEditText(), device_name.getmEditText(),
                 getResources().
-                        getString(R.string.title_search_equipment_name), Equipment.EQUIPMENT_NAME, DEVICE_NAME, "请先选择组别");
+                        getString(R.string.title_search_equipment_name), Equipment.EQUIPMENT_NAME, DEVICE_NAME, "请先选择组别或无该组别设备信息");
         group.getmEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -404,6 +425,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 getResources().
                         getString(R.string.title_search_equipment_nun), Equipment.ORACLE_ID, DEVICE_NUM, "请先选择设备名称，或刷设备卡获取机台号");
 
+        getSimpleDescription();
+        initDropSearchView(null,simple_description.getmEditText(),getResources().getString(R.string.simpleDescription),"DataName",SIMPLE_DESCRIPTION,"无该设备的简要描述");
+
     }
 
     private void initDeviceNum() {
@@ -462,7 +486,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         if (!isSearchview) {
             teamId = mTeamNamelist.get(group.getSelectPosition()).get("Team_ID").valueAsString();
         }
-        String rawQuery ="select distinct EquipmentName from Equipment where Organise_ID_use ="+teamId+" and EquipmentName is not null";
+        String rawQuery ="select distinct EquipmentName from Equipment where Organise_ID_Use ="+teamId+" and EquipmentName is not null";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -480,7 +504,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                     .asObjectElement());
                         }
                     } else {
-                        Toast.makeText(mContext, "程序数据库出错，请重新登陆", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(mContext, "无所属组别设备数据", Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -510,7 +534,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             //get userData from server
 
         } else {
-            create_task.setText(operator.getName());  //创建人名
+           create_task.setText(operator.getName());  //创建人名
 
             String rawQuery = "select Organise_ID Team_ID,OrganiseName TeamName  from BaseOrganise where Organise_ID in(" + operator.getOrganiseID() + ")";
             ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
@@ -610,10 +634,12 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
         task_subtype_name_desc = (TextView) findViewById(R.id.task_subtype_name_id);
         task_type = (DropEditText) findViewById(R.id.task_type);
+        task_type.setText(Task_Class_Name.get(TaskClass));
         task_subtype = (DropEditText) findViewById(R.id.task_subtype);
+        getSubTaskType(TaskClass);
         group = (DropEditText) findViewById(R.id.group_id);
         device_name = (DropEditText) findViewById(R.id.device_name);
-
+        simple_description=(DropEditText)findViewById(R.id.simple_description);
         create_task = (EditText) findViewById(R.id.create_task);
         device_num = (EditText) findViewById(R.id.device_num);
         task_description = (EditText) findViewById(R.id.edit_task_description);
@@ -866,6 +892,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                     code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) && isSuccess) {
 
                                 String data=jsonObject.getString("Data");
+                              //  SharedPreferenceManager.setLoginData(mContext,jsonObject.get("Data").toString());
                                 Operator operator = getLoginInfo(data);
                                 if(null !=  operator){
                                     creatorId = String.valueOf(operator.getId());
@@ -906,8 +933,14 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
                         if (dataElement != null && dataElement.isArray()
                                 && dataElement.asArrayElement().size() > 0) {
-                            ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
-                            device_num.setText(objectElement.get(Equipment.ASSETSID).valueAsString());
+                            final ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    device_num.setText(DataUtil.isDataElementNull(objectElement.get("OracleID")));
+                                }
+                            });
+                            equipmentID= DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID));
                             nfcDialog.dismiss();
                             Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
 
@@ -966,7 +999,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                             case DEVICE_NUM:
                                                 searchDataLists.addAll(mDeviceNumlist);
                                                 break;
-
+                                            case SIMPLE_DESCRIPTION:
+                                                searchDataLists.addAll(mSimpleDescriptionList);
+                                                break;
                                         }
                                         searchtag = searTag;
                                         if (condition != null) {
@@ -1013,26 +1048,32 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         taskDetail.set("TaskClass", task_type_class.get(TaskType));
         taskDetail.set("TaskApplicantOrg",teamId);
 
-        JsonArray jsonArray=new JsonArray();
-        JsonObject JsonObject=new JsonObject();
-        JsonObject.addProperty("Equipment_ID", MachineCode);
-        JsonObject.addProperty("TaskEquipment_ID", 0);
-        jsonArray.add(JsonObject);
+//        JsonArray jsonArray=new JsonArray();
+//        JsonObject JsonObject=new JsonObject();
+//        JsonObject.addProperty("Equipment_ID", MachineCode);
+//        JsonObject.addProperty("TaskEquipment_ID", 0);
+//        jsonArray.add(JsonObject);
 
-        JSONArray jsonArray1=new JSONArray();
-        jsonArray1.add(JsonObject);
+   //     JSONArray jsonArray1=new JSONArray();
+   //     jsonArray1.add(JsonObject);
 
-        JsonArrayElement jsonArrayElement=new JsonArrayElement(jsonArray);
-        for(int i=0;i<jsonArrayElement.size();i++){
+   //     JsonArrayElement jsonArrayElement=new JsonArrayElement(jsonArray);
+   //     for(int i=0;i<jsonArrayElement.size();i++){
 
-        }
+     //   }
+        JsonObjectElement jsonObjectElement=new JsonObjectElement();
+        jsonObjectElement.set("Equipment_ID", MachineCode);
+        jsonObjectElement.set("TaskEquipment_ID", 0);
+        ArrayList<ObjectElement> list=new ArrayList<ObjectElement>();
+        list.add(jsonObjectElement);
+        JsonArrayElement jsonArrayElement=new JsonArrayElement(list.toString());
        //包装数据
         task.set("Task",taskDetail);
-        task.set("TaskEquipment",jsonArray.toString());
+        task.set("TaskEquipment",jsonArrayElement);
 
 
         params.putJsonParams(task.toJson());
-        HttpUtils.post(this, "TaskCollection", params, new HttpCallback() {
+        HttpUtils.postWithoutCookie(this, "TaskCollection", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -1072,6 +1113,29 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+            }
+        });
+    }
+    private void getSimpleDescription(){
+        String sql="select * from DataDictionary where DataType='EquipmentClassTrouble' and 1=1";
+        getSqliteStore().performRawQuery(sql, "DataDictionary", new StoreCallback() {
+            @Override
+            public void success(DataElement element, String resource) {
+                if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
+                    for (int i=0;i<element.asArrayElement().size();i++){
+                    mSimpleDescriptionList.add(element.asArrayElement().get(i).asObjectElement());
+                    }
+                }
+            }
+
+            @Override
+            public void failure(DatastoreException ex, String resource) {
+                  runOnUiThread(new Runnable() {
+                      @Override
+                      public void run() {
+                          ToastUtil.showToastLong(R.string.noSimpleDescriptionData,mContext);
+                      }
+                  });
             }
         });
     }

@@ -40,6 +40,7 @@ import com.emms.R;
 import com.emms.adapter.TaskAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
 import com.emms.schema.Equipment;
 import com.emms.schema.Maintain;
 import com.emms.schema.Operator;
@@ -59,6 +60,8 @@ import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.util.MessageUtils;
+import com.emms.util.RootUtil;
+import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -103,16 +106,19 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private Context mContext;
     private PopMenuTaskDetail popMenuTaskDetail;
     private ChangeEquipmentDialog changeEquipmentDialog;
-    private String TaskDetail = null;
-    private String TaskClass=null;
-    private Long taskId = null;
+    private String TaskDetail = null;//任务详细
+    private String TaskClass=null;//任务类型
+    private Long taskId = null;//任务ID
     private List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
-    private Map<String, Object> deviceCountMap = new HashMap<String, Object>();
-    private ArrayList<String> TaskDeviceIdList = new ArrayList<String>();
-    private Map<String, String> Task_DeviceId_TaskEquipmentId = new HashMap<String, String>();
+    private Map<String, Object> deviceCountMap = new HashMap<String, Object>();//设备数量
+    private ArrayList<String> TaskDeviceIdList = new ArrayList<String>();//设备ID列表
+    private Map<String, String> Task_DeviceId_TaskEquipmentId = new HashMap<String, String>();//设备ID对应TaskEquipmentID映射
+    private int TaskStatus=-1;
+    private boolean getEquipmentListFail=false;//约束网络访问是否成功的tag
     //0-开始，1-暂停，2-领料，3-待料，4-结束
 
     private final String STATUS_DONE = "4";
+    private String Main_person_in_charge_Operator_id;//任务主负责人ID
     static private HashMap<String, String> taskEquipmentStatus = new HashMap<String, String>();
 
     {
@@ -127,7 +133,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private DisplayImageOptions options; // DisplayImageOptions是用于设置图片显示的类
 
     private static final int MSG_UPDATE_DEVICE_SUM_INFO = 10;
-
+    private HashMap<String,HashMap<String,Integer>>TaskEquipment_OperatorID_Status=new HashMap<String,HashMap<String,Integer>>();//任务设备参与人状态map
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,7 +144,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         TaskDetail = getIntent().getStringExtra("TaskDetail");
         TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         taskId = getTaskId(TaskDetail);
-
+        TaskStatus=getIntent().getIntExtra("TaskStatus",-1);
         //初始化imageLoader
         options = new DisplayImageOptions.Builder().cacheInMemory(false) // 设置下载的图片是否缓存在内存中
 //                .cacheOnDisc(true) // 设置下载的图片是否缓存在SD卡中
@@ -266,21 +272,28 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
         findViewById(R.id.btn_right_action).setOnClickListener(this);
         ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.task_details));
-        findViewById(R.id.btn_bar_left).setVisibility(View.VISIBLE);
         menuImageView = (ImageView) findViewById(R.id.btn_bar_left_action);
+        if(RootUtil.rootStatus(TaskStatus,1)){
         menuImageView.setVisibility(View.VISIBLE);
+        findViewById(R.id.btn_bar_left).setVisibility(View.VISIBLE);
+        }else{
+            menuImageView.setVisibility(View.GONE);
+        }
         menuImageView.setOnClickListener(this);
         scrollview = (ScrollView) findViewById(R.id.scrollview_parent);
         mListview = (ScrollViewWithListView) findViewById(R.id.problem_count);
         noScrollgridview = (ExpandGridView) findViewById(R.id.picture_containt);
         noScrollgridview.setSelector(new ColorDrawable(Color.TRANSPARENT));
-        JsonObjectElement taskDetail = new JsonObjectElement(TaskDetail);
-        ((TextView) findViewById(R.id.task_group)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.ORGANISE_NAME)));
-        ((TextView) findViewById(R.id.task_ID)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.TASK_ID)));
-        ((TextView) findViewById(R.id.task_start_time)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.START_TIME)));
-        ((TextView) findViewById(R.id.task_create_time)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT_TIME)));
-        ((TextView) findViewById(R.id.task_creater)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT)));
-        ((TextView) findViewById(R.id.task_description)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.TASK_DESCRIPTION)));
+        {
+            JsonObjectElement taskDetail = new JsonObjectElement(TaskDetail);
+            ((TextView) findViewById(R.id.task_group)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.ORGANISE_NAME)));
+            ((TextView) findViewById(R.id.task_ID)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.TASK_ID)));
+            ((TextView) findViewById(R.id.task_start_time)).setText(DataUtil.getDate(DataUtil.isDataElementNull(taskDetail.get(Task.START_TIME))));
+            ((TextView) findViewById(R.id.task_create_time)).setText(DataUtil.getDate(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT_TIME))));
+            ((TextView) findViewById(R.id.task_creater)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT)));
+            ((TextView) findViewById(R.id.task_description)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.TASK_DESCRIPTION)));
+            Main_person_in_charge_Operator_id = DataUtil.isDataElementNull(taskDetail.get("Operator_ID"));
+        }
         adapter = new GridAdapter(this);
 //        adapter.update1();
         noScrollgridview.setAdapter(adapter);
@@ -308,6 +321,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
             }
         };
+        popMenuTaskDetail.setIs_Main_person_in_charge_Operator_id(RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id));
         String[] mTitles = getResources().getStringArray(R.array.menu_list);
 
         popMenuTaskDetail.addItems(mTitles);
@@ -373,20 +387,20 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             return 0;
         }
 
-        public void setSelectedPosition(int position) {
-            selectedPosition = position;
-        }
-
-        public int getSelectedPosition() {
-            return selectedPosition;
-        }
+//        public void setSelectedPosition(int position) {
+//            selectedPosition = position;
+//        }
+//
+//        public int getSelectedPosition() {
+//            return selectedPosition;
+//        }
 
         /**
          * ListView Item设置
          */
         public View getView(int position, View convertView, ViewGroup parent) {
             //final int coord = position;
-            ViewHolder holder = null;
+            ViewHolder holder;
 
             if (convertView == null) {
 
@@ -664,26 +678,25 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
 
     private void getTaskEquipmentFromServerByTaskId() {
-        showCustomDialog(R.string.loadingData);
+
         if (null == taskId) {
             return;
         }
-
+        showCustomDialog(R.string.loadingData);
         HttpParams params = new HttpParams();
         params.put("task_id", taskId.toString());
         params.put("pageSize",10);
         params.put("pageIndex",1);
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
-        Log.e("returnString", "dd");
         HttpUtils.get(mContext, "TaskDetailList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                if (t != null) {
-                    JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    if (!jsonObjectElement.get("PageData").isNull()) {
-                        ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
 
+                if (t != null) {
+                 //   JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                //    if (!jsonObjectElement.get("PageData").isNull()) {
+                        ArrayElement jsonArrayElement = new JsonArrayElement(t);
                         if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
                             datas.clear();
                             TaskDeviceIdList.clear();
@@ -694,7 +707,17 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                 TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
                                 Task_DeviceId_TaskEquipmentId.put(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)),
                                         DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("TaskEquipment_ID")));
-                                String equipmentStatus = DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("status"));
+                                String equipmentStatus = DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("Status"));
+                              if(jsonArrayElement.get(i).asObjectElement().get("TaskEquipmentOperatorList")!=null&&
+                                      jsonArrayElement.get(i).asObjectElement().get("TaskEquipmentOperatorList").asArrayElement().size()>0) {
+                                 HashMap<String,Integer> Equipment_OperatorID_Status=new HashMap<String, Integer>();
+                                  for (int j = 0; j < jsonArrayElement.get(i).asObjectElement().get("TaskEquipmentOperatorList").asArrayElement().size(); j++) {
+                                      ObjectElement json = jsonArrayElement.get(i).asObjectElement().get("TaskEquipmentOperatorList").asArrayElement().get(j).asObjectElement();
+                                      Equipment_OperatorID_Status.put(DataUtil.isDataElementNull(json.get("Operator_ID")), Integer.valueOf(DataUtil.isDataElementNull(json.get("Status"))));
+                                  }
+                                  TaskEquipment_OperatorID_Status.put(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)),
+                                          Equipment_OperatorID_Status);
+                              }
                                 if (STATUS_DONE.equals(equipmentStatus)) {
                                     dealDeviceCount++;
                                 }
@@ -715,7 +738,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                             mHandler.sendMessage(message);
                         }
                     }
-                }
+                getEquipmentListFail=false;
                 dismissCustomDialog();
             }
 
@@ -723,8 +746,10 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
+
                 dismissCustomDialog();
-                Toast toast = Toast.makeText(TaskDetailsActivity.this, "获取设备列表失败，服务器返回异常", Toast.LENGTH_LONG);
+                getEquipmentListFail=true;
+                Toast toast = Toast.makeText(TaskDetailsActivity.this, "获取设备列表失败，访问超时", Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER, 0, 0);
                 toast.show();
             }
@@ -739,12 +764,12 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         HttpParams params = new HttpParams();
         // params.put("id", taskId.toString());
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
-        params.put("taskID",taskId.toString());
+        params.put("task_id",taskId.toString());
         HttpUtils.get(mContext, "TaskImgsList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                Log.e("returnString", t);
+               // Log.e("returnString", t);
                 if (t != null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
                     ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
@@ -799,7 +824,11 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private void addTaskEquipment(String iccardID) {
         //   ChangeEquipmentDialog changeEquipmentDialog=new ChangeEquipmentDialog(this,R.layout.change_equipment_status_dialog,R.style.MyDialog);
         //  changeEquipmentDialog.show();
-
+        if(getEquipmentListFail){
+            ToastUtil.showToastLong("重新获取设备列表中,请稍候",this);
+            getTaskEquipmentFromServerByTaskId();
+            return;
+        }
 //        postTaskEquipment("aaaa","0",0);
         String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='" + iccardID + "'";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
@@ -825,17 +854,39 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                     changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.change_equipment_status_dialog, R.style.MyDialog);
                                     changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
                                             Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
+                                   // changeEquipmentDialog.setMainPersonInChargeOperatorId(Main_person_in_charge_Operator_id.equals(String.valueOf(getLoginInfo().getId())));
+                                    changeEquipmentDialog.setMainPersonInChargeOperatorId(RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id));
                                     changeEquipmentDialog.setOnSubmitInterface(new dialogOnSubmitInterface() {
                                         @Override
                                         public void onsubmit() {
                                             getTaskEquipmentFromServerByTaskId();
                                         }
                                     });
+                                    int status=-1;
+                                    if(TaskEquipment_OperatorID_Status.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))!=null){
+                                    if(TaskEquipment_OperatorID_Status.get(
+                                            DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).containsKey(getLoginInfo().getId())){
+                                        status=TaskEquipment_OperatorID_Status.get(
+                                                DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).get(getLoginInfo().getId());
+                                    }
+                                    }
+                                    changeEquipmentDialog.setOperator_Status(status);
                                     changeEquipmentDialog.show();
                                 }else {
-                                    changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
+                                    changeEquipmentDialog.setDatas(String.valueOf(taskId),
+                                            objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
                                             Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
-                                   if(!changeEquipmentDialog.isShowing()){
+                                    int status=-1;
+                                    if(TaskEquipment_OperatorID_Status.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))!=null){
+                                        if(TaskEquipment_OperatorID_Status.get(
+                                                DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).containsKey(getLoginInfo().getId())){
+                                            status=TaskEquipment_OperatorID_Status.get(
+                                                    DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).get(getLoginInfo().getId());
+                                        }
+                                    }
+                                    changeEquipmentDialog.setOperator_Status(status);
+                               //     changeEquipmentDialog.setMainPersonInChargeOperatorId(Main_person_in_charge_Operator_id);
+                                    if(!changeEquipmentDialog.isShowing()){
                                     changeEquipmentDialog.show();}
                                 }
                             }
@@ -876,7 +927,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         taskEquepment.set("Equipment_ID", equipmentID);
         //taskEquepment.set("Equipment_ID", equipmentID);
         taskEquepment.set("Status",0);
-        taskEquepment.set("Operator_ID",getLoginInfo().getId());
+       // taskEquepment.set("Operator_ID",getLoginInfo().getId());
         //taskEquepment.set();
         params.putJsonParams(taskEquepment.toJson());
 
@@ -941,4 +992,5 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         }
 
     };
+
 }

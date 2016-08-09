@@ -9,19 +9,29 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.DatastoreException.DatastoreException;
+import com.datastore_android_sdk.callback.StoreCallback;
+import com.datastore_android_sdk.datastore.DataElement;
+import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.datastore_android_sdk.rxvolley.client.ProgressListener;
 import com.datastore_android_sdk.rxvolley.http.VolleyError;
+import com.datastore_android_sdk.schema.Query;
 import com.emms.ConfigurationManager;
 import com.emms.R;
+import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.push.PushService;
 import com.emms.ui.KProgressHUD;
@@ -30,6 +40,16 @@ import com.emms.util.Constants;
 import com.emms.util.SharedPreferenceManager;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.toolbox.Loger;
+import com.emms.util.ToastUtil;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.nimbusds.jose.util.JSONObjectUtils;
+
+import net.minidev.json.JSONUtil;
+import net.minidev.json.parser.JSONParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,7 +67,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private EditText inputPassWord;
     private EditText inputname;
     private KProgressHUD hud;
-
+    //private ImageButton setting;
     Handler pushHandler = PushService.mHandler;
 
     @Override
@@ -59,19 +79,31 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 //        //透明导航栏
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+       //getDataBaseUpdateFromServer();
         initView();
         getNewDataFromServer();
     }
 
     private void initView() {
+        findViewById(R.id.setting).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(mContext,EnteringEquipmentICCardIDActivity.class);
+                startActivity(intent);
+            }
+        });
         login = (TextView) findViewById(R.id.login);
         machine = (TextView) findViewById(R.id.machine);
         inputPassWord = (EditText) findViewById(R.id.inputPassWord);
         inputname = (EditText) findViewById(R.id.inputUserName);
 //        inputname.setText("GET0259106");
 //        inputPassWord.setText("888888");
-        inputname.setText("GET0006236");
-        inputPassWord.setText("888888");
+    //    SharedPreferenceManager.getUserName(this);
+    //    SharedPreferenceManager.getPassWord(this);
+     //   inputname.setText("GET0006236");
+     //   inputPassWord.setText("888888");
+      inputname.setText(SharedPreferenceManager.getUserName(this));
+      inputPassWord.setText(SharedPreferenceManager.getPassWord(this));
         login.setOnClickListener(this);
         machine.setOnClickListener(this);
         hud = KProgressHUD.create(this)
@@ -90,8 +122,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.login:
-                final String userid = inputname.getText().toString();
-                final String password = inputPassWord.getText().toString();
+                final String userid = inputname.getText().toString().toUpperCase();
+                final String password = inputPassWord.getText().toString().toUpperCase();
                 if (!hasNetworkConnection()) {
                     showDialog(getString(R.string.warning_title),
                             getString(R.string.network_error));
@@ -145,9 +177,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                                 SharedPreferenceManager.setLoginData(LoginActivity.this,data);
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
 
-
+                                String Organise_ID=new JSONObject(data).get("Organise_ID").toString();
                                 Set<String> tagSet = new LinkedHashSet<String>();
                                 tagSet.add(userid);
+                                tagSet.add(Organise_ID);
                                 //调用JPush API设置Tag
                                 pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, tagSet));
 
@@ -211,21 +244,45 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
     //下载DB文件
     private void getNewDataFromServer() {
-
+        final File db = new File(getExternalFilesDir(null), "/EMMS.db");
+        if(db.exists()){
+            return;
+        }
        final File dbFile = new File(getExternalFilesDir(null), "/EMMS.zip");
            if(dbFile.exists()){
-
+               try{
+                   HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);}catch (Exception e){
+               }
              return;
           }
+        showCustomDialog(R.string.DownloadDataBase);
+        HttpUtils.download(this, dbFile.getAbsolutePath(), "", null, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                try{
+                HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
+                dismissCustomDialog();
+                ToastUtil.showToastLong("数据文件下载完毕",mContext);}catch (Exception e){
+                }
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.loadingFail,mContext);
+                dismissCustomDialog();
+            }
+        });
        // String savepath = dbFile.getParentFile().getAbsolutePath();
-        new Thread(new Runnable() {
+      /*  new Thread(new Runnable() {
             @Override
             public void run() {
                 Looper.prepare();
                 HttpUtils.downloadData(dbFile, "",LoginActivity.this);
                 Looper.loop();
             }
-        }).start();
+        }).start();*/
       //  HttpUtils.downloadData(dbFile, "");
   /*      final RelativeLayout progress=(RelativeLayout)findViewById(R.id.downloadProgress);
         progress.setVisibility(View.VISIBLE);
@@ -255,5 +312,56 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             }
         });
     }*/
+    }
+    private void getDataBaseUpdateFromServer(){
+        HttpParams params=new HttpParams();
+        params.put("lastUpdateTime",2);
+        params.put("fromFactory","GEW");
+                HttpUtils.getWithoutCookies(this, "SqlToSqlite", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null){
+                /*    JsonParser jsonParser=new JsonParser();
+                    JsonObject j=jsonParser.parse(t).getAsJsonObject();
+                    JsonArray jsonArray=j.getAsJsonArray("DataType");
+                    if(jsonArray!=null){
+                        Log.e("dd","bb");
+                    }*/
+                JsonObjectElement json=new JsonObjectElement(t);
+                    if(json.get("DataType")!=null&&json.get("DataType").asArrayElement().size()>0){
+                    updateData(json.get("DataType"), EPassSqliteStoreOpenHelper.SCHEMA_DATATYPE);}
+                    if(json.get("BaseOrganise")!=null&&json.get("BaseOrganise").asArrayElement().size()>0){
+                        updateData(json.get("BaseOrganise"),EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE);}
+                    if(json.get("DataDictionary")!=null&&json.get("DataDictionary").asArrayElement().size()>0){
+                        updateData(json.get("DataDictionary"),EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY);}
+                    if(json.get("Equipment")!=null&&json.get("Equipment").asArrayElement().size()>0){
+                        updateData(json.get("Equipment"),EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT);}
+                    if(json.get("TaskOrganiseRelation")!=null&&json.get("TaskOrganiseRelation").asArrayElement().size()>0){
+                        updateData(json.get("TaskOrganiseRelation"),EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION);}
+                }
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+            }
+        });
+    }
+    private void updateData(DataElement data,String resource){
+        for(int i=0;i<data.asArrayElement().size();i++) {
+            getSqliteStore().updateElements(new Query(), data.asArrayElement().get(i),resource, new StoreCallback() {
+                @Override
+                public void success(DataElement element, String resource) {
+                    Log.e("Success","Success");
+                }
+
+                @Override
+                public void failure(DatastoreException ex, String resource) {
+                    Log.e(ex.toString(),resource.toString());
+                }
+            });
+        }
+
     }
 }

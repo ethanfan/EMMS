@@ -17,9 +17,8 @@ public class DataUtil {
     }
     public static String getDate(String date){
         if(date.contains("T")){
-            date.replace("T","  ");
-            return date;
-        }else{
-        return date;}
+           return date.replace("T","  ");
+        }
+        return date;
     }
 }

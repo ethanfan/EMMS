@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:background="#00000000"
   >
+    <!--
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -152,6 +153,71 @@
             android:textSize="20sp"/>
     </LinearLayout>
     </RelativeLayout>
-
+-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@color/white"
+                android:textSize="20sp"
+                android:textColor="#D2D2D2"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:id="@+id/cancle"
+                android:text="@string/cancel"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/comfirm"
+                android:textColor="#D2D2D2"
+                android:textSize="20sp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:background="@color/white"
+                android:text="@string/sure"/>
+        </LinearLayout>
+        <com.emms.ui.WheelView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/list"
+            android:layout_gravity="center_vertical"
+            android:background="@color/transparent"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:id="@+id/change_equipment_operator_status"
+                android:textColor="#D2D2D2"
+                android:text="@string/change_equipment_operator_status"
+                android:background="@color/white"
+                android:textSize="20sp"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#D2D2D2"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp"
+                android:id="@+id/change_equipment_status"
+                android:text="@string/change_equipment_status"
+                android:background="@color/white"
+                android:textSize="20sp"/>
+        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

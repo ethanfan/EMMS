@@ -20,6 +20,18 @@
         <item>子任务管理</item>
         <item>故障总结</item>
     </string-array>
-
-
+    <string-array name="Equipment_Status">
+        <item>处理中</item>
+        <item>暂停</item>
+        <item>待料</item>
+        <item>完成</item>
+    </string-array>
+    <string-array name="Equipment_Operator_Status">
+        <item>处理中</item>
+        <item>暂停</item>
+        <item>退出</item>
+        <item>领料</item>
+        <item>待料</item>
+        <item>完成</item>
+    </string-array>
 </resources>

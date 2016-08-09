@@ -304,18 +304,33 @@
                             android:layout_width="0dp"
                             android:layout_height="130dp"
                             android:layout_weight="3"
-                            android:background="@android:color/white"
-                            android:padding="10dp">
-
+                            android:background="@android:color/transparent"
+                            >
+                            <com.emms.ui.DropEditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:minHeight="40dip"
+                                android:id="@+id/simple_description"
+                                drop:drawableRight="@mipmap/drop_down"
+                                drop:dropMode="flow_parent"
+                                drop:hint="@string/select"
+                                drop:hintColor="@color/hint_color"
+                                >
+                            </com.emms.ui.DropEditText>
                             <EditText
                                 android:id="@+id/edit_task_description"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@null"
+                                android:layout_below="@+id/simple_description"
+                                android:background="@color/white"
+                                android:height="40dip"
                                 android:hint="@string/task_description_hint"
                                 android:textColor="@color/text_color"
                                 android:textColorHint="@color/hint_color"
-                                android:textSize="18sp" />
+                                android:paddingTop="10dp"
+                                android:paddingBottom="10dp"
+                                android:textSize="18sp"
+                                android:layout_marginTop="15dp"/>
                         </RelativeLayout>
                     </LinearLayout>
 

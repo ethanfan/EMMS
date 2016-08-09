@@ -132,7 +132,6 @@ public  class HttpUtils {
     }
 
     public static void get( final Context context,final String table, final HttpParams params,final HttpCallback callback){
-
         String cookie = SharedPreferenceManager.getCookie(context);
         if (cookie !=null) {
             params.putHeaders("Origin", "http://EMMSAPP");
@@ -163,7 +162,7 @@ public  class HttpUtils {
     public static void download(Context context,String storeFilePath, String url, ProgressListener
             progressListener, HttpCallback callback){
         RxVolley.setContext(context);
-        RxVolley.download(storeFilePath,"https://cloud.linkgoo.cn/app/emms/EMMS.zip",progressListener,callback);
+        RxVolley.download(storeFilePath,"https://edpazure.esquel.cn/apps/hrcampus/prod/EMMS.zip",progressListener,callback);
     }
     public static void delete( final Context context,final String table, final HttpParams params,final HttpCallback callback){
 
@@ -222,7 +221,7 @@ public  class HttpUtils {
                     toast.show();
                 }
             });
-          //  URL url = new URL("https://cloud.linkgoo.cn/app/emms/EMMS.zip");
+           //URL url = new URL("https://cloud.linkgoo.cn/app/emms/EMMS.zip");
             URL url = new URL("https://edpazure.esquel.cn/apps/hrcampus/prod/EMMS.zip");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -316,5 +315,19 @@ public  class HttpUtils {
                     .encoding("UTF-8") //编码格式，默认为utf-8
                     .doTask();  //执行请求操作
         }
+    public static void postWithoutCookie( final Context context,final String table, final HttpParams params,final HttpCallback callback){
 
+            params.putHeaders("Origin", "http://EMMSAPP");
+            params.putHeaders("Referer", "http://EMMSAPP");
+            RxVolley.setContext(context);
+            new RxVolley.Builder()
+                    .url(BuildConfig.getServerAPIEndPoint() + table)
+                    .httpMethod(RxVolley.Method.POST) //default GET or POST/PUT/DELETE/HEAD/OPTIONS/TRACE/PATCH
+                    .contentType(RxVolley.ContentType.JSON)//default FORM or JSON
+                    .params(params)
+                    .retryPolicy(new DefaultRetryPolicy(5000,0,1f))
+                    .callback(callback)
+                    .encoding("UTF-8") //default
+                    .doTask();
+    }
 }

@@ -21,6 +21,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.DatastoreException.DatastoreException;
+import com.datastore_android_sdk.callback.StoreCallback;
+import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
@@ -33,6 +36,10 @@ import com.emms.schema.Task;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
 import com.emms.util.DataUtil;
+import com.emms.util.ToastUtil;
+import com.google.common.util.concurrent.ListenableFuture;
+
+import net.minidev.json.JSONUtil;
 
 import java.util.ArrayList;
 
@@ -57,6 +64,7 @@ public class SummaryActivity extends BaseActivity{
     private ArrayList<ObjectElement> typeList=new ArrayList<ObjectElement>();
     private ObjectElement TaskDetail;
     private boolean TaskComplete=false;
+    private String TaskTrouble_ID="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +96,7 @@ public class SummaryActivity extends BaseActivity{
             }
         });
         if(TaskComplete) {
+            comfirm.setVisibility(View.GONE);
             findViewById(R.id.footer_toolbar).setVisibility(View.VISIBLE);
             //initFooterToolbar
             findViewById(R.id.preStep).setOnClickListener(new View.OnClickListener() {
@@ -100,15 +109,15 @@ public class SummaryActivity extends BaseActivity{
                 @Override
                 public void onClick(View v) {
                     //待写
-                    Intent intent=new Intent(context,CommandActivity.class);
-                    intent.putExtra("TaskComplete",true);
-                    intent.putExtra("TaskDetail",TaskDetail.toString());
-                    startActivity(intent);
+
+                    submitFaultSummaryToServer();
+
                 }
             });
         }
     }
     private void initSearchView() {
+        initData();
         mDrawer_layout = (CustomDrawerLayout) findViewById(R.id.search_page);
         mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mDrawer_layout.setBackgroundColor(Color.parseColor("#00000000"));
@@ -145,7 +154,7 @@ public class SummaryActivity extends BaseActivity{
         });
         getFaultType();
         initDropSearchView(null, type.getmEditText(), context.getResources().
-                        getString(R.string.faultType), DataDictionary.DATA_CODE,
+                        getString(R.string.faultType), DataDictionary.DATA_NAME,
                 1, "获取数据失败");
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -253,9 +262,13 @@ public class SummaryActivity extends BaseActivity{
         FaultSummary.set(Task.TASK_ID,DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
 
         //如果存在TaskTrouble_ID则填对应，否则填0
-        FaultSummary.set("TaskTrouble_ID",0);
+        if(TaskTrouble_ID.equals("")){
+        FaultSummary.set("TaskTrouble_ID",0);}
+        else{
+            FaultSummary.set("TaskTrouble_ID",Integer.valueOf(TaskTrouble_ID));
+        }
        // FaultSummary.set("TroubleType",type.getText().toString());
-        FaultSummary.set("TroubleType","1234");
+        FaultSummary.set("TroubleType",type.getText().toString());
         FaultSummary.set("TroubleDescribe",description.getText().toString());
         FaultSummary.set("MaintainDescribe",repair_status.getText().toString());
         httpParams.putJsonParams(FaultSummary.toJson());
@@ -264,12 +277,19 @@ public class SummaryActivity extends BaseActivity{
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 dismissCustomDialog();
+                if(TaskComplete){
+                    Intent intent=new Intent(context,CommandActivity.class);
+                    intent.putExtra("TaskComplete",true);
+                    intent.putExtra("TaskDetail",TaskDetail.toString());
+                    startActivity(intent);
+                }
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 dismissCustomDialog();
+                ToastUtil.showToastLong(R.string.submitFail,context);
             }
         });
     }
@@ -300,7 +320,7 @@ public class SummaryActivity extends BaseActivity{
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             JsonObjectElement FaultSummary=new JsonObjectElement();
-            FaultSummary.set("TaskTrouble_ID",0);
+            FaultSummary.set("TaskTrouble_ID",TaskTrouble_ID);
             FaultSummary.set("TroubleType",type.getText().toString());
             FaultSummary.set("TroubleDescribe",description.getText().toString());
             FaultSummary.set("MaintainDescribe",repair_status.getText().toString());
@@ -320,11 +340,30 @@ public class SummaryActivity extends BaseActivity{
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    TaskTrouble_ID= DataUtil.isDataElementNull(faultData.get("TaskTrouble_ID"));
                     type.setText(DataUtil.isDataElementNull(faultData.get("TroubleType")));
                     description.setText(DataUtil.isDataElementNull(faultData.get("TroubleDescribe")));
                     repair_status.setText(DataUtil.isDataElementNull(faultData.get("MaintainDescribe")));
                 }
             });
         }
+    }
+    private void initData(){
+        String sql="select * from DataDictionary where DataType='EquipmentTroubleSort'";
+        getSqliteStore().performRawQuery(sql, "DataDictionary", new StoreCallback() {
+            @Override
+            public void success(DataElement element, String resource) {
+                if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
+                    for(int i=0;i<element.asArrayElement().size();i++){
+                        typeList.add(element.asArrayElement().get(i).asObjectElement());
+                    }
+                }
+            }
+
+            @Override
+            public void failure(DatastoreException ex, String resource) {
+
+            }
+        });
     }
 }
