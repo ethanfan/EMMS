@@ -177,7 +177,9 @@
     <string name="exchangeOrderToOnePerson">只能转单给一人</string>
     <string name="exchangeOrder">转单</string>
     <string name="exchangeOrderSuccess">转单成功</string>
+    <string name="exchangeOrderFail">转单失败</string>
     <string name="inviteSuccess">邀请成功</string>
+    <string name="inviteFail">邀请成功</string>
     <string name="taskHistory">任务历史</string>
     <string name="scanICCardSuccess">刷卡成功</string>
     <string name="scanICCardFail">刷卡失败</string>
@@ -194,4 +196,17 @@
     <string name="pleaseScanICcardNum">请扫描或输入ICCard号</string>
     <string name="noSimpleDescriptionData">该设备无简要描述,请手动输入</string>
     <string name="simpleDescription">简要描述</string>
+    <string name="factory">分厂:</string>
+    <string name="factoryTitle">分厂</string>
+    <string name="pleaseSelectFactory">请选择分厂</string>
+    <string name="equipment_status">设备状态：&#160;&#160;</string>
+    <string name="setting">设置</string>
+    <string name="AccountOrPasswordFail">账号/密码错误</string>
+    <string name="thisWorkerIsBusy">该人员处于忙碌状态，不可选择</string>
+    <string name="invitorIsInTask">被邀人已在该任务中，无法重复邀请</string>
+    <string name="exchangerIsInTask">被转单人员已在该任务中，无法重复邀请</string>
+    <string name="getTaskOperatorFail">获取任务参与人数据失败，请检查网络</string>
+    <string name="OnlyDealingTaskCanAddEquipment">只有处理中任务可以添加设备</string>
+    <string name="OnlyDealingTaskCanAddPhoto">只有处理中任务可以添加照片</string>
+    <string name="CanNotChangeEquipmentStatus">设备状态为已完成，不可修改状态</string>
 </resources>

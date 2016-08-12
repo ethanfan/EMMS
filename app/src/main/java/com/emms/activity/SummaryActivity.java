@@ -31,8 +31,10 @@ import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Task;
+import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
 import com.emms.util.DataUtil;
@@ -118,12 +120,18 @@ public class SummaryActivity extends BaseActivity{
     }
     private void initSearchView() {
         initData();
+        searchBox = (EditText) findViewById(R.id.et_search);
         mDrawer_layout = (CustomDrawerLayout) findViewById(R.id.search_page);
+        mDrawer_layout.setCloseDrawerListener(new CloseDrawerListener() {
+            @Override
+            public void close() {
+                searchBox.setText("");
+            }
+        });
         mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mDrawer_layout.setBackgroundColor(Color.parseColor("#00000000"));
         menuSearchTitle = (TextView) findViewById(R.id.left_title);
         clearBtn = (ImageView) findViewById(R.id.iv_search_clear);
-        searchBox = (EditText) findViewById(R.id.et_search);
         emptyView = (ViewGroup) findViewById(R.id.empty_view);
         mResultListView = (ListView) findViewById(R.id.listview_search_result);
         mResultAdapter = new ResultListAdapter(context);
@@ -159,6 +167,7 @@ public class SummaryActivity extends BaseActivity{
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mDrawer_layout.closeDrawer(Gravity.RIGHT);
             }
         });
         searchBox.addTextChangedListener(new TextWatcher() {
@@ -276,12 +285,20 @@ public class SummaryActivity extends BaseActivity{
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                dismissCustomDialog();
-                if(TaskComplete){
-                    Intent intent=new Intent(context,CommandActivity.class);
-                    intent.putExtra("TaskComplete",true);
-                    intent.putExtra("TaskDetail",TaskDetail.toString());
-                    startActivity(intent);
+                if(t!=null) {
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    if(jsonObjectElement.get(Data.SUCCESS)!=null&&jsonObjectElement.get(Data.SUCCESS).valueAsBoolean()) {
+                        dismissCustomDialog();
+                        ToastUtil.showToastLong(R.string.submitSuccess,context);
+                        if (TaskComplete) {
+                            Intent intent = new Intent(context, CommandActivity.class);
+                            intent.putExtra("TaskComplete", true);
+                            intent.putExtra("TaskDetail", TaskDetail.toString());
+                            startActivity(intent);
+                        }
+                    }else {
+                        ToastUtil.showToastLong(R.string.submitFail,context);
+                    }
                 }
             }
 

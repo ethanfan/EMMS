@@ -20,6 +20,7 @@ import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
+import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -37,6 +38,7 @@ public class TaskHistory extends BaseActivity {
     private String TaskClass;
     private static int PAGE_SIZE=10;
     private int pageIndex=1;
+    private int RecCount=0;
     private Handler handler=new Handler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +86,7 @@ public class TaskHistory extends BaseActivity {
             }
         };
         listView.setAdapter(adapter);
+        listView.setMode(PullToRefreshListView.Mode.PULL_FROM_END);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -117,6 +120,11 @@ public class TaskHistory extends BaseActivity {
         });
     }
     private void getTaskHistory(){
+        if(RecCount!=0){
+            if((pageIndex-1)*PAGE_SIZE>=RecCount){
+                ToastUtil.showToastLong(R.string.noMoreData,context);
+                return;
+            }}
         showCustomDialog(R.string.loadingData);
         HttpParams params = new HttpParams();
         params.put("task_class", TaskClass);
@@ -128,14 +136,19 @@ public class TaskHistory extends BaseActivity {
                 super.onSuccess(t);
                 if(t!=null){
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    if(jsonObjectElement!=null){
                     if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
+                        RecCount = jsonObjectElement.get("RecCount").valueAsInt();
+                        if (pageIndex == 1) {
+                            data.clear();
+                        }
                         pageIndex++;
                         for(DataElement dataElement:jsonObjectElement.get("PageData").asArrayElement()){
                          data.add(dataElement.asObjectElement());
                         }
                         adapter.notifyDataSetChanged();
                     }
-                }
+                }}
                 dismissCustomDialog();
             }
             @Override

@@ -54,7 +54,7 @@ import com.emms.util.WheelAdapter;
  * 
  * @author Yuri Kanivets
  */
-public class WheelView extends View {
+public class WheelView2 extends View {
 	/** Scrolling duration */
 	private static final int SCROLLING_DURATION = 400;
 
@@ -142,7 +142,7 @@ public class WheelView extends View {
 	/**
 	 * Constructor
 	 */
-	public WheelView(Context context, AttributeSet attrs, int defStyle) {
+	public WheelView2(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		initData(context);
 	}
@@ -150,7 +150,7 @@ public class WheelView extends View {
 	/**
 	 * Constructor
 	 */
-	public WheelView(Context context, AttributeSet attrs) {
+	public WheelView2(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		initData(context);
 	}
@@ -158,7 +158,7 @@ public class WheelView extends View {
 	/**
 	 * Constructor
 	 */
-	public WheelView(Context context) {
+	public WheelView2(Context context) {
 		super(context);
 		initData(context);
 	}

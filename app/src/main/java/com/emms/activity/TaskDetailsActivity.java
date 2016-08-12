@@ -1,6 +1,5 @@
 package com.emms.activity;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,16 +8,13 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.util.Base64;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +25,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -40,10 +37,7 @@ import com.emms.R;
 import com.emms.adapter.TaskAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Data;
 import com.emms.schema.Equipment;
-import com.emms.schema.Maintain;
-import com.emms.schema.Operator;
 import com.emms.schema.Task;
 import com.emms.ui.ChangeEquipmentDialog;
 import com.emms.ui.ExpandGridView;
@@ -51,7 +45,7 @@ import com.emms.ui.PopMenuTaskDetail;
 import com.emms.ui.ScrollViewWithListView;
 import com.emms.util.AnimateFirstDisplayListener;
 import com.emms.util.Bimp;
-import com.emms.util.BuildConfig;
+import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.FileUtils;
 import com.datastore_android_sdk.datastore.ObjectElement;
@@ -59,28 +53,22 @@ import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
-import com.emms.util.MessageUtils;
+import com.emms.util.ListViewUtility;
 import com.emms.util.RootUtil;
 import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.emms.util.SharedPreferenceManager;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
-import org.apache.commons.io.output.TaggedOutputStream;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,18 +110,20 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     static private HashMap<String, String> taskEquipmentStatus = new HashMap<String, String>();
 
     {
-        taskEquipmentStatus.put("0", "开始");
-        taskEquipmentStatus.put("1", "暂停");
-        taskEquipmentStatus.put("2", "领料");
+        taskEquipmentStatus.put("0", "待处理");
+        taskEquipmentStatus.put("1", "处理中");
+        taskEquipmentStatus.put("2", "暂停");
         taskEquipmentStatus.put("3", "待料");
-        taskEquipmentStatus.put(STATUS_DONE, "结束");
+        taskEquipmentStatus.put(STATUS_DONE, "完成");
     }
+     private HashMap<String, String> Equipment_Operator_Status_Name_ID_map= new HashMap<String, String>();
 
     protected ImageLoader imageLoader = ImageLoader.getInstance();
     private DisplayImageOptions options; // DisplayImageOptions是用于设置图片显示的类
 
     private static final int MSG_UPDATE_DEVICE_SUM_INFO = 10;
     private HashMap<String,HashMap<String,Integer>>TaskEquipment_OperatorID_Status=new HashMap<String,HashMap<String,Integer>>();//任务设备参与人状态map
+    private HashMap<String,String> Euqipment_ID_STATUS_map=new HashMap<String, String>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -189,9 +179,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         taskAdapter = new TaskAdapter(datas) {
 
             @Override
-            public View getCustomView(View convertView, int position, ViewGroup parent) {
-                TaskViewHolder holder;
-                if (convertView == null) {
+            public View getCustomView(View convertView, final int position, ViewGroup parent) {
+                final TaskViewHolder holder;
+              //  if (convertView == null) {
                     convertView = LayoutInflater.from(TaskDetailsActivity.this).inflate(R.layout.item_order_details, parent, false);
                     holder = new TaskViewHolder();
                     holder.tv_creater = (TextView) convertView.findViewById(R.id.id_participant);
@@ -200,25 +190,51 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     holder.tv_create_time = (TextView) convertView.findViewById(R.id.tv_start_time_details);
                     holder.tv_end_time = (TextView) convertView.findViewById(R.id.tv_end_time_details);
                     holder.tv_task_state = (TextView) convertView.findViewById(R.id.tv_task_state_details);
-
-                    convertView.setTag(holder);
-                } else {
-                    holder = (TaskViewHolder) convertView.getTag();
-                }
-                String creater = DataUtil.isDataElementNull(datas.get(position).get("Name"));
-                if (creater != null) {
-                    if (!creater.equals("")) {
-                        holder.tv_creater.setText(creater);
-                    } else {
-                        holder.tv_creater.setText(getResources().getString(R.string.no_creater));
-                    }
-                } else {
-
+                    holder.listView=(ListView)convertView.findViewById(R.id.equipment_opeartor_list);
+              //      convertView.setTag(holder);
+              //  } else {
+              //      holder = (TaskViewHolder) convertView.getTag();
+             //   }
+                if(datas.get(position).get("TaskEquipmentOperatorList")!=null&&
+                        datas.get(position).get("TaskEquipmentOperatorList").asArrayElement().size()>0) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            holder.tv_creater.setVisibility(View.GONE);
+                            final ArrayList<ObjectElement> obj=new ArrayList<ObjectElement>();
+                            for(int j=0;j< datas.get(position).get("TaskEquipmentOperatorList").asArrayElement().size();j++){
+                                obj.add( datas.get(position).get("TaskEquipmentOperatorList").asArrayElement().get(j).asObjectElement());
+                            }
+                            if(holder.listView.getAdapter()!=null){
+                                ((TaskAdapter)holder.listView.getAdapter()).notifyDataSetChanged();
+                            }
+                            else {
+                                holder.listView.setAdapter(new TaskAdapter(obj) {
+                                    @Override
+                                    public View getCustomView(View convertView1, int position1, ViewGroup parent1) {
+                                        TaskViewHolder holder1;
+                                        if (convertView1 == null) {
+                                            holder1 = new TaskViewHolder();
+                                            convertView1 = LayoutInflater.from(TaskDetailsActivity.this).inflate(R.layout.item_equipment_operator_status, parent1, false);
+                                            holder1.tv_creater = (TextView) convertView1.findViewById(R.id.operator_name);
+                                            holder1.tv_task_state = (TextView) convertView1.findViewById(R.id.operator_status);
+                                           convertView1.setTag(holder1);
+                                       } else {
+                                            holder1 = (TaskViewHolder) convertView1.getTag();
+                                       }
+                                        holder1.tv_creater.setText(DataUtil.isDataElementNull(obj.get(position1).get("Name")));
+                                        holder1.tv_task_state.setText(Equipment_Operator_Status_Name_ID_map.get(DataUtil.isDataElementNull(obj.get(position1).get("Status"))));
+                                        return convertView1;
+                                    }
+                                });
+                             }
+                            ListViewUtility.setListViewHeightBasedOnChildren(holder.listView);
+                        }
+                    });
+                }else{
+                    holder.tv_creater.setVisibility(View.VISIBLE);
                     holder.tv_creater.setText(getResources().getString(R.string.no_creater));
                 }
-
-
-              //  holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get(Equipment.EQUIPMENT_ID)));
                 holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get("OracleID")));
                 holder.tv_device_name.setText(DataUtil.isDataElementNull(datas.get(position).get(Equipment.EQUIPMENT_NAME)));
                 //String createTime = LongToDate.longPointDate(datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsLong());
@@ -251,6 +267,14 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     }
 
     private void initDatas() {
+        {
+            Equipment_Operator_Status_Name_ID_map.put("0",getResources().getString(R.string.start));
+            Equipment_Operator_Status_Name_ID_map.put("1",getResources().getString(R.string.pause));
+            Equipment_Operator_Status_Name_ID_map.put("2",getResources().getString(R.string.quit));
+            Equipment_Operator_Status_Name_ID_map.put("3",getResources().getString(R.string.material_requisition));
+            Equipment_Operator_Status_Name_ID_map.put("4",getResources().getString(R.string.wait_material));
+            Equipment_Operator_Status_Name_ID_map.put("5",getResources().getString(R.string.complete));
+        }
         // for test
         //  taskId = 93L;
 
@@ -302,6 +326,10 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                                     long arg3) {
                 if (arg2 == dataList.size()) {
+                    if(TaskStatus!=1){
+                        ToastUtil.showToastLong(R.string.OnlyDealingTaskCanAddPhoto,mContext);
+                        return;
+                    }
                     new PopupWindows(mContext, noScrollgridview);
                 } else {
                     ImageView image = (ImageView) arg1.findViewById(R.id.item_grida_image);
@@ -525,7 +553,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case TAKE_PICTURE:
+            case TAKE_PICTURE:{
                 if (resultCode == -1) {
                     //Bimp.drr.add(path);
 
@@ -560,7 +588,14 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     //在此上传图片到服务器;
                     submitPictureToServer(path);
                 }
+                break;}
+            case Constants.REQUEST_CODE_EXCHANGE_ORDER:{
+                if(requestCode==1){
+                setResult(2);
+                finish();
+                }
                 break;
+            }
         }
     }
 
@@ -644,7 +679,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 public void onFailure(int errorNo, String strMsg) {
                     super.onFailure(errorNo, strMsg);
 
-                    Toast toast = Toast.makeText(TaskDetailsActivity.this, "上传图片失败", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(TaskDetailsActivity.this, "上传图片失败,请检查网络", Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
                 }
@@ -685,7 +720,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         showCustomDialog(R.string.loadingData);
         HttpParams params = new HttpParams();
         params.put("task_id", taskId.toString());
-        params.put("pageSize",10);
+        params.put("pageSize",1000);
         params.put("pageIndex",1);
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
         HttpUtils.get(mContext, "TaskDetailList", params, new HttpCallback() {
@@ -708,6 +743,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                 Task_DeviceId_TaskEquipmentId.put(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)),
                                         DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("TaskEquipment_ID")));
                                 String equipmentStatus = DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("Status"));
+                                Euqipment_ID_STATUS_map.put(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)),
+                                        equipmentStatus);
                               if(jsonArrayElement.get(i).asObjectElement().get("TaskEquipmentOperatorList")!=null&&
                                       jsonArrayElement.get(i).asObjectElement().get("TaskEquipmentOperatorList").asArrayElement().size()>0) {
                                  HashMap<String,Integer> Equipment_OperatorID_Status=new HashMap<String, Integer>();
@@ -810,7 +847,10 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-//
+        if(TaskStatus!=1){
+            ToastUtil.showToastLong(R.string.OnlyDealingTaskCanAddEquipment,this);
+            return;
+        }
             Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             String iccardID = NfcUtils.dumpTagData(tag);
 
@@ -849,7 +889,10 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                //若已有该设备号，弹出对话框，申请进行状态变更
+                                if(Euqipment_ID_STATUS_map.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).equals(STATUS_DONE)){
+                                    ToastUtil.showToastLong(R.string.CanNotChangeEquipmentStatus,mContext);
+                                    return;
+                                }
                                 if(changeEquipmentDialog==null) {
                                     changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.change_equipment_status_dialog, R.style.MyDialog);
                                     changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),

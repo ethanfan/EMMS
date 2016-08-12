@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,8 +36,12 @@ import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.push.PushService;
 import com.emms.ui.KProgressHUD;
+import com.emms.ui.PopMenuLoginActivity;
+import com.emms.ui.PopMenuTaskDetail;
 import com.emms.util.BuildConfig;
 import com.emms.util.Constants;
+import com.emms.util.DataUtil;
+import com.emms.util.RootUtil;
 import com.emms.util.SharedPreferenceManager;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.toolbox.Loger;
@@ -67,14 +72,18 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private EditText inputPassWord;
     private EditText inputname;
     private KProgressHUD hud;
+    private String def_Factory="GEW";
     //private ImageButton setting;
-    Handler pushHandler = PushService.mHandler;
+    private Handler pushHandler = PushService.mHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         mContext = this;
+        if(SharedPreferenceManager.getFactory(this)==null){
+            SharedPreferenceManager.setFactory(this,def_Factory);
+        }
 //        //透明状态栏
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 //        //透明导航栏
@@ -88,8 +97,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         findViewById(R.id.setting).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(mContext,EnteringEquipmentICCardIDActivity.class);
-                startActivity(intent);
+                ShowPopWindow(v);
             }
         });
         login = (TextView) findViewById(R.id.login);
@@ -163,40 +171,48 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     public void onSuccess(String t) {
                         super.onSuccess(t);
                         hud.dismiss();
-                        try {
-                            JSONObject jsonObject = new JSONObject(t);
-                            int code = Integer.parseInt(jsonObject.get("Result").toString());
-                            boolean isSuccess = jsonObject.get("Success").equals(true);
-                            if ((code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS ||
-                                    code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) && isSuccess) {
-                                SharedPreferenceManager.setUserName(LoginActivity.this, userid);
-                                SharedPreferenceManager.setPassWord(LoginActivity.this, password);
-                                String userData =jsonObject.getString("UserData");
-                                SharedPreferenceManager.setUserData(LoginActivity.this, userData);
-                                String data=jsonObject.getString("Data");
-                                SharedPreferenceManager.setLoginData(LoginActivity.this,data);
-                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        if(t!=null){
+                            JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                            if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
+                                try {
+                                    JSONObject jsonObject = new JSONObject(t);
+                                    int code = Integer.parseInt(jsonObject.get("Result").toString());
+                                    boolean isSuccess = jsonObject.get("Success").equals(true);
+                                    if ((code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS ||
+                                            code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) && isSuccess) {
+                                        SharedPreferenceManager.setUserName(LoginActivity.this, userid);
+                                        SharedPreferenceManager.setPassWord(LoginActivity.this, password);
+                                        String userData =jsonObject.getString("UserData");
+                                        SharedPreferenceManager.setUserData(LoginActivity.this, userData);
+                                        String data=jsonObject.getString("Data");
+                                        SharedPreferenceManager.setLoginData(LoginActivity.this,data);
+                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
 
-                                String Organise_ID=new JSONObject(data).get("Organise_ID").toString();
-                                Set<String> tagSet = new LinkedHashSet<String>();
-                                tagSet.add(userid);
-                                tagSet.add(Organise_ID);
-                                //调用JPush API设置Tag
-                                pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, tagSet));
+                                        String Organise_ID=new JSONObject(data).get("Organise_ID").toString();
+                                        Set<String> tagSet = new LinkedHashSet<String>();
+                                        //tagSet.add(userid);
+                                        tagSet.add(Organise_ID);
+                                        //调用JPush API设置Tag
+                                        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, tagSet));
 
-                                pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, userid));
+                                        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, Organise_ID));
 
-                                finish();
-                            } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
-                                Toast.makeText(mContext, getResources().getString(R.string.warning_message_frozen), Toast.LENGTH_SHORT).show();
-                            } else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
-                                Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
+                                        Toast.makeText(mContext, getResources().getString(R.string.warning_message_frozen), Toast.LENGTH_SHORT).show();
+                                    } else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
+                                        Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    hud.dismiss();
+                                    Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();
+                                }
+                            }else{
+                                ToastUtil.showToastLong(R.string.AccountOrPasswordFail,mContext);
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            hud.dismiss();
-                            Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();
                         }
+
                     }
                 });
                 break;
@@ -235,17 +251,21 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
         if (headers == null)
             return;
-
             String cookie=headers.get("Set-Cookie");
-            String[]cookies=cookie.split(";");
-       // String[] cookievalues = cookies[0].split("=");
-        SharedPreferenceManager.setCookie(LoginActivity.this,cookies[0]);
+        if(cookie!=null) {
+            String[] cookies = cookie.split(";");
+            // String[] cookievalues = cookies[0].split("=");
+            SharedPreferenceManager.setCookie(LoginActivity.this, cookies[0]);
+        }
 
     }
     //下载DB文件
     private void getNewDataFromServer() {
+       // final File db = new File(getExternalFilesDir(null), "/EMMS"+SharedPreferenceManager.getFactory(this)+".db");
         final File db = new File(getExternalFilesDir(null), "/EMMS.db");
         if(db.exists()){
+            //getDataBaseUpdateFromServer();
+            getDBDataLastUpdateTime();
             return;
         }
        final File dbFile = new File(getExternalFilesDir(null), "/EMMS.zip");
@@ -313,11 +333,30 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         });
     }*/
     }
-    private void getDataBaseUpdateFromServer(){
+    private void getDataBaseUpdateFromServer(DataElement dataElement){
         HttpParams params=new HttpParams();
-        params.put("lastUpdateTime",2);
-        params.put("fromFactory","GEW");
-                HttpUtils.getWithoutCookies(this, "SqlToSqlite", params, new HttpCallback() {
+        JsonObjectElement data=new JsonObjectElement();
+//        data.set("LastUpdateTime_BaseOrganise", DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_BaseOrganise")));
+//        data.set("LastUpdateTime_DataDictionary",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataDictionary")));
+//        data.set("LastUpdateTime_DataType",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataType")));
+//        data.set("LastUpdateTime_Equipment",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_Equipment")));
+//        data.set("LastUpdateTime_TaskOrganiseRelation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_TaskOrganiseRelation")));
+
+        data.set("LastUpdateTime_BaseOrganise","0x000000000001499B");
+        data.set("LastUpdateTime_DataDictionary","0x000000000001499B");
+        data.set("LastUpdateTime_DataType","0x000000000001499B");
+        data.set("LastUpdateTime_Equipment","0x000000000001499B");
+        data.set("LastUpdateTime_TaskOrganiseRelation","0x000000000001499B");
+
+        if(SharedPreferenceManager.getFactory(this)==null){
+        data.set("Factory_ID",def_Factory);}
+        else {
+            data.set("Factory_ID",SharedPreferenceManager.getFactory(this));
+        }
+        data.set("IsNewApp",1);
+       // params.put("sqlLiteDBModel",data.toJson());
+        params.putJsonParams(data.toJson());
+        HttpUtils.postWithoutCookie(this, "SqlToSqlite", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -334,7 +373,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     if(json.get("BaseOrganise")!=null&&json.get("BaseOrganise").asArrayElement().size()>0){
                         updateData(json.get("BaseOrganise"),EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE);}
                     if(json.get("DataDictionary")!=null&&json.get("DataDictionary").asArrayElement().size()>0){
-                        updateData(json.get("DataDictionary"),EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY);}
+                         updateData(json.get("DataDictionary"),EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY);
+                    }
                     if(json.get("Equipment")!=null&&json.get("Equipment").asArrayElement().size()>0){
                         updateData(json.get("Equipment"),EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT);}
                     if(json.get("TaskOrganiseRelation")!=null&&json.get("TaskOrganiseRelation").asArrayElement().size()>0){
@@ -349,7 +389,18 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         });
     }
     private void updateData(DataElement data,String resource){
-        for(int i=0;i<data.asArrayElement().size();i++) {
+        getSqliteStore().createElement(data, resource, new StoreCallback() {
+            @Override
+            public void success(DataElement element, String resource) {
+               Log.e("Success","successSave");
+            }
+
+            @Override
+            public void failure(DatastoreException ex, String resource) {
+                Log.e("Fail","FailSave");
+            }
+        });
+      /*  for(int i=0;i<data.asArrayElement().size();i++) {
             getSqliteStore().updateElements(new Query(), data.asArrayElement().get(i),resource, new StoreCallback() {
                 @Override
                 public void success(DataElement element, String resource) {
@@ -361,7 +412,38 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     Log.e(ex.toString(),resource.toString());
                 }
             });
-        }
+        }*/
 
+    }
+    private void ShowPopWindow(View v){
+        PopMenuLoginActivity popMenuLoginActivity = new PopMenuLoginActivity(this, 300) {
+
+            @Override
+            public void onEventDismiss() {
+
+            }
+        };
+        String[] mTitles = getResources().getStringArray(R.array.menu_login);
+
+        popMenuLoginActivity.addItems(mTitles);
+        popMenuLoginActivity.showAsDropDown(v);
+    }
+    private void getDBDataLastUpdateTime(){
+        String sql="    select * from (select max(LastUpdateTime) LastUpdateTime_BaseOrganise from BaseOrganise)," +
+                "    (select max(LastUpdateTime) LastUpdateTime_DataDictionary from DataDictionary)," +
+                "    (select max(LastUpdateTime) LastUpdateTime_DataType from DataType)," +
+                "    (select max(LastUpdateTime) LastUpdateTime_Equipment from Equipment)," +
+                "    (select max(LastUpdateTime) LastUpdateTime_TaskOrganiseRelation from TaskOrganiseRelation)";
+        getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
+            @Override
+            public void success(DataElement element, String resource) {
+                getDataBaseUpdateFromServer(element.asArrayElement().get(0));
+            }
+
+            @Override
+            public void failure(DatastoreException ex, String resource) {
+
+            }
+        });
     }
 }

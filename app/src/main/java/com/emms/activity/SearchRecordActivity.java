@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.RxVolley;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -28,6 +29,7 @@ import com.emms.schema.Task;
 import com.emms.ui.NFCDialog;
 import com.emms.util.BuildConfig;
 import com.emms.util.SharedPreferenceManager;
+import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -129,10 +131,17 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                if(t!=null){
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
                 Toast toast=Toast.makeText(mContext,R.string.scanICCardSuccess,Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER,0,0);
                 toast.show();
-                getTaskHistory(TaskClass);
+                getTaskHistory(TaskClass);}
+                    else{
+                        ToastUtil.showToastLong("刷卡登录失败",mContext);
+                    }
+                }
                 dismissCustomDialog();
             }
 
@@ -159,9 +168,10 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
             return;
 
         String cookie=headers.get("Set-Cookie");
-        String[]cookies=cookie.split(";");
+        if(cookie!=null){
+        String[] cookies = cookie.split(";");
         // String[] cookievalues = cookies[0].split("=");
-        SharedPreferenceManager.setCookie(SearchRecordActivity.this,cookies[0]);
-
+        SharedPreferenceManager.setCookie(SearchRecordActivity.this, cookies[0]);
+    }
     }
 }

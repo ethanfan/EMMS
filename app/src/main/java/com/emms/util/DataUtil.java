@@ -21,4 +21,12 @@ public class DataUtil {
         }
         return date;
     }
+    public static boolean isNumeric(String checkStr) {
+        try {
+            Integer.parseInt(checkStr);
+            return true; // Did not throw, must be a number
+        } catch (NumberFormatException err) {
+            return false; // Threw, So is not a number
+        }
+    }
 }

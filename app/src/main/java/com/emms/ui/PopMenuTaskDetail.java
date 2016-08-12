@@ -1,5 +1,6 @@
 package com.emms.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -31,6 +32,7 @@ import com.emms.activity.SummaryActivity;
 import com.emms.activity.WorkLoadActivity;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
+import com.emms.util.Constants;
 import com.emms.util.ListViewUtility;
 import com.emms.util.RootUtil;
 import com.emms.util.ToastUtil;
@@ -47,7 +49,6 @@ public abstract class PopMenuTaskDetail {
     private ObjectElement TaskDetail;
 	private Long TaskId;
 	private String TaskClass;
-
 	public void setIs_Main_person_in_charge_Operator_id(boolean is_Main_person_in_charge_Operator_id) {
 		this.is_Main_person_in_charge_Operator_id = is_Main_person_in_charge_Operator_id;
 	}
@@ -260,7 +261,7 @@ public abstract class PopMenuTaskDetail {
 		Intent intent=new Intent(context, InvitorActivity.class);
 		intent.putExtra(Task.TASK_ID,String.valueOf(TaskId));
 		intent.putExtra("isExChangeOrder",true);
-		context.startActivity(intent);
+		((Activity)context).startActivityForResult(intent, Constants.REQUEST_CODE_EXCHANGE_ORDER);
 	}
 	private void InviteHelp(){
 

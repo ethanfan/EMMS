@@ -3,51 +3,28 @@ package com.emms.ui;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
-import android.os.Handler;
-import android.os.Message;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
-import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.emms.R;
-import com.emms.activity.AppAplication;
-import com.emms.activity.TaskDetailsActivity;
 import com.emms.activity.dialogOnSubmitInterface;
-import com.emms.adapter.StatusAdapter;
-import com.emms.adapter.TaskAdapter;
-import com.emms.bean.WorkInfo;
-import com.emms.datastore.EPassSqliteStoreOpenHelper;
+import com.emms.adapter.MyWheelAdapter;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.DataDictionary;
 import com.emms.schema.Task;
+import com.emms.ui.WheelView.widget.WheelView;
 import com.emms.util.ArrayWheelAdapter;
-import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.j256.ormlite.field.types.IntegerObjectType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 自定义对话框
@@ -70,8 +47,14 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         Operator_Status = operator_Status;
     }
     private int Operator_Status=-1;
+
+//    public void setEquipment_Status(int equipment_Status) {
+//        Equipment_Status = equipment_Status;
+//    }
+//
+//    private int Equipment_Status=-1;
     private WheelView Status;
-    private ArrayWheelAdapter<String> adapter;
+//    private ArrayWheelAdapter<String> adapter;
     private ArrayList<String> Equipment_Status_List=new ArrayList<String>();
     private ArrayList<String> Equipment_Operator_Status_List=new ArrayList<String>();
     private ArrayList<String> showList=new ArrayList<String>();
@@ -95,6 +78,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         initMap();
         initData();
         initview();
+        setCanceledOnTouchOutside(false);
     }
     public void setOnSubmitInterface(dialogOnSubmitInterface onSubmitInterface) {
         this.onSubmitInterface = onSubmitInterface;
@@ -113,20 +97,20 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             @Override
             public void onClick(View v) {
                 if(ViewTag==1){
-                   postTaskOperatorEquipment(Equipment_Operator_Status_Name_ID_map.get(showList.get(Status.getCurrentItem())));
+                   postTaskOperatorEquipment(Equipment_Operator_Status_Name_ID_map.get(Status.getSelectionItem().toString()));
                     }
                     else if(ViewTag==2){
-                    postTaskEquipment(Equipment_Status_Name_ID_map.get(showList.get(Status.getCurrentItem())));
+                    postTaskEquipment(Equipment_Status_Name_ID_map.get((Status.getSelectionItem().toString())));
                     }
             }
         });
-        Status=(WheelView)findViewById(R.id.list);
-        Status.setVisibleItems(5);
-        //Status.getCurrentItem();
-        Status.setDrawingCacheEnabled(false);
         showList=Equipment_Operator_Status_List;
-        adapter=new ArrayWheelAdapter<>(showList);
-        Status.setAdapter(adapter);
+        Status=(WheelView)findViewById(R.id.WheelView);
+        Status.setWheelAdapter(new MyWheelAdapter(context));
+       Status.setSkin(com.wx.wheelview.widget.WheelView.Skin.Common);
+        Status.setWheelData(showList);
+        Status.setWheelSize(5);
+        Status.setDividerHeight(2);
         initTagButton();
    //     initEquipmentTagView();
     }
@@ -153,16 +137,23 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                Toast.makeText(context, "修改设备状态成功", Toast.LENGTH_SHORT).show();
-                dismiss();
-                onSubmitInterface.onsubmit();
+                if(t!=null) {
+                    JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                    if (jsonObjectElement != null) {
+                        if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
+                        Toast.makeText(context, "修改设备状态成功", Toast.LENGTH_SHORT).show();
+                        dismiss();}else{
+                            ToastUtil.showToastLong("修改设备状态失败,请检查参与人状态",context);
+                        }
+                        onSubmitInterface.onsubmit();
+                    }
+                }
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                        Toast.makeText(context, "修改设备状态失败", Toast.LENGTH_SHORT).show();
-
+                   ToastUtil.showToastLong("修改设备状态失败,请检查网络 ",context);
             }
         });
     }
@@ -317,13 +308,12 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             public void run() {
                 if(tag==1){
                     showList=Equipment_Operator_Status_List;
-                    adapter.setList(showList);
-                   Status.invalidate();
-                   // Status.
+                    Status.setWheelData(showList);
+                    Status.smoothScrollToPosition(0);
                 }else if(tag==2){
                     showList=Equipment_Status_List;
-                    adapter.setList(showList);
-                   Status.invalidate();
+                    Status.setWheelData(showList);
+                    Status.smoothScrollToPosition(0);
                 }
             }
         });
@@ -336,7 +326,8 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
      //   TaskOperatorDataToSubmit.set("TaskEquipment_ID",Integer.valueOf(TaskEquipmentId));
      //   TaskOperatorDataToSubmit.set("status",status);
      //   params.putJsonParams(TaskOperatorDataToSubmit.toJson());
-        HttpUtils.post(context, "TaskOperatorStatus?task_id="+TaskId+"&equipment_id="+EquipmentId+"&status="+status, params, new HttpCallback() {
+        HttpUtils.post(context, "TaskOperatorStatus?task_id="+TaskId+"&equipment_id="+EquipmentId+"&status="+status,
+                params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

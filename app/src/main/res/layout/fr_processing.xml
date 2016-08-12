@@ -4,18 +4,6 @@
     xmlns:tl="http://schemas.android.com/apk/res-auto"
     android:background="@color/bg_main"
     android:layout_height="match_parent">
-    <com.flyco.tablayout.SegmentTabLayout
-        android:id="@+id/tl_1"
-        android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="13dp"
-       android:layout_marginBottom="6dp"
-        tl:tl_bar_color="#ffffff"
-        tl:tl_indicator_color="@color/main_color"
-        tl:tl_tab_padding="20dp"
-        tl:tl_indicator_corner_radius="9dp"
-        android:visibility="gone"/>
     <com.handmark.pulltorefresh.library.PullToRefreshListView
         android:id="@+id/processing_list"
         android:layout_width="match_parent"

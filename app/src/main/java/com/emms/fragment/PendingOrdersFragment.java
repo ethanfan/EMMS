@@ -21,6 +21,7 @@ import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.RxVolley;
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
+import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.bean.TaskBean;
 import com.emms.httputils.HttpUtils;
@@ -58,24 +59,27 @@ public class PendingOrdersFragment extends BaseFragment{
     private static int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
+    private int removeNum=0;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
-        listView.setMode(PullToRefreshListView.Mode.PULL_FROM_END);
+        listView.setMode(PullToRefreshListView.Mode.BOTH);
         listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
                 //上拉加载更多
-                handler.postDelayed(new Runnable() {
+                handler.post(new Runnable() {
                     @Override
                     public void run() {
+                        pageIndex=1;
+                        getPendingOrderTaskDataFromServer();
                         listView.onRefreshComplete();
                      //   Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
                     }
-                },1000);
+                });
             }
 
             @Override
@@ -87,7 +91,7 @@ public class PendingOrdersFragment extends BaseFragment{
                         listView.onRefreshComplete();
                         //Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
                     }
-                },1000);
+                },0);
             }
         });
         return v;
@@ -145,7 +149,7 @@ public class PendingOrdersFragment extends BaseFragment{
     }
     private void getPendingOrderTaskDataFromServer(){
         if(RecCount!=0){
-            if(pageIndex*PAGE_SIZE>=RecCount){
+            if((pageIndex-1)*PAGE_SIZE>=RecCount){
                 ToastUtil.showToastLong(R.string.noMoreData,mContext);
                 return;
             }}
@@ -167,6 +171,8 @@ public class PendingOrdersFragment extends BaseFragment{
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
                     if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0)
                     RecCount=jsonObjectElement.get("RecCount").valueAsInt();
+                    if(taskNumInteface!=null){
+                    taskNumInteface.ChangeTaskNumListener(1,RecCount);}
                     if(pageIndex==1){
                         datas.clear();
                     }
@@ -236,6 +242,7 @@ public class PendingOrdersFragment extends BaseFragment{
                              toast.show();
                          }
                          datas.remove(position);
+
                          taskAdapter.setDatas(datas);
                          taskAdapter.notifyDataSetChanged();
                      }
@@ -272,6 +279,11 @@ public class PendingOrdersFragment extends BaseFragment{
                             toast.show();
                         }
                         datas.remove(position);
+                        removeNum++;
+                        if(taskNumInteface!=null){
+                            taskNumInteface.ChangeTaskNumListener(1,RecCount-removeNum);
+                            taskNumInteface.refreshProcessingFragment();
+                        }
                         taskAdapter.setDatas(datas);
                         taskAdapter.notifyDataSetChanged();
                     }
@@ -286,11 +298,20 @@ public class PendingOrdersFragment extends BaseFragment{
             }
         });
     }
-    public static Fragment newInstance(String TaskClass){
+    public static PendingOrdersFragment newInstance(String TaskClass){
         PendingOrdersFragment fragment = new PendingOrdersFragment();
         Bundle bundle = new Bundle();
         bundle.putString(Task.TASK_CLASS, TaskClass);
         fragment.setArguments(bundle);
         return fragment;
+    }
+    public void setTaskNumInteface(TaskNumInteface taskNumInteface) {
+        this.taskNumInteface = taskNumInteface;
+    }
+
+    private TaskNumInteface taskNumInteface;
+    public void doRefresh(){
+        pageIndex=1;
+        getPendingOrderTaskDataFromServer();
     }
 }

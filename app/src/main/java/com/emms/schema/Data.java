@@ -6,4 +6,5 @@ package com.emms.schema;
 public class Data {
     public static final String PAGE_DATA = "PageData";
     public static final String REC_COUNT = "RecCount";
+    public static final String SUCCESS="Success";
 }

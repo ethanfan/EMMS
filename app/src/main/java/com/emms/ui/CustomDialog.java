@@ -414,12 +414,20 @@ public class CustomDialog extends Dialog {
 
     private void initSearchView() {
         initWorkNumListData();
+
+        searchBox = (EditText) findViewById(R.id.et_search);
         mDrawer_layout = (CustomDrawerLayout) findViewById(R.id.search_page);
+        mDrawer_layout.setCloseDrawerListener(new CloseDrawerListener() {
+            @Override
+            public void close() {
+                searchBox.setText("");
+            }
+        });
         mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mDrawer_layout.setBackgroundColor(Color.parseColor("#00000000"));
+
         menuSearchTitle = (TextView) findViewById(R.id.left_title);
         clearBtn = (ImageView) findViewById(R.id.iv_search_clear);
-        searchBox = (EditText) findViewById(R.id.et_search);
         emptyView = (ViewGroup) findViewById(R.id.empty_view);
         mResultListView = (ListView) findViewById(R.id.listview_search_result);
         mResultAdapter = new ResultListAdapter(context);
@@ -461,7 +469,7 @@ public class CustomDialog extends Dialog {
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mDrawer_layout.closeDrawer(Gravity.RIGHT);
             }
         });
         searchBox.addTextChangedListener(new TextWatcher() {

@@ -17,6 +17,7 @@ import com.datastore_android_sdk.datastore.ObjectElement;
 import com.emms.R;
 import com.emms.bean.AwaitRepair;
 import com.emms.util.DataUtil;
+import com.emms.util.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ public class MultiAdapter extends BaseAdapter {
 
     public void setListItems(List<ObjectElement> listItems) {
         this.listItems = listItems;
+        mChecked.clear();
         if(mChecked!=null){
             for (; mChecked.size()<listItems.size();) {// 遍历且设置CheckBox默认状态为未选中
                 mChecked.add(false);
@@ -58,8 +60,17 @@ public class MultiAdapter extends BaseAdapter {
     private List<ObjectElement> listItems;
 
     private Context ctx;
+
+    public List<Boolean> getmChecked() {
+        return mChecked;
+    }
+
+    public void setmChecked(List<Boolean> mChecked) {
+        this.mChecked = mChecked;
+    }
+
     /** 标记CheckBox是否被选中 **/
-    List<Boolean> mChecked;
+    List<Boolean> mChecked= new ArrayList<Boolean>();;
 
     List<Integer> listItemID;
     //HashSet<Integer> OperatorSet=new HashSet<Integer>();
@@ -69,8 +80,6 @@ public class MultiAdapter extends BaseAdapter {
         // TODO Auto-generated constructor stub
         this.ctx = context;
         this.listItems = listItems;
-
-        mChecked = new ArrayList<Boolean>();
         for (int i = 0; i < listItems.size(); i++) {// 遍历且设置CheckBox默认状态为未选中
             mChecked.add(false);
         }
@@ -133,7 +142,7 @@ public class MultiAdapter extends BaseAdapter {
 
         //  View rowView = this.viewMap.get(position);
         //  AwaitRepair awaitRepair =  listItems.get(position);
-        ObjectElement Operator = listItems.get(position);
+        final ObjectElement Operator = listItems.get(position);
         final ViewHolder holder;
         if (convertView == null) {
             holder=new ViewHolder();
@@ -166,7 +175,7 @@ public class MultiAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
-
+               if(!DataUtil.isDataElementNull(Operator.get("Status")).equals("1")){
                     if(mChecked.get(position))//当前已选中，点击后取消选中
                     {
                         holder.select.setVisibility(View.INVISIBLE);
@@ -179,6 +188,9 @@ public class MultiAdapter extends BaseAdapter {
                         mChecked.set(position, true);
                     }
                    ClickResult(ctx);
+                }else {
+                   ToastUtil.showToastLong(R.string.thisWorkerIsBusy,ctx);
+               }
                 }
             });
 

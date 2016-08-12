@@ -24,8 +24,10 @@ import com.emms.adapter.GroupAdapter;
 import com.emms.adapter.MultiAdapter;
 import com.emms.bean.AwaitRepair;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
+import com.emms.util.ToastUtil;
 import com.google.gson.JsonObject;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -57,6 +59,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
     private int RecCount=0;
     private Handler handler=new Handler();
     private ObjectElement groupData=null;
+    private ArrayList<String> TaskOperator=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +71,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
             ((TextView)findViewById(R.id.tv_title)).setText(R.string.exchangeOrder);
         }
         taskId=getIntent().getStringExtra(Task.TASK_ID) ;
+        getTaskOperatorListFromServer();
         adapter=new MultiAdapter(InvitorActivity.this,listItems);
         mListView = (PullToRefreshListView) findViewById(R.id.id_wait_list);
         mListView.setAdapter(adapter);
@@ -82,6 +86,12 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
             }
         });
         bcakImageView = (ImageView) findViewById(R.id.btn_bar_left_action);
+     /*   bcakImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });*/
         sureImageView = (ImageView) findViewById(R.id.btn_right_action);
 
         groupAdapter=new GroupAdapter(InvitorActivity.this,listGroup);
@@ -127,7 +137,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
      */
     private void getListItems() {
         if(RecCount!=0){
-        if(pageIndex*PAGE_SIZE>=RecCount){
+        if((pageIndex-1)*PAGE_SIZE>=RecCount){
             Toast toast=Toast.makeText(this,R.string.noMoreData,Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER,0,0);
             toast.show();
@@ -212,10 +222,10 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
         int clikId =v.getId();
         switch (clikId){
             case R.id.btn_bar_left_action:
-                finish();
-                break;
+            {   finish();
+                break;}
 
-            case R.id.btn_right_action:
+            case R.id.btn_right_action:{
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -224,6 +234,16 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                         for(int i=0;i<adapter.getlistItemID().size();i++){
                             invitorList.add(Integer.valueOf(DataUtil.isDataElementNull(adapter.getListItems().get(adapter.getListItemID().get(i)).get("Operator_ID"))));
                         }
+                            for(int j=0;j<TaskOperator.size();j++) {
+                                if (invitorList.contains(Integer.valueOf(TaskOperator.get(j)))) {
+                                    if(isExChangeOrder){
+                                        ToastUtil.showToastLong(R.string.exchangerIsInTask,context);
+                                    }else{
+                                        ToastUtil.showToastLong(R.string.invitorIsInTask,context);
+                                    }
+                                    return;
+                                }
+                            }
                             postInviteDataToServer(invitorList);
                         //    Toast.makeText(InvitorActivity.this, "你选择了："
                          //           + adapter.getlistItemID().toString(), Toast.LENGTH_SHORT).show();
@@ -232,7 +252,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                     }
                 });
 
-                break;
+                break;}
         }
     }
     public void postInviteDataToServer(ArrayList<Integer> submitData){
@@ -255,7 +275,7 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
         }
     //    List<Integer> a=new ArrayList<Integer>();
    //     a.add(4667);
-        JsonArrayElement jsonArrayElement=new JsonArrayElement(submitData.toString());
+        final JsonArrayElement jsonArrayElement=new JsonArrayElement(submitData.toString());
         jsonObjectElement.set("Operator_IDS",jsonArrayElement);
        // Log.e("daf",a.toString());
         params.putJsonParams(jsonObjectElement.toJson());
@@ -264,11 +284,23 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 dismissCustomDialog();
+                if(t!=null){
+                    JsonObjectElement json=new JsonObjectElement(t);
+                    if(json.get(Data.SUCCESS)!=null&&json.get(Data.SUCCESS).valueAsBoolean()){
                 if(isExChangeOrder){
+                    setResult(1);
                     Toast.makeText(InvitorActivity.this,R.string.exchangeOrderSuccess,Toast.LENGTH_LONG).show();
                 }else{
                 Toast.makeText(InvitorActivity.this,R.string.inviteSuccess,Toast.LENGTH_LONG).show();}
                 finish();
+            }else {
+                        if(isExChangeOrder){
+                            ToastUtil.showToastLong(R.string.exchangeOrderFail,context);
+                        }else {
+                            ToastUtil.showToastLong(R.string.inviteFail,context);
+                        }
+                    }
+                }
             }
 
             @Override
@@ -278,5 +310,34 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
             }
         });
 
+    }
+    private void getTaskOperatorListFromServer(){
+        HttpParams params=new HttpParams();
+        params.put("task_id",taskId);
+        HttpUtils.get(this, "TaskOperatorJoin", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+               if(t!=null){
+                   JsonObjectElement json=new JsonObjectElement(t);
+                   if(json.get(Data.SUCCESS)!=null&&json.get(Data.SUCCESS).valueAsBoolean()){
+                   if(json!=null&&json.get(Data.PAGE_DATA)!=null&&json.get(Data.PAGE_DATA).asArrayElement().size()>0){
+                 for(int i=0;i<json.get(Data.PAGE_DATA).asArrayElement().size();i++){
+                       TaskOperator.add(DataUtil.isDataElementNull(json.get(Data.PAGE_DATA).asArrayElement()
+                               .get(i).asObjectElement().get("Operator_ID")));
+                   }
+                   }
+               }else{
+                       ToastUtil.showToastLong(R.string.getTaskOperatorFail,context);
+                   }
+               }
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.getTaskOperatorFail,context);
+            }
+        });
     }
 }

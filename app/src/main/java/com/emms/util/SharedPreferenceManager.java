@@ -24,6 +24,8 @@ public final class SharedPreferenceManager {
 
 	public static final String LOGIN_DATA="Data";
 
+	public static final String FACTORY="Factory";
+
 	private SharedPreferenceManager() {
 
 	}
@@ -97,6 +99,17 @@ public final class SharedPreferenceManager {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		pref.edit().putString(LOGIN_DATA, Data).commit();
+	}
+	public static String getFactory(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getString(FACTORY, null);
+	}
+
+	public static void setFactory(Context context, String Data) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putString(FACTORY, Data).commit();
 	}
 }
  

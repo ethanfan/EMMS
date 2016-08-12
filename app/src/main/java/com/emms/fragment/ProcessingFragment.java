@@ -1,5 +1,6 @@
 package com.emms.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,10 +17,14 @@ import android.widget.Toast;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
+import com.emms.activity.TaskNumInteface;
+import com.emms.activity.dialogOnSubmitInterface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
+import com.emms.util.Constants;
 import com.emms.util.DataUtil;
+import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.datastore_android_sdk.datastore.ObjectElement;
@@ -52,6 +57,9 @@ public class ProcessingFragment extends BaseFragment {
     private Context mContext;
     private Handler handler=new Handler();
     private String TaskClass;
+    private static int PAGE_SIZE=10;
+    private int pageIndex=1;
+    private int RecCount=0;
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         TaskClass=this.getArguments().getString(Task.TASK_CLASS);
@@ -67,11 +75,12 @@ public class ProcessingFragment extends BaseFragment {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        pageIndex=1;
                         getProcessingDataFromServer();
                         listView.onRefreshComplete();
                       //  Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
                     }
-                },1000);
+                },0);
             }
 
             @Override
@@ -79,10 +88,11 @@ public class ProcessingFragment extends BaseFragment {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        getProcessingDataFromServer();
                         listView.onRefreshComplete();
                         //Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
                     }
-                },1000);
+                },0);
             }
         });
         taskAdapter = new TaskAdapter(datas) {
@@ -125,7 +135,8 @@ public class ProcessingFragment extends BaseFragment {
                 intent.putExtra("TaskDetail",datas.get(position-1).toString());
                 intent.putExtra(Task.TASK_CLASS,TaskClass);
                 intent.putExtra("TaskStatus",1);
-                startActivity(intent);
+                //startActivity(intent);
+                ((Activity)mContext).startActivityForResult(intent, Constants.REQUEST_CODE_PROCESSING_ORDER_TASK_DETAIL);
             }
         });
         return v;
@@ -137,6 +148,11 @@ public class ProcessingFragment extends BaseFragment {
 
     }
     private void getProcessingDataFromServer(){
+        if(RecCount!=0){
+            if((pageIndex-1)*PAGE_SIZE>=RecCount){
+                ToastUtil.showToastLong(R.string.noMoreData,mContext);
+                return;
+            }}
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
        // params.put("id", SharedPreferenceManager.getUserName(mContext));
@@ -149,8 +165,8 @@ public class ProcessingFragment extends BaseFragment {
       //  params.put("operator_id",operator_id);
         params.put("status",1);//状态1，即处理中任务
         params.put("taskClass",TaskClass);
-        params.put("pageSize",10);
-        params.put("pageIndex",1);
+        params.put("pageSize",PAGE_SIZE);
+        params.put("pageIndex",pageIndex);
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -161,19 +177,27 @@ public class ProcessingFragment extends BaseFragment {
                   //  if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()==0){
                       //提示没有处理中的任务
                   //  }
-                    datas.clear();
-                    for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
-                        datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
-                    }
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            taskAdapter.setDatas(datas);
-                            taskAdapter.notifyDataSetChanged();
+                    if(jsonObjectElement!=null&&jsonObjectElement.get("PageData")!=null
+                            &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
+                        RecCount = jsonObjectElement.get("RecCount").valueAsInt();
+                        if(taskNumInteface!=null){
+                        taskNumInteface.ChangeTaskNumListener(0,RecCount);}
+                        if (pageIndex == 1) {
+                            datas.clear();
                         }
-                    });
-             //      setData(datas);
-
+                        pageIndex++;
+                        for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
+                            datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
+                        }
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                taskAdapter.setDatas(datas);
+                                taskAdapter.notifyDataSetChanged();
+                            }
+                        });
+                        //      setData(datas);
+                    }
 
                 }
                 dismissCustomDialog();
@@ -189,12 +213,22 @@ public class ProcessingFragment extends BaseFragment {
             }
         });
     }
-    public static Fragment newInstance(String TaskClass){
+    public static ProcessingFragment newInstance(String TaskClass){
         ProcessingFragment fragment = new ProcessingFragment();
         Bundle bundle = new Bundle();
         bundle.putString(Task.TASK_CLASS, TaskClass);
         fragment.setArguments(bundle);
         return fragment;
     }
+    public void doRefresh(){
+        pageIndex=1;
+        getProcessingDataFromServer();
+    }
+
+    public void setTaskNumInteface(TaskNumInteface taskNumInteface) {
+        this.taskNumInteface = taskNumInteface;
+    }
+
+    private TaskNumInteface taskNumInteface;
 
 }

@@ -115,7 +115,7 @@ public class WorkLoadActivity extends BaseActivity{
 
                    @Override
                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                          //if(s.toString().
                    }
 
                    @Override
@@ -198,8 +198,13 @@ public class WorkLoadActivity extends BaseActivity{
     private void submitWorkLoadToServer(){
         workloadKeylist.clear();
         workloadKeylist.addAll(workloadMap.keySet());
+
         int sum=0;
         for(int i=0;i<workloadKeylist.size();i++){
+            if(!DataUtil.isNumeric(workloadMap.get(workloadKeylist.get(i)).getText().toString())){
+                ToastUtil.showToastLong("请输入整数",this);
+                return;
+            }
             sum+=Integer.valueOf(workloadMap.get(workloadKeylist.get(i)).getText().toString());
         }
         if(sum!=100){
@@ -223,21 +228,29 @@ public class WorkLoadActivity extends BaseActivity{
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                ToastUtil.showToastLong(R.string.submitSuccess,context);
-                dismissCustomDialog();
-                if(TaskComplete){
-                    if(TaskClass.equals(Task.REPAIR_TASK)){
-                        Intent intent=new Intent(context,SummaryActivity.class);
-                        intent.putExtra("TaskComplete",true);
-                        intent.putExtra("TaskDetail",TaskDetail.toString());
-                        startActivity(intent);}
-                    else {
-                        Intent intent=new Intent(context,CommandActivity.class);
-                        intent.putExtra("TaskComplete",true);
-                        intent.putExtra("TaskDetail",TaskDetail.toString());
-                        startActivity(intent);
+                if(t!=null){
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
+                        ToastUtil.showToastLong(R.string.submitSuccess,context);
+                        dismissCustomDialog();
+                        if(TaskComplete){
+                            if(TaskClass.equals(Task.REPAIR_TASK)){
+                                Intent intent=new Intent(context,SummaryActivity.class);
+                                intent.putExtra("TaskComplete",true);
+                                intent.putExtra("TaskDetail",TaskDetail.toString());
+                                startActivity(intent);}
+                            else {
+                                Intent intent=new Intent(context,CommandActivity.class);
+                                intent.putExtra("TaskComplete",true);
+                                intent.putExtra("TaskDetail",TaskDetail.toString());
+                                startActivity(intent);
+                            }
+                        }else{
+                            finish();
+                        }
                     }
                 }
+
             }
 
             @Override

@@ -4,7 +4,7 @@
     android:background="@color/white"
     android:layout_height="wrap_content">
     <View
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="8sp"
         android:id="@+id/ttt"
         ></View>
@@ -29,7 +29,7 @@
         android:textColor="@color/text_login"
         android:textSize="17.0sp" />
     <View
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="8sp"
         android:layout_below="@+id/textView"
         ></View>

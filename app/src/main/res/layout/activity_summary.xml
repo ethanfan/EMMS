@@ -45,6 +45,7 @@
         android:layout_marginRight="20dp"
         android:id="@+id/type"
         android:layout_alignTop="@id/type_tag"
+        drop:drawableRight="@mipmap/drop_down"
         drop:dropMode="flow_parent"
         drop:hint="@string/select"
         drop:hintColor="@color/hint_color"/>
@@ -64,7 +65,7 @@
         android:layout_toRightOf="@+id/description_tag"
         android:layout_alignTop="@+id/description_tag"
         android:layout_alignParentRight="true"
-        android:layout_marginLeft="15dp"
+        android:layout_alignLeft="@+id/type"
         android:layout_marginRight="20dp"
         android:background="@color/white"
         android:textColor="@color/black"

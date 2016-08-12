@@ -50,7 +50,7 @@
             android:id="@+id/id_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/task_state"
+            android:text="@string/equipment_status"
             android:textColor="@color/text_color"
             android:layout_marginTop="5dp"
             android:textSize="17sp"
@@ -118,9 +118,9 @@
             android:text="@string/participant"
             android:id="@+id/textView20"
             android:layout_marginTop="5dp"
-            android:paddingLeft="20dp"
-            android:layout_toLeftOf="@+id/id_participant"
-            android:layout_below="@+id/tv_end_time_details"/>
+            android:layout_alignRight="@+id/id_status"
+            android:layout_below="@+id/id_status"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -129,8 +129,17 @@
             android:textSize="17sp"
             android:id="@+id/id_participant"
             android:paddingRight="30dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/tv_task_state_details"
+            android:layout_toRightOf="@+id/textView20"
+            android:layout_alignTop="@+id/textView20"
+            android:visibility="gone"
            />
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/equipment_opeartor_list"
+            android:layout_toRightOf="@+id/textView20"
+            android:layout_below="@+id/id_status">
+        </ListView>
     </RelativeLayout>
 </RelativeLayout>

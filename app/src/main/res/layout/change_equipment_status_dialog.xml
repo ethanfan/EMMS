@@ -186,12 +186,20 @@
                 android:background="@color/white"
                 android:text="@string/sure"/>
         </LinearLayout>
+        <!--
         <com.emms.ui.WheelView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/list"
             android:layout_gravity="center_vertical"
             android:background="@color/transparent"/>
+            -->
+        <com.emms.ui.WheelView.widget.WheelView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/WheelView"
+            android:layout_gravity="center_vertical">
+        </com.emms.ui.WheelView.widget.WheelView>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">

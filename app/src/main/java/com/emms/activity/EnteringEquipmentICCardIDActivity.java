@@ -52,6 +52,7 @@ import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
 import com.emms.schema.Task;
 import com.emms.ui.ChangeEquipmentDialog;
+import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
 import com.emms.ui.ExpandGridView;
@@ -204,12 +205,18 @@ private void initView(){
         });
     }
     private void initSearchView() {
+        searchBox = (EditText) findViewById(R.id.et_search);
         mDrawer_layout = (CustomDrawerLayout) findViewById(R.id.search_page);
+        mDrawer_layout.setCloseDrawerListener(new CloseDrawerListener() {
+            @Override
+            public void close() {
+                searchBox.setText("");
+            }
+        });
         mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mDrawer_layout.setBackgroundColor(Color.parseColor("#00000000"));
         menuSearchTitle = (TextView) findViewById(R.id.left_title);
         clearBtn = (ImageView) findViewById(R.id.iv_search_clear);
-        searchBox = (EditText) findViewById(R.id.et_search);
         emptyView = (ViewGroup) findViewById(R.id.empty_view);
         mResultListView = (ListView) findViewById(R.id.listview_search_result);
         mResultAdapter = new ResultListAdapter(context);
@@ -244,7 +251,7 @@ private void initView(){
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mDrawer_layout.closeDrawer(Gravity.RIGHT);
             }
         });
         searchBox.addTextChangedListener(new TextWatcher() {

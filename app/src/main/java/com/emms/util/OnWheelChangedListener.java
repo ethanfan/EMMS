@@ -16,7 +16,7 @@
 
 package com.emms.util;
 
-import com.emms.ui.WheelView;
+import com.emms.ui.WheelView2;
 
 /**
  * Wheel changed listener interface.
@@ -31,5 +31,5 @@ public interface OnWheelChangedListener {
 	 * @param oldValue the old value of current item
 	 * @param newValue the new value of current item
 	 */
-	void onChanged(WheelView wheel, int oldValue, int newValue);
+	void onChanged(WheelView2 wheel, int oldValue, int newValue);
 }

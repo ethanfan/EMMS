@@ -13,6 +13,8 @@
 //import android.widget.TextView;
 //import android.widget.Toast;
 //
+//import com.emms.R;
+//
 //import cn.jpush.android.api.InstrumentedActivity;
 //import cn.jpush.android.api.JPushInterface;
 //
@@ -144,6 +146,10 @@
 //
 //	public void registerMessageReceiver() {
 //		mMessageReceiver = new MessageReceiver();
+//
+//
+//
+//
 //		IntentFilter filter = new IntentFilter();
 //		filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
 //		filter.addAction(MESSAGE_RECEIVED_ACTION);

@@ -26,6 +26,7 @@ public class DataDictionary extends Model<Operator, Long> implements Identity<Lo
     public static final String DATA_VALUE3 = "DataValue3";
     public static final String STATUS = "Status";
     public static final String REMARK = "Remark";
+    public static final String LASTUPDATETIME="LastUpdateTime";
 
     @DatabaseField(id = true,
             columnName = DATA_ID, canBeNull = false)
@@ -43,37 +44,37 @@ public class DataDictionary extends Model<Operator, Long> implements Identity<Lo
     @Expose
     private String pdata_id;
 
-    @DatabaseField(columnName = DATA_TYPE, canBeNull = false)
+    @DatabaseField(columnName = DATA_TYPE, canBeNull = false,defaultValue = "")
     @SerializedName(DATA_TYPE)
     @Expose
     private String data_type;
 
-    @DatabaseField(columnName = DATA_CODE, canBeNull = false)
+    @DatabaseField(columnName = DATA_CODE, canBeNull = false,defaultValue = "")
     @SerializedName(DATA_CODE)
     @Expose
     private String data_code;
 
-    @DatabaseField(columnName = DATA_NAME, canBeNull = false)
+    @DatabaseField(columnName = DATA_NAME, canBeNull = false,defaultValue = "")
     @SerializedName(DATA_NAME)
     @Expose
     private String data_name;
 
-    @DatabaseField(columnName = DATA_DESCR, canBeNull = false)
+    @DatabaseField(columnName = DATA_DESCR, canBeNull = false,defaultValue = "")
     @SerializedName(DATA_DESCR)
     @Expose
     private String data_descr;
 
-    @DatabaseField(columnName = DATA_VALUE1, canBeNull = false)
+    @DatabaseField(columnName = DATA_VALUE1, canBeNull = false,defaultValue = "")
     @SerializedName(DATA_VALUE1)
     @Expose
     private String data_value1;
 
-    @DatabaseField(columnName = DATA_VALUE2, canBeNull = false)
+    @DatabaseField(columnName = DATA_VALUE2, canBeNull = false,defaultValue = "")
     @SerializedName(DATA_VALUE2)
     @Expose
     private String data_value2;
 
-    @DatabaseField(columnName = DATA_VALUE3, canBeNull = false)
+    @DatabaseField(columnName = DATA_VALUE3, canBeNull = false,defaultValue = "")
     @SerializedName(DATA_VALUE3)
     @Expose
     private String data_value3;
@@ -83,10 +84,16 @@ public class DataDictionary extends Model<Operator, Long> implements Identity<Lo
     @Expose
     private String status;
 
-    @DatabaseField(columnName = REMARK, canBeNull = false)
+    @DatabaseField(columnName = REMARK, canBeNull = false,defaultValue = "")
     @SerializedName(REMARK)
     @Expose
     private String remark;
+
+    @DatabaseField(columnName = LASTUPDATETIME, canBeNull = false)
+    @SerializedName(LASTUPDATETIME)
+    @Expose
+    private String LastUpdateTime;
+
 
     public Long getData_id() {
         return data_id;
@@ -184,6 +191,13 @@ public class DataDictionary extends Model<Operator, Long> implements Identity<Lo
         this.remark = remark;
     }
 
+    public String getLastUpdateTime() {
+        return LastUpdateTime;
+    }
+
+    public void setLastUpdateTime(String lastUpdateTime) {
+        LastUpdateTime = lastUpdateTime;
+    }
     @Override
     public int hashCode() {
         return data_id.hashCode();

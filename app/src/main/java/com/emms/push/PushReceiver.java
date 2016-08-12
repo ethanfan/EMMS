@@ -104,7 +104,7 @@ public class PushReceiver extends BroadcastReceiver {
 	private void processCustomMessage(Context context, Bundle bundle) {
 		String message = bundle.getString(JPushInterface.EXTRA_MESSAGE);
 
-		JsonObjectElement jsonObjectElement = new JsonObjectElement(message);
+		//JsonObjectElement jsonObjectElement = new JsonObjectElement(message);
 
 
 	}

@@ -1,6 +1,7 @@
 package com.emms.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.fragment.LinkedOrdersFragment;
@@ -19,7 +21,9 @@ import com.emms.fragment.PendingOrdersFragment;
 import com.emms.fragment.ProcessingFragment;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
+import com.emms.util.Constants;
 import com.emms.util.SharedPreferenceManager;
+import com.emms.util.ToastUtil;
 import com.emms.util.ViewFindUtils;
 import com.flyco.tablayout.SlidingTabLayout;
 import com.flyco.tablayout.listener.OnTabSelectListener;
@@ -31,6 +35,7 @@ import com.datastore_android_sdk.rxvolley.client.HttpParams;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by jaffer.deng on 2016/6/20.
@@ -43,6 +48,8 @@ public class TaskListActivity extends BaseActivity implements OnTabSelectListene
     private ArrayList<ObjectElement> RepairTask=new ArrayList<ObjectElement>();
     private Handler handler;
     private String TaskClass;
+    private SlidingTabLayout tabLayout_2;
+    //private HashMap<String,Integer> TaskClass_Position_map=new HashMap<>()
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,14 +61,35 @@ public class TaskListActivity extends BaseActivity implements OnTabSelectListene
         mTitles =getResources().getStringArray(R.array.select_tab_status);
         for (int i =0;i< mTitles.length;i++) {
             if (i==0) {
-                mFragments.add(ProcessingFragment.newInstance(TaskClass));
+                ProcessingFragment processingFragment=ProcessingFragment.newInstance(TaskClass);
+                processingFragment.setTaskNumInteface(new TaskNumInteface() {
+                    @Override
+                    public void ChangeTaskNumListener(int tag, int num) {
+                       ChangeTaskNum(tag,num);
+                    }
+                    @Override
+                    public void refreshProcessingFragment() {
+                    }
+                });
+                mFragments.add(processingFragment);
             }else if (i ==1){
-                mFragments.add(PendingOrdersFragment.newInstance(TaskClass));
+                PendingOrdersFragment pendingOrdersFragment=PendingOrdersFragment.newInstance(TaskClass);
+                pendingOrdersFragment.setTaskNumInteface(new TaskNumInteface() {
+                    @Override
+                    public void ChangeTaskNumListener(int tag, int num) {
+                        ChangeTaskNum(tag,num);
+                    }
+
+                    @Override
+                    public void refreshProcessingFragment() {
+                        ((ProcessingFragment)mFragments.get(0)).doRefresh();
+                    }
+                });
+                mFragments.add(pendingOrdersFragment);
             }else if (i ==2){
                 mFragments.add(LinkedOrdersFragment.newInstance(TaskClass));
             }
         }
-
         View decorView = getWindow().getDecorView();
         ViewPager vp = ViewFindUtils.find(decorView, R.id.vp);
         vp.setOffscreenPageLimit(2);
@@ -69,7 +97,7 @@ public class TaskListActivity extends BaseActivity implements OnTabSelectListene
         vp.setAdapter(mAdapter);
         String[] taskNum=getIntent().getStringExtra("TaskNum").split("/");
 
-        SlidingTabLayout tabLayout_2 = ViewFindUtils.find(decorView, R.id.tl_2);
+        tabLayout_2 = ViewFindUtils.find(decorView, R.id.tl_2);
         tabLayout_2.setViewPager(vp);
         tabLayout_2.setOnTabSelectListener(this);
 
@@ -216,4 +244,55 @@ public class TaskListActivity extends BaseActivity implements OnTabSelectListene
             }
         });
     }*/
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case Constants.REQUEST_CODE_PROCESSING_ORDER_TASK_DETAIL:{
+                if(resultCode==2){
+                ((ProcessingFragment)mFragments.get(0)).doRefresh();
+                }
+                ((PendingOrdersFragment)mFragments.get(1)).doRefresh();
+                break;
+            }
+        }
+    }
+    private void ChangeTaskNum(int tag,int num){
+        tabLayout_2.showMsg(tag,num);
+    }
+    private void getTaskCountFromServer(){
+        showCustomDialog(R.string.loadingData);
+        HttpParams params=new HttpParams();
+        //params.put("id",String.valueOf(getLoginInfo().getId()));
+        // String s=SharedPreferenceManager.getUserName(this);
+        HttpUtils.get(this, "TaskNum", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if (t != null) {
+                    JsonObjectElement json = new JsonObjectElement(t);
+                    //获取任务数目，Data_ID对应，1对应维修，2对应维护，3对应搬车，4对应其它
+                    if (json.get("PageData") != null && json.get("PageData").asArrayElement() != null&&json.get("PageData").asArrayElement().size()>0) {
+                        for (int i = 0; i < json.get("PageData").asArrayElement().size(); i++) {
+                            //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
+                            //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectEl
+                            if(json.get("PageData").asArrayElement().get(i).asObjectElement().get("DataCode").valueAsString().equals(TaskClass)){
+                                tabLayout_2.showMsg(1, json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0").valueAsInt());
+                                tabLayout_2.showMsg(0, json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1").valueAsInt());
+                            }
+                        }
+                    }
+                }
+                dismissCustomDialog();
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.loadingFail,mContext);
+                dismissCustomDialog();
+            }
+        });
+    }
 }

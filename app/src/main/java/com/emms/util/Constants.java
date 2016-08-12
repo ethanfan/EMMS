@@ -13,4 +13,7 @@ public class Constants {
     public static final int REQUEST_CODE_EXIT_LOGIN_SUCCESS = 114;
     public static final int REQUEST_CODE_EXIT_LOGIN_FAIL = 115;
 
+    public final static int REQUEST_CODE_EXCHANGE_ORDER=116;
+    public final static int REQUEST_CODE_PROCESSING_ORDER_TASK_DETAIL=117;
+
 }

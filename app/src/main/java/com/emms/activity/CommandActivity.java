@@ -75,9 +75,9 @@ public class CommandActivity extends NfcActivity  {
         task_complete_time=(TextView)findViewById(R.id.task_complete_time);
         group.setText(DataUtil.isDataElementNull(taskDetail.get(Task.ORGANISE_NAME)));
         task_id.setText(DataUtil.isDataElementNull(taskDetail.get(Task.TASK_ID)));
-        task_create_time.setText(DataUtil.isDataElementNull(taskDetail.get(Task.START_TIME)));
-        task_accept_time.setText(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT_TIME)));
-        task_complete_time.setText(DataUtil.isDataElementNull(taskDetail.get(Task.FINISH_TIME)));
+        task_create_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT_TIME))));
+        task_accept_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(taskDetail.get(Task.START_TIME))));
+        task_complete_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(taskDetail.get(Task.FINISH_TIME))));
       //任务评价
        response_speed=(HorizontalListView)findViewById(R.id.response_speed);
         service_attitude=(HorizontalListView)findViewById(R.id.service_attitude);
@@ -273,12 +273,24 @@ public class CommandActivity extends NfcActivity  {
         HttpUtils.post(this, "TaskFinish", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
-                super.onSuccess(t);
-            }
+                if(t!=null){
+                JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
+                        jsonObjectElement.get("Success").valueAsBoolean()){
+                ToastUtil.showToastLong("任务完成",context);
+                    if(nfcDialog!=null&&nfcDialog.isShowing()){
+                        nfcDialog.dismiss();
+                    }
+                    startActivity(new Intent(context,MainActivity.class));
+                }else {
+                    ToastUtil.showToastLong("无法提交任务完成，请检查任务信息",context);
+                }
+            }}
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.submitFail,context);
             }
         });
     }

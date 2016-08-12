@@ -18,7 +18,7 @@
             android:textSize="23sp" />
 
         <ImageView
-            android:id="@+id/btn_bar_right"
+            android:id="@+id/btn_bar_left"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@null"

@@ -3,6 +3,7 @@ package com.emms.ui;
 import android.content.Context;
 import android.support.v4.widget.DrawerLayout;
 import android.util.AttributeSet;
+import android.view.View;
 
 /**
  * Created by Administrator on 2016/7/20.
@@ -30,5 +31,15 @@ public class CustomDrawerLayout extends DrawerLayout {
                 MeasureSpec.getSize(heightMeasureSpec), MeasureSpec.EXACTLY);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
+   @Override
+    public void closeDrawer(View drawerView){
+       super.closeDrawer(drawerView);
+       closeDrawerListener.close();
+   }
+    public void setCloseDrawerListener(CloseDrawerListener closeDrawerListener) {
+        this.closeDrawerListener = closeDrawerListener;
+    }
+
+    private CloseDrawerListener closeDrawerListener;
 
 }
