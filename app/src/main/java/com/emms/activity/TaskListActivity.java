@@ -40,7 +40,7 @@ import java.util.HashMap;
 /**
  * Created by jaffer.deng on 2016/6/20.
  */
-public class TaskListActivity extends BaseActivity implements OnTabSelectListener,View.OnClickListener{
+public class TaskListActivity extends NfcActivity implements OnTabSelectListener,View.OnClickListener{
     private Context mContext ;
     private ArrayList<Fragment> mFragments = new ArrayList<>();
     private  String[] mTitles ;
@@ -105,10 +105,10 @@ public class TaskListActivity extends BaseActivity implements OnTabSelectListene
      //   tabLayout_2.showMsg(2, 9);         //消息数量和位置
      //   tabLayout_2.setMsgMargin(2, 12, 10);
 
-        tabLayout_2.showMsg(1, Integer.valueOf(taskNum[0]));
+        tabLayout_2.showMsg(1, Integer.valueOf(taskNum[1]));
         tabLayout_2.setMsgMargin(1, 12, 10);
 
-        tabLayout_2.showMsg(0, Integer.valueOf(taskNum[1]));
+        tabLayout_2.showMsg(0, Integer.valueOf(taskNum[0]));
         tabLayout_2.setMsgMargin(0, 12, 10);
         //getSupportFragmentManager().
     }
@@ -152,6 +152,11 @@ public class TaskListActivity extends BaseActivity implements OnTabSelectListene
         if (click_id ==R.id.btn_right_action){
             finish();
         }
+    }
+
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
@@ -252,8 +257,8 @@ public class TaskListActivity extends BaseActivity implements OnTabSelectListene
             case Constants.REQUEST_CODE_PROCESSING_ORDER_TASK_DETAIL:{
                 if(resultCode==2){
                 ((ProcessingFragment)mFragments.get(0)).doRefresh();
-                }
-                ((PendingOrdersFragment)mFragments.get(1)).doRefresh();
+
+                ((PendingOrdersFragment)mFragments.get(1)).doRefresh();}
                 break;
             }
         }

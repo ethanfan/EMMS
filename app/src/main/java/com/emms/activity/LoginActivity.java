@@ -2,8 +2,11 @@ package com.emms.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -34,7 +37,9 @@ import com.emms.ConfigurationManager;
 import com.emms.R;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
+import com.emms.push.ExampleUtil;
 import com.emms.push.PushService;
+import com.emms.schema.Operator;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.PopMenuLoginActivity;
 import com.emms.ui.PopMenuTaskDetail;
@@ -64,7 +69,11 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+import cn.jpush.android.api.BasicPushNotificationBuilder;
+import cn.jpush.android.api.JPushInterface;
+import cn.jpush.android.api.TagAliasCallback;
+
+public class LoginActivity extends NfcActivity implements View.OnClickListener {
     private static final String TAG = "LoginActivity";
     private Context mContext;
     private TextView login;
@@ -75,7 +84,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private String def_Factory="GEW";
     //private ImageButton setting;
     private Handler pushHandler = PushService.mHandler;
-
+    private Handler handle=new Handler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,13 +93,12 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         if(SharedPreferenceManager.getFactory(this)==null){
             SharedPreferenceManager.setFactory(this,def_Factory);
         }
-//        //透明状态栏
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-//        //透明导航栏
-//        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-       //getDataBaseUpdateFromServer();
+
+        //init();
         initView();
-        getNewDataFromServer();
+        //  registerMessageReceiver();
+
+       getNewDataFromServer();
     }
 
     private void initView() {
@@ -133,19 +141,22 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 final String userid = inputname.getText().toString().toUpperCase();
                 final String password = inputPassWord.getText().toString().toUpperCase();
                 if (!hasNetworkConnection()) {
-                    showDialog(getString(R.string.warning_title),
-                            getString(R.string.network_error));
+//                    showDialog(getString(R.string.warning_title),
+//                            getString(R.string.network_error));
+                    ToastUtil.showToastLong(R.string.network_error,mContext);
                     return;
                 }
 
                 if (userid == null || userid.length() == 0) {
-                    showDialog(getString(R.string.warning_title),
-                            getString(R.string.warning_message_no_user));
+//                    showDialog(getString(R.string.warning_title),
+//                            getString(R.string.warning_message_no_user));
+                    ToastUtil.showToastLong(R.string.warning_message_no_user,mContext);
                     return;
                 }
                 if (password == null || password.length() == 0) {
-                    showDialog(getString(R.string.warning_title),
-                            getString(R.string.warning_message_no_password));
+//                    showDialog(getString(R.string.warning_title),
+//                            getString(R.string.warning_message_no_password));
+                    ToastUtil.showToastLong(R.string.warning_message_no_password,mContext);
                     return;
                 }
                 hud.show();
@@ -188,15 +199,23 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                                         SharedPreferenceManager.setLoginData(LoginActivity.this,data);
                                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
 
+
+                                        //调用JPush API设置Tag\
                                         String Organise_ID=new JSONObject(data).get("Organise_ID").toString();
                                         Set<String> tagSet = new LinkedHashSet<String>();
                                         //tagSet.add(userid);
-                                        tagSet.add(Organise_ID);
-                                        //调用JPush API设置Tag
+                                        tagSet.add("1002");
+                                        String[]or=Organise_ID.split(",");
+                                        for(int k=0;k<or.length;k++){
+                                        tagSet.add(or[k]);
+                                        }
+                                        tagSet.add(new JSONObject(data).get(Operator.OPERATOR_ID).toString());
+                                       // PushService.registerMessageReceiver(mContext);
+                                        JPushInterface.init(mContext);
+                                        JPushInterface.resumePush(mContext);
+                                        setStyleBasic();
                                         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, tagSet));
-
-                                        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, Organise_ID));
-
+                                        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "1001"));
                                         finish();
                                     } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
                                         Toast.makeText(mContext, getResources().getString(R.string.warning_message_frozen), Toast.LENGTH_SHORT).show();
@@ -265,6 +284,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         final File db = new File(getExternalFilesDir(null), "/EMMS.db");
         if(db.exists()){
             //getDataBaseUpdateFromServer();
+           // getDBFromServer();
             getDBDataLastUpdateTime();
             return;
         }
@@ -275,25 +295,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                }
              return;
           }
-        showCustomDialog(R.string.DownloadDataBase);
-        HttpUtils.download(this, dbFile.getAbsolutePath(), "", null, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-                try{
-                HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
-                dismissCustomDialog();
-                ToastUtil.showToastLong("数据文件下载完毕",mContext);}catch (Exception e){
-                }
-            }
+        getDBFromServer(dbFile);
 
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.loadingFail,mContext);
-                dismissCustomDialog();
-            }
-        });
        // String savepath = dbFile.getParentFile().getAbsolutePath();
       /*  new Thread(new Runnable() {
             @Override
@@ -336,24 +339,24 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private void getDataBaseUpdateFromServer(DataElement dataElement){
         HttpParams params=new HttpParams();
         JsonObjectElement data=new JsonObjectElement();
-//        data.set("LastUpdateTime_BaseOrganise", DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_BaseOrganise")));
-//        data.set("LastUpdateTime_DataDictionary",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataDictionary")));
-//        data.set("LastUpdateTime_DataType",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataType")));
-//        data.set("LastUpdateTime_Equipment",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_Equipment")));
-//        data.set("LastUpdateTime_TaskOrganiseRelation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_TaskOrganiseRelation")));
+        data.set("LastUpdateTime_BaseOrganise", DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_BaseOrganise")));
+        data.set("LastUpdateTime_DataDictionary",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataDictionary")));
+        data.set("LastUpdateTime_DataType",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataType")));
+        data.set("LastUpdateTime_Equipment",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_Equipment")));
+        data.set("LastUpdateTime_TaskOrganiseRelation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_TaskOrganiseRelation")));
 
-        data.set("LastUpdateTime_BaseOrganise","0x000000000001499B");
-        data.set("LastUpdateTime_DataDictionary","0x000000000001499B");
-        data.set("LastUpdateTime_DataType","0x000000000001499B");
-        data.set("LastUpdateTime_Equipment","0x000000000001499B");
-        data.set("LastUpdateTime_TaskOrganiseRelation","0x000000000001499B");
+//        data.set("LastUpdateTime_BaseOrganise","0x0000000000014985");
+//        data.set("LastUpdateTime_DataDictionary","0x0000000000014985");
+//        data.set("LastUpdateTime_DataType","0x0000000000014985");
+//        data.set("LastUpdateTime_Equipment","0x0000000000014985");
+//        data.set("LastUpdateTime_TaskOrganiseRelation","0x0000000000014985");
 
         if(SharedPreferenceManager.getFactory(this)==null){
         data.set("Factory_ID",def_Factory);}
         else {
             data.set("Factory_ID",SharedPreferenceManager.getFactory(this));
         }
-        data.set("IsNewApp",1);
+       // data.set("IsNewApp",1);
        // params.put("sqlLiteDBModel",data.toJson());
         params.putJsonParams(data.toJson());
         HttpUtils.postWithoutCookie(this, "SqlToSqlite", params, new HttpCallback() {
@@ -443,6 +446,114 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             @Override
             public void failure(DatastoreException ex, String resource) {
 
+            }
+        });
+    }
+
+
+    //for receive customer msg from jpush server
+    private MessageReceiver mMessageReceiver;
+    public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";
+    public static final String KEY_TITLE = "title";
+    public static final String KEY_MESSAGE = "message";
+    public static final String KEY_EXTRAS = "extras";
+
+    public void registerMessageReceiver() {
+        mMessageReceiver = new MessageReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+        filter.addAction(MESSAGE_RECEIVED_ACTION);
+        registerReceiver(mMessageReceiver, filter);
+    }
+
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
+    }
+
+    public class MessageReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (MESSAGE_RECEIVED_ACTION.equals(intent.getAction())) {
+                String messge = intent.getStringExtra(KEY_MESSAGE);
+                String extras = intent.getStringExtra(KEY_EXTRAS);
+                StringBuilder showMsg = new StringBuilder();
+                showMsg.append(KEY_MESSAGE + " : " + messge + "\n");
+                if (!ExampleUtil.isEmpty(extras)) {
+                    showMsg.append(KEY_EXTRAS + " : " + extras + "\n");
+                }
+                setCostomMsg(showMsg.toString());
+            }
+        }
+    }
+
+    private EditText msgText;
+    private void setCostomMsg(String msg){
+        if (null != msgText) {
+            msgText.setText(msg);
+            msgText.setVisibility(View.VISIBLE);
+        }
+    }
+    // 初始化 JPush。如果已经初始化，但没有登录成功，则执行重新登录。
+    private void init(){
+        Log.e("aaaaaaaa",mContext.toString());
+        JPushInterface.init(mContext);
+    }
+    private void setStyleBasic(){
+        BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(this);
+        builder.statusBarDrawable = R.drawable.ic_launcher;
+        builder.notificationFlags = Notification.FLAG_AUTO_CANCEL;  //设置为点击后自动消失
+        builder.notificationDefaults = Notification.DEFAULT_SOUND;  //设置为铃声（ Notification.DEFAULT_SOUND）或者震动（ Notification.DEFAULT_VIBRATE）
+        JPushInterface.setPushNotificationBuilder(1, builder);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(PushService.mMessageReceiver!=null&&PushService.isBroadcastRegister()){
+     // PushService.unregisterMessageReceiver(mContext);
+            }
+    }
+    private void getDBFromServer(final File dbFile){
+     HttpParams params=new HttpParams();
+        params.put("factory",SharedPreferenceManager.getFactory(this));
+        HttpUtils.getWithoutCookies(this, "SqlToSqlite", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+              if(t!=null){
+                  JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                  if(jsonObjectElement!=null){
+                  downloadDB(dbFile,DataUtil.isDataElementNull(jsonObjectElement.get("DownloadUrl")));
+                  }
+              }
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+            }
+        });
+    }
+    private void downloadDB(final File dbFile,String url){
+        showCustomDialog(R.string.DownloadDataBase);
+        HttpUtils.download(this, dbFile.getAbsolutePath(), url, null, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                try{
+                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
+                    dismissCustomDialog();
+                    ToastUtil.showToastLong("数据文件下载完毕",mContext);}catch (Exception e){
+                }
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.loadingFail,mContext);
+                dismissCustomDialog();
             }
         });
     }

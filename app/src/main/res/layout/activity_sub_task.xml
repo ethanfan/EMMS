@@ -19,6 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/group_type_tag"
+            android:layout_marginLeft="30dp"
             android:textColor="@color/black"
             android:text="@string/group_type"/>
         <TextView
@@ -28,6 +29,24 @@
             android:textColor="@color/black"
             android:paddingLeft="10dp"
             android:layout_toRightOf="@id/group_type_tag"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/task_state_tag"
+            android:textColor="@color/black"
+            android:paddingBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_alignRight="@+id/group_type_tag"
+            android:layout_below="@+id/group_type_tag"
+            android:text="@string/task_state"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/task_state"
+            android:textColor="@color/black"
+            android:paddingLeft="10dp"
+            android:layout_alignTop="@+id/task_state_tag"
+            android:layout_toRightOf="@id/task_state_tag"/>
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -49,28 +68,6 @@
             android:textColor="@color/black"
             android:paddingLeft="10dp"
             android:layout_toRightOf="@id/task_number_tag"/>
-    </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/three"
-        android:layout_below="@+id/one"
-        android:layout_marginTop="5dp"
-        android:layout_alignLeft="@id/one">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/task_state_tag"
-            android:textColor="@color/black"
-            android:paddingBottom="5dp"
-            android:text="@string/task_state"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/task_state"
-            android:textColor="@color/black"
-            android:paddingLeft="10dp"
-            android:layout_toRightOf="@id/task_state_tag"/>
     </RelativeLayout>
 </RelativeLayout>
     <View

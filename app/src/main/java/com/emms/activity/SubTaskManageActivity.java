@@ -39,7 +39,7 @@ import java.util.zip.Inflater;
 /**
  * Created by jaffer.deng on 2016/6/6.
  */
-public class SubTaskManageActivity extends BaseActivity implements View.OnClickListener {
+public class SubTaskManageActivity extends NfcActivity implements View.OnClickListener {
    private PullToRefreshListView sub_task_listView;
    private LinearLayout add_sub_task;
     private SubTaskAdapter adapter;
@@ -276,4 +276,8 @@ public class SubTaskManageActivity extends BaseActivity implements View.OnClickL
 
     }
 
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
+    }
 }

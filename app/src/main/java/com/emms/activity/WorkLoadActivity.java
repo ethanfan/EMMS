@@ -43,7 +43,7 @@ import java.util.HashMap;
 /**
  * Created by Administrator on 2016/7/29.
  */
-public class WorkLoadActivity extends BaseActivity{
+public class WorkLoadActivity extends NfcActivity{
     private TextView group,task_id,total_worktime;
     private ListView list;
     private Button comfirm;
@@ -260,6 +260,11 @@ public class WorkLoadActivity extends BaseActivity{
                 ToastUtil.showToastLong(R.string.submitFail,context);
             }
         });
+
+    }
+
+    @Override
+    public void resolveNfcMessage(Intent intent) {
 
     }
 }

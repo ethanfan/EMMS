@@ -19,7 +19,7 @@ public class DataType extends Model<Operator, Long> implements Identity<Long> {
     public static final String DATATYPE_DESCR = "DataTypeDescr";
     public static final String MODEL = "Model";
     public static final String STATUS = "Status";
-
+    public static final String LASTUPDATETIME="LastUpdateTime";
     @DatabaseField(id = true,
             columnName = DATATYPE_ID, canBeNull = false)
     @SerializedName(DATATYPE_ID)
@@ -50,6 +50,11 @@ public class DataType extends Model<Operator, Long> implements Identity<Long> {
     @SerializedName(STATUS)
     @Expose
     private String status;
+
+    @DatabaseField(columnName = LASTUPDATETIME, canBeNull = false)
+    @SerializedName(LASTUPDATETIME)
+    @Expose
+    private String LastUpdateTime;
 
     public Long getDataType_id() {
         return dataType_id;
@@ -98,6 +103,15 @@ public class DataType extends Model<Operator, Long> implements Identity<Long> {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public String getLastUpdateTime() {
+        return LastUpdateTime;
+    }
+
+    public void setLastUpdateTime(String lastUpdateTime) {
+        LastUpdateTime = lastUpdateTime;
+    }
+
 
     @Override
     public int hashCode() {

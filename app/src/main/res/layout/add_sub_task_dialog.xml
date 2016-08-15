@@ -58,7 +58,7 @@
                             android:layout_weight="3"
                             drop:drawableRight="@mipmap/drop_down"
                             drop:dropMode="flow_parent"
-                            drop:hint="@string/pleaseInputOrSelect"
+                            drop:hint="@string/select"
                             drop:hintColor="@color/hint_color" />
 
                     </RelativeLayout>
@@ -118,7 +118,7 @@
                             android:layout_weight="3"
                             drop:drawableRight="@mipmap/drop_down"
                             drop:dropMode="flow_parent"
-                            drop:hint="@string/pleaseInputOrSelect"
+                            drop:hint="@string/select"
                             drop:hintColor="@color/hint_color" />
 
                     </RelativeLayout>

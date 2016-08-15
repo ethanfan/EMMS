@@ -15,6 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
+            android:layout_alignRight="@+id/id_Warranty_time_description"
             android:text="@string/grouptype"
             android:textSize="17sp"/>
         <TextView
@@ -22,9 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
-            android:paddingLeft="5dp"
             android:layout_toRightOf="@id/id_group"
-            android:text="D"
             android:textSize="17sp"/>
         <!--
         <TextView
@@ -75,8 +74,8 @@
             android:layout_height="wrap_content"
             android:text="@string/warranty_person"
             android:textColor="@color/text_color"
+            android:layout_alignRight="@+id/id_Warranty_time_description"
             android:layout_below="@+id/id_group"
-            android:layout_alignLeft="@+id/id_group"
             android:textSize="17sp"/>
 
         <TextView
@@ -84,10 +83,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
-            android:layout_marginLeft="5dp"
             android:textSize="17sp"
             android:layout_alignTop="@+id/Warranty_person_tag"
             android:layout_toRightOf="@+id/Warranty_person_tag" />
+        <!--
         <TextView
             android:id="@+id/id_status"
             android:layout_width="wrap_content"
@@ -108,6 +107,7 @@
             android:layout_toRightOf="@+id/id_status"
             android:textSize="17sp"
             android:layout_alignTop="@+id/id_status" />
+            -->
         <TextView
             android:id="@+id/id_Warranty_time_description"
             android:layout_width="wrap_content"
@@ -115,7 +115,7 @@
             android:layout_marginTop="5dp"
             android:text="@string/repair_time"
             android:textColor="@color/text_color"
-            android:layout_below="@+id/id_status"
+            android:layout_below="@+id/Warranty_person_tag"
             android:layout_alignParentLeft="true"
             android:textSize="17sp"/>
 
@@ -123,7 +123,6 @@
             android:id="@+id/tv_Warranty_time_process"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2016.05.05 10:22 "
             android:textColor="@color/text_color"
             android:layout_alignTop="@+id/id_Warranty_time_description"
             android:layout_toRightOf="@+id/id_Warranty_time_description"
@@ -143,7 +142,6 @@
             android:id="@+id/tv_start_time_process"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="2016.05.05 10:22 "
             android:textColor="@color/text_color"
             android:layout_alignTop="@+id/id_start_time_description"
             android:layout_toRightOf="@+id/id_start_time_description"
@@ -185,7 +183,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingRight="15dp"
-            android:text="任务描述任务描述 "
             android:textColor="@color/text_color"
             android:layout_alignTop="@+id/id_task_description"
             android:layout_toRightOf="@+id/id_task_description"

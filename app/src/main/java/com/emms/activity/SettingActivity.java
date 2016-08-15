@@ -45,7 +45,7 @@ import java.util.ArrayList;
 /**
  * Created by Administrator on 2016/8/10.
  */
-public class SettingActivity extends BaseActivity implements View.OnClickListener{
+public class SettingActivity extends NfcActivity implements View.OnClickListener{
     private ResultListAdapter mResultAdapter;
     private ListView mResultListView;
     private TextView menuSearchTitle;
@@ -272,4 +272,8 @@ public class SettingActivity extends BaseActivity implements View.OnClickListene
                 });
     }
 
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
+    }
 }

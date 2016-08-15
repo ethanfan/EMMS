@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by jaffer.deng on 2016/6/27.
  */
-public class GetPicActivity extends BaseActivity{
+public class GetPicActivity extends NfcActivity{
     // ArrayList<Entity> dataList;//用来装载数据源的列表
     List<ImageBucket> dataList;
     GridView gridView;
@@ -98,5 +98,10 @@ public class GetPicActivity extends BaseActivity{
             }
 
         });
+    }
+
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
     }
 }

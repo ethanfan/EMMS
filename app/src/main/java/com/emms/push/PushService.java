@@ -27,7 +27,7 @@ public class PushService {
 
     private static final String TAG = "PushService";
     //for receive customer msg from jpush server
-    private static MessageReceiver mMessageReceiver;
+    public static MessageReceiver mMessageReceiver;
     public static final String MESSAGE_RECEIVED_ACTION = "com.emms.push.MESSAGE_RECEIVED_ACTION";
     public static final String KEY_TITLE = "title";
     public static final String KEY_MESSAGE = "message";
@@ -45,7 +45,7 @@ public class PushService {
 
     private static Context applicationContext = null;
 
-
+   private static boolean isMessageReceiverRegister=false;
     public static void  registerMessageReceiver(Context context) {
         applicationContext = context;
         mMessageReceiver = new MessageReceiver();
@@ -53,6 +53,10 @@ public class PushService {
         filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         filter.addAction(MESSAGE_RECEIVED_ACTION);
         context.registerReceiver(mMessageReceiver, filter);
+        setMessageReceiverRegister(true);
+    }
+    public static void  unregisterMessageReceiver(Context context) {
+        context.unregisterReceiver(mMessageReceiver);
     }
 
     public static class MessageReceiver extends BroadcastReceiver {
@@ -78,7 +82,7 @@ public class PushService {
             super.handleMessage(msg);
             switch (msg.what) {
                 case MSG_SET_ALIAS:
-                    Log.d(TAG, "Set alias in handler.");
+                    Log.e(TAG, "Set alias in handler.");
                     try {
                         JPushInterface.setAliasAndTags(applicationContext, (String) msg.obj, null, mAliasCallback);
                     }catch(Exception e){
@@ -87,7 +91,7 @@ public class PushService {
                     break;
 
                 case MSG_SET_TAGS:
-                    Log.d(TAG, "Set tags in handler.");
+                    Log.e(TAG, "Set tags in handler.");
                     try {
                         JPushInterface.setAliasAndTags(applicationContext, null, (Set<String>) msg.obj, mTagsCallback);
                     }catch(Exception e){
@@ -168,8 +172,12 @@ public class PushService {
 
     };
 
+    public static void setMessageReceiverRegister(boolean messageReceiverRegister) {
+        isMessageReceiverRegister = messageReceiverRegister;
+    }
 
-
-
+    public static boolean isBroadcastRegister(){
+        return isMessageReceiverRegister;
+    }
 
 }

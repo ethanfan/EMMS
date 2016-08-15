@@ -8,7 +8,7 @@ import android.view.View;
 import com.emms.R;
 import com.emms.schema.Task;
 
-public class MachineActivity extends BaseActivity implements View.OnClickListener{
+public class MachineActivity extends NfcActivity implements View.OnClickListener{
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +53,11 @@ public class MachineActivity extends BaseActivity implements View.OnClickListene
                 startActivity(intent);
                 break;}
         }
+
+    }
+
+    @Override
+    public void resolveNfcMessage(Intent intent) {
 
     }
 }

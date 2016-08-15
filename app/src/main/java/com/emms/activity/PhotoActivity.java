@@ -21,7 +21,7 @@ import java.util.List;
 /**
  * Created by jaffer.deng on 2016/6/27.
  */
-public class PhotoActivity extends BaseActivity{
+public class PhotoActivity extends NfcActivity{
     private ArrayList<View> listViews = null;
     private ViewPager pager;
     private MyPageAdapter adapter;
@@ -151,6 +151,11 @@ public class PhotoActivity extends BaseActivity{
 
         }
     };
+
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
+    }
 
     class MyPageAdapter extends PagerAdapter
     {

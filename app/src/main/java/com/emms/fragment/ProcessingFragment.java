@@ -107,7 +107,7 @@ public class ProcessingFragment extends BaseFragment {
                     convertView.findViewById(R.id.tv_end_time_process).setVisibility(View.GONE);
                     holder.tv_group = (TextView) convertView.findViewById(R.id.group);
                     holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);
-                    holder.tv_task_state = (TextView) convertView.findViewById(R.id.tv_task_state);
+                    //holder.tv_task_state = (TextView) convertView.findViewById(R.id.tv_task_state);
                     holder.tv_repair_time=(TextView)convertView.findViewById(R.id.tv_Warranty_time_process);
                     holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
@@ -118,7 +118,7 @@ public class ProcessingFragment extends BaseFragment {
                 //待修改
                holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
-                holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
+            //    holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
                 holder.tv_repair_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
                 holder.tv_start_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));

@@ -162,7 +162,7 @@ public  class HttpUtils {
     public static void download(Context context,String storeFilePath, String url, ProgressListener
             progressListener, HttpCallback callback){
         RxVolley.setContext(context);
-        RxVolley.download(storeFilePath,"https://edpazure.esquel.cn/apps/hrcampus/prod/EMMS.zip",progressListener,callback);
+        RxVolley.download(storeFilePath,url,progressListener,callback);
     }
     public static void delete( final Context context,final String table, final HttpParams params,final HttpCallback callback){
 

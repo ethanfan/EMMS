@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * Created by jaffer.deng on 2016/6/14.
  */
-public class searchActivity extends BaseActivity implements View.OnClickListener {
+public class searchActivity extends NfcActivity implements View.OnClickListener {
 
     private EditText searchBox;
     private ImageView clearBtn;
@@ -157,5 +157,10 @@ public class searchActivity extends BaseActivity implements View.OnClickListener
             InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             im.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS);
         }
+    }
+
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
     }
 }

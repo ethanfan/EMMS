@@ -36,6 +36,12 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     private String TaskId;
     private String EquipmentId;
     private String TaskEquipmentId;
+
+    public void setEquipemntStatus(int equipemntStatus) {
+        EquipemntStatus = equipemntStatus;
+    }
+
+    private int EquipemntStatus=-1;
     //private ArrayList<String> status=new ArrayList<String>();
     //private int tag=1;
     private Button change_equipment_operator_status,change_equipment_status;
@@ -45,6 +51,17 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 
     public void setOperator_Status(int operator_Status) {
         Operator_Status = operator_Status;
+
+        if(Operator_Status==-1){
+            showList.clear();
+            if(Equipment_Operator_Status_List.size()==0){
+                initData();
+            }
+            showList.add(Equipment_Operator_Status_List.get(0));
+        if(Status!=null&&Status.getAdapter()!=null){
+            Status.setWheelData(showList);
+        }
+        }
     }
     private int Operator_Status=-1;
 
@@ -104,14 +121,15 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                     }
             }
         });
+        initTagButton();
         showList=Equipment_Operator_Status_List;
         Status=(WheelView)findViewById(R.id.WheelView);
         Status.setWheelAdapter(new MyWheelAdapter(context));
-       Status.setSkin(com.wx.wheelview.widget.WheelView.Skin.Common);
+        Status.setSkin(com.wx.wheelview.widget.WheelView.Skin.Common);
         Status.setWheelData(showList);
         Status.setWheelSize(5);
         Status.setDividerHeight(2);
-        initTagButton();
+        findViewById(R.id.dialog).postInvalidate();
    //     initEquipmentTagView();
     }
 
@@ -306,12 +324,23 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         ((Activity)context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                showList.clear();
                 if(tag==1){
-                    showList=Equipment_Operator_Status_List;
+                    if(Operator_Status==-1){
+                        showList.add(Equipment_Operator_Status_List.get(0));
+                    }else{
+                    //showList=Equipment_Operator_Status_List;
+                        showList.addAll(Equipment_Operator_Status_List);
+                    }
                     Status.setWheelData(showList);
                     Status.smoothScrollToPosition(0);
                 }else if(tag==2){
-                    showList=Equipment_Status_List;
+                    if(EquipemntStatus==-1){
+                        showList.add(Equipment_Status_List.get(0));
+                    }else {
+                   // showList=Equipment_Status_List;
+                        showList.addAll(Equipment_Status_List);
+                    }
                     Status.setWheelData(showList);
                     Status.smoothScrollToPosition(0);
                 }
@@ -357,19 +386,19 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         Collections.addAll(Equipment_Operator_Status_List,context.getResources().getStringArray(R.array.Equipment_Operator_Status));
     }
     private void initMap(){
-        {
+
             Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.start), 0);
             Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.pause), 1);
             Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.quit), 2);
             Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.material_requisition), 3);
             Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.wait_material), 4);
             Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 5);
-        }
-        {
+
+
             Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.start), 1);
             Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.pause), 2);
             Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.wait_material), 3);
             Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 4);
-        }
+
     }
 }

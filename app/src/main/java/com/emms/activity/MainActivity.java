@@ -24,7 +24,7 @@ import java.util.HashMap;
 /**
  * Created by jaffer.deng on 2016/6/6.
  */
-public class MainActivity extends BaseActivity implements View.OnClickListener{
+public class MainActivity extends NfcActivity implements View.OnClickListener{
 
     private Button btn_exit;
     private CardView create_task,repair_tag,maintain_tag,move_car_tag,other_tag,team_status_tag;
@@ -163,8 +163,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                        for (int i = 0; i < json.get("PageData").asArrayElement().size(); i++) {
                            //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
                            //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
-                           String taskNumToShow = json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0").valueAsString() + "/" +
-                                   json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1").valueAsString();
+                           String taskNumToShow = json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1").valueAsString() + "/" +
+                                   json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0").valueAsString();
                            taskNum.put(i, taskNumToShow);
                        }
                        repair_msg.setText(taskNum.get(0));
@@ -179,9 +179,18 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
            @Override
            public void onFailure(int errorNo, String strMsg) {
                super.onFailure(errorNo, strMsg);
+               if(errorNo==401){
+                   ToastUtil.showToastLong(R.string.unauthorization,context);
+                   return;
+               }
                ToastUtil.showToastLong(R.string.loadingFail,context);
                dismissCustomDialog();
            }
         });
+    }
+
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
     }
 }

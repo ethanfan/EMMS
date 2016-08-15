@@ -1,6 +1,7 @@
 package com.emms.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -14,7 +15,7 @@ import com.handmark.pulltorefresh.library.internal.Utils;
 import com.polites.android.GestureImageView;
 
 
-public class ShowBigImageActivity extends Activity {
+public class ShowBigImageActivity extends NfcActivity {
     static Bitmap tmpBitMap;
 
     @Override
@@ -61,5 +62,10 @@ public class ShowBigImageActivity extends Activity {
     }
     public static void cleanTmpBitmap(){
         tmpBitMap = null;
+    }
+
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
     }
 }

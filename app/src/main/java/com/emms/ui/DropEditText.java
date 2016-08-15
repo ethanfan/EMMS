@@ -57,6 +57,7 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 
 		mEditText = (EditText) findViewById(R.id.dropview_edit);
 		mDropImage = (ImageView) findViewById(R.id.dropview_image);
+		//mEditText.setSingleLine(true);
 
 //		mEditText.setSelectAllOnFocus(true);
 		mDropImage.setImageResource(mDrawableLeft);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.os.Message;
 import android.os.Parcelable;
 import android.support.v4.app.ServiceCompat;
 import android.text.format.DateUtils;
@@ -16,7 +17,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -24,6 +27,7 @@ import com.emms.R;
 import com.emms.adapter.commandAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
+import com.emms.schema.Equipment;
 import com.emms.schema.Task;
 import com.emms.ui.HorizontalListView;
 import com.emms.ui.NFCDialog;
@@ -35,6 +39,7 @@ import org.apache.http.conn.routing.RouteInfo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2016/7/25.
@@ -56,7 +61,7 @@ public class CommandActivity extends NfcActivity  {
     private NFCDialog nfcDialog;
     private int nfctag=0;
     private static int TASK_COMPLETE=1;
-
+    private final String STATUS_DONE = "4";
     private boolean TaskComplete=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -261,9 +266,7 @@ public class CommandActivity extends NfcActivity  {
     }
     private void TaskCompleteScan(){
         //HttpParams httpParams=new HttpParams();
-        if(nfcDialog!=null&&!nfcDialog.isShowing()){
-        nfcDialog.show();}
-        nfctag=1;
+        getTaskEquipmentFromServerByTaskId();
     }
     private void TaskComplete(String iccardId){
         HttpParams params=new HttpParams();
@@ -291,6 +294,76 @@ public class CommandActivity extends NfcActivity  {
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 ToastUtil.showToastLong(R.string.submitFail,context);
+            }
+        });
+    }
+
+
+    public void getOperatorInfoFromServer(String iccardID){
+        showCustomDialog(R.string.loadingData);
+        HttpParams httpParams=new HttpParams();
+        httpParams.put("ICCardID",Integer.valueOf(iccardID));
+        HttpUtils.getWithoutCookies(this, "Token", httpParams, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null){
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
+                        ToastUtil.showToastLong(R.string.scanICCardSuccess,context);}
+                    else{
+                        ToastUtil.showToastLong("刷卡登录失败",context);
+                    }
+                }
+                dismissCustomDialog();
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.scanICCardFail,context);
+                dismissCustomDialog();
+            }
+        });
+    }
+
+
+    private void getTaskEquipmentFromServerByTaskId() {
+
+        if (null == task_id.getText().toString()||task_id.getText().toString().equals("")) {
+            return;
+        }
+        showCustomDialog(R.string.loadingData);
+        HttpParams params = new HttpParams();
+        params.put("task_id", task_id.getText().toString());
+        params.put("pageSize",1000);
+        params.put("pageIndex",1);
+        //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
+        HttpUtils.get(this, "TaskDetailList", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                dismissCustomDialog();
+                if (t != null) {
+                    ArrayElement jsonArrayElement = new JsonArrayElement(t);
+                    if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
+                        for(int i=0;i<jsonArrayElement.size();i++ ){
+                            if(!DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("Status")).equals(STATUS_DONE)){
+                                ToastUtil.showToastLong(R.string.TaskEquipmentNotComplete,context);
+                                return;
+                            }
+                        }
+                    }
+                    if(nfcDialog!=null&&!nfcDialog.isShowing()){
+                        nfcDialog.show();}
+                    nfctag=1;
+                }
+            }
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
+                ToastUtil.showToastLong("获取设备状态失败，访问超时",context);
             }
         });
     }

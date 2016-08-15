@@ -12,20 +12,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/toolbar"></include>
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:id="@+id/aaaa">
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
-    android:layout_marginLeft="10dp"
-    android:paddingTop="8dp"
-    android:id="@+id/equipment_tag"
-    android:textSize="25sp"
-    android:text="@string/equipment_tag_number"/>
+
 <!--
         <ImageButton
             android:layout_width="43dp"
@@ -37,58 +24,105 @@
             android:layout_marginRight="5dp"
             android:layout_alignParentRight="true"/>
             -->
-        <com.emms.ui.DropEditText
-            android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="50dp"
+        android:id="@+id/subTask"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/task_subtype_name_id"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@+id/equipment_tag"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/equipment_tag"
-            android:layout_alignBottom="@+id/equipment_tag"
-            android:background="@drawable/bg_edit_normal"
-            android:layout_marginRight="10dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1.6"
+            android:gravity="end"
+            android:text="@string/equipment_tag_number"
+            android:textColor="@color/text_color"
+            android:textSize="18sp" />
+
+        <com.emms.ui.DropEditText
             android:id="@+id/equipment_id"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
             drop:drawableRight="@mipmap/drop_down"
             drop:dropMode="flow_parent"
             drop:hint="@string/select"
-            drop:hintColor="@color/hint_color"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:paddingTop="8dp"
-            android:layout_marginLeft="10dp"
-            android:layout_alignRight="@+id/equipment_tag"
-            android:layout_below="@+id/equipment_tag"
-            android:id="@+id/iccard_tag"
-            android:textSize="25sp"
-            android:text="@string/iccard_id"/>
+            drop:hintColor="@color/hint_color" />
 
-        <ImageButton
-            android:layout_width="43dp"
-            android:layout_height="43dp"
-            android:src="@mipmap/scan"
-            android:id="@+id/iccard_scan"
-            android:layout_alignTop="@+id/iccard_tag"
-            android:layout_marginRight="5dp"
-            android:background="@color/transparent"
-            android:layout_alignParentRight="true"/>
-        <EditText
-            android:layout_width="wrap_content"
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="30dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@+id/iccard_tag"
-            android:layout_toLeftOf="@+id/iccard_scan"
-            android:layout_alignTop="@+id/iccard_tag"
-            android:layout_alignBottom="@+id/iccard_scan"
-            android:background="@drawable/bg_edit_normal"
-            android:id="@+id/iccard_id"/>
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1.6"
+            android:gravity="end"
+            android:text="@string/iccard_id"
+            android:textColor="@color/text_color"
+            android:textSize="18sp" />
+
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:layout_below="@+id/iccard_id"
-            android:layout_marginBottom="30dp">
+            android:layout_weight="3">
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/edit_bg_shape"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/iccard_id"
+                    style="?android:attr/textViewStyle"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:height="40dip"
+                    android:background="@null"
+                    android:editable="false"
+                    android:hint="@string/scan"
+                    android:textColor="@color/text_color"
+                    android:textColorHint="@color/hint_color"
+                    android:textSize="18sp" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="2dip"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="2dip"
+                    android:paddingRight="2dip"
+                    android:src="@mipmap/scan" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/iccard_scan"
+                android:layout_width="43dp"
+                android:layout_height="43dp"
+                android:layout_alignParentRight="true"
+                android:background="@color/transparent"
+                android:contentDescription="@null" />
+        </RelativeLayout>
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp">
         <Button
             android:layout_width="match_parent"
             android:layout_height="50dp"
@@ -97,16 +131,14 @@
             android:id="@+id/comfirm"
             android:text="@string/sure"
             android:textSize="23sp"
-            android:textColor="@color/white"
             android:layout_alignParentBottom="true"
+            android:textColor="@color/white"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
             android:layout_marginTop="20dp"
             />
-        </RelativeLayout>
     </RelativeLayout>
-
 </LinearLayout>
         </FrameLayout>
     <include layout="@layout/activity_search"

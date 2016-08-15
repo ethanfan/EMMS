@@ -48,7 +48,7 @@ import java.util.ArrayList;
 /**
  * Created by Administrator on 2016/7/25.
  */
-public class SummaryActivity extends BaseActivity{
+public class SummaryActivity extends NfcActivity{
     private DropEditText type;
     private EditText description,repair_status;
     private Button comfirm;
@@ -297,7 +297,7 @@ public class SummaryActivity extends BaseActivity{
                             startActivity(intent);
                         }
                     }else {
-                        ToastUtil.showToastLong(R.string.submitFail,context);
+                        ToastUtil.showToastLong(R.string.submit_Fail,context);
                     }
                 }
             }
@@ -382,5 +382,10 @@ public class SummaryActivity extends BaseActivity{
 
             }
         });
+    }
+
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
     }
 }

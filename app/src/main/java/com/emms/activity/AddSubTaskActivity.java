@@ -69,7 +69,7 @@ import java.util.Map;
 /**
  * Created by jaffer.deng on 2016/6/7.
  */
-public class AddSubTaskActivity extends BaseActivity implements View.OnClickListener {
+public class AddSubTaskActivity extends NfcActivity implements View.OnClickListener {
 
         private Context context=this;
         private EditText  approved_working_hours;
@@ -539,6 +539,11 @@ public class AddSubTaskActivity extends BaseActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+
+    }
+
+    @Override
+    public void resolveNfcMessage(Intent intent) {
 
     }
 }

@@ -1,6 +1,7 @@
 package com.emms.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -40,7 +41,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 /**
  * Created by jaffer.deng on 2016/7/15.
  */
-public class InvitorActivity extends BaseActivity implements View.OnClickListener{
+public class InvitorActivity extends NfcActivity implements View.OnClickListener{
     private PullToRefreshListView mListView;
     private ListView mGroupListView;
     private MultiAdapter adapter=null;
@@ -234,6 +235,15 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                         for(int i=0;i<adapter.getlistItemID().size();i++){
                             invitorList.add(Integer.valueOf(DataUtil.isDataElementNull(adapter.getListItems().get(adapter.getListItemID().get(i)).get("Operator_ID"))));
                         }
+                            if(invitorList.size()==0){
+                                if(isExChangeOrder){
+                                    ToastUtil.showToastLong(R.string.pleaseSelectExchangeOrderTarget,context);
+                                    return;
+                                }else {
+                                    ToastUtil.showToastLong(R.string.pleaseSelectInviteTarget,context);
+                                    return;
+                                }
+                            }
                             for(int j=0;j<TaskOperator.size();j++) {
                                 if (invitorList.contains(Integer.valueOf(TaskOperator.get(j)))) {
                                     if(isExChangeOrder){
@@ -339,5 +349,10 @@ public class InvitorActivity extends BaseActivity implements View.OnClickListene
                 ToastUtil.showToastLong(R.string.getTaskOperatorFail,context);
             }
         });
+    }
+
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
     }
 }

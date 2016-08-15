@@ -25,6 +25,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/bg_main"
+                    android:id="@+id/layout"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:orientation="vertical">
@@ -64,6 +65,7 @@
                         android:layout_marginRight="16dp"
                         android:layout_marginTop="10dp"
                         android:id="@+id/subTask"
+                        android:visibility="gone"
                         android:orientation="horizontal">
 
                         <TextView
@@ -159,7 +161,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="16dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="8dp"
                         android:orientation="horizontal">
 
                         <TextView
@@ -285,15 +287,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="16dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="8dp"
                         android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginRight="8dp"
-                            android:layout_marginTop="13dp"
                             android:layout_weight="1.6"
+                            android:layout_gravity="center_vertical"
                             android:gravity="end"
                             android:text="@string/task_description"
                             android:textColor="@color/text_color"
@@ -302,7 +304,7 @@
                         <RelativeLayout
                             android:id="@+id/edit_resume"
                             android:layout_width="0dp"
-                            android:layout_height="130dp"
+                            android:layout_height="wrap_content"
                             android:layout_weight="3"
                             android:background="@android:color/transparent"
                             >
@@ -317,23 +319,41 @@
                                 drop:hintColor="@color/hint_color"
                                 >
                             </com.emms.ui.DropEditText>
-                            <EditText
-                                android:id="@+id/edit_task_description"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_below="@+id/simple_description"
-                                android:background="@color/white"
-                                android:height="40dip"
-                                android:hint="@string/task_description_hint"
-                                android:textColor="@color/text_color"
-                                android:textColorHint="@color/hint_color"
-                                android:paddingTop="10dp"
-                                android:paddingBottom="10dp"
-                                android:textSize="18sp"
-                                android:layout_marginTop="15dp"/>
                         </RelativeLayout>
                     </LinearLayout>
-
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:layout_weight="1.6"
+                            android:textSize="18sp"
+                            android:layout_marginRight="8dp"
+                            android:layout_marginTop="13dp"/>
+                        <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_height="100dp"
+                            android:layout_weight="3"
+                            android:background="@color/white"
+                            android:id="@+id/task_description"
+                            android:visibility="gone"
+                            android:layout_below="@+id/simple_description">
+                    <EditText
+                        android:id="@+id/edit_task_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:hint="@string/task_description_hint"
+                        android:textColor="@color/text_color"
+                        android:textColorHint="@color/hint_color"
+                        android:textSize="18sp"/>
+                        </RelativeLayout>
+                    </LinearLayout>
                     <Button
                         android:id="@+id/sure"
                         android:layout_width="280dp"
