@@ -129,7 +129,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         showList.addAll(Equipment_Operator_Status_List);
         Status=(WheelView)findViewById(R.id.WheelView);
         Status.setWheelAdapter(new MyWheelAdapter(context));
-        Status.setSkin(com.wx.wheelview.widget.WheelView.Skin.Common);
+        Status.setSkin(com.wx.wheelview.widget.WheelView.Skin.Holo);
         Status.setWheelData(showList);
         Status.setWheelSize(5);
         Status.setDividerHeight(2);

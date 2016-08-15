@@ -25,7 +25,8 @@
                 android:background="@drawable/dashedline"/>
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -79,20 +80,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
                 </com.emms.ui.ScrollViewWithListView>
-                <LinearLayout
-                    android:id="@+id/line"
-                    android:layout_marginTop="5dp"
-                    android:layout_below="@id/problem_count"
+                <!--<LinearLayout-->
+                    <!--android:id="@+id/line"-->
+                    <!--android:layout_marginTop="5dp"-->
+                    <!--android:layout_below="@id/problem_count"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:background="@color/hint_color"-->
+                    <!--android:layout_height="0.5dp"-->
+                    <!--android:orientation="horizontal">-->
+                <!--</LinearLayout>-->
+                <View
                     android:layout_width="match_parent"
-                    android:background="@color/hint_color"
-                    android:layout_height="0.5dp"
-                    android:orientation="horizontal">
-                </LinearLayout>
+                    android:layout_marginTop="10dp"
+                    android:layout_below="@+id/problem_count"
+                    android:layout_height="1dp"
+                    android:id="@+id/line"
+                    android:layerType="software"
+                    android:background="@drawable/dashedline"/>
                 <TextView
                     android:layout_below="@id/line"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="13dp"
                     android:textSize="17sp"
                     android:textColor="@color/text_color"
                     android:text="@string/task_picture"
@@ -111,15 +120,23 @@
                     android:layout_toEndOf="@+id/textView19">
                 </com.emms.ui.ExpandGridView>
 
-                <LinearLayout
-                    android:id="@+id/line1"
-                    android:layout_marginTop="5dp"
-                    android:layout_below="@id/picture_containt"
+                <!--<LinearLayout-->
+                    <!--android:id="@+id/line1"-->
+                    <!--android:layout_marginTop="5dp"-->
+                    <!--android:layout_below="@id/picture_containt"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:background="@color/hint_color"-->
+                    <!--android:layout_height="0.5dp"-->
+                    <!--android:orientation="horizontal">-->
+                <!--</LinearLayout>-->
+                <View
                     android:layout_width="match_parent"
-                    android:background="@color/hint_color"
-                    android:layout_height="0.5dp"
-                    android:orientation="horizontal">
-                </LinearLayout>
+                    android:layout_marginTop="10dp"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/picture_containt"
+                    android:id="@+id/line1"
+                    android:layerType="software"
+                    android:background="@drawable/dashedline"/>
 <!--
                 <LinearLayout
                     android:id="@+id/edit_reason"

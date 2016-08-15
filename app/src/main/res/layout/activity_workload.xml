@@ -60,7 +60,8 @@
         android:textSize="17sp"/>
     <View
         android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
         android:id="@+id/aaa"
         android:layout_below="@+id/total_worktime_tag">
     </View>
@@ -102,6 +103,7 @@
         android:layout_above="@+id/aaabbb"
         android:layout_below="@+id/aaa"
         android:descendantFocusability="beforeDescendants"
+        android:divider="@color/transparent"
         android:id="@+id/listView">
     </ListView>
 </RelativeLayout>

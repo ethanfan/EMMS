@@ -13,6 +13,7 @@ import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -76,7 +77,6 @@ public class SummaryActivity extends NfcActivity{
         getSummaryFromServer();
         initView();
         initSearchView();
-
     }
     public void initView(){
         //initTopToolbar
@@ -87,6 +87,7 @@ public class SummaryActivity extends NfcActivity{
                 finish();
             }
         });
+
         type=(DropEditText)findViewById(R.id.type);
         description=(EditText)findViewById(R.id.description);
         repair_status=(EditText)findViewById(R.id.repair_status);
@@ -117,6 +118,22 @@ public class SummaryActivity extends NfcActivity{
                 }
             });
         }
+        findViewById(R.id.layout).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                description.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(0, InputMethodManager.RESULT_SHOWN);
+            }
+        });
+        findViewById(R.id.layout2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                repair_status.requestFocus();
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(0, InputMethodManager.RESULT_SHOWN);
+            }
+        });
     }
     private void initSearchView() {
         initData();

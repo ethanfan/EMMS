@@ -673,7 +673,6 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         task_subtype = (DropEditText) findViewById(R.id.task_subtype);
         group = (DropEditText) findViewById(R.id.group_id);
         device_name = (DropEditText) findViewById(R.id.device_name);
-        //device_name.getmEditText().setSingleLine();
         simple_description=(DropEditText)findViewById(R.id.simple_description);
         create_task = (EditText) findViewById(R.id.create_task);
         device_num = (EditText) findViewById(R.id.device_num);

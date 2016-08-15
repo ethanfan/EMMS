@@ -2,12 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="#DFDFDF"
+        android:id="@+id/ooo"></View>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/name_tag"
         android:layout_marginTop="5dp"
+        android:layout_alignRight="@+id/start_time_tag"
         android:layout_marginLeft="10dp"
+        android:layout_below="@+id/ooo"
         android:textSize="17sp"
         android:text="@string/UserName"/>
     <TextView
@@ -16,7 +23,6 @@
         android:id="@+id/name"
         android:paddingLeft="10dp"
         android:textSize="17sp"
-        android:textColor="@color/black"
         android:layout_toRightOf="@+id/name_tag"
         android:layout_alignTop="@+id/name_tag"/>
     <TextView
@@ -45,8 +51,7 @@
         android:text="@string/start_time"
         android:layout_marginTop="5dp"
         android:layout_below="@+id/name_tag"
-        android:textSize="17sp"
-        android:layout_alignLeft="@id/name_tag"/>
+        android:textSize="17sp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -110,6 +115,7 @@
             android:layout_alignTop="@+id/workload_tag"
             android:layout_toLeftOf="@+id/percent"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="5dp"/>
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"/>
 </RelativeLayout>
 </RelativeLayout>
