@@ -7,8 +7,31 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/group_type"
         android:textColor="@color/text_color"
+        android:textSize="17sp"
+        android:layout_alignParentTop="true"
+        android:text="@string/applicanter"
+        android:layout_alignRight="@+id/textView14"
+        android:id="@+id/textView13" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="何邵勃"
+        android:id="@+id/task_creater"
+        android:textColor="@color/text_color"
+        android:textSize="17sp"
+        android:layout_alignParentTop="true"
+        android:singleLine="true"
+        android:layout_alignTop="@+id/textView13"
+        android:layout_toRightOf="@+id/textView13" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/group_type"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/text_color"
+        android:layout_below="@+id/textView13"
+        android:layout_alignRight="@+id/textView13"
         android:textSize="17sp"
         android:id="@+id/textView8" />
     <TextView
@@ -17,9 +40,8 @@
         android:textColor="@color/text_color"
         android:textSize="17sp"
         android:text="D"
-        android:layout_marginLeft="3dp"
-        android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/textView8"
+        android:layout_alignTop="@+id/textView8"
         android:id="@+id/task_group" />
     <TextView
         android:layout_width="wrap_content"
@@ -27,6 +49,7 @@
         android:textColor="@color/text_color"
         android:textSize="17sp"
         android:text="@string/task_number"
+        android:id="@+id/ccc"
         android:layout_alignParentTop="true"
         android:layout_toLeftOf="@+id/task_ID" />
     <TextView
@@ -34,31 +57,11 @@
         android:layout_height="wrap_content"
         android:textColor="@color/text_color"
         android:textSize="17sp"
-        android:layout_marginRight="15dp"
         android:text="0115"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:id="@+id/task_ID" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/text_color"
-        android:textSize="17sp"
-        android:layout_marginTop="5dp"
-        android:text="@string/creater"
-        android:layout_below="@+id/textView8"
-        android:layout_alignParentLeft="true"
-        android:id="@+id/textView13" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="何邵勃"
-        android:layout_marginLeft="3dp"
-        android:id="@+id/task_creater"
-        android:textColor="@color/text_color"
-        android:textSize="17sp"
-        android:layout_alignTop="@+id/textView13"
-        android:layout_toRightOf="@+id/textView13" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -66,7 +69,7 @@
         android:textSize="17sp"
         android:layout_marginTop="5dp"
         android:text="@string/issue_time"
-        android:layout_below="@+id/textView13"
+        android:layout_below="@+id/textView8"
         android:layout_alignParentLeft="true"
         android:id="@+id/textView14" />
     <TextView
@@ -116,4 +119,5 @@
         android:layout_alignTop="@+id/textView16"
         android:layout_toRightOf="@+id/textView16"
         android:text="我是描述我是描述我是描述我是描述我是描述我是描述我是描述"/>
+
 </RelativeLayout>

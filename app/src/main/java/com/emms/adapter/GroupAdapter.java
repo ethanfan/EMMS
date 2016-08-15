@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.emms.R;
 import com.emms.util.DataUtil;
+import com.google.common.escape.Escaper;
 
 import java.util.ArrayList;
 
@@ -34,7 +35,11 @@ public class GroupAdapter extends BaseAdapter {
         this.context =context;
         this.datas =datas;
     }
-
+    private ObjectElement selection;
+    public void setSelection(ObjectElement selection){
+        this.selection=selection;
+        notifyDataSetChanged();
+    }
     @Override
     public int getCount() {
         return datas.size();
@@ -66,10 +71,18 @@ public class GroupAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        if(position==0&&tag){
+//        if(position==0&&tag){
+//            holder.groupItem.setTextColor(Color.RED);
+//           tag=false;
+//        }
+        if(selection!=null){
+        if(datas.get(position).equals(selection)){
             holder.groupItem.setTextColor(Color.RED);
-            tag=false;
-          }
+        }
+            else {
+            holder.groupItem.setTextColor(Color.BLACK);
+        }
+        }
         holder.groupItem.setText(DataUtil.isDataElementNull(datas.get(position).get("OrganiseName")));
 
         return convertView;

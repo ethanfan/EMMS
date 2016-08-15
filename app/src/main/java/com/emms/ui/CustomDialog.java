@@ -46,6 +46,7 @@ import com.emms.schema.Equipment;
 import com.emms.schema.Task;
 import com.emms.schema.Team;
 import com.emms.util.DataUtil;
+import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -221,6 +222,10 @@ public class CustomDialog extends Dialog {
     }
 
     public void submitSubTaskData() {
+        if(!DataUtil.isNum(approved_working_hours.getText().toString())){
+            ToastUtil.showToastLong(R.string.pleaseInputNum,context);
+            return;
+        }
         HttpParams params = new HttpParams();
         JsonObjectElement jsonObjectElement = new JsonObjectElement();
         //如果是修改任务，传子任务ID,若添加子任务,传子任务ID=0

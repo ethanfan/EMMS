@@ -3,7 +3,7 @@
 
     <string name="login_id_hint">请输入用户名</string>
     <string name="login_password_hint">请输入密码</string>
-
+   <string name="pleaseInput">请输入</string>
     <string name="warning_title">溫馨提示</string>
 
     <string name="network_error">请检测网络是否正常</string>
@@ -17,7 +17,7 @@
     <string name="task_history_query">任务历史查询</string>
     <string name="repair">报修</string>
     <string name="move_car">搬车</string>
-    <string name="other">其他</string>
+    <string name="other">其它</string>
     <string name="login">登录</string>
     <string name="logining">登录中. . .</string>
     <string name="public_machine">公共机</string>
@@ -32,7 +32,8 @@
     <string name="scan">请扫描</string>
     <string name="task_type">任务类型: </string>
     <string name="creater">创建人:</string>
-    <string name="equipment_num"> 机台号: </string>
+    <string name="applicanter">创建人：</string>
+    <string name="equipment_num"> 机台编号: </string>
     <string name="group">组别: </string>
     <string name="equipment_name"> 设备名称: </string>
     <string name="task_subtype_name"> 任务子类型: </string>
@@ -60,8 +61,8 @@
     <string name="paused">已暂停</string>
     <string name="group_type">组别：</string>
     <string name="grouptype">组别：</string>
-    <string name="device_num">设备编号：&#160;&#160;</string>
-    <string name="device_name">设备名称：&#160;&#160; </string>
+    <string name="device_num">设备编号：</string>
+    <string name="device_name">设备名称：</string>
     <string name="task_state">任务状态： </string>
     <string name="repair_time">报修时间：</string>
     <string name="start_time">开始时间： </string>
@@ -110,7 +111,7 @@
     <string name="add">添加</string>
     <string name="delete">删除</string>
     <string name="sub_task">子任务</string>
-    <string name="sub_task_equipment_num">机台号:&#160;&#160;&#160;&#160;</string>
+    <string name="sub_task_equipment_num">机台编号:</string>
     <string name="sure">确定</string>
     <string name="warranty_person">报修人：</string>
     <!--<string name="error">Error</string>-->
@@ -187,6 +188,7 @@
     <string name="noMoreData">没有更多数据了</string>
     <string name="judgeWorkloadSum">工作量总和不等于100%，提交失败</string>
     <string name="submitSuccess">提交成功</string>
+    <string name="commandSuccess">评价成功</string>
     <string name="submit_Fail">提交失败</string>
     <string name="submitFail">数据提交失败，请检查网络</string>
     <string name="loadingFail">数据获取失败，请检查网络</string>
@@ -200,7 +202,7 @@
     <string name="factory">分厂:</string>
     <string name="factoryTitle">分厂</string>
     <string name="pleaseSelectFactory">请选择分厂</string>
-    <string name="equipment_status">设备状态：&#160;&#160;</string>
+    <string name="equipment_status">设备状态：</string>
     <string name="setting">设置</string>
     <string name="AccountOrPasswordFail">账号/密码错误</string>
     <string name="thisWorkerIsBusy">该人员处于忙碌状态，不可选择</string>
@@ -216,4 +218,5 @@
     <string name="TaskEquipmentNotComplete">该任务中存在设备处于未完成状态，不可提交任务完成</string>
     <string name="unauthorization">您的账号未授权，请联系管理员</string>
     <string name="getEquipmentNumSuccess">获取机台号成功</string>
+    <string name="pleaseInputNum">请输入数字</string>
 </resources>

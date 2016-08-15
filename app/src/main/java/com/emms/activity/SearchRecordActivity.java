@@ -68,7 +68,7 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
         repair_task.setOnClickListener(this);
         move_car_task.setOnClickListener(this);
         other_task.setOnClickListener(this);
-        repair_task.setTextColor(Color.RED);
+        repair_task.setTextColor(Color.parseColor("#AB2D42"));
       //  TaskHistroyQuery.setOnClickListener(this);
     }
 
@@ -79,7 +79,7 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
             case R.id.repair_task:
             {   TaskClass="T01";
                 {
-                    repair_task.setTextColor(Color.RED);
+                    repair_task.setTextColor(Color.parseColor("#AB2D42"));
                     move_car_task.setTextColor(Color.BLACK);
                     other_task.setTextColor(Color.BLACK);
                 }
@@ -89,7 +89,7 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
             {   TaskClass="T03";
                 {
                     repair_task.setTextColor(Color.BLACK);
-                    move_car_task.setTextColor(Color.RED);
+                    move_car_task.setTextColor(Color.parseColor("#AB2D42"));
                     other_task.setTextColor(Color.BLACK);
                 }
                 break;
@@ -99,7 +99,7 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
                 {
                     repair_task.setTextColor(Color.BLACK);
                     move_car_task.setTextColor(Color.BLACK);
-                    other_task.setTextColor(Color.RED);
+                    other_task.setTextColor(Color.parseColor("#AB2D42"));
                 }
                 break;
             }

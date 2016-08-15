@@ -104,7 +104,11 @@ public class CommandActivity extends NfcActivity  {
         comfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                postTaskCommandToServer();
+
+                if(nfcDialog!=null&&!nfcDialog.isShowing()){
+                    nfcDialog.show();}
+                nfctag=1;
+                //postTaskCommandToServer();
             }
         });
         //initTopToolbar
@@ -129,7 +133,10 @@ public class CommandActivity extends NfcActivity  {
             @Override
             public void onClick(View v) {
                 //待写
-                postTaskCommandToServer();
+                if(nfcDialog!=null&&!nfcDialog.isShowing()){
+                    nfcDialog.show();}
+                nfctag=1;
+                //postTaskCommandToServer();
             }
         });}
         nfcDialog = new NFCDialog(context, R.style.MyDialog) {
@@ -150,7 +157,7 @@ public class CommandActivity extends NfcActivity  {
             Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             String iccardID = NfcUtils.dumpTagData(tag);
             if(nfctag==1){
-                TaskComplete(iccardID);
+                postTaskCommandToServer(iccardID);
                 if(nfcDialog!=null&&nfcDialog.isShowing()){
                     nfcDialog.dismiss();
                 }
@@ -189,7 +196,11 @@ public class CommandActivity extends NfcActivity  {
             }
         });
     }
-    private void postTaskCommandToServer(){
+    private void postTaskCommandToServer(final String iccardID){
+
+        if(nfcDialog!=null&&!nfcDialog.isShowing()){
+            nfcDialog.show();}
+        nfctag=1;
         showCustomDialog(R.string.submitData);
         HttpParams params=new HttpParams();
         JsonObjectElement submitCommandData=new JsonObjectElement();
@@ -205,8 +216,11 @@ public class CommandActivity extends NfcActivity  {
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 dismissCustomDialog();
-                ToastUtil.showToastLong(R.string.submitSuccess,context);
-                TaskCompleteScan();
+                if(t!=null){
+                ToastUtil.showToastLong(R.string.commandSuccess,context);
+                TaskComplete(iccardID);}else {
+                    ToastUtil.showToastLong(R.string.submitFail,context);
+                }
             }
 
             @Override
@@ -266,7 +280,7 @@ public class CommandActivity extends NfcActivity  {
     }
     private void TaskCompleteScan(){
         //HttpParams httpParams=new HttpParams();
-        getTaskEquipmentFromServerByTaskId();
+        //getTaskEquipmentFromServerByTaskId();
     }
     private void TaskComplete(String iccardId){
         HttpParams params=new HttpParams();
@@ -354,9 +368,6 @@ public class CommandActivity extends NfcActivity  {
                             }
                         }
                     }
-                    if(nfcDialog!=null&&!nfcDialog.isShowing()){
-                        nfcDialog.show();}
-                    nfctag=1;
                 }
             }
             @Override

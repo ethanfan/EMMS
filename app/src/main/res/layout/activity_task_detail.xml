@@ -30,7 +30,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="17sp"
-                    android:padding="5dp"
+                    android:paddingTop="5dp"
+                    android:paddingBottom="5dp"
+                    android:paddingRight="5dp"
                     android:textColor="@color/text_color"
                     android:text="@string/device_count"
                     android:id="@+id/textView17" />
@@ -90,7 +92,6 @@
                     android:layout_below="@id/line"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="6dp"
                     android:layout_marginTop="8dp"
                     android:textSize="17sp"
                     android:textColor="@color/text_color"

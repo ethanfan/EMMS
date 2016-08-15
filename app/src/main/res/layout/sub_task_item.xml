@@ -21,6 +21,24 @@
           android:id="@+id/work_num"
           android:paddingLeft="10dp"
           android:layout_toRightOf="@id/work_num_tag"/>
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textColor="@color/black"
+          android:layout_marginTop="5dp"
+          android:layout_alignRight="@+id/work_num_tag"
+          android:id="@+id/equipment_num_tag"
+          android:text="@string/sub_task_equipment_num"
+          android:layout_below="@+id/work_num_tag"/>
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:id="@+id/equipment_num"
+          android:textColor="@color/black"
+          android:paddingLeft="10dp"
+          android:layout_alignTop="@+id/equipment_num_tag"
+          android:layout_toRightOf="@+id/equipment_num_tag"/>
+
   </RelativeLayout>
 
         <TextView
@@ -38,6 +56,25 @@
             android:layout_alignParentRight="true"
             android:paddingRight="30dp"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/status_tag"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/approve_work_hours_tag"
+        android:layout_alignLeft="@+id/approve_work_hours_tag"
+        android:textColor="@color/black"
+        android:text="@string/work_status"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/status"
+        android:textColor="@color/black"
+        android:paddingLeft="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/status_tag"
+        android:layout_toRightOf="@id/status_tag"/>
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,44 +82,14 @@
         android:layout_below="@+id/one"
         android:layout_marginTop="5dp"
         android:layout_alignLeft="@id/one">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:id="@+id/equipment_num_tag"
-            android:text="@string/sub_task_equipment_num"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/equipment_num"
-            android:textColor="@color/black"
-            android:paddingLeft="10dp"
-            android:layout_toRightOf="@id/equipment_num_tag"/>
+
     </RelativeLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/status_tag"
-            android:layout_alignTop="@+id/six"
-            android:layout_alignLeft="@+id/approve_work_hours_tag"
-            android:textColor="@color/black"
-            android:text="@string/work_status"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/status"
-            android:textColor="@color/black"
-            android:paddingLeft="10dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/status_tag"
-            android:layout_toRightOf="@id/status_tag"/>
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/three"
         android:layout_below="@+id/six"
-        android:layout_marginTop="5dp"
         android:layout_alignLeft="@id/one">
         <TextView
             android:layout_width="wrap_content"

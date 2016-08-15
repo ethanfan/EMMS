@@ -81,19 +81,21 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
         mGroupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                for(int i=0;i<parent.getChildCount();i++){
-                    if(i==position){
-                        View v=parent.getChildAt(position);
-                        TextView tv=(TextView)v.findViewById(R.id.group_name);
-                        tv.setTextColor(Color.RED);
-                        //tv.setBackgroundColor(Color.RED);
-                    }
-                    else{
-                        View v=parent.getChildAt(i);
-                        TextView tv=(TextView)v.findViewById(R.id.group_name);
-                        tv.setTextColor(Color.BLACK);
-                    }
-                }
+//                ObjectElement objectElement=listGroup.get(position);
+//                for(int i=0;i<parent.getChildCount();i++){
+//                    if(listGroup.get(i).equals(objectElement)){
+//                        View v=parent.getChildAt(position);
+//                        TextView tv=(TextView)v.findViewById(R.id.group_name);
+//                        tv.setTextColor(Color.RED);
+//                        //tv.setBackgroundColor(Color.RED);
+//                    }
+//                    else{
+//                        View v=parent.getChildAt(i);
+//                        TextView tv=(TextView)v.findViewById(R.id.group_name);
+//                        tv.setTextColor(Color.BLACK);
+//                    }
+//                }
+                groupAdapter.setSelection(listGroup.get(position));
                 pageIndex=1;
                 RecCount=0;
                 groupData=listGroup.get(position);
@@ -217,6 +219,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                        getListItems();
                        groupAdapter.setDatas(listGroup);
                        groupAdapter.notifyDataSetChanged();
+                       groupAdapter.setSelection(listGroup.get(0));
                     }
 
                    // if(json!=null)

@@ -736,7 +736,11 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                             datas.clear();
                             TaskDeviceIdList.clear();
                             int dealDeviceCount = 0;
+                            boolean taskComplete=true;
                             for (int i = 0; i < jsonArrayElement.size(); i++) {
+                                if(!DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("Status")).equals(STATUS_DONE)){
+                                    taskComplete=false;
+                                }
                                 datas.add(jsonArrayElement.get(i).asObjectElement());
                                // TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
                                 TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
@@ -760,7 +764,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                 }
 
                             }
-
+                            if(popMenuTaskDetail!=null){
+                            popMenuTaskDetail.setTaskComplete(taskComplete);
+                            }
                             if (null != taskAdapter) {
 //                            adapter.setData(dataList);
                                 taskAdapter.notifyDataSetChanged();
@@ -906,32 +912,32 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                         }
                                     });
                                     //设置当前操作员在设备中状态，默认为-1即未参与
-                                    int status=-1;
-                                    if(TaskEquipment_OperatorID_Status.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))!=null){
-                                    if(TaskEquipment_OperatorID_Status.get(
-                                            DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).containsKey(String.valueOf(getLoginInfo().getId()))){
-                                        status=TaskEquipment_OperatorID_Status.get(
-                                                DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).get(String.valueOf(getLoginInfo().getId()));
-                                    }
-                                    }
+//                                    int status=-1;
+//                                    if(TaskEquipment_OperatorID_Status.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))!=null){
+//                                    if(TaskEquipment_OperatorID_Status.get(
+//                                            DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).containsKey(String.valueOf(getLoginInfo().getId()))){
+//                                        status=TaskEquipment_OperatorID_Status.get(
+//                                                DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).get(String.valueOf(getLoginInfo().getId()));
+//                                    }
+//                                    }
+//                                    changeEquipmentDialog.setOperator_Status(status);
                                     int EquipmentStatus=-1;
                                     EquipmentStatus=Integer.valueOf(Euqipment_ID_STATUS_map.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))));
                                     changeEquipmentDialog.setEquipemntStatus(EquipmentStatus);
-                                    changeEquipmentDialog.setOperator_Status(status);
                                     changeEquipmentDialog.show();
                                 }else {
                                     changeEquipmentDialog.setDatas(String.valueOf(taskId),
                                             objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
                                             Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
-                                    int status=-1;
-                                    if(TaskEquipment_OperatorID_Status.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))!=null){
-                                        if(TaskEquipment_OperatorID_Status.get(
-                                                DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).containsKey(String.valueOf(getLoginInfo().getId()))){
-                                            status=TaskEquipment_OperatorID_Status.get(
-                                                    DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).get(String.valueOf(getLoginInfo().getId()));
-                                        }
-                                    }
-                                    changeEquipmentDialog.setOperator_Status(status);
+//                                    int status=-1;
+//                                    if(TaskEquipment_OperatorID_Status.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))!=null){
+//                                        if(TaskEquipment_OperatorID_Status.get(
+//                                                DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).containsKey(String.valueOf(getLoginInfo().getId()))){
+//                                            status=TaskEquipment_OperatorID_Status.get(
+//                                                    DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).get(String.valueOf(getLoginInfo().getId()));
+//                                        }
+//                                    }
+//                                    changeEquipmentDialog.setOperator_Status(status);
                                     int EquipmentStatus=-1;
                                     EquipmentStatus=Integer.valueOf(Euqipment_ID_STATUS_map.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))));
                                     changeEquipmentDialog.setEquipemntStatus(EquipmentStatus);
@@ -1060,5 +1066,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 super.onFailure(errorNo, strMsg);
             }
         });
+    }
+    private void getTaskEquipmentOperatorStatusTrail(){
+
     }
 }

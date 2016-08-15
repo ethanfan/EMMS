@@ -30,6 +30,7 @@ import com.emms.activity.InvitorActivity;
 import com.emms.activity.SubTaskManageActivity;
 import com.emms.activity.SummaryActivity;
 import com.emms.activity.WorkLoadActivity;
+import com.emms.activity.dialogOnSubmitInterface;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.Constants;
@@ -52,7 +53,7 @@ public abstract class PopMenuTaskDetail {
 	public void setIs_Main_person_in_charge_Operator_id(boolean is_Main_person_in_charge_Operator_id) {
 		this.is_Main_person_in_charge_Operator_id = is_Main_person_in_charge_Operator_id;
 	}
-
+    private boolean taskComplete=false;
 	private boolean is_Main_person_in_charge_Operator_id=false;
 	// private OnItemClickListener listener;
 	public PopMenuTaskDetail(Context context, int width,String taskDetail,String taskClass) {
@@ -308,6 +309,10 @@ public abstract class PopMenuTaskDetail {
 			ToastUtil.showToastLong("只有主负责人可以提交任务完成",context);
 			return;
 		}
+		if(!taskComplete){
+			ToastUtil.showToastLong(R.string.TaskEquipmentNotComplete,context);
+			return;
+		}
 		Intent intent=new Intent(context, SubTaskManageActivity.class);
 		//intent.putExtra(Task.TASK_ID,TaskId);
 		intent.putExtra("TaskDetail",TaskDetail.toString());
@@ -316,4 +321,12 @@ public abstract class PopMenuTaskDetail {
 		context.startActivity(intent);
 	}
 
+//	public void setDialogOnSubmit(dialogOnSubmitInterface dialogOnSubmit) {
+//		this.dialogOnSubmit = dialogOnSubmit;
+//	}
+//
+//	private dialogOnSubmitInterface dialogOnSubmit;
+	public void setTaskComplete(boolean taskComplete){
+		this.taskComplete=taskComplete;
+	}
 }

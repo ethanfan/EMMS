@@ -18,12 +18,18 @@
         android:layout_height="wrap_content"
         android:id="@+id/content"
         android:layout_below="@+id/toolbar">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:id="@+id/ccccc">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/type_tag"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"
+        android:layout_centerVertical="true"
         android:text="@string/fault_type"
         android:textSize="20sp"/>
   <!--
@@ -43,54 +49,91 @@
         android:layout_alignParentRight="true"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        android:layout_centerVertical="true"
         android:id="@+id/type"
-        android:layout_alignTop="@id/type_tag"
         drop:drawableRight="@mipmap/drop_down"
         drop:dropMode="flow_parent"
         drop:hint="@string/select"
         drop:hintColor="@color/hint_color"/>
+        </RelativeLayout>
     <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="@string/fault_description"
-    android:layout_below="@+id/type"
+    android:layout_below="@+id/ccccc"
     android:layout_marginTop="15dp"
+        android:layout_marginLeft="20dp"
     android:id="@+id/description_tag"
-    android:textSize="20sp"
-    android:layout_alignLeft="@+id/type_tag"/>
+    android:textSize="20sp"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="120dp"
+            android:layout_toRightOf="@+id/description_tag"
+            android:layout_alignTop="@+id/description_tag"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:background="@color/white"
+            android:id="@+id/layout"
+            android:layout_marginLeft="20dp"
+            >
     <EditText
         android:id="@+id/description"
-        android:layout_width="wrap_content"
-        android:layout_height="120dp"
-        android:layout_toRightOf="@+id/description_tag"
-        android:layout_alignTop="@+id/description_tag"
-        android:layout_alignParentRight="true"
-        android:layout_alignLeft="@+id/type"
-        android:layout_marginRight="20dp"
-        android:background="@color/white"
-        android:textColor="@color/black"
-        android:textSize="20sp" />
-    <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/repair_status"
-        android:layout_below="@+id/description"
-        android:layout_marginTop="15dp"
-        android:id="@+id/status_tag"
-        android:textSize="20sp"
-        android:layout_alignLeft="@+id/type_tag"/>
-    <EditText
-        android:id="@+id/repair_status"
-        android:layout_width="wrap_content"
-        android:layout_height="120dp"
-        android:layout_toRightOf="@+id/status_tag"
-        android:layout_alignTop="@+id/status_tag"
-        android:layout_alignParentRight="true"
-        android:layout_alignLeft="@+id/description"
-        android:layout_marginRight="20dp"
-        android:background="@color/white"
         android:textColor="@color/black"
-        android:textSize="20sp" />
+        android:background="@color/transparent"
+        android:hint="@string/pleaseInput"
+        android:paddingTop="5dp"
+        android:textColorHint="@color/hint_color"
+        android:paddingBottom="5dp"
+        android:paddingLeft="5dp"
+        android:textSize="18sp" />
+        </RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/repair_status"
+            android:layout_below="@+id/layout"
+            android:layout_marginTop="15dp"
+            android:id="@+id/status_tag"
+            android:textSize="20sp"
+            android:layout_alignLeft="@+id/description_tag"/>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="120dp"
+            android:layout_toRightOf="@+id/description_tag"
+            android:layout_alignTop="@+id/status_tag"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:background="@color/white"
+            android:id="@+id/layout2"
+            android:layout_alignLeft="@+id/layout">
+            <EditText
+                android:id="@+id/repair_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:background="@color/transparent"
+                android:hint="@string/pleaseInput"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingLeft="5dp"
+                android:textColorHint="@color/hint_color"
+                android:textSize="18sp" />
+        </RelativeLayout>
+
+    <!--<EditText-->
+        <!--android:id="@+id/repair_status"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="120dp"-->
+        <!--android:layout_toRightOf="@+id/status_tag"-->
+        <!--android:layout_alignTop="@+id/status_tag"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_alignLeft="@+id/layout"-->
+        <!--android:layout_marginRight="20dp"-->
+        <!--android:background="@color/white"-->
+        <!--android:textColor="@color/black"-->
+        <!--android:textSize="20sp" />-->
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"

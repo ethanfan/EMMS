@@ -22,7 +22,7 @@ public class ShowBigImageActivity extends NfcActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE); 
+       // requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.show_big_image);
         
         Bitmap bitmap = getTmpBitmap();

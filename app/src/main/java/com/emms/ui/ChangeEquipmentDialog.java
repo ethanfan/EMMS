@@ -99,6 +99,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         initData();
         initview();
         setCanceledOnTouchOutside(false);
+
     }
     public void setOnSubmitInterface(dialogOnSubmitInterface onSubmitInterface) {
         this.onSubmitInterface = onSubmitInterface;
@@ -125,14 +126,14 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             }
         });
         initTagButton();
-        showList=Equipment_Operator_Status_List;
+        showList.addAll(Equipment_Operator_Status_List);
         Status=(WheelView)findViewById(R.id.WheelView);
         Status.setWheelAdapter(new MyWheelAdapter(context));
         Status.setSkin(com.wx.wheelview.widget.WheelView.Skin.Common);
         Status.setWheelData(showList);
         Status.setWheelSize(5);
         Status.setDividerHeight(2);
-       // findViewById(R.id.dialog).setTranslationY(getNavigationBarHeight(context));
+      // findViewById(R.id.dialog).setTranslationY((-1)*getNavigationBarHeight(context));
 
    //     initEquipmentTagView();
     }
@@ -330,23 +331,21 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             public void run() {
                 showList.clear();
                 if(tag==1){
-                    if(Operator_Status==-1){
-                        showList.add(Equipment_Operator_Status_List.get(0));
-                    }else{
-                    //showList=Equipment_Operator_Status_List;
+//                    if(Operator_Status==-1){
+//                        showList.add(Equipment_Operator_Status_List.get(0));
+//                    }else{
                         showList.addAll(Equipment_Operator_Status_List);
-                    }
-                    Status.setWheelData(showList);
-                    Status.smoothScrollToPosition(0);
+                    //}
                 }else if(tag==2){
                     if(EquipemntStatus==-1){
                         showList.add(Equipment_Status_List.get(0));
                     }else {
-                   // showList=Equipment_Status_List;
                         showList.addAll(Equipment_Status_List);
                     }
-                    Status.setWheelData(showList);
-                    Status.smoothScrollToPosition(0);
+                }
+                Status.setWheelData(showList);
+                if(showList.size()>0){
+                Status.smoothScrollToPosition(0);
                 }
             }
         });

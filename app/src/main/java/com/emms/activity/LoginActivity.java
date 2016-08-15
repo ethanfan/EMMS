@@ -39,6 +39,7 @@ import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.push.ExampleUtil;
 import com.emms.push.PushService;
+import com.emms.schema.Equipment;
 import com.emms.schema.Operator;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.PopMenuLoginActivity;
@@ -216,7 +217,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                                         setStyleBasic();
                                         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, tagSet));
                                         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "1001"));
-                                        finish();
                                     } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
                                         Toast.makeText(mContext, getResources().getString(R.string.warning_message_frozen), Toast.LENGTH_SHORT).show();
                                     } else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
@@ -403,6 +403,22 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 Log.e("Fail","FailSave");
             }
         });
+        if(data!=null&&data.isArray()){
+       for(int i=0;i<data.asArrayElement().size();i++){
+        getSqliteStore().updateElement(data.asArrayElement().get(i).asObjectElement().get(Equipment.EQUIPMENT_ID).valueAsString(),
+                data.asArrayElement().get(i), resource, new StoreCallback() {
+                    @Override
+                    public void success(DataElement element, String resource) {
+                        Log.e("","");
+                    }
+
+                    @Override
+                    public void failure(DatastoreException ex, String resource) {
+                       Log.e("","");
+                    }
+                });
+       }
+    }
       /*  for(int i=0;i<data.asArrayElement().size();i++) {
             getSqliteStore().updateElements(new Query(), data.asArrayElement().get(i),resource, new StoreCallback() {
                 @Override
