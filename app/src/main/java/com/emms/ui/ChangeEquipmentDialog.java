@@ -3,7 +3,9 @@ package com.emms.ui;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -22,6 +24,7 @@ import com.emms.ui.WheelView.widget.WheelView;
 import com.emms.util.ArrayWheelAdapter;
 import com.emms.util.ToastUtil;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -55,7 +58,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         if(Operator_Status==-1){
             showList.clear();
             if(Equipment_Operator_Status_List.size()==0){
-                initData();
+                initMap();
             }
             showList.add(Equipment_Operator_Status_List.get(0));
         if(Status!=null&&Status.getAdapter()!=null){
@@ -129,7 +132,8 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         Status.setWheelData(showList);
         Status.setWheelSize(5);
         Status.setDividerHeight(2);
-        findViewById(R.id.dialog).postInvalidate();
+       // findViewById(R.id.dialog).setTranslationY(getNavigationBarHeight(context));
+
    //     initEquipmentTagView();
     }
 
@@ -400,5 +404,38 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.wait_material), 3);
             Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 4);
 
+    }
+    private static boolean checkDeviceHasNavigationBar(Context context) {
+        boolean hasNavigationBar = false;
+        Resources rs = context.getResources();
+        int id = rs.getIdentifier("config_showNavigationBar", "bool", "android");
+        if (id > 0) {
+            hasNavigationBar = rs.getBoolean(id);
+        }
+        try {
+            Class systemPropertiesClass = Class.forName("android.os.SystemProperties");
+            Method m = systemPropertiesClass.getMethod("get", String.class);
+            String navBarOverride = (String) m.invoke(systemPropertiesClass, "qemu.hw.mainkeys");
+            if ("1".equals(navBarOverride)) {
+                hasNavigationBar = false;
+            } else if ("0".equals(navBarOverride)) {
+                hasNavigationBar = true;
+            }
+        } catch (Exception e) {
+            Log.w("", e);
+        }
+
+        return hasNavigationBar;
+
+    }
+    //获取NavigationBar的高度：
+    private static int getNavigationBarHeight(Context context) {
+        int navigationBarHeight = 0;
+        Resources rs = context.getResources();
+        int id = rs.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (id > 0 && checkDeviceHasNavigationBar(context)) {
+            navigationBarHeight = rs.getDimensionPixelSize(id);
+        }
+        return navigationBarHeight;
     }
 }

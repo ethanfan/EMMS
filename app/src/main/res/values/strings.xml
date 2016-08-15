@@ -31,7 +31,7 @@
     <string name="pleaseInputOrSelect">请点击或下拉</string>
     <string name="scan">请扫描</string>
     <string name="task_type">任务类型: </string>
-    <string name="creater">创建人：</string>
+    <string name="creater">创建人:</string>
     <string name="equipment_num"> 机台号: </string>
     <string name="group">组别: </string>
     <string name="equipment_name"> 设备名称: </string>
@@ -215,4 +215,5 @@
     <string name="pleaseSelectInviteTarget">请选择邀请对象</string>
     <string name="TaskEquipmentNotComplete">该任务中存在设备处于未完成状态，不可提交任务完成</string>
     <string name="unauthorization">您的账号未授权，请联系管理员</string>
+    <string name="getEquipmentNumSuccess">获取机台号成功</string>
 </resources>

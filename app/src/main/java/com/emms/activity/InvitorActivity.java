@@ -2,6 +2,7 @@ package com.emms.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -80,6 +81,19 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
         mGroupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                for(int i=0;i<parent.getChildCount();i++){
+                    if(i==position){
+                        View v=parent.getChildAt(position);
+                        TextView tv=(TextView)v.findViewById(R.id.group_name);
+                        tv.setTextColor(Color.RED);
+                        //tv.setBackgroundColor(Color.RED);
+                    }
+                    else{
+                        View v=parent.getChildAt(i);
+                        TextView tv=(TextView)v.findViewById(R.id.group_name);
+                        tv.setTextColor(Color.BLACK);
+                    }
+                }
                 pageIndex=1;
                 RecCount=0;
                 groupData=listGroup.get(position);

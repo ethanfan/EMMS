@@ -1,6 +1,7 @@
 package com.emms.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 public class GroupAdapter extends BaseAdapter {
 
     private Context context;
-
+    private boolean tag=true;
     public ArrayList<ObjectElement> getDatas() {
         return datas;
     }
@@ -65,7 +66,10 @@ public class GroupAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-
+        if(position==0&&tag){
+            holder.groupItem.setTextColor(Color.RED);
+            tag=false;
+          }
         holder.groupItem.setText(DataUtil.isDataElementNull(datas.get(position).get("OrganiseName")));
 
         return convertView;

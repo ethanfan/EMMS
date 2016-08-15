@@ -935,101 +935,21 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             } else if (iccardID.equals("")) {
                 return;
             }
-            if (nfctag == CREATER) {
-                nfctag = 0;
-                HttpParams params = new HttpParams();
-                params.put("ICCardID", iccardID);
-                showCustomDialog(R.string.loadingData);
-                HttpUtils.getWithoutCookies(this, "Token", params, new HttpCallback() {
-                    @Override
-                    public void onSuccess(String t) {
-                        super.onSuccess(t);
-                        try {
-                            JSONObject jsonObject = new JSONObject(t);
-                            int code = Integer.parseInt(jsonObject.get("Result").toString());
-                            boolean isSuccess = jsonObject.get("Success").equals(true);
-                            if ((code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS ||
-                                    code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) && isSuccess) {
-
-                                String data=jsonObject.getString("Data");
-                              //  SharedPreferenceManager.setLoginData(mContext,jsonObject.get("Data").toString());
-                                Operator operator = getLoginInfo(data);
-                                if(null !=  operator){
-                                    creatorId = String.valueOf(operator.getId());
-                                    getTeamId(operator);
-                                }
-
-
-                            } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
-                                ToastUtil.showToastLong(R.string.warning_message_frozen,mContext);
-                           }
-//                             else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
-//                                ToastUtil.showToastLong("登录失败",mContext);
-//                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            ToastUtil.showToastLong(R.string.warning_message_error,mContext);
-                        }
-                        dismissCustomDialog();
-                    }
-
-                    @Override
-                    public void onFailure(int errorNo, String strMsg) {
-                        super.onFailure(errorNo, strMsg);
-                        dismissCustomDialog();
-                    }
-                });
-
-
-                nfcDialog.dismiss();
+//            if (nfctag == CREATER) {
+//                nfctag = 0;
+            //nfcDialog.dismiss();
                 //Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
-            } else if (nfctag == DEVICE_NUM) {
-                nfctag = 0;
-
-                String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='" + iccardID + "'";
-                ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
-                        EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
-                Futures.addCallback(elemt, new FutureCallback<DataElement>() {
-
-                    @Override
-                    public void onSuccess(DataElement dataElement) {
-                        if (dataElement != null && dataElement.isArray()
-                                && dataElement.asArrayElement().size() > 0) {
-                            final ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    device_num.setText(DataUtil.isDataElementNull(objectElement.get("OracleID")));
-                                }
-                            });
-                            equipmentID= DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID));
-                            nfcDialog.dismiss();
-                            Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
-                            // getOrganiseNameAndEquipmentNameByEquipmentID(equipmentID);                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
-                        } else {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(mContext, "目前该设备没有机台号", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Throwable throwable) {
-
-                    }
-                });
+//           } else if (nfctag == DEVICE_NUM) {
+//                nfctag = 0;
 
 
 
+               getEquipmentNumByICcardId(iccardID);
 
 
             }
 
-        }
+       // }
     }
 
     private void initDropSearchView(
@@ -1240,6 +1160,92 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             @Override
             public void failure(DatastoreException ex, String resource) {
 
+            }
+        });
+    }
+    private void getEquipmentNumByICcardId(final String iccardID){
+        String rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='" + iccardID + "'";
+        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+                EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
+        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+
+            @Override
+            public void onSuccess(DataElement dataElement) {
+                if (dataElement != null && dataElement.isArray()
+                        && dataElement.asArrayElement().size() > 0) {
+                    final ObjectElement objectElement = dataElement.asArrayElement().get(0).asObjectElement();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            device_num.setText(DataUtil.isDataElementNull(objectElement.get("OracleID")));
+                        }
+                    });
+                    equipmentID= DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID));
+                    nfcDialog.dismiss();
+                    //Toast.makeText(mContext, "", Toast.LENGTH_SHORT).show();
+                    ToastUtil.showToastLong(R.string.getEquipmentNumSuccess,mContext);
+                    // getOrganiseNameAndEquipmentNameByEquipmentID(equipmentID);                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                           // Toast.makeText(mContext, "目前该设备没有机台号", Toast.LENGTH_SHORT).show();
+                            getApplicantByICcardID(iccardID);
+                        }
+                    });
+
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                ToastUtil.showToastLong("无该卡信息",mContext);
+            }
+        });
+
+    }
+    private void getApplicantByICcardID(String iccardID){
+        HttpParams params = new HttpParams();
+        params.put("ICCardID", iccardID);
+        showCustomDialog(R.string.loadingData);
+        HttpUtils.getWithoutCookies(this, "Token", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                try {
+                    JSONObject jsonObject = new JSONObject(t);
+                    int code = Integer.parseInt(jsonObject.get("Result").toString());
+                    boolean isSuccess = jsonObject.get("Success").equals(true);
+                    if ((code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS ||
+                            code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) && isSuccess) {
+
+                        String data=jsonObject.getString("Data");
+                        //  SharedPreferenceManager.setLoginData(mContext,jsonObject.get("Data").toString());
+                        Operator operator = getLoginInfo(data);
+                        if(null !=  operator){
+                            creatorId = String.valueOf(operator.getId());
+                            getTeamId(operator);
+                        }
+
+
+                    } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
+                        ToastUtil.showToastLong(R.string.warning_message_frozen,mContext);
+                    }
+                    else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
+                        ToastUtil.showToastLong("无该卡信息",mContext);
+                   }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    ToastUtil.showToastLong(R.string.warning_message_error,mContext);
+                }
+                dismissCustomDialog();
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
+                ToastUtil.showToastLong(R.string.loadingFail,mContext);
             }
         });
     }
