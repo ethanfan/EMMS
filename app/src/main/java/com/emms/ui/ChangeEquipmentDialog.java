@@ -6,8 +6,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,11 +22,11 @@ import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.activity.dialogOnSubmitInterface;
-import com.emms.adapter.MyWheelAdapter;
+import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.ui.WheelView.widget.WheelView;
-import com.emms.util.ArrayWheelAdapter;
+import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 
 import java.lang.reflect.Method;
@@ -75,9 +80,9 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 //    private int Equipment_Status=-1;
     private WheelView Status;
 //    private ArrayWheelAdapter<String> adapter;
-    private ArrayList<String> Equipment_Status_List=new ArrayList<String>();
-    private ArrayList<String> Equipment_Operator_Status_List=new ArrayList<String>();
-    private ArrayList<String> showList=new ArrayList<String>();
+    private ArrayList<ObjectElement> Equipment_Status_List=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> Equipment_Operator_Status_List=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> showList=new ArrayList<ObjectElement>();
     private HashMap<String,Integer> Equipment_Operator_Status_Name_ID_map=new HashMap<String, Integer>();
     private HashMap<String,Integer> Equipment_Status_Name_ID_map=new HashMap<String, Integer>();
     private int ViewTag=1;
@@ -106,6 +111,8 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     }
 
     private dialogOnSubmitInterface onSubmitInterface=null;
+    private ListView listView;
+    private TaskAdapter adapter;
     public void initview() {
         ((TextView)findViewById(R.id.cancle)).setText(R.string.cancel);
         findViewById(R.id.cancle).setOnClickListener(new View.OnClickListener() {
@@ -114,34 +121,71 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                 dismiss();
             }
         });
-        findViewById(R.id.comfirm).setOnClickListener(new View.OnClickListener() {
+//        findViewById(R.id.comfirm).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(ViewTag==1){
+//                   postTaskOperatorEquipment(Equipment_Operator_Status_Name_ID_map.get(Status.getSelectionItem().toString()));
+//                    }
+//                    else if(ViewTag==2){
+//                    postTaskEquipment(Equipment_Status_Name_ID_map.get((Status.getSelectionItem().toString())));
+//                    }
+//            }
+//        });
+//        initTagButton();
+//        showList.addAll(Equipment_Operator_Status_List);
+//        Status=(WheelView)findViewById(R.id.WheelView);
+//        Status.setWheelAdapter(new MyWheelAdapter(context));
+//        Status.setSkin(com.wx.wheelview.widget.WheelView.Skin.Holo);
+//        Status.setWheelData(showList);
+//        Status.setWheelSize(5);
+//        Status.setDividerHeight(2);
+    //   findViewById(R.id.dialog).setTranslationY((-1)*getNavigationBarHeight(context));
+
+      //  initEquipmentTagView();
+        listView=(ListView)findViewById(R.id.listView);
+        adapter=new TaskAdapter(showList) {
             @Override
-            public void onClick(View v) {
-                if(ViewTag==1){
-                   postTaskOperatorEquipment(Equipment_Operator_Status_Name_ID_map.get(Status.getSelectionItem().toString()));
-                    }
-                    else if(ViewTag==2){
-                    postTaskEquipment(Equipment_Status_Name_ID_map.get((Status.getSelectionItem().toString())));
-                    }
+            public View getCustomView(View convertView, int position, ViewGroup parent) {
+                TaskViewHolder holder;
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(context).inflate(R.layout.dialog_item, parent, false);
+                    holder = new TaskViewHolder();
+                    holder.image=(ImageView)convertView.findViewById(R.id.image);
+                    holder.tv_task_state=(TextView)convertView.findViewById(R.id.status);
+                    convertView.setTag(holder);
+                }else {
+                    holder = (TaskViewHolder) convertView.getTag();
+                }
+                if(showList.get(position).get("Type").valueAsString().equals("EquipmentStatus")) {
+                    holder.image.setImageResource(R.mipmap.equipment_status);
+                }
+                else {
+                    holder.image.setImageResource(R.mipmap.equipment_operator_status_mipmap);
+                }
+                holder.tv_task_state.setText(DataUtil.isDataElementNull(showList.get(position).get("Status")));
+                return convertView;
+            }
+        };
+        listView.setAdapter(adapter);
+        adapter.setDatas(showList);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //修改设备状态
+                if(showList.get(position).get("Type").valueAsString().equals("EquipmentStatus")){
+                    postTaskEquipment(Equipment_Status_Name_ID_map.get(DataUtil.isDataElementNull(showList.get(position).get("Status"))));
+                }else {
+                    //修改设备参与人状态
+                    postTaskOperatorEquipment(Equipment_Operator_Status_Name_ID_map.get(DataUtil.isDataElementNull(showList.get(position).get("Status"))));
+                }
             }
         });
-        initTagButton();
-        showList.addAll(Equipment_Operator_Status_List);
-        Status=(WheelView)findViewById(R.id.WheelView);
-        Status.setWheelAdapter(new MyWheelAdapter(context));
-        Status.setSkin(com.wx.wheelview.widget.WheelView.Skin.Holo);
-        Status.setWheelData(showList);
-        Status.setWheelSize(5);
-        Status.setDividerHeight(2);
-      // findViewById(R.id.dialog).setTranslationY((-1)*getNavigationBarHeight(context));
-
-   //     initEquipmentTagView();
     }
 
 
 
     private void postTaskEquipment(int status) {
-
         HttpParams params = new HttpParams();
 
         JsonObjectElement taskEquepment=new JsonObjectElement();
@@ -165,10 +209,10 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                     if (jsonObjectElement != null) {
                         if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
                         Toast.makeText(context, "修改设备状态成功", Toast.LENGTH_SHORT).show();
-                        dismiss();}else{
+                        dismiss();
+                            onSubmitInterface.onsubmit();}else{
                             ToastUtil.showToastLong("修改设备状态失败,请检查参与人状态",context);
                         }
-                        onSubmitInterface.onsubmit();
                     }
                 }
             }
@@ -385,8 +429,25 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 
     }
     public void initData(){
-        Collections.addAll(Equipment_Status_List,context.getResources().getStringArray(R.array.Equipment_Status));
-        Collections.addAll(Equipment_Operator_Status_List,context.getResources().getStringArray(R.array.Equipment_Operator_Status));
+        ArrayList<String> arrayList=new ArrayList<>();
+        ArrayList<String> list=new ArrayList<>();
+        Collections.addAll(arrayList,context.getResources().getStringArray(R.array.Equipment_Status));
+        Collections.addAll(list,context.getResources().getStringArray(R.array.Equipment_Operator_Status));
+        for(String s:arrayList){
+            JsonObjectElement json=new JsonObjectElement();
+            json.set("Status",s);
+            json.set("Type","EquipmentStatus");
+            Equipment_Status_List.add(json);
+        }
+        for(String ss:list){
+            JsonObjectElement json=new JsonObjectElement();
+            json.set("Status",ss);
+            json.set("Type","EquipmentOperatorStatus");
+            Equipment_Operator_Status_List.add(json);
+        }
+        showList.addAll(Equipment_Status_List);
+        showList.addAll(Equipment_Operator_Status_List);
+       // adapter.notifyDataSetChanged();
     }
     private void initMap(){
 

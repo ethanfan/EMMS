@@ -77,7 +77,7 @@ public class GroupAdapter extends BaseAdapter {
 //        }
         if(selection!=null){
         if(datas.get(position).equals(selection)){
-            holder.groupItem.setTextColor(Color.RED);
+            holder.groupItem.setTextColor(Color.parseColor("#AB2D42"));
         }
             else {
             holder.groupItem.setTextColor(Color.BLACK);

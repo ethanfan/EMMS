@@ -23,4 +23,5 @@
     <color name="pause_color">#fe0100</color>
     <color name="order_color">#ff8602</color>
     <color name="click_item">#fff2db</color>
+    <color name="esquel_red">#AB2D42</color>
 </resources>

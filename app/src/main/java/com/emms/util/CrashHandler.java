@@ -98,6 +98,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         if (ex == null) {
             return false;
         }
+        getErrorInfoFromException(ex);
         //收集设备参数信息
         collectDeviceInfo(mContext);
         //使用Toast来显示异常信息
@@ -225,6 +226,16 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+    public static String getErrorInfoFromException(Throwable e) {
+        try {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            return "\r\n" + sw.toString() + "\r\n";
+        } catch (Exception e2) {
+            return "bad getErrorInfoFromException";
         }
     }
 }

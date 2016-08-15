@@ -103,12 +103,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     }
 
     private void initView() {
-        findViewById(R.id.setting).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShowPopWindow(v);
-            }
-        });
         login = (TextView) findViewById(R.id.login);
         machine = (TextView) findViewById(R.id.machine);
         inputPassWord = (EditText) findViewById(R.id.inputPassWord);
@@ -127,6 +121,12 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
         .setLabel(getResources().getString(R.string.logining))
                 .setCancellable(true);
+        findViewById(R.id.systemSetting).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowPopWindow(v);
+            }
+        });
     }
 
     @Override
@@ -226,6 +226,8 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                                     e.printStackTrace();
                                     hud.dismiss();
                                     Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();
+                                }catch (Exception e){
+                                    throw e;
                                 }
                             }else{
                                 ToastUtil.showToastLong(R.string.AccountOrPasswordFail,mContext);
@@ -285,7 +287,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         if(db.exists()){
             //getDataBaseUpdateFromServer();
            // getDBFromServer();
-            getDBDataLastUpdateTime();
+            //getDBDataLastUpdateTime();
             return;
         }
        final File dbFile = new File(getExternalFilesDir(null), "/EMMS.zip");

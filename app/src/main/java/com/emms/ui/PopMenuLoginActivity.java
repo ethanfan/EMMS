@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,6 +83,7 @@ public abstract class PopMenuLoginActivity {
 				onEventDismiss();
 			}
 		});
+
 	}
 
 	public abstract void onEventDismiss();
@@ -127,9 +129,9 @@ public abstract class PopMenuLoginActivity {
 		popupWindow.showAsDropDown(parent,
 				10,
 				// 保证尺寸是根据屏幕像素密度来的
-				context.getResources().getDimensionPixelSize(
-						R.dimen.popmenu_yoff));
-
+		context.getResources().getDimensionPixelSize(
+				R.dimen.popmenu_yoff));
+//       popupWindow.showAtLocation(parent, Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK,0,0);
 		// 使其聚集
 		popupWindow.setFocusable(true);
 		// 设置允许在外点击消失

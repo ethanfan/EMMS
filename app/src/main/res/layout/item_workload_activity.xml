@@ -15,6 +15,7 @@
         android:layout_alignRight="@+id/start_time_tag"
         android:layout_marginLeft="10dp"
         android:layout_below="@+id/ooo"
+        android:textColor="@color/black"
         android:textSize="17sp"
         android:text="@string/UserName"/>
     <TextView
@@ -22,6 +23,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/name"
         android:paddingLeft="10dp"
+        android:textColor="@color/black"
         android:textSize="17sp"
         android:layout_toRightOf="@+id/name_tag"
         android:layout_alignTop="@+id/name_tag"/>
@@ -30,6 +32,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/skill"
         android:layout_marginRight="20dp"
+        android:textColor="@color/black"
         android:textSize="17sp"
         android:layout_alignTop="@+id/name_tag"
         android:layout_alignParentRight="true"
@@ -38,6 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/skill_tag"
+        android:textColor="@color/black"
         android:layout_toLeftOf="@+id/skill"
         android:layout_alignTop="@+id/skill"
         android:textSize="17sp"
@@ -49,6 +53,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/start_time_tag"
         android:text="@string/start_time"
+        android:textColor="@color/black"
         android:layout_marginTop="5dp"
         android:layout_below="@+id/name_tag"
         android:textSize="17sp"/>
@@ -56,6 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/start_time"
+        android:textColor="@color/black"
         android:layout_toRightOf="@+id/start_time_tag"
         android:textSize="17sp"
         android:layout_alignTop="@+id/start_time_tag"
@@ -66,6 +72,7 @@
         android:id="@+id/end_time_tag"
         android:text="@string/end_time"
         android:layout_marginTop="5dp"
+        android:textColor="@color/black"
         android:layout_below="@+id/start_time_tag"
         android:textSize="17sp"
         android:layout_alignLeft="@id/start_time_tag"/>
@@ -73,6 +80,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/end_time"
+        android:textColor="@color/black"
         android:layout_toRightOf="@+id/end_time_tag"
         android:textSize="17sp"
         android:layout_alignTop="@+id/end_time_tag"
@@ -86,6 +94,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/workload_tag"
+        android:textColor="@color/black"
        android:layout_centerVertical="true"
         android:text="@string/workload"
         android:layout_marginTop="5dp"
@@ -99,6 +108,7 @@
             android:layout_marginRight="5dp"
             android:layout_marginTop="5dp"
             android:layout_alignParentRight="true"
+            android:textColor="@color/black"
             android:textSize="17sp"
             android:text="@string/percent"
             />

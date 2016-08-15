@@ -90,7 +90,20 @@
             android:textColor="@color/text_color"
             android:textColorHint="#909090" />
     </RelativeLayout>
-
+    <Button
+        android:id="@+id/login"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_below="@+id/input_password_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/yellow"
+        android:padding="2dp"
+        android:textSize="22sp"
+        android:text="@string/login"
+        android:textColor="@android:color/white" />
     <LinearLayout
         android:id="@+id/buttondecrisp"
         android:layout_width="fill_parent"
@@ -99,16 +112,24 @@
         android:background="@android:color/white"
         android:orientation="horizontal" >
 
+        <!--<TextView-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="50dp"-->
+            <!--android:layout_weight="1"-->
+            <!--android:gravity="center"-->
+            <!--android:text="@string/login"-->
+            <!--android:textColor="@color/text_login"-->
+            <!--android:textSize="20sp"-->
+            <!--android:id="@+id/login" />-->
         <TextView
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/login"
+            android:text="@string/systemSetting"
             android:textColor="@color/text_login"
             android:textSize="20sp"
-            android:id="@+id/login" />
-
+            android:id="@+id/systemSetting" />
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
@@ -158,15 +179,15 @@
 
         </ProgressBar>
     </RelativeLayout>
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:scaleX="0.8"
-        android:scaleY="0.8"
-        android:background="@color/transparent"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
-        android:id="@+id/setting"
-        android:src="@mipmap/maintenance"/>
+    <!--<ImageButton-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:scaleX="0.8"-->
+        <!--android:scaleY="0.8"-->
+        <!--android:background="@color/transparent"-->
+        <!--android:layout_marginRight="20dp"-->
+        <!--android:layout_marginTop="20dp"-->
+        <!--android:id="@+id/setting"-->
+        <!--android:src="@mipmap/maintenance"/>-->
 </RelativeLayout>

@@ -87,7 +87,7 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
                     SharedPreferenceManager.setCookie(MainActivity.this,null);
                     SharedPreferenceManager.setLoginData(MainActivity.this,null);
                     SharedPreferenceManager.setUserData(MainActivity.this,null);
-                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                   // startActivity(new Intent(MainActivity.this, LoginActivity.class));
                     finish();
                 }
 

@@ -114,6 +114,7 @@
             android:screenOrientation="portrait">
         </activity>
         <activity android:name=".activity.TaskDetailsActivity"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait">
         </activity>
         <activity android:name=".activity.SubTaskManageActivity"

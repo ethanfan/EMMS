@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.push.PushService;
+import com.emms.util.CrashHandler;
 import com.emms.util.LocaleUtils;
 import com.datastore_android_sdk.datastore.Datastore;
 import com.datastore_android_sdk.sqlite.SqliteStore;
@@ -21,6 +22,7 @@ public class AppAplication extends Application {
     public void onCreate() {
         super.onCreate();
 //        CrashHandler catchHandler = CrashHandler.getInstance();
+//        // 注册crashHandler
 //        catchHandler.init(getApplicationContext());
         System.setProperty("ssl.TrustManagerFactory.algorithm",
                 javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm());
