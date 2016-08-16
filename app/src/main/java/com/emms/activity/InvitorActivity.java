@@ -2,42 +2,35 @@ package com.emms.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
+import android.text.Layout;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
-import com.emms.activity.BaseActivity;
 import com.emms.adapter.GroupAdapter;
 import com.emms.adapter.MultiAdapter;
-import com.emms.bean.AwaitRepair;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
-import com.google.gson.JsonObject;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Created by jaffer.deng on 2016/7/15.
@@ -51,7 +44,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
     private ArrayList<ObjectElement> listGroup=new ArrayList<ObjectElement>();
     // private HashMap<ObjectElement,ArrayList<ObjectElement>> List_Group_Items=new HashMap<ObjectElement,ArrayList<ObjectElement>>();
     private ImageView bcakImageView;
-    private ImageView sureImageView;
+    private Button sureButton;
     private boolean isExChangeOrder=false;
     private boolean isInviteHelp=false;
     private Context context=this;
@@ -109,7 +102,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                 finish();
             }
         });*/
-        sureImageView = (ImageView) findViewById(R.id.btn_right_action);
+        sureButton = (Button) findViewById(R.id.btn_sure_bg);
 
         groupAdapter=new GroupAdapter(InvitorActivity.this,listGroup);
         mGroupListView.setAdapter(groupAdapter);
@@ -120,7 +113,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
 
 
         bcakImageView.setOnClickListener(this);
-        sureImageView.setOnClickListener(this);
+        sureButton.setOnClickListener(this);
         mListView.setMode(PullToRefreshListView.Mode.PULL_FROM_END);
         mListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
@@ -246,7 +239,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
             {   finish();
                 break;}
 
-            case R.id.btn_right_action:{
+            case R.id.btn_sure_bg:{
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

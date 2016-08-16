@@ -21,9 +21,9 @@ public class AppAplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-//        CrashHandler catchHandler = CrashHandler.getInstance();
-//        // 注册crashHandler
-//        catchHandler.init(getApplicationContext());
+        CrashHandler catchHandler = CrashHandler.getInstance();
+        // 注册crashHandler
+        catchHandler.init(getApplicationContext());
         System.setProperty("ssl.TrustManagerFactory.algorithm",
                 javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm());
         LocaleUtils.SupportedLanguage language = LocaleUtils.getLanguage(this);

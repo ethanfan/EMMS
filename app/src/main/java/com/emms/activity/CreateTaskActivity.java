@@ -34,7 +34,6 @@ import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
-import com.emms.push.PushService;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
 import com.emms.schema.Operator;
@@ -43,7 +42,6 @@ import com.emms.schema.Team;
 import com.emms.ui.DropEditText;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.NFCDialog;
-import com.emms.util.BuildConfig;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.SharedPreferenceManager;
@@ -52,27 +50,17 @@ import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import net.minidev.json.JSONArray;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.representation.Representation;
 
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Locale;
-import java.util.Set;
-
-import javax.xml.transform.TransformerFactory;
 
 /**
  * Created by jaffer.deng on 2016/6/7.
@@ -226,17 +214,24 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                 case GROUP:
                                     teamId =mResultAdapter.getItem(inPosition).get(Team.TEAM_ID).valueAsString();
                                     group.getmEditText().setText(searchResult);
+
+                                    resetTeam();
+
                                     break;
                                 case DEVICE_NAME:
                                     equipmentName =mResultAdapter.getItem(inPosition).get(Equipment.EQUIPMENT_NAME).valueAsString();
 //                                    device_name.getmEditText().setSingleLine(true);
                                     device_name.getmEditText().setText(searchResult);
                                     DeviceName=DataUtil.isDataElementNull(mResultAdapter.getItem(inPosition).get(Equipment.EQUIPMENT_CLASS));
-                                    getSimpleDescription(DeviceName);
+
+                                    resetDeviceName();
+                                    initDeviceNum();
                                     break;
                                 case DEVICE_NUM:
                                     device_num.setText(searchResult);
                                     equipmentID=mResultAdapter.getItem(inPosition).get(Equipment.EQUIPMENT_ID).valueAsString();
+                                    resetDeviceNum();
+                                    getSimpleDescription(DeviceName);
                                     break;
                                 case SIMPLE_DESCRIPTION:
                                     simple_description.getmEditText().setText(searchResult);
@@ -281,7 +276,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     }
 
     private void initEvent() {
-        getSimpleDescription("all");
+//        getSimpleDescription("all");
        // initLoginData();
         getTaskType();//获取任务类型 基本不用改
         initDropSearchView(null, task_type.getmEditText(), getResources().
@@ -334,25 +329,25 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         initDropSearchView(group.getmEditText(), device_name.getmEditText(),
                 getResources().
                         getString(R.string.title_search_equipment_name), Equipment.EQUIPMENT_NAME, DEVICE_NAME, "请先选择组别或无该组别设备信息",device_name.getDropImage());
-        group.getmEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                //device_name.getmEditText().setText("");
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if(!tag){
-                getDeviceName();}else{
-                    tag=false;
-                }
-            }
-        });
+//        group.getmEditText().addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                //device_name.getmEditText().setText("");
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                if(!tag){
+//                getDeviceName();}else{
+//                    tag=false;
+//                }
+//            }
+//        });
         simple_description.getmEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -431,30 +426,30 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 //                );
 
 
-        device_name.getmEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                if(!tag){
-                    if (!s.toString().equals("")){
-                        initDeviceNum();
-                        }
-                    }else{
-                    if(!DeviceName.equals("")){
-                    tag=false;
-                    }
-                }
-            }
-        });
+//        device_name.getmEditText().addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//            }
+//
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                if(!tag){
+//                    if (!s.toString().equals("")){
+//                        initDeviceNum();
+//                        }
+//                    }else{
+//                    if(!DeviceName.equals("")){
+//                    tag=false;
+//                    }
+//                }
+//            }
+//        });
 
         initDropSearchView(device_name.getmEditText(), device_num,
                 getResources().
@@ -464,9 +459,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     }
 
     private void initDeviceNum() {
-        if ( !isSearchview){
-            equipmentName = mDeviceNamelist.get(device_name.getSelectPosition()).get(Equipment.EQUIPMENT_NAME).valueAsString();
-        }
+//        if ( !isSearchview){
+//            equipmentName = mDeviceNamelist.get(device_name.getSelectPosition()).get(Equipment.EQUIPMENT_NAME).valueAsString();
+//        }
         try {
             String rawQuery = "SELECT * FROM Equipment WHERE EquipmentName=" + "'" + equipmentName
                     + "'" + " AND Organise_ID_use =" + teamId ;
@@ -567,9 +562,19 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             //get userData from server
 
         } else {
-           create_task.setText(operator.getName());  //创建人名
+            create_task.setText(operator.getName());  //创建人名
+            getTeamIdByOrganiseID(operator.getOrganiseID());
+        }
+    }
 
-            String rawQuery = "select Organise_ID Team_ID,OrganiseName TeamName  from BaseOrganise where Organise_ID in(" + operator.getOrganiseID() + ")";
+
+    private void getTeamIdByOrganiseID(String organiseID) {
+
+
+        String teamIDStr = "";
+        String teamNameStr = "";
+
+            String rawQuery = "select Organise_ID Team_ID,OrganiseName TeamName  from BaseOrganise where Organise_ID in(" + organiseID + ")";
             ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                     EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE, null);
             Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -581,6 +586,17 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                             && dataElement.asArrayElement().size() > 0) {
                         for (int i = 0; i < dataElement.asArrayElement().size(); i++) {
                             mTeamNamelist.add(dataElement.asArrayElement().get(i).asObjectElement());
+                        }
+
+                        if(1 == mTeamNamelist.size()){
+                            teamId =mTeamNamelist.get(0).get("Team_ID").valueAsString();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    group.getmEditText().setText(mTeamNamelist.get(0).get("TeamName").valueAsString());
+                                    getDeviceName();
+                                }
+                            });
                         }
                     } else {
                         runOnUiThread(new Runnable() {
@@ -600,7 +616,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                     System.out.println(throwable.getMessage());
                 }
             });
-        }
+
 
 
 
@@ -1236,14 +1252,32 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            tag=true;
                             device_num.setText(DataUtil.isDataElementNull(objectElement.get("OracleID")));
+                            equipmentName =objectElement.get("EquipmentName").valueAsString();
+//                                    device_name.getmEditText().setSingleLine(true);
+                            device_name.getmEditText().setText(objectElement.get("EquipmentName").valueAsString());
+                            DeviceName=objectElement.get("EquipmentClass").valueAsString();
+                            getTeamIdByOrganiseID(objectElement.get("Organise_ID_Use").valueAsString());
+                            tag = true;
+                            resetDeviceName();
+
+
                         }
                     });
                     equipmentID= DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID));
+
+
+
                     nfcDialog.dismiss();
                     //Toast.makeText(mContext, "", Toast.LENGTH_SHORT).show();
-                    ToastUtil.showToastLong(R.string.getEquipmentNumSuccess,mContext);
-                    // getOrganiseNameAndEquipmentNameByEquipmentID(equipmentID);                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtil.showToastLong(R.string.getEquipmentNumSuccess, mContext);
+                        }
+                    });
+//                    getOrganiseNameAndEquipmentNameByEquipmentID(equipmentID);                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
                 } else {
                     runOnUiThread(new Runnable() {
                         @Override
@@ -1263,6 +1297,48 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         });
 
     }
+
+    private void resetCretor(){
+        teamId ="";
+        group.getmEditText().setText("");
+        equipmentName ="";
+        device_name.getmEditText().setText("");
+        DeviceName="";
+        device_num.setText("");
+        equipmentID="";
+        simple_description.getmEditText().setText("");
+        mSimpleDescriptionList.clear();
+
+    }
+
+    private void resetTeam(){
+        equipmentName ="";
+        device_name.getmEditText().setText("");
+        DeviceName="";
+        device_num.setText("");
+        equipmentID="";
+        simple_description.getmEditText().setText("");
+        mSimpleDescriptionList.clear();
+
+    }
+
+    private void resetDeviceName(){
+        if(!tag) {
+            device_num.setText("");
+            equipmentID = "";
+        }
+        getSimpleDescription(DeviceName);
+        simple_description.getmEditText().setText("");
+        mSimpleDescriptionList.clear();
+        tag = false;
+
+    }
+
+    private void resetDeviceNum(){
+
+
+    }
+
     private void getApplicantByICcardID(String iccardID){
         HttpParams params = new HttpParams();
         params.put("ICCardID", iccardID);
@@ -1284,6 +1360,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         if(null !=  operator){
                             creatorId = String.valueOf(operator.getId());
                             getTeamId(operator);
+                            resetCretor();
+
                         }
 
 
@@ -1309,3 +1387,5 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         });
     }
 }
+
+

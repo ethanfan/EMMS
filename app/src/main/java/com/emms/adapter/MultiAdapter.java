@@ -152,6 +152,7 @@ public class MultiAdapter extends BaseAdapter {
             holder.tech = (TextView) convertView.findViewById(R.id.id_tech);
             holder.status = (ImageView) convertView.findViewById(R.id.workstatus);
             holder.select = (ImageView) convertView.findViewById(R.id.select);
+            holder.selectNormal = (ImageView) convertView.findViewById(R.id.select_normal);
             holder.multi_item = (LinearLayout) convertView.findViewById(R.id.multi_item);
             convertView.setTag(holder);
         }else{
@@ -166,9 +167,11 @@ public class MultiAdapter extends BaseAdapter {
             }
            if(mChecked.get(position)){
                holder.select.setVisibility(View.VISIBLE);
+               holder.selectNormal.setVisibility(View.INVISIBLE);
            }
             else{
                holder.select.setVisibility(View.INVISIBLE);
+               holder.selectNormal.setVisibility(View.VISIBLE);
            }
         holder.multi_item.setOnClickListener(new View.OnClickListener() {
 
@@ -179,11 +182,13 @@ public class MultiAdapter extends BaseAdapter {
                     if(mChecked.get(position))//当前已选中，点击后取消选中
                     {
                         holder.select.setVisibility(View.INVISIBLE);
+                        holder.selectNormal.setVisibility(View.VISIBLE);
                         mChecked.set(position, false);
                     }
                     else
                     {
                         holder.select.setVisibility(View.VISIBLE);
+                        holder.selectNormal.setVisibility(View.INVISIBLE);
                         holder.select.setImageResource(R.mipmap.select_pressed);
                         mChecked.set(position, true);
                     }
@@ -212,6 +217,7 @@ public class MultiAdapter extends BaseAdapter {
         TextView tech;
         ImageView status;
         ImageView select;
+        ImageView selectNormal;
         LinearLayout multi_item;
     }
 }

@@ -10,12 +10,14 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -98,6 +100,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         if (ex == null) {
             return false;
         }
+        ex.printStackTrace();
         getErrorInfoFromException(ex);
         //收集设备参数信息
         collectDeviceInfo(mContext);
@@ -230,10 +233,21 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     }
     public static String getErrorInfoFromException(Throwable e) {
         try {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            e.printStackTrace(pw);
-            return "\r\n" + sw.toString() + "\r\n";
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            PrintStream pout = new PrintStream(out);
+            e.printStackTrace(pout);
+            String ret = new String(out.toByteArray());
+            pout.close();
+            try {
+                out.close();
+            } catch (Exception ex) {
+            }
+            return ret;
+
+//            StringWriter sw = new StringWriter();
+//            PrintWriter pw = new PrintWriter(sw);
+//            e.printStackTrace(pw);
+//            return "\r\n" + sw.toString() + "\r\n";
         } catch (Exception e2) {
             return "bad getErrorInfoFromException";
         }
