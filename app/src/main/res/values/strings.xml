@@ -36,6 +36,7 @@
     <string name="applicanter">创建人员：</string>
     <string name="equipment_num"> 机台编号: </string>
     <string name="group">所属组别：</string>
+    <string name="belongGroup">所属组别:</string>
     <string name="equipment_name"> 设备名称: </string>
     <string name="task_subtype_name"> 任务子类型: </string>
     <string name="task_description"> 任务描述:</string>

@@ -286,7 +286,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         getTaskType();//获取任务类型 基本不用改
         initDropSearchView(null, task_type.getmEditText(), getResources().
                         getString(R.string.title_search_task_type), DataDictionary.DATA_NAME,
-                TASK_TYPE, "获取数据失败");
+                TASK_TYPE, "获取数据失败",task_type.getDropImage());
 
         task_type.getmEditText()
                 .addTextChangedListener(
@@ -329,11 +329,11 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 //        });
         initDropSearchView(task_type.getmEditText(), task_subtype.getmEditText(),
                 getResources().
-                        getString(R.string.title_search_task_subtype), DataDictionary.DATA_NAME, TASK_SUBTYPE, "请先选择任务类型");
+                        getString(R.string.title_search_task_subtype), DataDictionary.DATA_NAME, TASK_SUBTYPE, "请先选择任务类型",task_subtype.getDropImage());
 
         initDropSearchView(group.getmEditText(), device_name.getmEditText(),
                 getResources().
-                        getString(R.string.title_search_equipment_name), Equipment.EQUIPMENT_NAME, DEVICE_NAME, "请先选择组别或无该组别设备信息");
+                        getString(R.string.title_search_equipment_name), Equipment.EQUIPMENT_NAME, DEVICE_NAME, "请先选择组别或无该组别设备信息",device_name.getDropImage());
         group.getmEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -376,9 +376,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         });
         initDropSearchView(create_task, group.getmEditText(),
                 getResources().
-                        getString(R.string.title_search_group), Team.TEAMNAME, GROUP, "请先扫描工卡获取创建人信息");
+                        getString(R.string.title_search_group), Team.TEAMNAME, GROUP, "请先扫描工卡获取创建人信息",group.getDropImage());
 
-//        group.getDropImage().setOnClickListener(new View.OnClickListener() {
+//       group.getDropImage().setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
 //                runOnUiThread(new Runnable() {
@@ -458,8 +458,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
         initDropSearchView(device_name.getmEditText(), device_num,
                 getResources().
-                        getString(R.string.title_search_equipment_nun), Equipment.ORACLE_ID, DEVICE_NUM, "请先选择设备名称，或刷设备卡获取机台号");
-        initDropSearchView(null,simple_description.getmEditText(),getResources().getString(R.string.simpleDescription),"DataName",SIMPLE_DESCRIPTION,"无该设备的简要描述");
+                        getString(R.string.title_search_equipment_nun), Equipment.ORACLE_ID, DEVICE_NUM, "请先选择设备名称，或刷设备卡获取机台号",null);
+        initDropSearchView(null,simple_description.getmEditText(),getResources().getString(R.string.simpleDescription),"DataName",SIMPLE_DESCRIPTION,"无该设备的简要描述",simple_description.getDropImage());
 
     }
 
@@ -959,7 +959,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
     private void initDropSearchView(
             final EditText condition,EditText subEditText,
-            final String searchTitle,final String searchName,final int searTag ,final String tips){
+            final String searchTitle,final String searchName,final int searTag ,final String tips,ImageView imageView){
         subEditText.
                 setOnClickListener(
                         new View.OnClickListener() {
@@ -1016,6 +1016,58 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         }
 
                 );
+        if(imageView!=null){
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        searchDataLists.clear();
+                        switch (searTag){
+                            case TASK_TYPE:
+                                searchDataLists.addAll(mTaskType);
+                                break;
+                            case TASK_SUBTYPE:
+                                searchDataLists.addAll(mSubType);
+                                break;
+                            case GROUP:
+                                searchDataLists.addAll(mTeamNamelist);
+                                break;
+                            case DEVICE_NAME:
+                                searchDataLists.addAll(mDeviceNamelist);
+                                break;
+
+                            case DEVICE_NUM:
+                                searchDataLists.addAll(mDeviceNumlist);
+                                break;
+                            case SIMPLE_DESCRIPTION:
+                                searchDataLists.addAll(mSimpleDescriptionList);
+                                break;
+                        }
+                        searchtag = searTag;
+                        if (condition != null) {
+                            if (!condition.getText().toString().equals("") && searchDataLists.size()>0) {
+                                mResultAdapter.changeData(searchDataLists, searchName);
+                                menuSearchTitle.setText(searchTitle);
+                                mDrawer_layout.openDrawer(Gravity.RIGHT);
+                            } else {
+                                Toast.makeText(mContext, tips, Toast.LENGTH_SHORT).show();
+                            }
+                        }else {
+                            if ( searchDataLists.size() > 0) {
+                                mResultAdapter.changeData(searchDataLists, searchName);
+                                menuSearchTitle.setText(searchTitle);
+                                mDrawer_layout.openDrawer(Gravity.RIGHT);
+                            } else {
+                                Toast.makeText(mContext, tips, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                    }
+                });
+            }
+        });}
     }
     private void submitTask(String TaskType,String TaskSubType,String teamId,String equipmentName
             ,String MachineCode,String TaskDescription){

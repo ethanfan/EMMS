@@ -171,7 +171,7 @@
                             android:layout_marginRight="8dp"
                             android:layout_weight="1.6"
                             android:gravity="end"
-                            android:text="@string/group"
+                            android:text="@string/belongGroup"
                             android:textColor="@color/text_color"
                             android:textSize="18sp" />
 

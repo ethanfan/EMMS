@@ -46,7 +46,7 @@ public abstract class PopMenuLoginActivity {
 	private ListView listView;
 	private PopAdapter popAdapter;
 	// private OnItemClickListener listener;
-	public PopMenuLoginActivity(Context context, int width) {
+	public PopMenuLoginActivity(Context context) {
 		// TODO Auto-generated constructor stub
 		this.context = context;
 		itemList = new ArrayList<String>(5);
@@ -131,7 +131,7 @@ public abstract class PopMenuLoginActivity {
 				// 保证尺寸是根据屏幕像素密度来的
 		context.getResources().getDimensionPixelSize(
 				R.dimen.popmenu_yoff));
-//       popupWindow.showAtLocation(parent, Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK,0,0);
+     // popupWindow.showAtLocation(parent, Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK,0,0);
 		// 使其聚集
 		popupWindow.setFocusable(true);
 		// 设置允许在外点击消失
@@ -179,31 +179,31 @@ public abstract class PopMenuLoginActivity {
 			ViewHolder holder;
 			if (convertView == null) {
 				convertView = LayoutInflater.from(context).inflate(
-						R.layout.popuwindow_task, null);
+						R.layout.popuwindow, null);
 				holder = new ViewHolder();
 
 				convertView.setTag(holder);
 
 				holder.groupItem = (TextView) convertView
 						.findViewById(R.id.textView);
-				holder.imageView = (ImageView) convertView.findViewById(R.id.menu_detail);
+			//	holder.imageView = (ImageView) convertView.findViewById(R.id.menu_detail);
 
 			} else {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
 			holder.groupItem.setText(itemList.get(position));
-			Drawable img  = context.getResources().getDrawable(R.mipmap.more_input);
-
-			if (0 ==position){
-				img =context.getResources().getDrawable(R.mipmap.more_input);
-			}else if (1 == position){
-				img =context.getResources().getDrawable(R.mipmap.more_scan);}
+//			Drawable img  = context.getResources().getDrawable(R.mipmap.more_input);
+//
+//			if (0 ==position){
+//				img =context.getResources().getDrawable(R.mipmap.more_input);
+//			}else if (1 == position){
+//				img =context.getResources().getDrawable(R.mipmap.more_scan);}
 			// 调用setCompoundDrawables时，必须调用Drawable.setBounds()方法,否则图片不显示
 //			img.setBounds(0, 0, img.getMinimumWidth(), img.getMinimumHeight());
 //
 //			holder.groupItem.setCompoundDrawables(img,null,null,null);
-			holder.imageView.setImageDrawable(img);
+			//holder.imageView.setImageDrawable(img);
 			return convertView;
 		}
 

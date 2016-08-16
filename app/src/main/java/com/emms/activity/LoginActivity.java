@@ -464,7 +464,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
 
     }
     private void ShowPopWindow(View v){
-        PopMenuLoginActivity popMenuLoginActivity = new PopMenuLoginActivity(this, 300) {
+        PopMenuLoginActivity popMenuLoginActivity = new PopMenuLoginActivity(this) {
 
             @Override
             public void onEventDismiss() {

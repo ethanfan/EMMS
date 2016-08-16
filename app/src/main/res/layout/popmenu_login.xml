@@ -4,20 +4,29 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@android:color/transparent">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
     <ListView
         android:id="@+id/listView"
-        android:layout_width="150dip"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="true"
         android:focusable="true"
-        android:layout_toRightOf="@+id/vv"
         android:divider="#DFDFDF"
         android:dividerHeight="1sp"
         android:listSelector="@android:color/transparent"
         android:cacheColorHint="@android:color/transparent"
         android:scrollbars="none"
         android:clipToPadding="true"
-
         >
     </ListView>
+        <View
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"></View>
+    </LinearLayout>
 </RelativeLayout>
