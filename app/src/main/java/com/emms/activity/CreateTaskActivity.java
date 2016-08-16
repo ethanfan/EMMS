@@ -281,7 +281,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     }
 
     private void initEvent() {
-        getSimpleDescription("all");
+//        getSimpleDescription("all");
        // initLoginData();
         getTaskType();//获取任务类型 基本不用改
         initDropSearchView(null, task_type.getmEditText(), getResources().
@@ -1234,14 +1234,23 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            tag=true;
                             device_num.setText(DataUtil.isDataElementNull(objectElement.get("OracleID")));
+                            equipmentName =objectElement.get("EquipmentName").valueAsString();
+//                                    device_name.getmEditText().setSingleLine(true);
+                            device_name.getmEditText().setText(objectElement.get("EquipmentName").valueAsString());
+                            DeviceName=objectElement.get("EquipmentClass").valueAsString();
+                            getSimpleDescription(DeviceName);
                         }
                     });
                     equipmentID= DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID));
+
+
+
                     nfcDialog.dismiss();
                     //Toast.makeText(mContext, "", Toast.LENGTH_SHORT).show();
                     ToastUtil.showToastLong(R.string.getEquipmentNumSuccess,mContext);
-                    // getOrganiseNameAndEquipmentNameByEquipmentID(equipmentID);                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
+//                    getOrganiseNameAndEquipmentNameByEquipmentID(equipmentID);                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
                 } else {
                     runOnUiThread(new Runnable() {
                         @Override
