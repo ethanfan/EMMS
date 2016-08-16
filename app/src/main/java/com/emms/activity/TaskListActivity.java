@@ -257,7 +257,6 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
             case Constants.REQUEST_CODE_PROCESSING_ORDER_TASK_DETAIL:{
                 if(resultCode==2){
                 ((ProcessingFragment)mFragments.get(0)).doRefresh();
-
                 ((PendingOrdersFragment)mFragments.get(1)).doRefresh();}
                 break;
             }

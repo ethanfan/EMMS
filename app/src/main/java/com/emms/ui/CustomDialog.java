@@ -252,10 +252,11 @@ public class CustomDialog extends Dialog {
                 super.onSuccess(t);
 
                 dismiss();
-                if(modifySubTask!=null){
+                if(modifySubTask==null){
                 Toast toast=Toast.makeText(context,"创建子任务成功",Toast.LENGTH_SHORT);
                 toast.setGravity(Gravity.CENTER,0,0);
-                toast.show();}else{
+                toast.show();}
+                else{
                     Toast toast=Toast.makeText(context,"修改子任务成功",Toast.LENGTH_SHORT);
                     toast.setGravity(Gravity.CENTER,0,0);
                     toast.show();
@@ -579,7 +580,7 @@ public class CustomDialog extends Dialog {
     }
     private void initWorkNumListData(){
         try {
-            String rawQuery = "select * from DataDictionary where DataType='WorkTime' And DataCode like 'OHZ%' order by Data_ID asc";
+            String rawQuery = "select * from DataDictionary where DataType='WorkTime'  order by Data_ID asc";
             ListenableFuture<DataElement> elemt = ((AppAplication) ((Activity)context).getApplication()).getSqliteStore().performRawQuery(rawQuery,
                     EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, null);
             Futures.addCallback(elemt, new FutureCallback<DataElement>() {

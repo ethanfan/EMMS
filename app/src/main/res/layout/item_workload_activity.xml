@@ -1,39 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
     <View
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="#DFDFDF"
         android:id="@+id/ooo"></View>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_below="@+id/ooo"
+        android:layout_marginRight="15dp">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/name_tag"
         android:layout_marginTop="5dp"
         android:layout_alignRight="@+id/start_time_tag"
-        android:layout_marginLeft="10dp"
-        android:layout_below="@+id/ooo"
         android:textColor="@color/black"
-        android:textSize="17sp"
+        android:textSize="18sp"
         android:text="@string/UserName"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/name"
-        android:paddingLeft="10dp"
         android:textColor="@color/black"
-        android:textSize="17sp"
+        android:textSize="18sp"
         android:layout_toRightOf="@+id/name_tag"
         android:layout_alignTop="@+id/name_tag"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/skill"
-        android:layout_marginRight="20dp"
         android:textColor="@color/black"
-        android:textSize="17sp"
+        android:textSize="18sp"
         android:layout_alignTop="@+id/name_tag"
         android:layout_alignParentRight="true"
         />
@@ -44,9 +48,8 @@
         android:textColor="@color/black"
         android:layout_toLeftOf="@+id/skill"
         android:layout_alignTop="@+id/skill"
-        android:textSize="17sp"
+        android:textSize="18sp"
         android:text="@string/tech"
-        android:paddingRight="5dp"
         />
     <TextView
         android:layout_width="wrap_content"
@@ -54,27 +57,27 @@
         android:id="@+id/start_time_tag"
         android:text="@string/start_time"
         android:textColor="@color/black"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:layout_below="@+id/name_tag"
-        android:textSize="17sp"/>
+        android:textSize="18sp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/start_time"
         android:textColor="@color/black"
         android:layout_toRightOf="@+id/start_time_tag"
-        android:textSize="17sp"
+        android:textSize="18sp"
         android:layout_alignTop="@+id/start_time_tag"
-        android:paddingLeft="10dp"/>
+        />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/end_time_tag"
         android:text="@string/end_time"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:textColor="@color/black"
         android:layout_below="@+id/start_time_tag"
-        android:textSize="17sp"
+        android:textSize="18sp"
         android:layout_alignLeft="@id/start_time_tag"/>
     <TextView
         android:layout_width="wrap_content"
@@ -82,34 +85,34 @@
         android:id="@+id/end_time"
         android:textColor="@color/black"
         android:layout_toRightOf="@+id/end_time_tag"
-        android:textSize="17sp"
+        android:textSize="18sp"
         android:layout_alignTop="@+id/end_time_tag"
-        android:paddingLeft="10dp"/>
+        />
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/end_time_tag"
-        android:layout_alignLeft="@id/end_time_tag">
+        android:layout_alignLeft="@id/end_time_tag"
+        android:layout_alignRight="@+id/skill">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/workload_tag"
         android:textColor="@color/black"
-       android:layout_centerVertical="true"
+        android:layout_centerVertical="true"
         android:text="@string/workload"
         android:layout_marginTop="5dp"
-        android:textSize="17sp"/>
+        android:textSize="18sp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/percent"
             android:layout_alignTop="@+id/workload_tag"
-            android:layout_marginRight="5dp"
             android:layout_marginTop="5dp"
             android:layout_alignParentRight="true"
             android:textColor="@color/black"
-            android:textSize="17sp"
+            android:textSize="18sp"
             android:text="@string/percent"
             />
         <EditText
@@ -117,6 +120,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/workload"
             android:background="@drawable/bg_edit_normal"
+            android:textSize="18sp"
             android:paddingTop="5dp"
             android:focusable="true"
             android:paddingLeft="5dp"
@@ -124,8 +128,8 @@
             android:layout_toRightOf="@+id/workload_tag"
             android:layout_alignTop="@+id/workload_tag"
             android:layout_toLeftOf="@+id/percent"
-            android:layout_marginLeft="10dp"
             android:layout_marginRight="5dp"
             android:layout_marginBottom="5dp"/>
 </RelativeLayout>
+    </RelativeLayout>
 </RelativeLayout>

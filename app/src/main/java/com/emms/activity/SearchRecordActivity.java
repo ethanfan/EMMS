@@ -126,7 +126,7 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
     public void getOperatorInfoFromServer(String iccardID){
         showCustomDialog(R.string.loadingData);
         HttpParams httpParams=new HttpParams();
-        httpParams.put("ICCardID",Integer.valueOf(iccardID));
+        httpParams.put("ICCardID",iccardID);
         HttpUtils.getWithoutCookies(this, "Token", httpParams, new HttpCallback() {
             @Override
             public void onSuccess(String t) {

@@ -62,7 +62,7 @@ public class TaskHistory extends BaseActivity {
             public View getCustomView(View convertView, int position, ViewGroup parent) {
                 TaskViewHolder holder;
                 if (convertView == null) {
-                    convertView = LayoutInflater.from(context).inflate(R.layout.item_fr_process, parent, false);
+                    convertView = LayoutInflater.from(context).inflate(R.layout.item_history, parent, false);
                     holder = new TaskViewHolder();
                     holder.tv_group = (TextView) convertView.findViewById(R.id.group);
                     holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);

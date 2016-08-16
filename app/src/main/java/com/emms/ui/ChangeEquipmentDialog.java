@@ -44,7 +44,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     private String TaskId;
     private String EquipmentId;
     private String TaskEquipmentId;
-
+    private KProgressHUD hud;
     public void setEquipemntStatus(int equipemntStatus) {
         EquipemntStatus = equipemntStatus;
     }
@@ -98,6 +98,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         super(context, style);
         this.context = context;
         setContentView(layout);
+        hud=KProgressHUD.create(context);
         //if(Equipment_OperatorID_Status.get())
       //  Collections.addAll(status,context.getResources().getStringArray(R.array.equip_status));
         initMap();
@@ -186,6 +187,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 
 
     private void postTaskEquipment(int status) {
+        showCustomDialog(R.string.submitData);
         HttpParams params = new HttpParams();
 
         JsonObjectElement taskEquepment=new JsonObjectElement();
@@ -215,12 +217,14 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                         }
                     }
                 }
+                dismissCustomDialog();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                    ToastUtil.showToastLong("修改设备状态失败,请检查网络 ",context);
+                dismissCustomDialog();
             }
         });
     }
@@ -395,6 +399,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         });
     }
     private void postTaskOperatorEquipment(int status){
+        showCustomDialog(R.string.submitData);
       HttpParams params=new HttpParams();
        // JsonObjectElement TaskOperatorDataToSubmit=new JsonObjectElement();
      //   TaskOperatorDataToSubmit.set("task_id",Integer.valueOf(TaskId));
@@ -416,12 +421,14 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                         ToastUtil.showToastLong("不允许修改状态",context);
                     }
                 }
+                dismissCustomDialog();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 ToastUtil.showToastLong(R.string.failToChangeStatus,context);
+                dismissCustomDialog();
             }
         });
     }
@@ -497,5 +504,22 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             navigationBarHeight = rs.getDimensionPixelSize(id);
         }
         return navigationBarHeight;
+    }
+    public KProgressHUD initCustomDialog(int resId) {
+        hud.setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
+                .setLabel(context.getResources().getString(resId))
+                .setCancellable(true);
+        return  hud;
+    }
+    public void showCustomDialog(int resId){
+        initCustomDialog(resId);
+        if(hud!=null&&!hud.isShowing()){
+            hud.show();
+        }
+    }
+    public void dismissCustomDialog(){
+        if(hud!=null&&hud.isShowing()){
+            hud.dismiss();
+        }
     }
 }

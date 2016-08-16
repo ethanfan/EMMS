@@ -151,8 +151,7 @@ public abstract class PopMenuTaskDetail {
 		popupWindow.showAsDropDown(parent,
 				10,
 				// 保证尺寸是根据屏幕像素密度来的
-				context.getResources().getDimensionPixelSize(
-						R.dimen.popmenu_yoff));
+				-1);
 
 		// 使其聚集
 		popupWindow.setFocusable(true);

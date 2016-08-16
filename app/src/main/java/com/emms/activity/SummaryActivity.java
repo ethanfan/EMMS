@@ -312,6 +312,8 @@ public class SummaryActivity extends NfcActivity{
                             intent.putExtra("TaskComplete", true);
                             intent.putExtra("TaskDetail", TaskDetail.toString());
                             startActivity(intent);
+                        }else{
+                            finish();
                         }
                     }else {
                         ToastUtil.showToastLong(R.string.submit_Fail,context);

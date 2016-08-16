@@ -29,6 +29,7 @@ import com.emms.schema.Equipment;
 import com.emms.schema.Task;
 import com.emms.ui.CustomDialog;
 import com.emms.util.DataUtil;
+import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -49,10 +50,12 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
     private Handler handler=new Handler();
     private HashMap<String,String> Status_Colors=new HashMap<String,String>();
     private ArrayList<ObjectElement> EquipmentList=new ArrayList<ObjectElement>();
-    private int index=1;
     private boolean TaskComplete=false;
     private Context context=this;
     private String TaskClass=null;
+    private static int PAGE_SIZE=10;
+    private int pageIndex=1;
+    private int RecCount=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +98,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
         ((TextView)findViewById(R.id.task_state)).setText(DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_STATUS)));
         sub_task_listView=(PullToRefreshListView)findViewById(R.id.sub_task_list);
         add_sub_task=(LinearLayout)findViewById(R.id.add_sub_task);
+        sub_task_listView.setMode(PullToRefreshListView.Mode.BOTH);
         sub_task_listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
@@ -102,11 +106,12 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        pageIndex=1;
                         getSubTaskDataFromServer();
                         sub_task_listView.onRefreshComplete();
                         //   Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
                     }
-                },2000);
+                },0);
             }
 
             @Override
@@ -114,10 +119,11 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        getSubTaskDataFromServer();
                         sub_task_listView.onRefreshComplete();
                         //Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
                     }
-                },2000);
+                },0);
             }
         });
         add_sub_task.setOnClickListener(new View.OnClickListener() {
@@ -129,6 +135,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
                 customDialog.setDialogOnSubmit(new dialogOnSubmitInterface() {
                     @Override
                     public void onsubmit() {
+                        pageIndex=1;
                         getSubTaskDataFromServer();
                     }
                 });
@@ -180,6 +187,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
                 customDialog.setDialogOnSubmit(new dialogOnSubmitInterface() {
                     @Override
                     public void onsubmit() {
+                        pageIndex=1;
                         getSubTaskDataFromServer();
                     }
                 });
@@ -200,24 +208,32 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
 
     }
     private void getSubTaskDataFromServer(){
+        if(RecCount!=0){
+            if((pageIndex-1)*PAGE_SIZE>=RecCount){
+                ToastUtil.showToastLong(R.string.noMoreData,context);
+                return;
+            }}
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
         params.put("task_id",taskId);
-        params.put("pageSize",10);
-        params.put("pageIndex",1);
+        params.put("pageSize",PAGE_SIZE);
+        params.put("pageIndex",pageIndex);
         HttpUtils.get(this, "TaskItemList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null){
-                    datas.clear();
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                     if(jsonObjectElement!=null&&jsonObjectElement.get("PageData")!=null
                             &&jsonObjectElement.get("PageData").asArrayElement().size()>0){
+                        RecCount = jsonObjectElement.get("RecCount").valueAsInt();
+                        if (pageIndex == 1) {
+                            datas.clear();
+                        }
+                        pageIndex++;
                         for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
                             datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
-                        index++;
                         adapter.setDatas(datas);
                         adapter.notifyDataSetChanged();
                     }
@@ -241,7 +257,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
 
             HttpParams params = new HttpParams();
             params.put("task_id", taskId.toString());
-        params.put("pageSize",10);
+        params.put("pageSize",1000);
         params.put("pageIndex",1);
             //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
             HttpUtils.get(this, "TaskDetailList", params, new HttpCallback() {

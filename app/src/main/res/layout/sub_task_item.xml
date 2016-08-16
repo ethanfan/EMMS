@@ -53,6 +53,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:id="@+id/approve_work_hours"
+            android:paddingLeft="10dp"
             android:layout_alignParentRight="true"
             android:paddingRight="30dp"/>
 
@@ -64,7 +65,7 @@
         android:layout_below="@+id/approve_work_hours_tag"
         android:layout_alignLeft="@+id/approve_work_hours_tag"
         android:textColor="@color/black"
-        android:text="@string/work_status"/>
+        android:text="@string/auditing_status"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

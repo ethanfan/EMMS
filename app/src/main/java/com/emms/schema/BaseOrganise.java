@@ -20,7 +20,7 @@ public class BaseOrganise extends Model<BaseOrganise, Long> implements Identity<
     public static final String ISSPAREORDEPOT = "IsSpareOrDepot";
     public static final String ORGANISETYPE = "OrganiseType";
     public static final String FROMFACTORY = "FromFactory";
-
+    public static final String LASTUPDATETIME="LastUpdateTime";
 
     @DatabaseField(id = true,
             columnName = ORGANISE_ID, canBeNull = false)
@@ -59,10 +59,23 @@ public class BaseOrganise extends Model<BaseOrganise, Long> implements Identity<
     private String fromFactory;
 
 
-    @DatabaseField(columnName = STATUS, canBeNull = false ,defaultValue = "0")
+    @DatabaseField(columnName = STATUS, canBeNull = true)
     @SerializedName(STATUS)
     @Expose
     private String status;
+
+    public String getLastUpdateTime() {
+        return LastUpdateTime;
+    }
+
+    public void setLastUpdateTime(String lastUpdateTime) {
+        LastUpdateTime = lastUpdateTime;
+    }
+
+    @DatabaseField(columnName = LASTUPDATETIME, canBeNull = false,defaultValue = "")
+    @SerializedName(LASTUPDATETIME)
+    @Expose
+    private String LastUpdateTime;
 
     public Long getOrganiseID() {
         return organiseID;

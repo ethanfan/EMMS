@@ -39,8 +39,13 @@ import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.push.ExampleUtil;
 import com.emms.push.PushService;
+import com.emms.schema.BaseOrganise;
+import com.emms.schema.Data;
+import com.emms.schema.DataDictionary;
+import com.emms.schema.DataType;
 import com.emms.schema.Equipment;
 import com.emms.schema.Operator;
+import com.emms.schema.TaskOrganiseRelation;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.PopMenuLoginActivity;
 import com.emms.ui.PopMenuTaskDetail;
@@ -189,9 +194,9 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                                 try {
                                     JSONObject jsonObject = new JSONObject(t);
                                     int code = Integer.parseInt(jsonObject.get("Result").toString());
-                                    boolean isSuccess = jsonObject.get("Success").equals(true);
+                                    //boolean isSuccess = jsonObject.get("Success").equals(true);
                                     if ((code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS ||
-                                            code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) && isSuccess) {
+                                            code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) ) {
                                         SharedPreferenceManager.setUserName(LoginActivity.this, userid);
                                         SharedPreferenceManager.setPassWord(LoginActivity.this, password);
                                         String userData =jsonObject.getString("UserData");
@@ -199,7 +204,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                                         String data=jsonObject.getString("Data");
                                         SharedPreferenceManager.setLoginData(LoginActivity.this,data);
                                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
-
 
                                         //调用JPush API设置Tag\
                                         String Organise_ID=new JSONObject(data).get("Organise_ID").toString();
@@ -287,7 +291,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         if(db.exists()){
             //getDataBaseUpdateFromServer();
            // getDBFromServer();
-            //getDBDataLastUpdateTime();
+            getDBDataLastUpdateTime();
             return;
         }
        final File dbFile = new File(getExternalFilesDir(null), "/EMMS.zip");
@@ -406,8 +410,31 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             }
         });
         if(data!=null&&data.isArray()){
+            String s="";
+            switch (resource){
+                case "DataDictionary":{
+                    s= DataDictionary.DATA_ID;
+                    break;
+                }
+                case "Equipment":{
+                    s=Equipment.EQUIPMENT_ID;
+                    break;
+                }
+                case "BaseOrganise":{
+                    s= BaseOrganise.ORGANISE_ID;
+                    break;
+                }
+                case "DataType":{
+                    s= DataType.DATATYPE_ID;
+                    break;
+                }
+                case "TaskOrganiseRelation":{
+                    s= TaskOrganiseRelation.TEAM_SERVICE_ID;
+                    break;
+                }
+            }
        for(int i=0;i<data.asArrayElement().size();i++){
-        getSqliteStore().updateElement(data.asArrayElement().get(i).asObjectElement().get(Equipment.EQUIPMENT_ID).valueAsString(),
+        getSqliteStore().updateElement(DataUtil.isDataElementNull(data.asArrayElement().get(i).asObjectElement().get(s)),
                 data.asArrayElement().get(i), resource, new StoreCallback() {
                     @Override
                     public void success(DataElement element, String resource) {

@@ -181,8 +181,11 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                         for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
                             listItems.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
-                         adapter.setListItems(listItems);
-                    }
+                    }else{
+                     listItems.clear();
+                        ToastUtil.showToastLong(R.string.thisGroupHasNoPerson,context);
+                        }
+                        adapter.setListItems(listItems);
                 }
                 else{
                     Toast toast=Toast.makeText(context,"获取数据失败",Toast.LENGTH_LONG);

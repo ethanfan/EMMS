@@ -32,10 +32,10 @@
     <string name="pleaseInputOrSelect">请点击或下拉</string>
     <string name="scan">请扫描</string>
     <string name="task_type">任务类型: </string>
-    <string name="creater">创建人:</string>
-    <string name="applicanter">创建人：</string>
+    <string name="creater">创建人员:</string>
+    <string name="applicanter">创建人员：</string>
     <string name="equipment_num"> 机台编号: </string>
-    <string name="group">组别: </string>
+    <string name="group">所属组别：</string>
     <string name="equipment_name"> 设备名称: </string>
     <string name="task_subtype_name"> 任务子类型: </string>
     <string name="task_description"> 任务描述:</string>
@@ -60,8 +60,8 @@
     <string name="other_task">其它任务</string>
     <string name="working">进行中</string>
     <string name="paused">已暂停</string>
-    <string name="group_type">组别：</string>
-    <string name="grouptype">组别：</string>
+    <string name="group_type">所属组别：</string>
+    <string name="grouptype">所属组别：</string>
     <string name="device_num">设备编号：</string>
     <string name="device_name">设备名称：</string>
     <string name="task_state">任务状态： </string>
@@ -107,6 +107,7 @@
     <string name="work_num_dialog">工作编号</string>
     <string name="work_name">工作名称:</string>
     <string name="work_status">状态:</string>
+    <string name="auditing_status">审核状态:</string>
     <string name="work_description">工作描述:</string>
     <string name="approved_working_hours">核定工时:</string>
     <string name="add">添加</string>
@@ -114,7 +115,7 @@
     <string name="sub_task">子任务</string>
     <string name="sub_task_equipment_num">机台编号:</string>
     <string name="sure">确定</string>
-    <string name="warranty_person">报修人：</string>
+    <string name="warranty_person">报修人员：</string>
     <!--<string name="error">Error</string>-->
     <!--<string name="no_nfc">No NFC found on this device</string>-->
     <!--<string name="nfc_disabled">NFC is not enabled. Please go to the wireless settings to enable it.</string>-->
@@ -135,7 +136,7 @@
     <string name="tech">技能：</string>
     <string name="task_descr">任务描述：</string>
     <string name="err_add_task_equipment">增加任务设备失败</string>
-    <string name="UserName">姓名： </string>
+    <string name="UserName">人员姓名：</string>
     <string name="WorkNum">工号:</string>
     <string name="DownloadDataBase">数据文件下载中，请稍候</string>
     <string name="task_create_time">任务发出时间:</string>
@@ -160,8 +161,8 @@
     <string name="fault_description">故障描述:</string>
     <string name="repair_status">维修情况:</string>
     <string name="faultType">故障类型</string>
-    <string name="total_worktime">总工时:</string>
-    <string name="workload">工作量:</string>
+    <string name="total_worktime">总工时：</string>
+    <string name="workload">工作总量：</string>
     <string name="entering_workload">工作量录入</string>
     <string name="change_equipment_operator_status">修改操作员状态</string>
     <string name="change_equipment_status">修改设备状态</string>
@@ -181,7 +182,7 @@
     <string name="exchangeOrderSuccess">转单成功</string>
     <string name="exchangeOrderFail">转单失败</string>
     <string name="inviteSuccess">邀请成功</string>
-    <string name="inviteFail">邀请成功</string>
+    <string name="inviteFail">邀请失败</string>
     <string name="taskHistory">任务历史</string>
     <string name="scanICCardSuccess">刷卡成功</string>
     <string name="scanICCardFail">刷卡失败</string>
@@ -220,4 +221,5 @@
     <string name="unauthorization">您的账号未授权，请联系管理员</string>
     <string name="getEquipmentNumSuccess">获取机台号成功</string>
     <string name="pleaseInputNum">请输入数字</string>
+    <string name="thisGroupHasNoPerson">无该组人员信息</string>
 </resources>

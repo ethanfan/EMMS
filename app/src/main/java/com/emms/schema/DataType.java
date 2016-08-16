@@ -26,22 +26,22 @@ public class DataType extends Model<Operator, Long> implements Identity<Long> {
     @Expose
     private Long dataType_id;
 
-    @DatabaseField(columnName = DATATYPE_CODE, canBeNull = false)
+    @DatabaseField(columnName = DATATYPE_CODE, canBeNull = true)
     @SerializedName(DATATYPE_CODE)
     @Expose
     private String dataType_code;
 
-    @DatabaseField(columnName = DATATYPE_NAME, canBeNull = false)
+    @DatabaseField(columnName = DATATYPE_NAME, canBeNull = true)
     @SerializedName(DATATYPE_NAME)
     @Expose
     private String dataType_name;
 
-    @DatabaseField(columnName = DATATYPE_DESCR, canBeNull = false)
+    @DatabaseField(columnName = DATATYPE_DESCR, canBeNull = true)
     @SerializedName(DATATYPE_DESCR)
     @Expose
     private String dataType_descr;
 
-    @DatabaseField(columnName = MODEL, canBeNull = false, defaultValue = "Static")
+    @DatabaseField(columnName = MODEL, canBeNull = true, defaultValue = "Static")
     @SerializedName(MODEL)
     @Expose
     private String model;
@@ -51,7 +51,7 @@ public class DataType extends Model<Operator, Long> implements Identity<Long> {
     @Expose
     private String status;
 
-    @DatabaseField(columnName = LASTUPDATETIME, canBeNull = false)
+    @DatabaseField(columnName = LASTUPDATETIME, canBeNull = false,defaultValue = "")
     @SerializedName(LASTUPDATETIME)
     @Expose
     private String LastUpdateTime;

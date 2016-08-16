@@ -39,7 +39,7 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
 
         initView();
         getTaskCountFromServer();
-       // getNewDataFromServer(); //下载DB文件
+        //getNewDataFromServer(); //下载DB文件
     }
     @Override
     protected void onRestart() {
@@ -163,9 +163,12 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
                        for (int i = 0; i < json.get("PageData").asArrayElement().size(); i++) {
                            //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
                            //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
-                           String taskNumToShow = json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1").valueAsString() + "/" +
-                                   json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0").valueAsString();
-                           taskNum.put(i, taskNumToShow);
+                           if(json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1")!=null&&
+                                   json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0")!=null) {
+                               String taskNumToShow = json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1").valueAsString() + "/" +
+                                       json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0").valueAsString();
+                               taskNum.put(i, taskNumToShow);
+                           }
                        }
                        repair_msg.setText(taskNum.get(0));
                        maintain_msg.setText(taskNum.get(1));
