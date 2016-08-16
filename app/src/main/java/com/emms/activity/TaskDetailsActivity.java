@@ -500,8 +500,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
             Button bt1 = (Button) view
                     .findViewById(R.id.item_popupwindows_camera);
-            Button bt2 = (Button) view
-                    .findViewById(R.id.item_popupwindows_Photo);
+//            Button bt2 = (Button) view
+//                    .findViewById(R.id.item_popupwindows_Photo);
             Button bt3 = (Button) view
                     .findViewById(R.id.item_popupwindows_cancel);
             bt1.setOnClickListener(new View.OnClickListener() {
@@ -510,14 +510,14 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     dismiss();
                 }
             });
-            bt2.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    Intent intent = new Intent(TaskDetailsActivity.this,
-                            GetPicActivity.class);
-                    startActivity(intent);
-                    dismiss();
-                }
-            });
+//            bt2.setOnClickListener(new View.OnClickListener() {
+//                public void onClick(View v) {
+//                    Intent intent = new Intent(TaskDetailsActivity.this,
+//                            GetPicActivity.class);
+//                    startActivity(intent);
+//                    dismiss();
+//                }
+//            });
             bt3.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     dismiss();
