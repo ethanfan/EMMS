@@ -22,15 +22,21 @@ import android.graphics.Canvas;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.handmark.pulltorefresh.library.internal.AdapterOnSlideListener;
 import com.handmark.pulltorefresh.library.internal.EmptyViewMethodAccessor;
 import com.handmark.pulltorefresh.library.internal.LoadingLayout;
+
+import org.apache.http.conn.routing.RouteInfo;
 
 public class PullToRefreshListView extends PullToRefreshAdapterViewBase<ListView> {
 
@@ -333,5 +339,6 @@ public class PullToRefreshListView extends PullToRefreshAdapterViewBase<ListView
 		}
 
 	}
+
 
 }

@@ -122,6 +122,7 @@
             android:background="@drawable/bg_edit_normal"
             android:textSize="18sp"
             android:paddingTop="5dp"
+            android:digits="1234567890."
             android:focusable="true"
             android:paddingLeft="5dp"
             android:paddingBottom="5dp"

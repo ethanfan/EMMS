@@ -71,29 +71,30 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
 
 
         //显示用户人名，工号
-        ((TextView)findViewById(R.id.UserName)).setText(getLoginInfo().getName());
-        ((TextView)findViewById(R.id.WorkNum)).setText(getLoginInfo().getOperator_no());
+
+        ((TextView)findViewById(R.id.UserName)).setText(getLoginInfo().getName()+"  "+getLoginInfo().getOperator_no());
+    //    ((TextView)findViewById(R.id.WorkNum)).setText(getLoginInfo().getOperator_no());
     }
 
     @Override
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.btn_exit){
+            showCustomDialog(R.string.logout);
             HttpParams params = new HttpParams();
             HttpUtils.delete(this, "Token", params, new HttpCallback() {
                 @Override
                 public void onSuccess(String t) {
                     super.onSuccess(t);
-                    SharedPreferenceManager.setCookie(MainActivity.this,null);
-                    SharedPreferenceManager.setLoginData(MainActivity.this,null);
-                    SharedPreferenceManager.setUserData(MainActivity.this,null);
-                   // startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                    finish();
+                    dismissCustomDialog();
+                    logout();
                 }
 
                 @Override
                 public void onFailure(int errorNo, String strMsg) {
                     super.onFailure(errorNo, strMsg);
+                    dismissCustomDialog();
+                    logout();
                 }
             });
         }else if (id == R.id.create_taskcd){
@@ -184,6 +185,7 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
                super.onFailure(errorNo, strMsg);
                if(errorNo==401){
                    ToastUtil.showToastLong(R.string.unauthorization,context);
+                   dismissCustomDialog();
                    return;
                }
                ToastUtil.showToastLong(R.string.loadingFail,context);
@@ -195,5 +197,11 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
     @Override
     public void resolveNfcMessage(Intent intent) {
 
+    }
+    private void logout(){
+        SharedPreferenceManager.setCookie(MainActivity.this,null);
+        SharedPreferenceManager.setLoginData(MainActivity.this,null);
+        SharedPreferenceManager.setUserData(MainActivity.this,null);
+        startActivity(new Intent(MainActivity.this, LoginActivity.class));
     }
 }

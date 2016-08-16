@@ -29,41 +29,41 @@
             android:background="@color/transparent"
             android:id="@+id/avatar" />
 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/UserName_tag"
-            android:text="@string/UserName"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="25dp"
-            android:textColor="#FFFFFF"
-            android:textSize="17sp"/>
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/UserName_tag"-->
+            <!--android:text="@string/workerName"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:layout_marginLeft="25dp"-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:textSize="17sp"/>-->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/UserName"
             android:textColor="#FFFFFF"
-            android:layout_toRightOf="@id/UserName_tag"
-            android:layout_alignTop="@+id/UserName_tag"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="30dp"
             android:textSize="17sp"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/UserName_tag"
-            android:layout_alignLeft="@+id/UserName_tag"
-            android:id="@+id/WorkNum_tag"
-            android:layout_marginTop="10dp"
-            android:textColor="#FFFFFF"
-            android:text="@string/WorkNum"
-            android:textSize="17sp"/>
-        <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/WorkNum_tag"
-            android:layout_alignTop="@+id/WorkNum_tag"
-            android:textColor="#FFFFFF"
-            android:id="@+id/WorkNum"
-            android:textSize="17sp"/>
+       <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/UserName_tag"-->
+            <!--android:layout_alignLeft="@+id/UserName_tag"-->
+            <!--android:id="@+id/WorkNum_tag"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:text="@string/workNumber"-->
+            <!--android:textSize="17sp"/>-->
+        <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+            <!--android:layout_toRightOf="@id/WorkNum_tag"-->
+            <!--android:layout_alignTop="@+id/WorkNum_tag"-->
+            <!--android:textColor="#FFFFFF"-->
+            <!--android:id="@+id/WorkNum"-->
+            <!--android:textSize="17sp"/>-->
         <Button
             android:layout_width="70dp"
             android:layout_height="35dp"

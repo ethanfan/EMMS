@@ -75,7 +75,8 @@ public class TaskHistory extends BaseActivity {
                 }else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
-                holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get("Organise_ID")));
+              //  holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get("Organise_ID")));
+                holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get("Organise")));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT)));
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(data.get(position).get("Status")));
                 holder.tv_repair_time.setText(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT_TIME)));

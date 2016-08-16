@@ -19,7 +19,9 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -472,4 +474,36 @@ public abstract class PullToRefreshAdapterViewBase<T extends AbsListView> extend
 			}
 		}
 	}
+//	public void setGestureListener(GestureListener gestureListener) {
+//		this.gestureListener = gestureListener;
+//	}
+//
+//	//	public void setAdapterOnSlideListener(AdapterOnSlideListener adapterOnSlideListener) {
+////		this.adapterOnSlideListener = adapterOnSlideListener;
+////	}
+////
+////	private AdapterOnSlideListener adapterOnSlideListener;
+//	private GestureListener gestureListener;
+//	private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
+//		private static final int SWIPE_X_DISTANCE_THRESHOLD = 120;
+//		private static final int SWIPE_Y_DISTANCE_THRESHOLD = 80;
+//		private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+//
+//		@Override
+//		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+//			float distanceX = e2.getX() - e1.getX();
+//			float distanceY = e2.getY() - e1.getY();
+//			if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceY) < SWIPE_Y_DISTANCE_THRESHOLD && Math.abs(distanceX) > SWIPE_X_DISTANCE_THRESHOLD
+//					&& Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+//				if (distanceX > 0) {//右滑
+//					Log.e("右滑","右滑");
+//					return true;
+//				}else if (distanceX < 0) {//左滑
+//					Log.e("左滑","左滑");
+//					return true;
+//				}
+//			}
+//			return false;
+//		}
+//	}
 }

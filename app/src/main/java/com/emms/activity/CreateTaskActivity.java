@@ -1171,7 +1171,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                     for (int i=0;i<element.asArrayElement().size();i++){
                     mSimpleDescriptionList.add(element.asArrayElement().get(i).asObjectElement());
                     }
-
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement();
+                    jsonObjectElement.set("DataName",getResources().getString(R.string.other));
+                    mSimpleDescriptionList.add(0,jsonObjectElement);
                 }
 //                JsonObjectElement jsonObjectElement=new JsonObjectElement();
 //                jsonObjectElement.set("DataName",getResources().getString(R.string.other));

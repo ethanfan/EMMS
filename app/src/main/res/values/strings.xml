@@ -138,7 +138,9 @@
     <string name="task_descr">任务描述：</string>
     <string name="err_add_task_equipment">增加任务设备失败</string>
     <string name="UserName">人员姓名：</string>
+    <string name="workerName">姓名：</string>
     <string name="WorkNum">工号:</string>
+ <string name="workNumber">工号：</string>
     <string name="DownloadDataBase">数据文件下载中，请稍候</string>
     <string name="task_create_time">任务发出时间:</string>
     <string name="task_accept_time">任务接单时间:</string>
@@ -223,4 +225,10 @@
     <string name="getEquipmentNumSuccess">获取机台号成功</string>
     <string name="pleaseInputNum">请输入数字</string>
     <string name="thisGroupHasNoPerson">无该组人员信息</string>
+    <string name="logout">退出登录中，请稍候</string>
+    <string name="logoutFail">退出登录失败</string>
+    <string name="deleteEquipment">删除设备</string>
+    <string name="deletingEquipment">删除设备中，请稍候</string>
+    <string name="deleteEquipmentSuccess">删除设备成功</string>
+    <string name="deleteEquipmentFail">删除设备失败</string>
 </resources>

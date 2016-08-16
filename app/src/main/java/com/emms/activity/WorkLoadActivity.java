@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -54,6 +56,7 @@ public class WorkLoadActivity extends NfcActivity{
     private HashMap<Integer,EditText> workloadMap=new HashMap<Integer, EditText>();
     private boolean TaskComplete=false;
     private ArrayList<Integer> workloadKeylist=new ArrayList<Integer>();
+ //   private HashMap<Integer,String> workloadEditTextNum=new HashMap<Integer, String>();
     private String TaskClass;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,24 +92,31 @@ public class WorkLoadActivity extends NfcActivity{
             @Override
             public View getCustomView(View convertView, final int position, ViewGroup parent) {
                 final WorkloadAdapter.ViewHolder holder;
-                if (convertView == null) {
+               // if (convertView == null) {
                     convertView = LayoutInflater.from(context).inflate(R.layout.item_workload_activity, parent, false);
                     holder = new WorkloadAdapter.ViewHolder();
                     holder.name=(TextView)convertView.findViewById(R.id.name) ;
                     holder.skill=(TextView)convertView.findViewById(R.id.skill) ;
-                    holder.startTime=(TextView)convertView.findViewById(R.id.start_time) ;
+                    holder.startTime=(TextView)convertView.findViewById(R.id.start_time);
                     holder.endTime=(TextView)convertView.findViewById(R.id.end_time) ;
                     holder.workload=(EditText)convertView.findViewById(R.id.workload) ;
+                    holder.workload.setInputType(EditorInfo.TYPE_CLASS_PHONE);
                     convertView.setTag(holder);
-                } else {
-                    holder = (WorkloadAdapter.ViewHolder) convertView.getTag();
-                }
+//                } else {
+//                    holder = (WorkloadAdapter.ViewHolder) convertView.getTag();
+//                }
                 holder.name.setText(DataUtil.isDataElementNull(datas.get(position).get("OperatorName")));
                 holder.skill.setText(DataUtil.isDataElementNull(datas.get(position).get("Skill")));
                 holder.startTime.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("StartTime"))));
                 holder.endTime.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("FinishTime"))));
                 holder.workload.setText(String.valueOf((int)(Float.valueOf(DataUtil.isDataElementNull(datas.get(position).get("Coefficient")))*100)));
                 workloadMap.put(position,holder.workload);
+               if(datas.get(position).get("Work")!=null){
+                   holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Work")));
+                }
+//                if(workloadEditTextNum.get(position)!=null){
+//                    holder.workload.setText(workloadEditTextNum.get(position));
+//                }
                 holder.workload.addTextChangedListener(new TextWatcher() {
                    @Override
                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -120,7 +130,8 @@ public class WorkLoadActivity extends NfcActivity{
 
                    @Override
                    public void afterTextChanged(Editable s) {
-                              datas.get(position).set("Workload",holder.workload.getText().toString());
+                              datas.get(position).set("Work",holder.workload.getText().toString());
+                      // workloadEditTextNum.put(position,holder.workload.getText().toString());
                    }
                });
                 return convertView;

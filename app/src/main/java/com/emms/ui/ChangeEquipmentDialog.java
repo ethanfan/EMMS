@@ -24,6 +24,7 @@ import com.emms.R;
 import com.emms.activity.dialogOnSubmitInterface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.ui.WheelView.widget.WheelView;
 import com.emms.util.DataUtil;
@@ -94,11 +95,12 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         Equipment_OperatorID_Status = equipment_OperatorID_Status;
     }*/
    // private HashMap<String,Integer> Equipment_OperatorID_Status=new HashMap<String, Integer>();
-    public ChangeEquipmentDialog(Context context, int layout, int style) {
+    public ChangeEquipmentDialog(Context context, int layout, int style,boolean tag) {
         super(context, style);
         this.context = context;
         setContentView(layout);
         hud=KProgressHUD.create(context);
+        is_Main_person_in_charge_operator_id=tag;
         //if(Equipment_OperatorID_Status.get())
       //  Collections.addAll(status,context.getResources().getStringArray(R.array.equip_status));
         initMap();
@@ -158,12 +160,17 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                 }else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
-                if(showList.get(position).get("Type").valueAsString().equals("EquipmentStatus")) {
+               // if(!showList.get(position).get("Type").valueAsString().equals("delete")){
+                  if(showList.get(position).get("Type").valueAsString().equals("EquipmentStatus")) {
                     holder.image.setImageResource(R.mipmap.equipment_status);
-                }
-                else {
+                     }
+                  else {
                     holder.image.setImageResource(R.mipmap.equipment_operator_status_mipmap);
-                }
+                       }
+//                }
+//            else {
+//                   holder.image.setImageBitmap(null);
+//                }
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(showList.get(position).get("Status")));
                 return convertView;
             }
@@ -176,10 +183,13 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                 //修改设备状态
                 if(showList.get(position).get("Type").valueAsString().equals("EquipmentStatus")){
                     postTaskEquipment(Equipment_Status_Name_ID_map.get(DataUtil.isDataElementNull(showList.get(position).get("Status"))));
-                }else {
+                }else if(showList.get(position).get("Type").valueAsString().equals("EquipmentOperatorStatus")){
                     //修改设备参与人状态
                     postTaskOperatorEquipment(Equipment_Operator_Status_Name_ID_map.get(DataUtil.isDataElementNull(showList.get(position).get("Status"))));
                 }
+//                else if(showList.get(position).get("Type").valueAsString().equals("delete")){
+//                    deleteEquipment();
+//                }
             }
         });
     }
@@ -440,19 +450,26 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         ArrayList<String> list=new ArrayList<>();
         Collections.addAll(arrayList,context.getResources().getStringArray(R.array.Equipment_Status));
         Collections.addAll(list,context.getResources().getStringArray(R.array.Equipment_Operator_Status));
-        for(String s:arrayList){
-            JsonObjectElement json=new JsonObjectElement();
-            json.set("Status",s);
-            json.set("Type","EquipmentStatus");
-            Equipment_Status_List.add(json);
-        }
+
         for(String ss:list){
             JsonObjectElement json=new JsonObjectElement();
             json.set("Status",ss);
             json.set("Type","EquipmentOperatorStatus");
             Equipment_Operator_Status_List.add(json);
         }
+        if(is_Main_person_in_charge_operator_id){
+//            JsonObjectElement jsonObjectElement=new JsonObjectElement();
+//            jsonObjectElement.set("Status",context.getResources().getString(R.string.deleteEquipment));
+//            jsonObjectElement.set("Type","delete");
+//            showList.add(jsonObjectElement);
+            for(String s:arrayList){
+                JsonObjectElement json=new JsonObjectElement();
+                json.set("Status",s);
+                json.set("Type","EquipmentStatus");
+                Equipment_Status_List.add(json);
+            }
         showList.addAll(Equipment_Status_List);
+        }
         showList.addAll(Equipment_Operator_Status_List);
        // adapter.notifyDataSetChanged();
     }
@@ -521,5 +538,35 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         if(hud!=null&&hud.isShowing()){
             hud.dismiss();
         }
+    }
+    public void deleteEquipment(){
+        showCustomDialog(R.string.deletingEquipment);
+        HttpParams params=new HttpParams();
+        //IDList即TaskEquipmentId对应删除字段
+        params.put("id",TaskEquipmentId);
+        HttpUtils.get(context, "TaskEquipmentCollection", params, new HttpCallback() {
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.submitFail,context);
+                dismissCustomDialog();
+            }
+
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null){
+                    JsonObjectElement json=new JsonObjectElement(t);
+                    if(json.get(Data.SUCCESS).valueAsBoolean()){
+                        ToastUtil.showToastLong(R.string.deleteEquipmentSuccess,context);
+                        onSubmitInterface.onsubmit();
+                        dismiss();
+                    }else {
+                        ToastUtil.showToastLong(R.string.deleteEquipmentFail,context);
+                    }
+                }
+                dismissCustomDialog();
+            }
+        });
     }
 }

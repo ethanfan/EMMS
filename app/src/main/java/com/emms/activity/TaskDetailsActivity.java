@@ -900,11 +900,12 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                     return;
                                 }
                                 if(changeEquipmentDialog==null) {
-                                    changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.dialog_equipment_status, R.style.MyDialog);
+                                    changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.dialog_equipment_status, R.style.MyDialog,
+                                            RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id));
                                     changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
                                             Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
                                    // changeEquipmentDialog.setMainPersonInChargeOperatorId(Main_person_in_charge_Operator_id.equals(String.valueOf(getLoginInfo().getId())));
-                                    changeEquipmentDialog.setMainPersonInChargeOperatorId(RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id));
+                                   // changeEquipmentDialog.setMainPersonInChargeOperatorId(RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id));
                                     changeEquipmentDialog.setOnSubmitInterface(new dialogOnSubmitInterface() {
                                         @Override
                                         public void onsubmit() {
@@ -987,7 +988,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         //taskEquepment.set();
         params.putJsonParams(taskEquepment.toJson());
 
-        HttpUtils.post(this, "TaskEquipment", params, new HttpCallback() {
+        HttpUtils.post(this, "TaskEquipmentCollection", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
