@@ -31,7 +31,7 @@
 <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="@string/group"
+    android:text="@string/belongGroup"
     android:layout_marginTop="10dp"
     android:id="@+id/group_tag"
     android:textColor="@color/black"
@@ -54,7 +54,7 @@
     android:layout_height="wrap_content"
     android:layout_below="@+id/group_tag"
     android:text="@string/task_create_time"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="30dp"
     android:layout_marginTop="10dp"
         android:textColor="@color/black"
     android:id="@+id/task_create_time_tag"
@@ -120,7 +120,7 @@
         android:text="@string/response_speed"
         android:layout_marginTop="20dp"
         android:textColor="@color/black"
-        android:layout_alignLeft="@+id/task_create_time_tag"
+        android:layout_alignLeft="@+id/task_complete_time_tag"
         android:id="@+id/response_speed_tag"
         android:textSize="18sp"
         />
@@ -149,7 +149,7 @@
         android:text="@string/service_attitude"
         android:textColor="@color/black"
         android:layout_marginTop="20dp"
-        android:layout_alignLeft="@+id/task_create_time_tag"
+        android:layout_alignLeft="@+id/response_speed_tag"
         android:id="@+id/service_attitude_tag"
         android:textSize="18sp"
         />
@@ -178,7 +178,7 @@
         android:text="@string/repair_speed"
         android:textColor="@color/black"
         android:layout_marginTop="20dp"
-        android:layout_alignLeft="@+id/task_create_time_tag"
+        android:layout_alignLeft="@+id/response_speed_tag"
         android:id="@+id/repair_speed_tag"
         android:textSize="18sp"
         />
@@ -193,8 +193,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="20dp"
+            android:layout_alignLeft="@+id/repair_speed_tag"
+            android:layout_marginTop="15dp"
             android:text="@string/command_standard"
             android:layout_below="@+id/repair_speed_tag"/>
         <!--

@@ -9,10 +9,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -83,7 +86,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     private static final String TAG = "LoginActivity";
     private Context mContext;
     private TextView login;
-    private TextView machine;
+    //private TextView machine;
     private EditText inputPassWord;
     private EditText inputname;
     private KProgressHUD hud;
@@ -109,7 +112,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
 
     private void initView() {
         login = (TextView) findViewById(R.id.login);
-        machine = (TextView) findViewById(R.id.machine);
+       // machine = (TextView) findViewById(R.id.machine);
         inputPassWord = (EditText) findViewById(R.id.inputPassWord);
         inputname = (EditText) findViewById(R.id.inputUserName);
 //        inputname.setText("GET0259106");
@@ -121,7 +124,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
       inputname.setText(SharedPreferenceManager.getUserName(this));
       inputPassWord.setText(SharedPreferenceManager.getPassWord(this));
         login.setOnClickListener(this);
-        machine.setOnClickListener(this);
+//        machine.setOnClickListener(this);
         hud = KProgressHUD.create(this)
                 .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
         .setLabel(getResources().getString(R.string.logining))
@@ -188,63 +191,17 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     public void onSuccess(String t) {
                         super.onSuccess(t);
                         hud.dismiss();
-                        if(t!=null){
-                            JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                            if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
-                                try {
-                                    JSONObject jsonObject = new JSONObject(t);
-                                    int code = Integer.parseInt(jsonObject.get("Result").toString());
-                                    //boolean isSuccess = jsonObject.get("Success").equals(true);
-                                    if ((code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS ||
-                                            code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) ) {
-                                        SharedPreferenceManager.setUserName(LoginActivity.this, userid);
-                                        SharedPreferenceManager.setPassWord(LoginActivity.this, password);
-                                        String userData =jsonObject.getString("UserData");
-                                        SharedPreferenceManager.setUserData(LoginActivity.this, userData);
-                                        String data=jsonObject.getString("Data");
-                                        SharedPreferenceManager.setLoginData(LoginActivity.this,data);
-                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-
-                                        //调用JPush API设置Tag\
-                                        String Organise_ID=new JSONObject(data).get("Organise_ID").toString();
-                                        Set<String> tagSet = new LinkedHashSet<String>();
-                                        //tagSet.add(userid);
-                                        tagSet.add("1002");
-                                        String[]or=Organise_ID.split(",");
-                                        for(int k=0;k<or.length;k++){
-                                        tagSet.add(or[k]);
-                                        }
-                                        tagSet.add(new JSONObject(data).get(Operator.OPERATOR_ID).toString());
-                                       // PushService.registerMessageReceiver(mContext);
-                                        JPushInterface.init(mContext);
-                                        JPushInterface.resumePush(mContext);
-                                        setStyleBasic();
-                                        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, tagSet));
-                                        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "1001"));
-                                    } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
-                                        Toast.makeText(mContext, getResources().getString(R.string.warning_message_frozen), Toast.LENGTH_SHORT).show();
-                                    } else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
-                                        Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                    hud.dismiss();
-                                    Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();
-                                }catch (Exception e){
-                                    throw e;
-                                }
-                            }else{
-                                ToastUtil.showToastLong(R.string.AccountOrPasswordFail,mContext);
-                            }
-                        }
+                        SharedPreferenceManager.setUserName(LoginActivity.this, userid);
+                        SharedPreferenceManager.setPassWord(LoginActivity.this, password);
+                        LoginSuccessEvent(t,true);
 
                     }
                 });
                 break;
-            case R.id.machine:
-                Intent intentMachine = new Intent(LoginActivity.this, MachineActivity.class);
-                startActivity(intentMachine);
-                break;
+//            case R.id.machine:
+//                Intent intentMachine = new Intent(LoginActivity.this, MachineActivity.class);
+//                startActivity(intentMachine);
+//                break;
         }
     }
 
@@ -513,7 +470,20 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
 
     @Override
     public void resolveNfcMessage(Intent intent) {
-
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+//
+            Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            String iccardID = NfcUtils.dumpTagData(tag);
+            if (iccardID == null) {
+                return;
+            } else if (iccardID.equals("")) {
+                return;
+            }
+            getOperatorInfoFromServer(iccardID);
+        }
     }
 
     public class MessageReceiver extends BroadcastReceiver {
@@ -601,5 +571,89 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 dismissCustomDialog();
             }
         });
+    }
+    public void getOperatorInfoFromServer(String iccardID){
+        showCustomDialog(R.string.logining);
+        HttpParams httpParams=new HttpParams();
+        httpParams.put("ICCardID",iccardID);
+        HttpUtils.getWithoutCookies(this, "Token", httpParams, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                LoginSuccessEvent(t,false);
+            }
+
+            @Override
+            public void onSuccess(Map<String, String> headers, byte[] t) {
+                super.onSuccess(headers, t);
+                SaveCookies(headers);
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                Toast toast=Toast.makeText(mContext,R.string.scanICCardFail,Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
+                dismissCustomDialog();
+            }
+        });
+    }
+    private void LoginSuccessEvent(String t,boolean isAccountPasswordLogin){
+        if(t!=null){
+            JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+            if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
+                try {
+                    JSONObject jsonObject = new JSONObject(t);
+                    int code = Integer.parseInt(jsonObject.get("Result").toString());
+                    //boolean isSuccess = jsonObject.get("Success").equals(true);
+                    if ((code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS ||
+                            code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) ) {
+                        String userData =jsonObject.getString("UserData");
+                        SharedPreferenceManager.setUserData(LoginActivity.this, userData);
+                        String data=jsonObject.getString("Data");
+                        SharedPreferenceManager.setLoginData(LoginActivity.this,data);
+                        startActivity(new Intent(LoginActivity.this, CusActivity.class));
+
+                        //调用JPush API设置Tag\
+                        String Organise_ID=new JSONObject(data).get("Organise_ID").toString();
+                        Set<String> tagSet = new LinkedHashSet<String>();
+                        //tagSet.add(userid);
+                        tagSet.add("1002");
+                        String[]or=Organise_ID.split(",");
+                        for(int k=0;k<or.length;k++){
+                            tagSet.add(or[k]);
+                        }
+                        tagSet.add(new JSONObject(data).get(Operator.OPERATOR_ID).toString());
+                        // PushService.registerMessageReceiver(mContext);
+                        JPushInterface.init(mContext);
+                        JPushInterface.resumePush(mContext);
+                        setStyleBasic();
+                        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, tagSet));
+                        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "1001"));
+                    } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
+                        Toast.makeText(mContext, getResources().getString(R.string.warning_message_frozen), Toast.LENGTH_SHORT).show();
+                    } else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
+                        if(isAccountPasswordLogin){
+                        Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    if(isAccountPasswordLogin){
+                    hud.dismiss();
+                    Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();}
+                }catch (Exception e){
+                    throw e;
+                }
+            }else{
+                if(isAccountPasswordLogin){
+                ToastUtil.showToastLong(R.string.AccountOrPasswordFail,mContext);
+                }else {
+                    ToastUtil.showToastLong(R.string.NoCardDetail,mContext);
+                }
+            }
+        }
+        dismissCustomDialog();
     }
 }

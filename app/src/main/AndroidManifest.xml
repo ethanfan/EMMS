@@ -54,6 +54,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.CusActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <!--<activity android:name=".activity.EquipmentHistory"-->
+            <!--android:screenOrientation="portrait">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
+        <!--</activity>-->
         <!--<activity android:name=".push.MainActivity"-->
             <!--android:screenOrientation="portrait">-->
             <!--<intent-filter>-->
@@ -80,6 +90,10 @@
         </activity>
         <activity
             android:name=".activity.TaskHistory"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.EquipmentHistory"
             android:screenOrientation="portrait" >
         </activity>
         <activity

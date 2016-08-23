@@ -41,6 +41,7 @@ import com.emms.adapter.ResultListAdapter;
 import com.emms.bean.WorkInfo;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
 import com.emms.schema.Task;
@@ -252,16 +253,26 @@ public class CustomDialog extends Dialog {
                 super.onSuccess(t);
 
                 dismiss();
-                if(modifySubTask==null){
-                Toast toast=Toast.makeText(context,"创建子任务成功",Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER,0,0);
-                toast.show();}
-                else{
-                    Toast toast=Toast.makeText(context,"修改子任务成功",Toast.LENGTH_SHORT);
-                    toast.setGravity(Gravity.CENTER,0,0);
-                    toast.show();
+                if(t!=null){
+                    JsonObjectElement json=new JsonObjectElement(t);
+                    if(json.get(Data.SUCCESS).valueAsBoolean()){
+                        if(modifySubTask==null){
+                            ToastUtil.showToastLong(R.string.createSubTaskSuccess,context);
+                        }
+                        else{
+                          ToastUtil.showToastLong(R.string.changeSubTaskSuccess,context);
+                        }
+                        dialogOnSubmit.onsubmit();
+                    }else{
+                        if(modifySubTask==null){
+                            ToastUtil.showToastLong(R.string.createSubTaskFail,context);
+                        }
+                        else{
+                            ToastUtil.showToastLong(R.string.changeSubTaskFail,context);
+                        }
+                    }
                 }
-                dialogOnSubmit.onsubmit();
+
             }
 
             @Override

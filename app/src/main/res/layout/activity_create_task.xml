@@ -326,29 +326,34 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="16dp"
                         android:layout_marginTop="12dp"
+                        android:id="@+id/layout_standard_workload"
+                        android:visibility="gone"
                         android:orientation="horizontal">
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:gravity="end"
                             android:layout_weight="1.6"
+                            android:text="@string/standardWorkload"
                             android:textSize="18sp"
-                            android:layout_marginRight="8dp"
-                            android:layout_marginTop="13dp"/>
+                            android:textColor="@color/text_color"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginRight="8dp"/>
                         <RelativeLayout
                             android:layout_width="0dp"
-                            android:layout_height="100dp"
+                            android:layout_height="40dip"
+                            android:gravity="center_vertical"
                             android:layout_weight="3"
                             android:background="@color/white"
-                            android:id="@+id/task_description"
-                            android:visibility="gone"
                             android:layout_below="@+id/simple_description">
                     <EditText
-                        android:id="@+id/edit_task_description"
+                        android:id="@+id/standard_workload"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/white"
-                        android:hint="@string/task_description_hint"
+                        android:gravity="center_vertical"
+                        android:hint="@string/pleaseInput"
+                        android:paddingLeft="5dp"
                         android:textColor="@color/text_color"
                         android:textColorHint="@color/hint_color"
                         android:textSize="18sp"/>

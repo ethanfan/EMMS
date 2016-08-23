@@ -110,19 +110,17 @@ public abstract class PopMenuTaskDetail {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				if (position == 0) {
-					WorkloadInput();
+					FaultSummary();
 				}else if (position == 1) {
-                    TaskComplete();
+					WorkloadInput();
 				}else if(position==2){
-
-				}else if(position==3){
-					ExChangeOrder();
-				}else if(position==4){
-					InviteHelp();
-				}else if(position==5){
 					SubTaskManage();
-				}else if(position==6){
-                    FaultSummary();
+				}else if(position==3){
+					InviteHelp();
+				}else if(position==4){
+					ExChangeOrder();
+				}else if(position==5){
+					TaskComplete();
 				}
 				popMenuTaskDetail.dismiss();
 			}
@@ -216,19 +214,17 @@ public abstract class PopMenuTaskDetail {
 			Drawable img  = context.getResources().getDrawable(R.mipmap.more_input);
 
 			if (0 ==position){
-				img =context.getResources().getDrawable(R.mipmap.more_input);
-			}else if (1 == position){
-				img =context.getResources().getDrawable(R.mipmap.more_finish);
-			}else if (2 == position){
-				img =context.getResources().getDrawable(R.mipmap.more_scan);
-			}else if (3 == position){
-				img =context.getResources().getDrawable(R.mipmap.more_single_turn);
-			}else if (4 == position){
-				img =context.getResources().getDrawable(R.mipmap.more_invitation);
-			}else if (5 == position){
-				img =context.getResources().getDrawable(R.mipmap.sub_task_management);
-			}else if (6 == position){
 				img =context.getResources().getDrawable(R.mipmap.failure_summary);
+			}else if (1 == position){
+				img =context.getResources().getDrawable(R.mipmap.more_input);
+			}else if (2 == position){
+				img =context.getResources().getDrawable(R.mipmap.sub_task_management);
+			}else if (3 == position){
+				img =context.getResources().getDrawable(R.mipmap.more_invitation);
+			}else if (4 == position){
+				img =context.getResources().getDrawable(R.mipmap.more_single_turn);
+			}else if (5 == position){
+				img =context.getResources().getDrawable(R.mipmap.more_finish);
 			}
 			// 调用setCompoundDrawables时，必须调用Drawable.setBounds()方法,否则图片不显示
 //			img.setBounds(0, 0, img.getMinimumWidth(), img.getMinimumHeight());

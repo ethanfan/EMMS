@@ -36,7 +36,18 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //做动态定制化开发，由服务器返回窗口列表，APP根据ID来展示
+        //使用gripView，Item为模块入口
 
+
+        //维修工权限展现内容
+        MaintenanceWorkerView();
+        //维修工班组长以上角色展现内容
+        MaintenanceWorkerHeadManView();
+        //车间工人/报修人展现内容
+        ShopWorkerView();
+        //车间工人班组长展现内容
+        ShopWorkerHeadManView();
         initView();
         getTaskCountFromServer();
         //getNewDataFromServer(); //下载DB文件
@@ -72,8 +83,8 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
 
         //显示用户人名，工号
 
-        ((TextView)findViewById(R.id.UserName)).setText(getLoginInfo().getName()+"  "+getLoginInfo().getOperator_no());
-    //    ((TextView)findViewById(R.id.WorkNum)).setText(getLoginInfo().getOperator_no());
+        ((TextView)findViewById(R.id.UserName)).setText(getLoginInfo().getName());
+        ((TextView)findViewById(R.id.WorkNum_tag)).setText(getLoginInfo().getOperator_no());
     }
 
     @Override
@@ -99,9 +110,9 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
             });
         }else if (id == R.id.create_taskcd){
             //后续删除此入口
-            //Intent intent=new Intent(MainActivity.this,CreateTaskActivity.class);
-            //startActivity(intent);
-            ToastUtil.showToastLong("目前只有公共机能创建任务",this);
+            Intent intent=new Intent(MainActivity.this,CreateTaskActivity.class);
+            startActivity(intent);
+//            ToastUtil.showToastLong("目前只有公共机能创建任务",this);
         }else if (id == R.id.repair_tag){
             Intent intent=new Intent(MainActivity.this,TaskListActivity.class);
             if(taskNum.get(0)!=null){
@@ -199,9 +210,26 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
 
     }
     private void logout(){
+        SharedPreferenceManager.setPassWord(MainActivity.this,null);
         SharedPreferenceManager.setCookie(MainActivity.this,null);
         SharedPreferenceManager.setLoginData(MainActivity.this,null);
         SharedPreferenceManager.setUserData(MainActivity.this,null);
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
+    }
+    //维修工权限展现内容
+    private void MaintenanceWorkerView(){
+
+    }
+    //维修工班组长以上角色展现内容
+    private void MaintenanceWorkerHeadManView(){
+
+    }
+    //车间工人/报修人展现内容
+    private void ShopWorkerView(){
+
+    }
+    //车间工人班组长展现内容
+    private void ShopWorkerHeadManView(){
+
     }
 }

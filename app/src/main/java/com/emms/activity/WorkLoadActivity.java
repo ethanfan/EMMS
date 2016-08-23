@@ -87,6 +87,9 @@ public class WorkLoadActivity extends NfcActivity{
                     submitWorkLoadToServer();
                 }
             });
+            if((!TaskClass.equals(Task.REPAIR_TASK))&&(!TaskClass.equals(Task.OTHER_TASK))){
+                ((Button)findViewById(R.id.nextStep)).setText(R.string.taskComplete);
+            }
         }
         workloadAdapter=new WorkloadAdapter(datas) {
             @Override
@@ -109,11 +112,22 @@ public class WorkLoadActivity extends NfcActivity{
                 holder.skill.setText(DataUtil.isDataElementNull(datas.get(position).get("Skill")));
                 holder.startTime.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("StartTime"))));
                 holder.endTime.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("FinishTime"))));
-                holder.workload.setText(String.valueOf((int)(Float.valueOf(DataUtil.isDataElementNull(datas.get(position).get("Coefficient")))*100)));
-                workloadMap.put(position,holder.workload);
-               if(datas.get(position).get("Work")!=null){
-                   holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Work")));
+                if(DataUtil.isFloat(DataUtil.isDataElementNull(datas.get(position).get("Coefficient")))){
+                    if(  !(((int)Float.parseFloat(DataUtil.isDataElementNull(datas.get(position).get("Coefficient"))))==0)    ){
+                        holder.workload.setText(String.valueOf( (int)(Float.valueOf(DataUtil.isDataElementNull(datas.get(position).get("Coefficient"))) * 100)));
+                        datas.get(position).set("Work",DataUtil.isDataElementNull(datas.get(position).get("Coefficient")));
+                    }
                 }
+                if(datas.get(position).get("Work")!=null){
+                if(DataUtil.isFloat(DataUtil.isDataElementNull(datas.get(position).get("Work")))){
+                        holder.workload.setText(String.valueOf((int) (Float.valueOf(DataUtil.isDataElementNull(datas.get(position).get("Work"))) * 100)));
+                }else {
+                    holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Work")));
+                }}
+                workloadMap.put(position,holder.workload);
+//               if(datas.get(position).get("Workload")!=null){
+//                   holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Workload")));
+//                }
 //                if(workloadEditTextNum.get(position)!=null){
 //                    holder.workload.setText(workloadEditTextNum.get(position));
 //                }
@@ -130,7 +144,11 @@ public class WorkLoadActivity extends NfcActivity{
 
                    @Override
                    public void afterTextChanged(Editable s) {
-                              datas.get(position).set("Work",holder.workload.getText().toString());
+                       if(DataUtil.isInt(s.toString())){
+                              datas.get(position).set("Work",Float.parseFloat(s.toString())/100.0f);
+                       }else{
+                           datas.get(position).set("Work",s.toString());
+                       }
                       // workloadEditTextNum.put(position,holder.workload.getText().toString());
                    }
                });
@@ -189,7 +207,7 @@ public class WorkLoadActivity extends NfcActivity{
         });
     }
     private void SetViewData(ObjectElement ViewData){
-        group.setText(DataUtil.isDataElementNull(ViewData.get("TaskApplicantOrg")));
+        group.setText(DataUtil.isDataElementNull(ViewData.get("TaskApplicantOrgName")));
         task_id.setText(DataUtil.isDataElementNull(ViewData.get(Task.TASK_ID)));
         total_worktime.setText(DataUtil.isDataElementNull(ViewData.get("Workload"))+getResources().getString(R.string.hours));
         if(ViewData.get("TaskOperator")!=null&&ViewData.get("TaskOperator").asArrayElement().size()>0) {
@@ -212,8 +230,12 @@ public class WorkLoadActivity extends NfcActivity{
 
         int sum=0;
         for(int i=0;i<workloadKeylist.size();i++){
-            if(!DataUtil.isNumeric(workloadMap.get(workloadKeylist.get(i)).getText().toString())){
-                ToastUtil.showToastLong("请输入整数",this);
+            if(workloadMap.get(workloadKeylist.get(i)).getText().toString().equals("")){
+                ToastUtil.showToastLong(R.string.pleaseInputWorkload,this);
+                return;
+            }
+            if(!DataUtil.isInt(workloadMap.get(workloadKeylist.get(i)).getText().toString())){
+                ToastUtil.showToastLong(R.string.pleaseInputInteger,this);
                 return;
             }
             sum+=Integer.valueOf(workloadMap.get(workloadKeylist.get(i)).getText().toString());
@@ -230,7 +252,7 @@ public class WorkLoadActivity extends NfcActivity{
           ObjectElement obj=workloadAdapter.getDatas().get(i);
           JsonObjectElement jsonObjectElement=new JsonObjectElement();
           jsonObjectElement.set("TaskOperator_ID", DataUtil.isDataElementNull(obj.get("TaskOperator_ID")));
-          jsonObjectElement.set("Coefficient",Float.valueOf(DataUtil.isDataElementNull(obj.get("Workload")))/100.0f);
+          jsonObjectElement.set("Coefficient",Float.valueOf(DataUtil.isDataElementNull(obj.get("Work"))));
           submitWorkloadData.add(jsonObjectElement);
       }
         JsonArrayElement submitData=new JsonArrayElement(submitWorkloadData.toString());
@@ -245,20 +267,24 @@ public class WorkLoadActivity extends NfcActivity{
                         ToastUtil.showToastLong(R.string.submitSuccess,context);
                         dismissCustomDialog();
                         if(TaskComplete){
-                            if(TaskClass.equals(Task.REPAIR_TASK)){
+                            if(  TaskClass.equals(Task.REPAIR_TASK)  ||  TaskClass.equals(Task.OTHER_TASK)  ){
                                 Intent intent=new Intent(context,SummaryActivity.class);
                                 intent.putExtra("TaskComplete",true);
+                                intent.putExtra(Task.TASK_CLASS,TaskClass);
                                 intent.putExtra("TaskDetail",TaskDetail.toString());
                                 startActivity(intent);}
                             else {
-                                Intent intent=new Intent(context,CommandActivity.class);
-                                intent.putExtra("TaskComplete",true);
-                                intent.putExtra("TaskDetail",TaskDetail.toString());
-                                startActivity(intent);
+//                                Intent intent=new Intent(context,CommandActivity.class);
+//                                intent.putExtra("TaskComplete",true);
+//                                intent.putExtra("TaskDetail",TaskDetail.toString());
+//                                startActivity(intent);
+                                TaskComplete();
                             }
                         }else{
                             finish();
                         }
+                    }else{
+                        ToastUtil.showToastLong(R.string.workloadSubmitFail,context);
                     }
                 }
 
@@ -277,5 +303,31 @@ public class WorkLoadActivity extends NfcActivity{
     @Override
     public void resolveNfcMessage(Intent intent) {
 
+    }
+    private void TaskComplete(){
+        HttpParams params=new HttpParams();
+        JsonObjectElement data=new JsonObjectElement();
+        data.set("Task_ID",task_id.getText().toString());
+        params.putJsonParams(data.toJson());
+        HttpUtils.post(this, "TaskFinish", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                if(t!=null){
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
+                            jsonObjectElement.get("Success").valueAsBoolean()){
+                        ToastUtil.showToastLong("任务完成",context);
+                        startActivity(new Intent(context,MainActivity.class));
+                    }else {
+                        ToastUtil.showToastLong("无法提交任务完成，请检查任务信息",context);
+                    }
+                }}
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.submitFail,context);
+            }
+        });
     }
 }

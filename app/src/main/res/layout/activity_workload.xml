@@ -15,9 +15,11 @@
         android:layout_height="wrap_content"
         android:id="@id/group_tag"
         android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:textSize="18sp"
         android:textColor="@color/black"
+        android:layout_below="@+id/total_worktime_tag"
         android:text="@string/group"/>
     <TextView
         android:layout_width="wrap_content"
@@ -32,7 +34,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/task_ID"
         android:textColor="@color/black"
-        android:layout_alignTop="@+id/group_tag"
+        android:layout_alignTop="@+id/total_worktime_tag"
         android:layout_marginRight="15dp"
         android:textSize="18sp"
         android:layout_alignParentRight="true"/>
@@ -42,20 +44,19 @@
         android:id="@+id/task_ID_tag"
         android:textColor="@color/black"
         android:layout_toLeftOf="@+id/task_ID"
-        android:layout_alignTop="@id/task_ID"
+        android:layout_alignTop="@+id/task_ID"
         android:textSize="18sp"
         android:text="@string/task_number"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/total_worktime_tag"
-        android:layout_below="@+id/group_tag"
         android:textColor="@color/black"
         android:layout_alignRight="@+id/group_tag"
-        android:layout_marginTop="5dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
         android:textSize="18sp"
-        android:text="@string/total_worktime"
-        android:layout_marginBottom="10dp"/>
+        android:text="@string/total_worktime"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

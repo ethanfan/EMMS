@@ -2,6 +2,7 @@ package com.emms.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -23,16 +24,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.DatastoreException.DatastoreException;
+import com.datastore_android_sdk.callback.StoreCallback;
+import com.datastore_android_sdk.datastore.Build;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
-import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.adapter.TaskAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
-import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
@@ -48,23 +50,22 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-import java.security.spec.RSAOtherPrimeInfo;
 import java.util.ArrayList;
 
 /**
- * Created by Administrator on 2016/8/4.
+ * Created by Administrator on 2016/8/22.
  */
-public class TaskHistory extends NfcActivity implements View.OnClickListener{
+public class EquipmentHistory extends NfcActivity implements View.OnClickListener{
     private PullToRefreshListView listView;
     private TaskAdapter adapter;
-    private ArrayList<ObjectElement> data=new ArrayList<ObjectElement>();
-    private Context context=this;
-    private String TaskClass;
+    private String Equipment_ID="";
+    private String Task_Description="";
+    private String EquipmentName="";
     private static int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
     private Handler handler=new Handler();
-
+    private Context context=this;
 
     private TextView menuSearchTitle;
     private ResultListAdapter mResultAdapter;
@@ -75,71 +76,38 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
     private int  searchtag =0;
     private CustomDrawerLayout mDrawer_layout;
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
-    private ArrayList<ObjectElement> taskClassList=new ArrayList<ObjectElement>();
-    private ArrayList<ObjectElement> taskStatusList=new ArrayList<>();
-    private ArrayList<ObjectElement> timeList=new ArrayList<>();
-    private DropEditText task_class,task_status,time;
-
+    private ArrayList<ObjectElement> EquipmentList=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> task_description_list=new ArrayList<>();
+    private ArrayList<ObjectElement> fault_type_list=new ArrayList<>();
+    private ArrayList<ObjectElement> fault_summary_list=new ArrayList<>();
+    private DropEditText equipment_name,task_description,fault_type;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_task_history);
-        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
+        setContentView(R.layout.activity_equipment_history);
+        Equipment_ID=getIntent().getStringExtra(Equipment.EQUIPMENT_ID);
+        Task_Description=getIntent().getStringExtra(Task.TASK_DESCRIPTION);
+        EquipmentName=getIntent().getStringExtra(Equipment.EQUIPMENT_NAME);
+        createTextData();
         initView();
+        if(Equipment_ID!=null || EquipmentName!=null || Task_Description!=null){
+        getEquipmentHistoryFromServer();
+        }
         initData();
         initSearchView();
-        getTaskHistory();
+    }
+    @Override
+    public void resolveNfcMessage(Intent intent) {
+
     }
     private void initView(){
-        ((TextView)findViewById(R.id.tv_title)).setText(R.string.taskHistory);
-        findViewById(R.id.btn_right_action).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        task_class=(DropEditText)findViewById(R.id.task_class) ;
-        task_status=(DropEditText)findViewById(R.id.task_status) ;
-        time=(DropEditText)findViewById(R.id.time) ;
-        listView=(PullToRefreshListView)findViewById(R.id.taskList);
-        adapter=new TaskAdapter(data) {
-            @Override
-            public View getCustomView(View convertView, int position, ViewGroup parent) {
-                TaskViewHolder holder;
-                if (convertView == null) {
-                    convertView = LayoutInflater.from(context).inflate(R.layout.item_history, parent, false);
-                    holder = new TaskViewHolder();
-                    holder.tv_group = (TextView) convertView.findViewById(R.id.group);
-                    holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);
-                    holder.tv_task_state = (TextView) convertView.findViewById(R.id.tv_task_state);
-                    holder.tv_repair_time=(TextView)convertView.findViewById(R.id.tv_Warranty_time_process);
-                    holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
-                    holder.tv_end_time= (TextView) convertView.findViewById(R.id.tv_end_time_process);
-                    holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
-                    convertView.setTag(holder);
-                }else {
-                    holder = (TaskViewHolder) convertView.getTag();
-                }
-              //  holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get("Organise_ID")));
-                holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get("Organise")));
-                holder.warranty_person.setText(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT)));
-                holder.tv_task_state.setText(DataUtil.isDataElementNull(data.get(position).get("Status")));
-                holder.tv_repair_time.setText(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT_TIME)));
-                holder.tv_start_time.setText(DataUtil.isDataElementNull(data.get(position).get(Task.START_TIME)));
-                holder.tv_end_time.setText(DataUtil.isDataElementNull(data.get(position).get(Task.FINISH_TIME)));
-                holder.tv_task_describe.setText(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_DESCRIPTION)));
-                return convertView;
-            }
-        };
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-            }
-        });
-        listView.setMode(PullToRefreshListView.Mode.BOTH);
+        ((TextView)findViewById(R.id.tv_title)).setText(R.string.DeveceHistory);
+        findViewById(R.id.btn_right_action).setOnClickListener(this);
+        equipment_name=(DropEditText)findViewById(R.id.equipment_name);
+        task_description=(DropEditText)findViewById(R.id.task_description) ;
+        fault_type=(DropEditText)findViewById(R.id.fault_type) ;
+        listView=(PullToRefreshListView)findViewById(R.id.equipment_history_list);
+        listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
@@ -147,12 +115,12 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        pageIndex = 1;
+                        getEquipmentHistoryFromServer();
                         listView.onRefreshComplete();
-                        pageIndex=1;
-                        getTaskHistory();
                         //  Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
                     }
-                },0);
+                }, 0);
             }
 
             @Override
@@ -160,55 +128,97 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        getEquipmentHistoryFromServer();
                         listView.onRefreshComplete();
-                        getTaskHistory();
-                        // Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
                     }
-                },0);
+                }, 0);
             }
         });
         findViewById(R.id.filter).setOnClickListener(this);
         findViewById(R.id.filter).setVisibility(View.VISIBLE);
         findViewById(R.id.search_button).setOnClickListener(this);
+        listView.setAdapter(new TaskAdapter(fault_summary_list) {
+            @Override
+            public View getCustomView(View convertView, int position, ViewGroup parent) {
+                TaskViewHolder holder;
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(context).inflate(R.layout.item_equipment_history, parent, false);
+                    holder = new TaskViewHolder();
+                    holder.tv_creater=(TextView)convertView.findViewById(R.id.task_id);//任务单号
+                    holder.tv_task_describe=(TextView)convertView.findViewById(R.id.fault_type);//故障类型
+                    holder.warranty_person=(TextView)convertView.findViewById(R.id.summary_person);
+                    holder.tv_task_state=(TextView)convertView.findViewById(R.id.sequence_number);//序号
+                    convertView.setTag(holder);
+                } else {
+                    holder = (TaskViewHolder) convertView.getTag();
+                }
+                //待修改
+               holder.tv_creater.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get(Task.TASK_ID)));
+                holder.tv_task_describe.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("FaultType")));
+                holder.warranty_person.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("summary_person")));
+                holder.tv_task_state.setText(String.valueOf(position+1));
+                return convertView;
+            }
+        });
     }
-    private void getTaskHistory(){
+    private void getEquipmentHistoryFromServer(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
                 ToastUtil.showToastLong(R.string.noMoreData,context);
                 return;
             }}
-        showCustomDialog(R.string.loadingData);
-        HttpParams params = new HttpParams();
-        params.put("task_class", TaskClass);
+        if(!(EquipmentName!=null&& !EquipmentName.equals("")&& Task_Description!=null&& !Task_Description.equals(""))){
+            if (equipment_name.getText().equals("")) {
+                EquipmentName=equipment_name.getText();
+            }
+            if (task_description.getText().equals("")) {
+                Task_Description=task_description.getText();
+            }
+        }
+        if(EquipmentName.equals("")){
+            ToastUtil.showToastLong(R.string.pleaseSelectEquipmentName,context);
+            return;
+        }
+        if(Task_Description.equals("")){
+            ToastUtil.showToastLong(R.string.pleaseSelectTaskDescription,context);
+            return;
+        }
+
+        HttpParams params=new HttpParams();
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
-        HttpUtils.get(this, "TaskHistoryList", params, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-                if(t!=null){
-                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement!=null){
-                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
-                        RecCount = jsonObjectElement.get("RecCount").valueAsInt();
-                        if (pageIndex == 1) {
-                            data.clear();
-                        }
-                        pageIndex++;
-                        for(DataElement dataElement:jsonObjectElement.get("PageData").asArrayElement()){
-                         data.add(dataElement.asObjectElement());
-                        }
-                        adapter.notifyDataSetChanged();
-                    }
-                }}
-                dismissCustomDialog();
+        params.put(Equipment.EQUIPMENT_NAME,EquipmentName);
+        params.put(Task.TASK_DESCRIPTION,Task_Description);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id=v.getId();
+        switch (id){
+            case R.id.btn_right_action:{
+                finish();
+                break;
             }
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-                dismissCustomDialog();
+            case R.id.filter:{
+                if(findViewById(R.id.search_filter).getVisibility()==View.GONE||
+                        findViewById(R.id.search_filter).getVisibility()==View.INVISIBLE){
+                //findViewById(R.id.search_filter).setVisibility(View.VISIBLE);
+                    buttonAnim(true);
+                }
+                else {
+                    //findViewById(R.id.search_filter).setVisibility(View.GONE);
+                    buttonAnim(false);
+                }
+                break;
             }
-        });
+            case R.id.search_button:{
+                pageIndex=1;
+                getEquipmentHistoryFromServer();
+                buttonAnim(false);
+                break;
+            }
+        }
     }
     private void initSearchView() {
         searchBox = (EditText) findViewById(R.id.et_search);
@@ -219,7 +229,6 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                 searchBox.setText("");
             }
         });
-
         mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
         mDrawer_layout.setBackgroundColor(Color.parseColor("#00000000"));
         menuSearchTitle = (TextView) findViewById(R.id.left_title);
@@ -239,15 +248,16 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                         public void run() {
                             switch (searchtag) {
                                 case 1:{
-                                    task_class.getmEditText().setText(searchResult);
+                                    equipment_name.getmEditText().setText(searchResult);
+                                    getTaskDecriptionFromDataBaseByEquipmentName(DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(Equipment.EQUIPMENT_CLASS)));
                                     break;}
 
                                 case 2:{
-                                    task_status.getmEditText().setText(searchResult);
+                                    task_description.getmEditText().setText(searchResult);
                                     break;
                                 }
                                 case 3:{
-                                    time.getmEditText().setText(searchResult);
+                                    fault_type.getmEditText().setText(searchResult);
                                 }
                             }
                             mDrawer_layout.closeDrawer(Gravity.RIGHT);
@@ -258,15 +268,15 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                 }
             }
         });
-        initDropSearchView(null, task_class.getmEditText(), context.getResources().
-                        getString(R.string.title_search_task_type),DataDictionary.DATA_NAME,
-                1, "获取数据失败",task_class.getDropImage());
-        initDropSearchView(null, task_status.getmEditText(), context.getResources().
-                        getString(R.string.task_s), DataDictionary.DATA_NAME,
-                2, "获取数据失败",task_status.getDropImage());
-        initDropSearchView(null, time.getmEditText(), context.getResources().
-                        getString(R.string.title_time),DataDictionary.DATA_NAME,
-                3, "获取数据失败",time.getDropImage());
+        initDropSearchView(null, equipment_name.getmEditText(), context.getResources().
+                        getString(R.string.title_search_equipment_name),Equipment.EQUIPMENT_NAME,
+                1, "获取数据失败",equipment_name.getDropImage());
+        initDropSearchView(null, task_description.getmEditText(), context.getResources().
+                        getString(R.string.simpleDescription), DataDictionary.DATA_NAME,
+                2, "请选择设备名称或该设备名称无对应任务描述",task_description.getDropImage());
+        initDropSearchView(null, fault_type.getmEditText(), context.getResources().
+                        getString(R.string.faultType),DataDictionary.DATA_NAME,
+                3, "请选择设备名称或该设备名称无对应任务描述",fault_type.getDropImage());
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -344,14 +354,14 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                 searchDataLists.clear();
                 switch (searTag) {
                     case 1:{
-                        searchDataLists.addAll(taskClassList);
+                        searchDataLists.addAll(EquipmentList);
                         break;
                     }
                     case 2:{
-                        searchDataLists.addAll(taskStatusList);
+                        searchDataLists.addAll(task_description_list);
                         break;}
                     case 3:{
-                        searchDataLists.addAll(timeList);
+                        searchDataLists.addAll(fault_type_list);
                         break;
                     }
                 }
@@ -383,29 +393,24 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
         });
     }
     private void initData(){
-        initTaskClassData();
-        initTaskStatusData();
-        intiTimeData();
+        getEquipmentListFromDataBase();
+        getTaskDecriptionFromDataBaseByEquipmentName("");
+        getFaultTypeFromDataBaseByEquipmentName("");
     }
-    private void initTaskClassData(){
-
-        String rawQuery = "select * from DataDictionary " +
-                "where DataType = 'TaskClass' and PData_ID = 0";
+    private void getEquipmentListFromDataBase(){
+        String rawQuery ="select  distinct EquipmentName,EquipmentClass from Equipment where  EquipmentName is not null";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
-                EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
+                EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
-            @Override
-            public void onSuccess(DataElement element) {
-                if (element != null && element.isArray()
-                        && element.asArrayElement().size() > 0) {
-                    taskClassList.clear();
-                    for (int i = 0; i < element.asArrayElement().size(); i++) {
-                        taskClassList.add(element.asArrayElement().get(i).asObjectElement());
-                    }
-                } else {
-                    Toast.makeText(context, "无数据", Toast.LENGTH_SHORT).show();
-                }
 
+            @Override
+            public void onSuccess(final DataElement element) {
+                EquipmentList.clear();
+                if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
+                    for(int i=0;i<element.asArrayElement().size();i++){
+                        EquipmentList.add(element.asArrayElement().get(i).asObjectElement());
+                    }
+                }
             }
 
             @Override
@@ -414,63 +419,61 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
             }
         });
     }
-    private void initTaskStatusData(){
-        JsonObjectElement jsonObjectElement=new JsonObjectElement();
-        jsonObjectElement.set(DataDictionary.DATA_NAME,getResources().getString(R.string.start));
-        jsonObjectElement.set("Status",1);
-        JsonObjectElement jsonObjectElement1=new JsonObjectElement();
-        jsonObjectElement1.set(DataDictionary.DATA_NAME,getResources().getString(R.string.task_state_details_finish));
-        jsonObjectElement1.set("Status",2);
-        taskStatusList.add(jsonObjectElement);
-        taskStatusList.add(jsonObjectElement1);
-    }
-    private void intiTimeData(){
-        JsonObjectElement jsonObjectElement=new JsonObjectElement();
-        jsonObjectElement.set(DataDictionary.DATA_NAME,getResources().getString(R.string.OneDay));
-        jsonObjectElement.set("Time",1);
-        JsonObjectElement jsonObjectElement1=new JsonObjectElement();
-        jsonObjectElement1.set(DataDictionary.DATA_NAME,getResources().getString(R.string.TwoDay));
-        jsonObjectElement1.set("Time",2);
-        JsonObjectElement jsonObjectElement2=new JsonObjectElement();
-        jsonObjectElement2.set(DataDictionary.DATA_NAME,getResources().getString(R.string.OneWeek));
-        jsonObjectElement2.set("Time",7);
-        timeList.add(jsonObjectElement);
-        timeList.add(jsonObjectElement1);
-        timeList.add(jsonObjectElement2);
-    }
+    private void getTaskDecriptionFromDataBaseByEquipmentName(String EquipmentClass){
+        String sql = "select * from DataDictionary where DataType='EquipmentClassTrouble' and 1=1 and DataValue1='" + EquipmentClass+"'";
 
-    @Override
-    public void resolveNfcMessage(Intent intent) {
-
-    }
-
-    @Override
-    public void onClick(View v) {
-        int id=v.getId();
-        switch (id){
-            case R.id.btn_right_action:{
-                finish();
-                break;
-            }
-            case R.id.filter:{
-                if(findViewById(R.id.search_filter).getVisibility()==View.GONE||
-                        findViewById(R.id.search_filter).getVisibility()==View.INVISIBLE){
-                    //findViewById(R.id.search_filter).setVisibility(View.VISIBLE);
-                    buttonAnim(true);
+        getSqliteStore().performRawQuery(sql, "DataDictionary", new StoreCallback() {
+            @Override
+            public void success(DataElement element, String resource) {
+                task_description_list.clear();
+                if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
+                    for (int i=0;i<element.asArrayElement().size();i++){
+                        task_description_list.add(element.asArrayElement().get(i).asObjectElement());
+                    }
                 }
-                else {
-                    //findViewById(R.id.search_filter).setVisibility(View.GONE);
-                    buttonAnim(false);
+            }
+
+            @Override
+            public void failure(DatastoreException ex, String resource) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtil.showToastLong(R.string.noSimpleDescriptionData,context);
+                    }
+                });
+            }
+        });
+    }
+    private void getFaultTypeFromDataBaseByEquipmentName(String EquipmentClass){
+        String sql="select * from DataDictionary where DataType='EquipmentTroubleSort' and 1=1";
+        getSqliteStore().performRawQuery(sql, "DataDictionary", new StoreCallback() {
+            @Override
+            public void success(DataElement element, String resource) {
+                fault_type_list.clear();
+                if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
+                    for (int i=0;i<element.asArrayElement().size();i++){
+                        fault_type_list.add(element.asArrayElement().get(i).asObjectElement());
+                    }
                 }
-                break;
             }
-            case R.id.search_button:{
-                pageIndex=1;
-                getTaskHistory();
-                buttonAnim(false);
-                break;
+            @Override
+            public void failure(DatastoreException ex, String resource) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtil.showToastLong(R.string.NoFaultType,context);
+                    }
+                });
             }
-        }
+        });
+    }
+    private void createTextData(){
+        for(int i=0;i<20;i++){
+        JsonObjectElement jsonObjectElement=new JsonObjectElement();
+        jsonObjectElement.set(Task.TASK_ID,"1234");
+        jsonObjectElement.set("FaultType","asdfasdfasdfasdfasd");
+        jsonObjectElement.set("summary_person","aaaa");
+        fault_summary_list.add(jsonObjectElement);}
     }
     private void buttonAnim(final boolean showChannelFilterView){
         if(showChannelFilterView){

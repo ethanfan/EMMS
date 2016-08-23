@@ -24,12 +24,20 @@ public class DataUtil {
         }
         return date;
     }
-    public static boolean isNumeric(String checkStr) {
+    public static boolean isInt(String checkStr) {
         try {
             Integer.parseInt(checkStr);
             return true; // Did not throw, must be a number
         } catch (NumberFormatException err) {
             return false; // Threw, So is not a number
+        }
+    }
+    public static boolean isFloat(String checkStr){
+        try {
+            Float.parseFloat(checkStr);
+            return true;
+        }catch (NumberFormatException e){
+            return false;
         }
     }
     public static boolean isNum(String checkStr){

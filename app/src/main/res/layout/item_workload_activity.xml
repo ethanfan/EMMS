@@ -130,7 +130,8 @@
             android:layout_alignTop="@+id/workload_tag"
             android:layout_toLeftOf="@+id/percent"
             android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"/>
+            android:layout_marginBottom="5dp"
+            android:hint="@string/pleaseInput"/>
 </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

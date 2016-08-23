@@ -311,7 +311,8 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                     JsonObjectElement json=new JsonObjectElement(t);
                     if(json.get(Data.SUCCESS)!=null&&json.get(Data.SUCCESS).valueAsBoolean()){
                 if(isExChangeOrder){
-                    setResult(1);
+                    //setResult(1);
+                    startActivity(new Intent(context,MainActivity.class));
                     Toast.makeText(InvitorActivity.this,R.string.exchangeOrderSuccess,Toast.LENGTH_LONG).show();
                 }else{
                 Toast.makeText(InvitorActivity.this,R.string.inviteSuccess,Toast.LENGTH_LONG).show();}

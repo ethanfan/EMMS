@@ -3,41 +3,23 @@ package com.emms.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.os.Parcelable;
-import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Base64;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
@@ -45,40 +27,19 @@ import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
-import com.emms.adapter.TaskAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
-import com.emms.schema.Task;
-import com.emms.ui.ChangeEquipmentDialog;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
-import com.emms.ui.ExpandGridView;
-import com.emms.ui.PopMenuTaskDetail;
-import com.emms.ui.ScrollViewWithListView;
-import com.emms.util.AnimateFirstDisplayListener;
-import com.emms.util.Bimp;
 import com.emms.util.DataUtil;
 import com.emms.util.FileUtils;
 import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by jaffer.deng on 2016/6/22.
@@ -247,7 +208,7 @@ private void initView(){
         });
         initDropSearchView(null, equipment_id.getmEditText(), context.getResources().
                         getString(R.string.work_num_dialog), Equipment.ORACLE_ID,
-                1, "获取数据失败");
+                1, "获取数据失败",equipment_id.getDropImage());
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -301,51 +262,60 @@ private void initView(){
 
     private void initDropSearchView(
             final EditText condition,EditText subEditText,
-            final String searchTitle,final String searchName,final int searTag ,final String tips){
+            final String searchTitle,final String searchName,final int searTag ,final String tips,ImageView imageView){
         subEditText.setOnClickListener(
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                ((Activity)context).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        searchDataLists.clear();
-                                        switch (searTag) {
-                                            case 1:{
-                                                searchDataLists.addAll(EquipmentList);
-                                                break;
-                                            }}
-                                            searchtag = searTag;
-                                            if (condition != null) {
-                                                if (!condition.getText().toString().equals("") && searchDataLists.size() > 0) {
-                                                    mDrawer_layout.openDrawer(Gravity.RIGHT);
-                                                    mResultAdapter.changeData(searchDataLists, searchName);
-                                                    menuSearchTitle.setText(searchTitle);
-                                                    menuSearchTitle.postInvalidate();
-                                                    mDrawer_layout.postInvalidate();
-
-                                                } else {
-                                                    Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
-                                                }
-                                            } else {
-                                                if (searchDataLists.size() > 0) {
-                                                    mDrawer_layout.openDrawer(Gravity.RIGHT);
-                                                    mResultAdapter.changeData(searchDataLists, searchName);
-                                                    menuSearchTitle.setText(searchTitle);
-                                                    menuSearchTitle.postInvalidate();
-                                                    mDrawer_layout.postInvalidate();
-
-                                                } else {
-                                                    Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
-                                                }
-                                            }
-
-
-
-                                    }
-                                });
+                                DropSearch(condition,
+                                        searchTitle,searchName,searTag ,tips);
                                 }
         });
-    }
+       imageView.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
 
+               DropSearch(condition,
+                       searchTitle,searchName,searTag ,tips);
+           }
+       });
+    }
+    private void DropSearch(final EditText condition,
+                            final String searchTitle,final String searchName,final int searTag ,final String tips){
+        ((Activity)context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                searchDataLists.clear();
+                switch (searTag) {
+                    case 1:{
+                        searchDataLists.addAll(EquipmentList);
+                        break;
+                    }}
+                searchtag = searTag;
+                if (condition != null) {
+                    if (!condition.getText().toString().equals("") && searchDataLists.size() > 0) {
+                        mDrawer_layout.openDrawer(Gravity.RIGHT);
+                        mResultAdapter.changeData(searchDataLists, searchName);
+                        menuSearchTitle.setText(searchTitle);
+                        menuSearchTitle.postInvalidate();
+                        mDrawer_layout.postInvalidate();
+
+                    } else {
+                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    if (searchDataLists.size() > 0) {
+                        mDrawer_layout.openDrawer(Gravity.RIGHT);
+                        mResultAdapter.changeData(searchDataLists, searchName);
+                        menuSearchTitle.setText(searchTitle);
+                        menuSearchTitle.postInvalidate();
+                        mDrawer_layout.postInvalidate();
+
+                    } else {
+                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+    }
 }

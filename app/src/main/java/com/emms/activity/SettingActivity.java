@@ -171,7 +171,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
         });
         initDropSearchView(null, Factory.getmEditText(), context.getResources().
                         getString(R.string.factoryTitle),"OrganiseName",
-                1, "获取数据失败");
+                1, "获取数据失败",Factory.getDropImage());
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -225,55 +225,64 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
 
     private void initDropSearchView(
             final EditText condition,EditText subEditText,
-            final String searchTitle,final String searchName,final int searTag ,final String tips){
+            final String searchTitle,final String searchName,final int searTag ,final String tips,ImageView imageView){
         subEditText.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ((Activity)context).runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                searchDataLists.clear();
-                                switch (searTag) {
-                                    case 1:{
-                                        searchDataLists.addAll(FactoryList);
-                                        break;
-                                    }}
-                                searchtag = searTag;
-                                if (condition != null) {
-                                    if (!condition.getText().toString().equals("") && searchDataLists.size() > 0) {
-                                        mDrawer_layout.openDrawer(Gravity.RIGHT);
-                                        mResultAdapter.changeData(searchDataLists, searchName);
-                                        menuSearchTitle.setText(searchTitle);
-                                        menuSearchTitle.postInvalidate();
-                                        mDrawer_layout.postInvalidate();
-
-                                    } else {
-                                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
-                                    }
-                                } else {
-                                    if (searchDataLists.size() > 0) {
-                                        mDrawer_layout.openDrawer(Gravity.RIGHT);
-                                        mResultAdapter.changeData(searchDataLists, searchName);
-                                        menuSearchTitle.setText(searchTitle);
-                                        menuSearchTitle.postInvalidate();
-                                        mDrawer_layout.postInvalidate();
-
-                                    } else {
-                                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-
-
-
-                            }
-                        });
+                        DropSearch(condition,
+                                searchTitle,searchName,searTag ,tips);
                     }
                 });
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DropSearch(condition,
+                        searchTitle,searchName,searTag ,tips);
+            }
+        });
     }
 
     @Override
     public void resolveNfcMessage(Intent intent) {
 
+    }
+    private void DropSearch(final EditText condition,
+                            final String searchTitle,final String searchName,final int searTag ,final String tips){
+        ((Activity)context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                searchDataLists.clear();
+                switch (searTag) {
+                    case 1:{
+                        searchDataLists.addAll(FactoryList);
+                        break;
+                    }}
+                searchtag = searTag;
+                if (condition != null) {
+                    if (!condition.getText().toString().equals("") && searchDataLists.size() > 0) {
+                        mDrawer_layout.openDrawer(Gravity.RIGHT);
+                        mResultAdapter.changeData(searchDataLists, searchName);
+                        menuSearchTitle.setText(searchTitle);
+                        menuSearchTitle.postInvalidate();
+                        mDrawer_layout.postInvalidate();
+
+                    } else {
+                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    if (searchDataLists.size() > 0) {
+                        mDrawer_layout.openDrawer(Gravity.RIGHT);
+                        mResultAdapter.changeData(searchDataLists, searchName);
+                        menuSearchTitle.setText(searchTitle);
+                        menuSearchTitle.postInvalidate();
+                        mDrawer_layout.postInvalidate();
+
+                    } else {
+                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
     }
 }

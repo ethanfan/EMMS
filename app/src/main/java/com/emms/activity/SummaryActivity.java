@@ -68,19 +68,26 @@ public class SummaryActivity extends NfcActivity{
     private ObjectElement TaskDetail;
     private boolean TaskComplete=false;
     private String TaskTrouble_ID="";
+    private String TaskClass=Task.REPAIR_TASK;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_summary);
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
         TaskComplete=getIntent().getBooleanExtra("TaskComplete",false);
+        if(getIntent().getStringExtra(Task.TASK_CLASS)!=null){
+        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);}
         getSummaryFromServer();
         initView();
         initSearchView();
     }
     public void initView(){
         //initTopToolbar
+        if(TaskClass.equals(Task.REPAIR_TASK)){
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.fault_summary);
+        }else {
+            ((TextView)findViewById(R.id.tv_title)).setText(R.string.task_summary);
+        }
         findViewById(R.id.btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -112,11 +119,11 @@ public class SummaryActivity extends NfcActivity{
                 @Override
                 public void onClick(View v) {
                     //待写
-
                     submitFaultSummaryToServer();
 
                 }
             });
+            ((Button)findViewById(R.id.nextStep)).setText(R.string.taskComplete);
         }
         findViewById(R.id.layout).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,7 +187,7 @@ public class SummaryActivity extends NfcActivity{
         getFaultType();
         initDropSearchView(null, type.getmEditText(), context.getResources().
                         getString(R.string.faultType), DataDictionary.DATA_NAME,
-                1, "获取数据失败");
+                1, "获取数据失败",type.getDropImage());
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -233,53 +240,24 @@ public class SummaryActivity extends NfcActivity{
 
     private void initDropSearchView(
             final EditText condition,EditText subEditText,
-            final String searchTitle,final String searchName,final int searTag ,final String tips){
+            final String searchTitle,final String searchName,final int searTag ,final String tips,final ImageView imageView){
         subEditText.
                 setOnClickListener(
                         new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                ((Activity)context).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        searchDataLists.clear();
-                                        switch (searTag){
-                                            case 1:
-                                               searchDataLists.addAll(typeList);
-                                                break;
-                                        }
-                                        searchtag = searTag;
-                                        if (condition != null) {
-                                            if (!condition.getText().toString().equals("") && searchDataLists.size() > 0) {
-                                                mDrawer_layout.openDrawer(Gravity.RIGHT);
-                                                mResultAdapter.changeData(searchDataLists, searchName);
-                                                menuSearchTitle.setText(searchTitle);
-                                                menuSearchTitle.postInvalidate();
-                                                mDrawer_layout.postInvalidate();
-
-                                            } else {
-                                                Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
-                                            }
-                                        } else {
-                                            if (searchDataLists.size() > 0) {
-                                                mDrawer_layout.openDrawer(Gravity.RIGHT);
-                                                mResultAdapter.changeData(searchDataLists, searchName);
-                                                menuSearchTitle.setText(searchTitle);
-                                                menuSearchTitle.postInvalidate();
-                                                mDrawer_layout.postInvalidate();
-
-                                            } else {
-                                                Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-
-                                    }
-                                });
-
+                                DropSearch(condition,
+                                searchTitle,searchName,searTag ,tips);
                             }
                         }
-
                 );
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DropSearch(condition,
+                        searchTitle,searchName,searTag ,tips);
+            }
+        });
     }
     private void submitFaultSummaryToServer(){
         showCustomDialog(R.string.submitData);
@@ -308,10 +286,11 @@ public class SummaryActivity extends NfcActivity{
                         dismissCustomDialog();
                         ToastUtil.showToastLong(R.string.submitSuccess,context);
                         if (TaskComplete) {
-                            Intent intent = new Intent(context, CommandActivity.class);
-                            intent.putExtra("TaskComplete", true);
-                            intent.putExtra("TaskDetail", TaskDetail.toString());
-                            startActivity(intent);
+//                            Intent intent = new Intent(context, CommandActivity.class);
+//                            intent.putExtra("TaskComplete", true);
+//                            intent.putExtra("TaskDetail", TaskDetail.toString());
+//                            startActivity(intent);
+                            TaskComplete();
                         }else{
                             finish();
                         }
@@ -406,5 +385,70 @@ public class SummaryActivity extends NfcActivity{
     @Override
     public void resolveNfcMessage(Intent intent) {
 
+    }
+    private void TaskComplete(){
+        HttpParams params=new HttpParams();
+        JsonObjectElement data=new JsonObjectElement();
+        data.set(Task.TASK_ID,DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
+        params.putJsonParams(data.toJson());
+        HttpUtils.post(this, "TaskFinish", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                if(t!=null){
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
+                            jsonObjectElement.get("Success").valueAsBoolean()){
+                        ToastUtil.showToastLong("任务完成",context);
+                        startActivity(new Intent(context,MainActivity.class));
+                    }else {
+                        ToastUtil.showToastLong("无法提交任务完成，请检查任务信息",context);
+                    }
+                }}
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.submitFail,context);
+            }
+        });
+    }
+    private void DropSearch(final EditText condition,
+               final String searchTitle,final String searchName,final int searTag ,final String tips){
+        ((Activity)context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                searchDataLists.clear();
+                switch (searTag){
+                    case 1:
+                        searchDataLists.addAll(typeList);
+                        break;
+                }
+                searchtag = searTag;
+                if (condition != null) {
+                    if (!condition.getText().toString().equals("") && searchDataLists.size() > 0) {
+                        mDrawer_layout.openDrawer(Gravity.RIGHT);
+                        mResultAdapter.changeData(searchDataLists, searchName);
+                        menuSearchTitle.setText(searchTitle);
+                        menuSearchTitle.postInvalidate();
+                        mDrawer_layout.postInvalidate();
+
+                    } else {
+                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    if (searchDataLists.size() > 0) {
+                        mDrawer_layout.openDrawer(Gravity.RIGHT);
+                        mResultAdapter.changeData(searchDataLists, searchName);
+                        menuSearchTitle.setText(searchTitle);
+                        menuSearchTitle.postInvalidate();
+                        mDrawer_layout.postInvalidate();
+
+                    } else {
+                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+        });
     }
 }
