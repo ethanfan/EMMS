@@ -4,7 +4,6 @@ import android.app.Application;
 
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.push.PushService;
-import com.emms.util.CrashHandler;
 import com.emms.util.LocaleUtils;
 import com.datastore_android_sdk.datastore.Datastore;
 import com.datastore_android_sdk.sqlite.SqliteStore;

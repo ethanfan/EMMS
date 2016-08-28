@@ -1,7 +1,6 @@
 package com.emms.activity;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,10 +33,16 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ArrayElement;
+import com.datastore_android_sdk.datastore.DataElement;
+import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
+import com.datastore_android_sdk.rest.JsonObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.TaskAdapter;
+import com.emms.adapter.commandAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
@@ -45,6 +50,7 @@ import com.emms.schema.Equipment;
 import com.emms.schema.Task;
 import com.emms.ui.ChangeEquipmentDialog;
 import com.emms.ui.ExpandGridView;
+import com.emms.ui.HorizontalListView;
 import com.emms.ui.PopMenuTaskDetail;
 import com.emms.ui.ScrollViewWithListView;
 import com.emms.util.AnimateFirstDisplayListener;
@@ -52,11 +58,6 @@ import com.emms.util.Bimp;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.FileUtils;
-import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rest.JsonArrayElement;
-import com.datastore_android_sdk.rest.JsonObjectElement;
-import com.datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.util.ListViewUtility;
 import com.emms.util.RootUtil;
 import com.emms.util.ToastUtil;
@@ -86,7 +87,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         TextView deviceCountTextView;
         TextView dealCountTextView;
     }
-
+    private TextView fault_type,fault_description,repair_status;
     private ViewHolder mHolder = new ViewHolder();
     private ImageView menuImageView;
     private ScrollViewWithListView mListview;
@@ -97,7 +98,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private ArrayList<ObjectElement> datas;
     private Context mContext;
     private PopMenuTaskDetail popMenuTaskDetail;
-    private ChangeEquipmentDialog changeEquipmentDialog;
+   // private ChangeEquipmentDialog changeEquipmentDialog;
     private String TaskDetail = null;//任务详细
     private String TaskClass=null;//任务类型
     private Long taskId = null;//任务ID
@@ -365,9 +366,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
+                             dialog.dismiss();
                     }
-                });
+                }).show();
                 return true;
             }
         });
@@ -385,6 +386,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
 
         findViewById(R.id.serchDeviceHistory).setOnClickListener(this);
+        //维修任务并且是已接单任务的情况下加载并显示故障总结
+        initViewWhenTaskClassIsRepairAndTaskStatusIsComplete();
 
     }
 
@@ -938,9 +941,27 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                     ToastUtil.showToastLong(R.string.CanNotChangeEquipmentStatus,mContext);
                                     return;
                                 }
-                                if(changeEquipmentDialog==null) {
-                                    changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.dialog_equipment_status, R.style.MyDialog,
-                                            RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id));
+
+                                //如果操作员未加入该设备，添加为处理中
+                                   if(TaskEquipment_OperatorID_Status.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))!=null){
+                                       if(!TaskEquipment_OperatorID_Status.get(
+                                            DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).containsKey(String.valueOf(getLoginInfo().getId()))){
+                                        postTaskOperatorEquipment(0,DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)));
+                                      return;
+                                       }
+                                    }else {
+                                       postTaskOperatorEquipment(0,DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)));
+                                   return;
+                                   }
+                                ////
+                                boolean isOneOperator=false;
+                                if(TaskEquipment_OperatorID_Status.get(
+                                        DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).size()==1){
+                                    isOneOperator=true;
+                                }
+                              //  if(changeEquipmentDialog==null) {
+                                ChangeEquipmentDialog changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.dialog_equipment_status, R.style.MyDialog,
+                                            RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id),isOneOperator);
                                     changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
                                             Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
                                    // changeEquipmentDialog.setMainPersonInChargeOperatorId(Main_person_in_charge_Operator_id.equals(String.valueOf(getLoginInfo().getId())));
@@ -965,26 +986,28 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                     EquipmentStatus=Integer.valueOf(Euqipment_ID_STATUS_map.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))));
                                     changeEquipmentDialog.setEquipemntStatus(EquipmentStatus);
                                     changeEquipmentDialog.show();
-                                }else {
-                                    changeEquipmentDialog.setDatas(String.valueOf(taskId),
-                                            objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
-                                            Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
-//                                    int status=-1;
-//                                    if(TaskEquipment_OperatorID_Status.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))!=null){
-//                                        if(TaskEquipment_OperatorID_Status.get(
-//                                                DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).containsKey(String.valueOf(getLoginInfo().getId()))){
-//                                            status=TaskEquipment_OperatorID_Status.get(
-//                                                    DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).get(String.valueOf(getLoginInfo().getId()));
-//                                        }
-//                                    }
-//                                    changeEquipmentDialog.setOperator_Status(status);
-                                    int EquipmentStatus=-1;
-                                    EquipmentStatus=Integer.valueOf(Euqipment_ID_STATUS_map.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))));
-                                    changeEquipmentDialog.setEquipemntStatus(EquipmentStatus);
-                               //     changeEquipmentDialog.setMainPersonInChargeOperatorId(Main_person_in_charge_Operator_id);
-                                    if(!changeEquipmentDialog.isShowing()){
-                                    changeEquipmentDialog.show();}
-                                }
+                              //  }
+//                                else {
+//                                    changeEquipmentDialog.setOneOperator(isOneOperator);
+//                                    changeEquipmentDialog.setDatas(String.valueOf(taskId),
+//                                            objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
+//                                            Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
+////                                    int status=-1;
+////                                    if(TaskEquipment_OperatorID_Status.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))!=null){
+////                                        if(TaskEquipment_OperatorID_Status.get(
+////                                                DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).containsKey(String.valueOf(getLoginInfo().getId()))){
+////                                            status=TaskEquipment_OperatorID_Status.get(
+////                                                    DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).get(String.valueOf(getLoginInfo().getId()));
+////                                        }
+////                                    }
+////                                    changeEquipmentDialog.setOperator_Status(status);
+//                                    int EquipmentStatus=-1;
+//                                    EquipmentStatus=Integer.valueOf(Euqipment_ID_STATUS_map.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))));
+//                                    changeEquipmentDialog.setEquipemntStatus(EquipmentStatus);
+//                               //     changeEquipmentDialog.setMainPersonInChargeOperatorId(Main_person_in_charge_Operator_id);
+//                                    if(!changeEquipmentDialog.isShowing()){
+//                                    changeEquipmentDialog.show();}
+//                                }
                             }
                         });
                     }
@@ -1154,5 +1177,222 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
         }
         }
+    }
+
+
+    private void postTaskOperatorEquipment(int status,String EquipmentId){
+        showCustomDialog(R.string.submitData);
+        HttpParams params=new HttpParams();
+        // JsonObjectElement TaskOperatorDataToSubmit=new JsonObjectElement();
+        //   TaskOperatorDataToSubmit.set("task_id",Integer.valueOf(TaskId));
+        //   TaskOperatorDataToSubmit.set("equipment_id",Integer.valueOf(EquipmentId));
+        //   TaskOperatorDataToSubmit.set("TaskEquipment_ID",Integer.valueOf(TaskEquipmentId));
+        //   TaskOperatorDataToSubmit.set("status",status);
+        //   params.putJsonParams(TaskOperatorDataToSubmit.toJson());
+        HttpUtils.post(this, "TaskOperatorStatus?task_id="+taskId+"&equipment_id="+EquipmentId+"&status="+status,
+                params, new HttpCallback() {
+                    @Override
+                    public void onSuccess(String t) {
+                        super.onSuccess(t);
+                        if(t!=null){
+                            JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                            if(jsonObjectElement.get("Success").valueAsBoolean()){
+                                getTaskEquipmentFromServerByTaskId();
+                                ToastUtil.showToastLong(R.string.SuccessToChangeStatus,mContext);
+                            }else {
+                                ToastUtil.showToastLong("不允许修改状态",mContext);
+                            }
+                        }
+                        dismissCustomDialog();
+                    }
+
+                    @Override
+                    public void onFailure(int errorNo, String strMsg) {
+                        super.onFailure(errorNo, strMsg);
+                        ToastUtil.showToastLong(R.string.failToChangeStatus,mContext);
+                        dismissCustomDialog();
+                    }
+                });
+    }
+    private void getSummaryFromServer(){
+        showCustomDialog(R.string.loadingData);
+        HttpParams httpParams=new HttpParams();
+        httpParams.put("task_id", String.valueOf(taskId));
+        HttpUtils.get(this, "TaskTroubleContent", httpParams, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null){
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    if(jsonObjectElement!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
+                        final ObjectElement faultData=jsonObjectElement.get("PageData").asArrayElement().get(0).asObjectElement();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                fault_type.setText(DataUtil.isDataElementNull(faultData.get("TroubleType")));
+                                fault_description.setText(DataUtil.isDataElementNull(faultData.get("TroubleDescribe")));
+                                repair_status.setText(DataUtil.isDataElementNull(faultData.get("MaintainDescribe")));
+                            }
+                        });
+                    }
+                    dismissCustomDialog();
+                }
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
+            }
+        });
+    }
+    private void initViewWhenTaskClassIsRepairAndTaskStatusIsComplete(){
+        if(TaskStatus==2){
+            findViewById(R.id.task_complete).setVisibility(View.VISIBLE);
+            if(TaskClass.equals(Task.REPAIR_TASK)){
+            findViewById(R.id.fault_summary).setVisibility(View.VISIBLE);
+            fault_type=(TextView)findViewById(R.id.fault_type);
+            fault_description=(TextView)findViewById(R.id.fault_description);
+            repair_status=(TextView)findViewById(R.id.repair_status);
+            getSummaryFromServer();
+            }
+            initWorkload();
+            initTaskCommand();
+    }
+    }
+    private TaskAdapter WorkloadAdapter;
+    private ArrayList<ObjectElement> workloadData=new ArrayList<>();
+    private void initWorkload(){
+        //workload_num
+        //workloadList
+        ListView workloadList=(ListView) findViewById(R.id.workloadList);
+        WorkloadAdapter=new TaskAdapter(workloadData) {
+            @Override
+            public View getCustomView(View convertView, int position, ViewGroup parent) {
+                TaskViewHolder holder;
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(mContext).inflate(R.layout.item_activity_taskdetail_workload, parent, false);
+                    holder = new TaskViewHolder();
+                    //显示6个内容，组别，报修人，状态，保修时间,开始时间，任务描述
+                    holder.tv_group = (TextView) convertView.findViewById(R.id.name);
+                    holder.warranty_person=(TextView)convertView.findViewById(R.id.workload_value);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (TaskViewHolder) convertView.getTag();
+                }
+                //待修改
+                holder.tv_group.setText(DataUtil.isDataElementNull(workloadData.get(position).get("OperatorName")));
+                holder.warranty_person.setText(String.valueOf((int)(Float.valueOf(DataUtil.isDataElementNull(workloadData.get(position).get("Coefficient"))) * 100))+"%");
+                return convertView;
+            }
+        };
+        workloadList.setAdapter(WorkloadAdapter);
+        getWorkLoadFromServer();
+    }
+    private void getWorkLoadFromServer(){
+        showCustomDialog(R.string.loadingData);
+        HttpParams httpParams=new HttpParams();
+        httpParams.put("task_id", String.valueOf(taskId));
+        HttpUtils.get(this, "TaskWorkload", httpParams, new HttpCallback() {
+            @Override
+            public void onSuccess(final String t) {
+                super.onSuccess(t);
+                if(t!=null){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                            SetViewData(jsonObjectElement);
+                        }
+                    });
+                }
+                dismissCustomDialog();
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
+            }
+        });
+    }
+    private void SetViewData(ObjectElement ViewData){
+        ((TextView)findViewById(R.id.workload_num)).setText(DataUtil.isDataElementNull(ViewData.get("Workload"))+getResources().getString(R.string.hours));
+        if(ViewData.get("TaskOperator")!=null&&ViewData.get("TaskOperator").asArrayElement().size()>0) {
+            for (int i = 0; i < ViewData.get("TaskOperator").asArrayElement().size(); i++) {
+                workloadData.add(ViewData.get("TaskOperator").asArrayElement().get(i).asObjectElement());
+            }
+            WorkloadAdapter.notifyDataSetChanged();
+        }
+    }
+    private ArrayList<Integer> response_speed_list=new ArrayList<>();
+    private ArrayList<Integer> service_attitude_list=new ArrayList<>();
+    private ArrayList<Integer> repair_speed_list=new ArrayList<>();
+    private commandAdapter response_speed_adapter,service_attitude_adapter,repair_speed_adapter;
+    private void initTaskCommand(){
+        //response_speed
+        //service_attitude
+        //repair_speed
+        HorizontalListView response_speed=(HorizontalListView)findViewById(R.id.response_speed);
+        HorizontalListView service_attitude=(HorizontalListView)findViewById(R.id.service_attitude);
+        HorizontalListView repair_speed=(HorizontalListView)findViewById(R.id.repair_speed);
+        for(int i=0;i<5;i++){
+            response_speed_list.add(0);
+            service_attitude_list.add(0);
+            repair_speed_list.add(0);
+        }
+         response_speed_adapter=new commandAdapter(this,response_speed_list);
+        response_speed.setAdapter(response_speed_adapter);
+
+         service_attitude_adapter=new commandAdapter(this,service_attitude_list);
+        service_attitude.setAdapter(service_attitude_adapter);
+
+         repair_speed_adapter=new commandAdapter(this,repair_speed_list);
+        repair_speed.setAdapter(repair_speed_adapter);
+        getTaskCommandFromServer();
+    }
+    private void getTaskCommandFromServer(){
+        HttpParams params=new HttpParams();
+        params.put("task_id", String.valueOf(taskId));
+        HttpUtils.get(this, "TaskEvaluationContent", params, new HttpCallback() {
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                Toast toast=Toast.makeText(mContext,getResources().getString(R.string.getCommandFail),Toast.LENGTH_LONG);
+                toast.setGravity(Gravity.CENTER,0,0);
+                toast.show();
+            }
+
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null){
+                    JsonObjectElement CommandData=new JsonObjectElement(t);
+                    if(CommandData.get("PageData")!=null){ if(CommandData.get("PageData").asArrayElement().size()>0){
+                            ObjectElement objectElement=CommandData.get("PageData").asArrayElement().get(0).asObjectElement();
+                            setCommandData(objectElement.get("RespondSpeed").valueAsInt(),"response_speed",response_speed_list,response_speed_adapter);
+                            setCommandData(objectElement.get("ServiceAttitude").valueAsInt(),"service_attitude",service_attitude_list,service_attitude_adapter);
+                            setCommandData(objectElement.get("MaintainSpeed").valueAsInt(),"repair_speed",repair_speed_list,repair_speed_adapter);
+                        }
+                    }
+                }
+            }
+        });
+    }
+    public void setCommandData(int num,String key,final ArrayList<Integer> numList,final commandAdapter cAdapter){
+        for(int i=0;i<5;i++){
+            if(i<num){
+                numList.set(i,1);
+            }else {
+                numList.set(i,0);
+            }
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                cAdapter.setDatas(numList);
+                cAdapter.notifyDataSetChanged();
+            }
+        });
     }
 }

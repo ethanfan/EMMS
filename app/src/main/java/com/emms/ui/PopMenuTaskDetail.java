@@ -26,6 +26,7 @@ import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
 import com.emms.activity.CommandActivity;
+import com.emms.activity.CreateTaskActivity;
 import com.emms.activity.InvitorActivity;
 import com.emms.activity.SubTaskManageActivity;
 import com.emms.activity.SummaryActivity;
@@ -109,17 +110,19 @@ public abstract class PopMenuTaskDetail {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if (position == 0) {
-					FaultSummary();
+				if(position==0){
+				   CreateTask();
 				}else if (position == 1) {
+					FaultSummary();
+				}else if (position == 2) {
 					WorkloadInput();
-				}else if(position==2){
-					SubTaskManage();
 				}else if(position==3){
-					InviteHelp();
+					SubTaskManage();
 				}else if(position==4){
-					ExChangeOrder();
+					InviteHelp();
 				}else if(position==5){
+					ExChangeOrder();
+				}else if(position==6){
 					TaskComplete();
 				}
 				popMenuTaskDetail.dismiss();
@@ -212,18 +215,19 @@ public abstract class PopMenuTaskDetail {
 
 			holder.groupItem.setText(itemList.get(position));
 			Drawable img  = context.getResources().getDrawable(R.mipmap.more_input);
-
-			if (0 ==position){
+			if (0 ==position) {
+				img = context.getResources().getDrawable(R.mipmap.create);
+			}else if (1 ==position){
 				img =context.getResources().getDrawable(R.mipmap.failure_summary);
-			}else if (1 == position){
-				img =context.getResources().getDrawable(R.mipmap.more_input);
 			}else if (2 == position){
-				img =context.getResources().getDrawable(R.mipmap.sub_task_management);
+				img =context.getResources().getDrawable(R.mipmap.more_input);
 			}else if (3 == position){
-				img =context.getResources().getDrawable(R.mipmap.more_invitation);
+				img =context.getResources().getDrawable(R.mipmap.sub_task_management);
 			}else if (4 == position){
-				img =context.getResources().getDrawable(R.mipmap.more_single_turn);
+				img =context.getResources().getDrawable(R.mipmap.more_invitation);
 			}else if (5 == position){
+				img =context.getResources().getDrawable(R.mipmap.more_single_turn);
+			}else if (6 == position){
 				img =context.getResources().getDrawable(R.mipmap.more_finish);
 			}
 			// 调用setCompoundDrawables时，必须调用Drawable.setBounds()方法,否则图片不显示
@@ -314,6 +318,9 @@ public abstract class PopMenuTaskDetail {
 		intent.putExtra("TaskComplete",true);
 		intent.putExtra(Task.TASK_CLASS,TaskClass);
 		context.startActivity(intent);
+	}
+	private void CreateTask(){
+		context.startActivity(new Intent(context, CreateTaskActivity.class));
 	}
 
 //	public void setDialogOnSubmit(dialogOnSubmitInterface dialogOnSubmit) {

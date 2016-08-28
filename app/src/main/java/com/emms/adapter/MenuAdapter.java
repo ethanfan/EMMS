@@ -53,13 +53,11 @@ public class MenuAdapter extends BaseAdapter {
 
             holder.groupItem = (TextView) convertView
                     .findViewById(R.id.textView);
-
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
         holder.groupItem.setText(mShowDataList.get(position));
-
         return convertView;
     }
     private final class ViewHolder {

@@ -321,6 +321,42 @@
                             </com.emms.ui.DropEditText>
                         </RelativeLayout>
                     </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="1.6"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="end"
+                        android:textColor="@color/text_color"
+                        android:textSize="18sp" />
+
+                    <RelativeLayout
+                        android:id="@+id/task_description_layout"
+                        android:layout_width="0dp"
+                        android:layout_height="130dp"
+                        android:layout_weight="3"
+                        android:visibility="gone"
+                        android:background="@color/white"
+                        >
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="40dip"
+                            android:textColor="@color/text_color"
+                            android:hint="@string/task_description_hint"
+                            android:id="@+id/task_description"
+                            >
+                        </EditText>
+                    </RelativeLayout>
+                    </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -334,7 +370,7 @@
                             android:layout_height="wrap_content"
                             android:gravity="end"
                             android:layout_weight="1.6"
-                            android:text="@string/standardWorkload"
+                            android:text="@string/work_num"
                             android:textSize="18sp"
                             android:textColor="@color/text_color"
                             android:layout_gravity="center_vertical"
@@ -346,18 +382,21 @@
                             android:layout_weight="3"
                             android:background="@color/white"
                             android:layout_below="@+id/simple_description">
-                    <EditText
+                    <com.emms.ui.DropEditText
+                        android:layout_height="wrap_content"
                         android:id="@+id/standard_workload"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
                         android:background="@color/white"
                         android:gravity="center_vertical"
-                        android:hint="@string/pleaseInput"
-                        android:paddingLeft="5dp"
+                        drop:drawableRight="@mipmap/drop_down"
+                        drop:dropMode="flow_parent"
+                        drop:hint="@string/select"
+                        drop:hintColor="@color/hint_color"
                         android:textColor="@color/text_color"
                         android:textColorHint="@color/hint_color"
                         android:textSize="18sp"/>
                         </RelativeLayout>
+
                     </LinearLayout>
                     <Button
                         android:id="@+id/sure"

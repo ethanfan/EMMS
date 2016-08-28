@@ -294,7 +294,7 @@ public class CommandActivity extends NfcActivity  {
                 JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                 if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
                         jsonObjectElement.get("Success").valueAsBoolean()){
-                ToastUtil.showToastLong("任务完成",context);
+                ToastUtil.showToastLong(R.string.taskComplete,context);
                     if(nfcDialog!=null&&nfcDialog.isShowing()){
                         nfcDialog.dismiss();
                     }

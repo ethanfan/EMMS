@@ -134,7 +134,6 @@ public class PopMenu {
 
 				holder.groupItem = (TextView) convertView
 						.findViewById(R.id.textView);
-
 			} else {
 				holder = (ViewHolder) convertView.getTag();
 			}

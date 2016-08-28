@@ -182,17 +182,17 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
         sub_task_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog,
-                        datas.get(position-1),EquipmentList);
-                customDialog.setDialogOnSubmit(new dialogOnSubmitInterface() {
-                    @Override
-                    public void onsubmit() {
-                        pageIndex=1;
-                        getSubTaskDataFromServer();
-                    }
-                });
-                customDialog.setTaskId(taskId);
-                customDialog.show();
+//                CustomDialog customDialog=new CustomDialog(SubTaskManageActivity.this,R.layout.add_sub_task_dialog,R.style.MyDialog,
+//                        datas.get(position-1),EquipmentList);
+//                customDialog.setDialogOnSubmit(new dialogOnSubmitInterface() {
+//                    @Override
+//                    public void onsubmit() {
+//                        pageIndex=1;
+//                        getSubTaskDataFromServer();
+//                    }
+//                });
+//                customDialog.setTaskId(taskId);
+//                customDialog.show();
             }
         });
         getSubTaskDataFromServer();

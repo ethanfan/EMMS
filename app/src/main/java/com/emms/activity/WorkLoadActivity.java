@@ -214,6 +214,9 @@ public class WorkLoadActivity extends NfcActivity{
                 for (int i = 0; i < ViewData.get("TaskOperator").asArrayElement().size(); i++) {
                     datas.add(ViewData.get("TaskOperator").asArrayElement().get(i).asObjectElement());
                 }
+            if(datas.size()==1){
+                datas.get(0).set("Coefficient",1.0);
+            }
             workloadAdapter.notifyDataSetChanged();
        /*     workloadAdapter.unregisterDataSetObserver(new DataSetObserver() {
                 @Override
@@ -317,7 +320,7 @@ public class WorkLoadActivity extends NfcActivity{
                     if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
                             jsonObjectElement.get("Success").valueAsBoolean()){
                         ToastUtil.showToastLong("任务完成",context);
-                        startActivity(new Intent(context,MainActivity.class));
+                        startActivity(new Intent(context,CusActivity.class));
                     }else {
                         ToastUtil.showToastLong("无法提交任务完成，请检查任务信息",context);
                     }

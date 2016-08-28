@@ -95,12 +95,13 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         Equipment_OperatorID_Status = equipment_OperatorID_Status;
     }*/
    // private HashMap<String,Integer> Equipment_OperatorID_Status=new HashMap<String, Integer>();
-    public ChangeEquipmentDialog(Context context, int layout, int style,boolean tag) {
+    public ChangeEquipmentDialog(Context context, int layout, int style,boolean tag,boolean tag2) {
         super(context, style);
         this.context = context;
         setContentView(layout);
         hud=KProgressHUD.create(context);
         is_Main_person_in_charge_operator_id=tag;
+        isOneOperator=tag2;
         //if(Equipment_OperatorID_Status.get())
       //  Collections.addAll(status,context.getResources().getStringArray(R.array.equip_status));
         initMap();
@@ -457,7 +458,9 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             json.set("Type","EquipmentOperatorStatus");
             Equipment_Operator_Status_List.add(json);
         }
-        if(is_Main_person_in_charge_operator_id){
+
+
+        if(is_Main_person_in_charge_operator_id&&!isOneOperator){
 //            JsonObjectElement jsonObjectElement=new JsonObjectElement();
 //            jsonObjectElement.set("Status",context.getResources().getString(R.string.deleteEquipment));
 //            jsonObjectElement.set("Type","delete");
@@ -477,15 +480,15 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 
             Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.start), 0);
             Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.pause), 1);
-            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.quit), 2);
-            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.material_requisition), 3);
-            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.wait_material), 4);
+//            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.quit), 2);
+//            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.material_requisition), 3);
+//            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.wait_material), 4);
             Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 5);
 
 
             Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.start), 1);
             Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.pause), 2);
-            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.wait_material), 3);
+//            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.wait_material), 3);
             Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 4);
 
     }
@@ -569,4 +572,11 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             }
         });
     }
+
+    public void setOneOperator(boolean oneOperator) {
+        isOneOperator = oneOperator;
+    }
+
+    private boolean isOneOperator=false;
+
 }

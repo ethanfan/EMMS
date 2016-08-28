@@ -9,6 +9,11 @@ import java.util.regex.Pattern;
  * Created by Administrator on 2016/7/17.
  */
 public class DataUtil {
+    /**
+     *  check whether the DataElement is null
+     * @param s the DataElement to be checked
+     * @return "" when DataElement is null Or StringValue when it is not null
+     */
     public static String isDataElementNull(DataElement s){
         if(s==null){
             return "";
@@ -24,6 +29,12 @@ public class DataUtil {
         }
         return date;
     }
+
+    /**
+     * Check the charsequence whether is Integer
+     * @param checkStr the charsequence to be checked
+     * @return true when the charsequence is Integer
+     */
     public static boolean isInt(String checkStr) {
         try {
             Integer.parseInt(checkStr);
@@ -32,6 +43,12 @@ public class DataUtil {
             return false; // Threw, So is not a number
         }
     }
+
+    /**
+     * Check the charsequence whether is Float
+     * @param checkStr the charsequence to be checked
+     * @return true when the charsequence is Float
+     */
     public static boolean isFloat(String checkStr){
         try {
             Float.parseFloat(checkStr);
@@ -40,6 +57,12 @@ public class DataUtil {
             return false;
         }
     }
+
+    /**
+     * Check the charsequence whether is Num with pattern[0-9.]*
+     * @param checkStr the charsequence to be checked
+     * @return true when the charsequence is Num
+     */
     public static boolean isNum(String checkStr){
         try {
             //Float.parseFloat(checkStr);

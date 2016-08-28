@@ -128,51 +128,13 @@
             android:layout_toRightOf="@+id/id_Warranty_time_description"
             android:textSize="17sp"/>
         <TextView
-            android:id="@+id/tv_task_class_tag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="@string/task_t"
-            android:textColor="@color/text_color"
-            android:layout_below="@+id/id_Warranty_time_description"
-            android:layout_alignParentLeft="true"
-            android:textSize="17sp"/>
-
-        <TextView
-            android:id="@+id/tv_task_class"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/esquel_red"
-            android:layout_alignTop="@+id/tv_task_class_tag"
-            android:layout_toRightOf="@+id/tv_task_class_tag"
-            android:textSize="17sp"/>
-        <TextView
-            android:id="@+id/tv_task_state_tag"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="@string/task_state"
-            android:textColor="@color/text_color"
-            android:layout_below="@+id/tv_task_class"
-            android:layout_alignParentLeft="true"
-            android:textSize="17sp"/>
-
-        <TextView
-            android:id="@+id/tv_task_state"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/order_color"
-            android:layout_alignTop="@+id/tv_task_state_tag"
-            android:layout_toRightOf="@+id/tv_task_state_tag"
-            android:textSize="17sp"/>
-        <TextView
             android:id="@+id/id_start_time_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text="@string/start_time"
             android:textColor="@color/text_color"
-            android:layout_below="@+id/tv_task_state_tag"
+            android:layout_below="@+id/id_Warranty_time_description"
             android:layout_alignParentLeft="true"
             android:textSize="17sp"/>
 
@@ -225,5 +187,44 @@
             android:layout_alignTop="@+id/id_task_description"
             android:layout_toRightOf="@+id/id_task_description"
             android:textSize="17sp"/>
+        <TextView
+            android:id="@+id/standard_workload_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/standardWorkTime"
+            android:textColor="@color/text_color"
+            android:layout_below="@+id/tv_task_describe"
+            android:layout_alignParentLeft="true"
+            android:textSize="17sp"/>
+
+        <TextView
+            android:id="@+id/standard_workload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="15dp"
+            android:textColor="@color/text_color"
+            android:layout_alignTop="@+id/standard_workload_tag"
+            android:layout_toRightOf="@+id/standard_workload_tag"
+            android:textSize="17sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/standard_workload"
+            android:layout_marginTop="5dp"
+            android:layout_alignLeft="@+id/standard_workload_tag"
+            android:text="@string/verifyWorkTime"
+            android:id="@+id/verifyWorkTime_tag"
+            android:textSize="17sp"
+            android:textColor="@color/text_color"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/standard_workload"
+            android:layout_toRightOf="@+id/verifyWorkTime_tag"
+            android:layout_alignTop="@+id/verifyWorkTime_tag"
+            android:id="@+id/verifyWorkTime"
+            android:textSize="17sp"
+            android:textColor="@color/text_color"/>
     </RelativeLayout>
 </RelativeLayout>

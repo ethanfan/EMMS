@@ -33,9 +33,7 @@ import com.emms.adapter.ResultListAdapter;
 import com.emms.adapter.TaskAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
-import com.emms.schema.Equipment;
 import com.emms.schema.Task;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
@@ -47,9 +45,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-
-import java.security.spec.RSAOtherPrimeInfo;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Administrator on 2016/8/4.
@@ -57,9 +54,9 @@ import java.util.ArrayList;
 public class TaskHistory extends NfcActivity implements View.OnClickListener{
     private PullToRefreshListView listView;
     private TaskAdapter adapter;
-    private ArrayList<ObjectElement> data=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> data=new ArrayList<>();
     private Context context=this;
-    private String TaskClass;
+    private String TaskClass=Task.REPAIR_TASK;
     private static int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
@@ -75,16 +72,18 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
     private int  searchtag =0;
     private CustomDrawerLayout mDrawer_layout;
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
-    private ArrayList<ObjectElement> taskClassList=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> taskClassList=new ArrayList<>();
     private ArrayList<ObjectElement> taskStatusList=new ArrayList<>();
     private ArrayList<ObjectElement> timeList=new ArrayList<>();
     private DropEditText task_class,task_status,time;
+    private HashMap<String,String> map=new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_history);
-        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
+       // TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
+        initMap();
         initView();
         initData();
         initSearchView();
@@ -116,18 +115,22 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                     holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
                     holder.tv_end_time= (TextView) convertView.findViewById(R.id.tv_end_time_process);
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
+                    holder.tv_device_name=(TextView)convertView.findViewById(R.id.tv_task_class);
                     convertView.setTag(holder);
                 }else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
               //  holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get("Organise_ID")));
-                holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get("Organise")));
+                holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT)));
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(data.get(position).get("Status")));
                 holder.tv_repair_time.setText(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT_TIME)));
                 holder.tv_start_time.setText(DataUtil.isDataElementNull(data.get(position).get(Task.START_TIME)));
                 holder.tv_end_time.setText(DataUtil.isDataElementNull(data.get(position).get(Task.FINISH_TIME)));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_DESCRIPTION)));
+                if(map.get(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_CLASS)))!=null) {
+                    holder.tv_device_name.setText(map.get(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_CLASS))));
+                }
                 return convertView;
             }
         };
@@ -136,7 +139,12 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                    Intent intent=new Intent(context,TaskDetailsActivity.class);
+                    intent.putExtra("TaskDetail",data.get(position-1).asObjectElement().toString());
+                    intent.putExtra(Task.TASK_ID,DataUtil.isDataElementNull(data.get(position-1).get(Task.TASK_ID)));
+                    intent.putExtra(Task.TASK_CLASS,DataUtil.isDataElementNull(data.get(position-1).get(Task.TASK_CLASS)));
+                    intent.putExtra("TaskStatus",2);
+                startActivity(intent);
             }
         });
         listView.setMode(PullToRefreshListView.Mode.BOTH);
@@ -180,6 +188,7 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
         showCustomDialog(R.string.loadingData);
         HttpParams params = new HttpParams();
         params.put("task_class", TaskClass);
+        params.put("dateLength",100);
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
         HttpUtils.get(this, "TaskHistoryList", params, new HttpCallback() {
@@ -188,7 +197,6 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                 super.onSuccess(t);
                 if(t!=null){
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement!=null){
                     if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
                         RecCount = jsonObjectElement.get("RecCount").valueAsInt();
                         if (pageIndex == 1) {
@@ -200,7 +208,7 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                         }
                         adapter.notifyDataSetChanged();
                     }
-                }}
+                }
                 dismissCustomDialog();
             }
             @Override
@@ -240,6 +248,7 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                             switch (searchtag) {
                                 case 1:{
                                     task_class.getmEditText().setText(searchResult);
+                                    TaskClass=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(DataDictionary.DATA_CODE));
                                     break;}
 
                                 case 2:{
@@ -541,5 +550,11 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
         }
 
         //findViewById(R.id.btn_menu).clearAnimation();
+    }
+    private void initMap(){
+        map.put(Task.REPAIR_TASK,getResources().getString(R.string.repair));
+        map.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintenance));
+        map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car));
+        map.put(Task.OTHER_TASK,getResources().getString(R.string.other));
     }
 }

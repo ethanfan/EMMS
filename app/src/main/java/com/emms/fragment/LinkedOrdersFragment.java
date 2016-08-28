@@ -48,7 +48,7 @@ public class LinkedOrdersFragment extends BaseFragment{
     private ArrayList<ObjectElement> data=new ArrayList<ObjectElement>();
     private Handler handler=new Handler();
     private String TaskClass;
-    private static int PAGE_SIZE=10;
+    private  int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
     @Nullable
@@ -131,6 +131,7 @@ public class LinkedOrdersFragment extends BaseFragment{
                 Intent intent=new Intent(mContext,TaskDetailsActivity.class);
                 intent.putExtra(Task.TASK_ID,data.get(position-1).get(Task.TASK_ID).valueAsString());
                 intent.putExtra("TaskDetail",data.get(position-1).asObjectElement().toString());
+                intent.putExtra("TaskStatus",2);
                 intent.putExtra(Task.TASK_CLASS,TaskClass);
                 startActivity(intent);
             }

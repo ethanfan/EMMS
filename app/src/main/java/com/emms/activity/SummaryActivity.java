@@ -399,7 +399,7 @@ public class SummaryActivity extends NfcActivity{
                     if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
                             jsonObjectElement.get("Success").valueAsBoolean()){
                         ToastUtil.showToastLong("任务完成",context);
-                        startActivity(new Intent(context,MainActivity.class));
+                        startActivity(new Intent(context,CusActivity.class));
                     }else {
                         ToastUtil.showToastLong("无法提交任务完成，请检查任务信息",context);
                     }

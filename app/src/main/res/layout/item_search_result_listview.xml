@@ -13,6 +13,7 @@
         android:layout_marginLeft="16dp"
         android:gravity="center_vertical"
         android:textSize="16sp"
+        android:singleLine="true"
         android:textColor="@color/text_color"
         tools:ignore="RtlHardcoded" />
     <View

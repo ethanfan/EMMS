@@ -2,7 +2,6 @@ package com.emms.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -26,16 +25,16 @@ import android.widget.Toast;
 
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
-import com.datastore_android_sdk.datastore.Build;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.adapter.TaskAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
-import com.emms.schema.Data;
+import com.emms.httputils.HttpUtils;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
 import com.emms.schema.Task;
@@ -76,7 +75,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
     private int  searchtag =0;
     private CustomDrawerLayout mDrawer_layout;
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
-    private ArrayList<ObjectElement> EquipmentList=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> EquipmentList=new ArrayList<>();
     private ArrayList<ObjectElement> task_description_list=new ArrayList<>();
     private ArrayList<ObjectElement> fault_type_list=new ArrayList<>();
     private ArrayList<ObjectElement> fault_summary_list=new ArrayList<>();
@@ -88,7 +87,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
         Equipment_ID=getIntent().getStringExtra(Equipment.EQUIPMENT_ID);
         Task_Description=getIntent().getStringExtra(Task.TASK_DESCRIPTION);
         EquipmentName=getIntent().getStringExtra(Equipment.EQUIPMENT_NAME);
-        createTextData();
+        //createTextData();
         initView();
         if(Equipment_ID!=null || EquipmentName!=null || Task_Description!=null){
         getEquipmentHistoryFromServer();
@@ -135,10 +134,18 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                 }, 0);
             }
         });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent=new Intent(context,EquipmentFaultSummaryActivity.class);
+                intent.putExtra("FaultDetail",fault_summary_list.get(position-1).asObjectElement().toString());
+                startActivity(intent);
+            }
+        });
         findViewById(R.id.filter).setOnClickListener(this);
         findViewById(R.id.filter).setVisibility(View.VISIBLE);
         findViewById(R.id.search_button).setOnClickListener(this);
-        listView.setAdapter(new TaskAdapter(fault_summary_list) {
+        adapter=new TaskAdapter(fault_summary_list) {
             @Override
             public View getCustomView(View convertView, int position, ViewGroup parent) {
                 TaskViewHolder holder;
@@ -155,14 +162,16 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                 }
                 //待修改
                holder.tv_creater.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get(Task.TASK_ID)));
-                holder.tv_task_describe.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("FaultType")));
-                holder.warranty_person.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("summary_person")));
+                holder.tv_task_describe.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("TroubleType")));
+                holder.warranty_person.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("Name")));
                 holder.tv_task_state.setText(String.valueOf(position+1));
                 return convertView;
             }
-        });
+        };
+        listView.setAdapter(adapter);
     }
     private void getEquipmentHistoryFromServer(){
+        showCustomDialog(R.string.loadingData);
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
                 ToastUtil.showToastLong(R.string.noMoreData,context);
@@ -176,20 +185,61 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                 Task_Description=task_description.getText();
             }
         }
-        if(EquipmentName.equals("")){
-            ToastUtil.showToastLong(R.string.pleaseSelectEquipmentName,context);
-            return;
-        }
-        if(Task_Description.equals("")){
-            ToastUtil.showToastLong(R.string.pleaseSelectTaskDescription,context);
-            return;
-        }
+//        if(EquipmentName.equals("")){
+//            ToastUtil.showToastLong(R.string.pleaseSelectEquipmentName,context);
+//            return;
+//        }
+//        if(Task_Description.equals("")){
+//            ToastUtil.showToastLong(R.string.pleaseSelectTaskDescription,context);
+//            return;
+//        }
 
         HttpParams params=new HttpParams();
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
-        params.put(Equipment.EQUIPMENT_NAME,EquipmentName);
-        params.put(Task.TASK_DESCRIPTION,Task_Description);
+//        params.put(Equipment.EQUIPMENT_NAME,EquipmentName);
+//        params.put(Task.TASK_DESCRIPTION,Task_Description);
+        HttpUtils.get(this, "TaskEquipmentHistoryList", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null){
+                    JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                    // int RecCount=jsonObjectElement.get("RecCount").valueAsInt();
+                    //  if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()==0){
+                    //提示没有处理中的任务
+                    //  }
+                    if(jsonObjectElement.get("PageData")!=null
+                            &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
+                        RecCount = jsonObjectElement.get("RecCount").valueAsInt();
+                        if (pageIndex == 1) {
+                            fault_summary_list.clear();
+                        }
+                        pageIndex++;
+                        for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
+                            fault_summary_list.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
+                        }
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.setDatas(fault_summary_list);
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                        //      setData(datas);
+                    }
+
+                }
+                dismissCustomDialog();
+                }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.loadingFail,context);
+                dismissCustomDialog();
+            }
+        });
     }
 
     @Override
@@ -249,9 +299,9 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                             switch (searchtag) {
                                 case 1:{
                                     equipment_name.getmEditText().setText(searchResult);
+                                    EquipmentName=searchResult;
                                     getTaskDecriptionFromDataBaseByEquipmentName(DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(Equipment.EQUIPMENT_CLASS)));
                                     break;}
-
                                 case 2:{
                                     task_description.getmEditText().setText(searchResult);
                                     break;

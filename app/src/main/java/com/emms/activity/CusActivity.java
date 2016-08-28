@@ -119,6 +119,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             ModelList.add(jsonObjectElement);
         }
     }
+    //个性化开发，根据服务器返回的角色模块ID进行个性化配置
     private JsonObjectElement ModelMatchingRule(JsonObjectElement obj){
          int model_id=obj.get("model_ID").valueAsInt();
         String packageName="com.emms.activity.";
@@ -175,7 +176,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             case 8:{//workloadverify
                 obj.set("model_image",R.mipmap.mainactivity_workload_verify);
                 obj.set("model_name",R.string.workloadVerify);
-               // obj.set("Class",TaskListActivity.class.toString());
+                obj.set("Class",packageName+"WorkloadVerifyActivity");
                 break;
             }
             case 9:{//otherTask
@@ -195,7 +196,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         super.onRestart();
         getTaskCountFromServer();
     }
-
+    //获取任务数量
     private void getTaskCountFromServer(){
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
@@ -266,6 +267,10 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             });
         }
     }
+
+    /**
+     * When the User Logout ,clear all the User Info from SharePreference except Account
+     */
     private void logout(){
         SharedPreferenceManager.setPassWord(CusActivity.this,null);
         SharedPreferenceManager.setCookie(CusActivity.this,null);

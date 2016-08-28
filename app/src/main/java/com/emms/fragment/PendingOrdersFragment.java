@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,31 +16,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.datastore_android_sdk.rest.JsonObjectElement;
-import com.datastore_android_sdk.rxvolley.RxVolley;
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
-import com.emms.bean.TaskBean;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Maintain;
 import com.emms.schema.Task;
+import com.emms.ui.CancelTaskDialog;
+import com.emms.ui.TaskCancelListener;
 import com.emms.util.DataUtil;
-import com.emms.util.LongToDate;
-import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 
-import org.restlet.engine.header.ContentType;
-
-import java.security.spec.RSAOtherPrimeInfo;
 import java.util.ArrayList;
 
 /**
@@ -52,11 +41,11 @@ public class PendingOrdersFragment extends BaseFragment{
 
     private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
-    private ArrayList<ObjectElement> datas;
+    private ArrayList<ObjectElement> datas=new ArrayList<>();
     private Context mContext;
     private Handler handler=new Handler();
     private String TaskClass;
-    private static int PAGE_SIZE=10;
+    private  int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
     private int removeNum=0;
@@ -101,7 +90,6 @@ public class PendingOrdersFragment extends BaseFragment{
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         TaskClass=this.getArguments().getString(Task.TASK_CLASS);
-        datas =new ArrayList<ObjectElement>();
         taskAdapter = new TaskAdapter(datas) {
             @Override
             public View getCustomView(View convertView, final int position, ViewGroup parent) {
@@ -114,6 +102,7 @@ public class PendingOrdersFragment extends BaseFragment{
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.Task_description);
                     holder.tv_task_state = (TextView) convertView.findViewById(R.id.Task_status);
                     holder.tv_create_time = (TextView) convertView.findViewById(R.id.tv_create_time_order);
+                    holder.tv_device_name = (TextView) convertView.findViewById(R.id.Task_Equipment);
                     holder.acceptTaskButton=(Button)convertView.findViewById(R.id.btn_order);
                     convertView.setTag(holder);
                 }else {
@@ -124,6 +113,7 @@ public class PendingOrdersFragment extends BaseFragment{
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
                 holder.tv_task_state.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS))));
                 holder.tv_create_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
+                holder.tv_device_name.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("EquipmentName"))));
                 holder.acceptTaskButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -146,6 +136,22 @@ public class PendingOrdersFragment extends BaseFragment{
                 startActivity(intent);
             }
         });
+        listView.getRefreshableView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view,final int position, long id) {
+                //if(is班组长)
+                CancelTaskDialog cancleTaskDialog=new CancelTaskDialog(mContext);
+                cancleTaskDialog.setTaskCancelListener(new TaskCancelListener() {
+                    @Override
+                    public void submitCancel(String CancelReason) {
+                        datas.get(position-1);
+                    }
+                });
+                cancleTaskDialog.show();
+                return true;
+            }
+        });
+
     }
     private void getPendingOrderTaskDataFromServer(){
         if(RecCount!=0){
@@ -266,7 +272,6 @@ public class PendingOrdersFragment extends BaseFragment{
                 super.onSuccess(t);
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement!=null){
                         if(jsonObjectElement.get("Success").valueAsBoolean()){
                             //成功，通知用户接单成功
                             Toast toast=Toast.makeText(mContext,"接单成功",Toast.LENGTH_LONG);
@@ -286,7 +291,7 @@ public class PendingOrdersFragment extends BaseFragment{
                         }
                         taskAdapter.setDatas(datas);
                         taskAdapter.notifyDataSetChanged();
-                    }
+
                 }
                 dismissCustomDialog();
             }

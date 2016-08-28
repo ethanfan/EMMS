@@ -1,6 +1,5 @@
 package com.emms.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.content.BroadcastReceiver;
@@ -12,38 +11,27 @@ import android.net.NetworkInfo;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
-import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
-import com.datastore_android_sdk.rxvolley.client.ProgressListener;
-import com.datastore_android_sdk.rxvolley.http.VolleyError;
-import com.datastore_android_sdk.schema.Query;
-import com.emms.ConfigurationManager;
+import com.datastore_android_sdk.rxvolley.toolbox.Loger;
 import com.emms.R;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.push.ExampleUtil;
 import com.emms.push.PushService;
 import com.emms.schema.BaseOrganise;
-import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.DataType;
 import com.emms.schema.Equipment;
@@ -51,24 +39,10 @@ import com.emms.schema.Operator;
 import com.emms.schema.TaskOrganiseRelation;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.PopMenuLoginActivity;
-import com.emms.ui.PopMenuTaskDetail;
-import com.emms.util.BuildConfig;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
-import com.emms.util.RootUtil;
 import com.emms.util.SharedPreferenceManager;
-import com.datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.datastore_android_sdk.rxvolley.toolbox.Loger;
 import com.emms.util.ToastUtil;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.nimbusds.jose.util.JSONObjectUtils;
-
-import net.minidev.json.JSONUtil;
-import net.minidev.json.parser.JSONParser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,7 +54,6 @@ import java.util.Set;
 
 import cn.jpush.android.api.BasicPushNotificationBuilder;
 import cn.jpush.android.api.JPushInterface;
-import cn.jpush.android.api.TagAliasCallback;
 
 public class LoginActivity extends NfcActivity implements View.OnClickListener {
     private static final String TAG = "LoginActivity";
@@ -147,6 +120,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.login:
+                //点击登录按钮，根据账号密码进行登录
                 final String userid = inputname.getText().toString().toUpperCase();
                 final String password = inputPassWord.getText().toString().toUpperCase();
                 if (!hasNetworkConnection()) {
@@ -230,7 +204,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
      */
     public void SaveCookies( Map<String, String> headers)
     {
-
+        //保存登录信息Cookies
         if (headers == null)
             return;
             String cookie=headers.get("Set-Cookie");
@@ -244,6 +218,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     //下载DB文件
     private void getNewDataFromServer() {
        // final File db = new File(getExternalFilesDir(null), "/EMMS"+SharedPreferenceManager.getFactory(this)+".db");
+        //检测数据库文件是否已经存在，若已存在，则调用增量接口
         final File db = new File(getExternalFilesDir(null), "/EMMS.db");
         if(db.exists()){
             //getDataBaseUpdateFromServer();
@@ -254,6 +229,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
        final File dbFile = new File(getExternalFilesDir(null), "/EMMS.zip");
            if(dbFile.exists()){
                try{
+                   //解压db文件
                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);}catch (Exception e){
                }
              return;
@@ -391,6 +367,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 }
             }
        for(int i=0;i<data.asArrayElement().size();i++){
+           Log.e("","");
         getSqliteStore().updateElement(DataUtil.isDataElementNull(data.asArrayElement().get(i).asObjectElement().get(s)),
                 data.asArrayElement().get(i), resource, new StoreCallback() {
                     @Override
@@ -482,6 +459,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             } else if (iccardID.equals("")) {
                 return;
             }
+            //刷卡登录
             getOperatorInfoFromServer(iccardID);
         }
     }
@@ -531,6 +509,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             }
     }
     private void getDBFromServer(final File dbFile){
+        // 下载Db文件
      HttpParams params=new HttpParams();
         params.put("factory",SharedPreferenceManager.getFactory(this));
         HttpUtils.getWithoutCookies(this, "SqlToSqlite", params, new HttpCallback() {
