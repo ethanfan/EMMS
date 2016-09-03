@@ -65,9 +65,8 @@ public class WorkLoadActivity extends NfcActivity{
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
         TaskComplete=getIntent().getBooleanExtra("TaskComplete",false);
         TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
-        getWorkLoadFromServer();
         initView();
-
+        getWorkLoadFromServer();
     }
     private void initView(){
         if(TaskComplete){
@@ -319,10 +318,10 @@ public class WorkLoadActivity extends NfcActivity{
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                     if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
                             jsonObjectElement.get("Success").valueAsBoolean()){
-                        ToastUtil.showToastLong("任务完成",context);
+                        ToastUtil.showToastLong(R.string.taskComplete,context);
                         startActivity(new Intent(context,CusActivity.class));
                     }else {
-                        ToastUtil.showToastLong("无法提交任务完成，请检查任务信息",context);
+                        ToastUtil.showToastLong(R.string.canNotSubmitTaskComplete,context);
                     }
                 }}
 

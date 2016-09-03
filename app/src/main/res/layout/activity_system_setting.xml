@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EDEDED">
+     <include layout="@layout/toolbar"
+         android:id="@+id/toolbar"></include>
+    <GridView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:verticalSpacing="5dp"
+        android:horizontalSpacing="5dp"
+        android:background="#EDEDED"
+        android:layout_below="@+id/toolbar"
+        android:id="@+id/model_list"
+        android:numColumns="3"
+        >
+    </GridView>
+</RelativeLayout>

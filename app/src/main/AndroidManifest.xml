@@ -60,6 +60,15 @@
         <activity android:name=".activity.EquipmentFaultSummaryActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".activity.TaskVerifyActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".activity.TeamStatusActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".activity.SystemSettingActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <!--<activity android:name=".activity.EquipmentHistory"-->
             <!--android:screenOrientation="portrait">-->
             <!--<intent-filter>-->
@@ -80,7 +89,8 @@
         </activity>
         <activity
             android:name=".activity.WorkloadVerifyActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity
             android:name=".activity.AddSubTaskActivity"
@@ -97,6 +107,10 @@
         </activity>
         <activity
             android:name=".activity.TaskHistory"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name=".activity.TaskHistoryCheck"
             android:screenOrientation="portrait" >
         </activity>
         <activity
@@ -264,7 +278,7 @@
 
 
         <!--<activity-->
-            <!--android:name="com.emms.push.MainActivity"-->
+            <!--android:name="com.ic_emms.push.MainActivity"-->
             <!--android:label="@string/app_name" >-->
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN" />-->

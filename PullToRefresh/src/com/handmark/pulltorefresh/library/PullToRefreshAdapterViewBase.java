@@ -405,18 +405,18 @@ public abstract class PullToRefreshAdapterViewBase<T extends AbsListView> extend
 		final Adapter adapter = mRefreshableView.getAdapter();
 
 		if (null == adapter || adapter.isEmpty()) {
-			if (DEBUG) {
-				Log.d(LOG_TAG, "isLastItemVisible. Empty View.");
-			}
+//			if (DEBUG) {
+//				Log.d(LOG_TAG, "isLastItemVisible. Empty View.");
+//			}
 			return true;
 		} else {
 			final int lastItemPosition = mRefreshableView.getCount() - 1;
 			final int lastVisiblePosition = mRefreshableView.getLastVisiblePosition();
 
-			if (DEBUG) {
-				Log.d(LOG_TAG, "isLastItemVisible. Last Item Position: " + lastItemPosition + " Last Visible Pos: "
-						+ lastVisiblePosition);
-			}
+//			if (DEBUG) {
+//				Log.d(LOG_TAG, "isLastItemVisible. Last Item Position: " + lastItemPosition + " Last Visible Pos: "
+//						+ lastVisiblePosition);
+//			}
 
 			/**
 			 * This check should really just be: lastVisiblePosition ==

@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.animation.FastOutLinearInInterpolator;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,17 +54,20 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
     private MyPagerAdapter mAdapter;
     private SlidingTabLayout tabLayout_2;
     private Context mContext=this;
+    private ViewPager vp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workload_verify);
-        initFragment();
         initView();
+        initFragment();
        // getCommandListFromServer();
     }
     private void initView() {
         ((TextView) findViewById(R.id.tv_title)).setText(R.string.workloadVerify);
         findViewById(R.id.btn_right_action).setOnClickListener(this);
+        findViewById(R.id.btn_sure_bg).setVisibility(View.VISIBLE);
+        findViewById(R.id.btn_sure_bg).setOnClickListener(this);
     }
 
 //    }
@@ -79,6 +83,10 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
         switch (id) {
             case R.id.btn_right_action: {
                 finish();
+                break;
+            }
+            case R.id.btn_sure_bg:{
+                doSubmit();
                 break;
             }
         }
@@ -115,23 +123,29 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
             }
         }
         View decorView = getWindow().getDecorView();
-        ViewPager vp = ViewFindUtils.find(decorView, R.id.vp);
+        vp = ViewFindUtils.find(decorView, R.id.vp);
         vp.setOffscreenPageLimit(1);
         mAdapter = new MyPagerAdapter(getSupportFragmentManager());
         vp.setAdapter(mAdapter);
-
         tabLayout_2 = ViewFindUtils.find(decorView, R.id.tl_2);
         tabLayout_2.setViewPager(vp);
         tabLayout_2.setOnTabSelectListener(this);
     }
+    private boolean tag= false;
     @Override
     public void onTabSelect(int position) {
-
     }
 
     @Override
     public void onTabReselect(int position) {
 
+    }
+    private void doSubmit(){
+        if(vp.getCurrentItem()==0){
+            ((PendingVerifyFragment)mFragments.get(0)).submitVerifyData();
+        }else {
+            ((LinkedVerifyFragment)mFragments.get(1)).submitVerifyData();
+        }
     }
     private class MyPagerAdapter extends FragmentPagerAdapter {
         public MyPagerAdapter(FragmentManager fm) {
@@ -153,4 +167,5 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
             return mFragments.get(position);
         }
     }
+
 }

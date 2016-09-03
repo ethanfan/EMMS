@@ -236,7 +236,15 @@ public class Operator extends Model<Operator, Long> implements Identity<Long> {
 	@Expose
 	private String organiseID;
 
+	public boolean isMaintenMan() {
+		return IsMaintenMan;
+	}
 
+	public void setMaintenMan(boolean maintenMan) {
+		IsMaintenMan = maintenMan;
+	}
+
+	private boolean IsMaintenMan=false;
 
 
 
@@ -519,4 +527,5 @@ public class Operator extends Model<Operator, Long> implements Identity<Long> {
 	public void setOrganiseID(String organiseID) {
 		this.organiseID = organiseID;
 	}
+
 }

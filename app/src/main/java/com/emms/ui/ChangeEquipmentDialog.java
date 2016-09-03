@@ -81,11 +81,11 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 //    private int Equipment_Status=-1;
     private WheelView Status;
 //    private ArrayWheelAdapter<String> adapter;
-    private ArrayList<ObjectElement> Equipment_Status_List=new ArrayList<ObjectElement>();
-    private ArrayList<ObjectElement> Equipment_Operator_Status_List=new ArrayList<ObjectElement>();
-    private ArrayList<ObjectElement> showList=new ArrayList<ObjectElement>();
-    private HashMap<String,Integer> Equipment_Operator_Status_Name_ID_map=new HashMap<String, Integer>();
-    private HashMap<String,Integer> Equipment_Status_Name_ID_map=new HashMap<String, Integer>();
+    private ArrayList<ObjectElement> Equipment_Status_List=new ArrayList<>();
+    private ArrayList<ObjectElement> Equipment_Operator_Status_List=new ArrayList<>();
+    private ArrayList<ObjectElement> showList=new ArrayList<>();
+    private HashMap<String,Integer> Equipment_Operator_Status_Name_ID_map=new HashMap<>();
+    private HashMap<String,Integer> Equipment_Status_Name_ID_map=new HashMap<>();
     private int ViewTag=1;
     /*
     public HashMap<String, Integer> getEquipment_OperatorID_Status() {
@@ -207,7 +207,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         //若任务未有设备，则输入为0，表示添加
         taskEquepment.set("TaskEquipment_ID",TaskEquipmentId);
         //若已有设备，申请状态变更
-        taskEquepment.set("OracleID", EquipmentId);
+        taskEquepment.set("Equipment_ID", EquipmentId);
         //taskEquepment.set("Equipment_ID", equipmentID);
         taskEquepment.set("Status",status);
 
@@ -219,14 +219,13 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                 super.onSuccess(t);
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    if (jsonObjectElement != null) {
                         if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
-                        Toast.makeText(context, "修改设备状态成功", Toast.LENGTH_SHORT).show();
+                        ToastUtil.showToastLong(R.string.SuccessChangeStatus,context);
                         dismiss();
                             onSubmitInterface.onsubmit();}else{
-                            ToastUtil.showToastLong("修改设备状态失败,请检查参与人状态",context);
+                            ToastUtil.showToastLong(R.string.FailChangeEquipmentStatusCauseByOperator,context);
                         }
-                    }
+
                 }
                 dismissCustomDialog();
             }
@@ -234,7 +233,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                   ToastUtil.showToastLong("修改设备状态失败,请检查网络 ",context);
+                   ToastUtil.showToastLong(R.string.FailChangeEquipmentStatusCauseByTimeOut,context);
                 dismissCustomDialog();
             }
         });
@@ -429,7 +428,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                         onSubmitInterface.onsubmit();
                         dismiss();
                     }else {
-                        ToastUtil.showToastLong("不允许修改状态",context);
+                        ToastUtil.showToastLong(R.string.CanNotChangeStatus,context);
                     }
                 }
                 dismissCustomDialog();
@@ -479,17 +478,17 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     private void initMap(){
 
             Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.start), 0);
-            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.pause), 1);
+            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.pause), 2);
 //            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.quit), 2);
 //            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.material_requisition), 3);
 //            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.wait_material), 4);
-            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 5);
+            Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 1);
 
 
             Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.start), 1);
-            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.pause), 2);
+            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.pause), 3);
 //            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.wait_material), 3);
-            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 4);
+            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 2);
 
     }
     private static boolean checkDeviceHasNavigationBar(Context context) {

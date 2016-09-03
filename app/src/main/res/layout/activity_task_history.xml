@@ -23,7 +23,6 @@
         android:layout_height="wrap_content"
         android:background="#E6ECF8"
         android:id="@+id/search_filter"
-        android:visibility="invisible"
         android:layout_below="@+id/toolbar">
         <LinearLayout
             android:layout_width="match_parent"

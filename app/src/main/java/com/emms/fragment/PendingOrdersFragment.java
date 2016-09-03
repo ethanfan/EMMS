@@ -21,6 +21,7 @@ import com.emms.activity.TaskDetailsActivity;
 import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.ui.CancelTaskDialog;
 import com.emms.ui.TaskCancelListener;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/6/21.
+ *
  */
 public class PendingOrdersFragment extends BaseFragment{
 
@@ -140,14 +142,17 @@ public class PendingOrdersFragment extends BaseFragment{
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view,final int position, long id) {
                 //if(is班组长)
-                CancelTaskDialog cancleTaskDialog=new CancelTaskDialog(mContext);
-                cancleTaskDialog.setTaskCancelListener(new TaskCancelListener() {
-                    @Override
-                    public void submitCancel(String CancelReason) {
-                        datas.get(position-1);
-                    }
-                });
-                cancleTaskDialog.show();
+//                CancelTaskDialog cancleTaskDialog=new CancelTaskDialog(mContext);
+//                cancleTaskDialog.setTaskCancelListener(new TaskCancelListener() {
+//                    @Override
+//                    public void submitCancel(String CancelReason) {
+//                        CancelTask(datas.get(position-1),CancelReason);
+//                    }
+//                });
+//                cancleTaskDialog.show();
+//
+//
+
                 return true;
             }
         });
@@ -279,7 +284,7 @@ public class PendingOrdersFragment extends BaseFragment{
                             toast.show();
                         }else{
                             //失败，通知用户接单失败，单已经被接
-                            Toast toast=Toast.makeText(mContext,"该单已被接",Toast.LENGTH_LONG);
+                            Toast toast=Toast.makeText(mContext,DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),Toast.LENGTH_SHORT);
                             toast.setGravity(Gravity.CENTER,0,0);
                             toast.show();
                         }
@@ -318,5 +323,37 @@ public class PendingOrdersFragment extends BaseFragment{
     public void doRefresh(){
         pageIndex=1;
         getPendingOrderTaskDataFromServer();
+    }
+    private void CancelTask(ObjectElement task, final String reason){
+        showCustomDialog(R.string.loadingData);
+        HttpParams params=new HttpParams();
+        JsonObjectElement submitData=new JsonObjectElement();
+        submitData.set(Task.TASK_ID,DataUtil.isDataElementNull(task.get(Task.TASK_ID)));
+        submitData.set("QuitReason",reason);
+        params.putJsonParams(submitData.toJson());
+        HttpUtils.post(mContext, "TaskRecieve/TaskQuit", params, new HttpCallback() {
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.FailCancelTask,mContext);
+                dismissCustomDialog();
+            }
+
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null){
+                    JsonObjectElement returnData=new JsonObjectElement(t);
+                    if(returnData.get(Data.SUCCESS).valueAsBoolean()){
+                        ToastUtil.showToastLong(R.string.SuccessCancelTask,mContext);
+                        pageIndex=1;
+                        getPendingOrderTaskDataFromServer();
+                    }else {
+                        ToastUtil.showToastLong(R.string.FailCancelTask,mContext);
+                    }
+                }
+                dismissCustomDialog();
+            }
+        });
     }
 }

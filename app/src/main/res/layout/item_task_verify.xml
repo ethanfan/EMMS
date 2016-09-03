@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="13dp"
+        android:background="@drawable/item_click"
+        android:paddingBottom="6dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="6dp"
+        android:descendantFocusability="blocksDescendants">
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/textView7"
+            android:text="@string/applicanter"
+            android:textColor="@color/text_color"
+            android:textSize="17sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:textSize="17sp"
+            android:id="@+id/tv_creater_order"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@id/textView6" />
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/textView7"
+            android:layout_below="@+id/textView6"
+            android:layout_marginTop="4dp"
+            android:text="@string/group_type"
+            android:textColor="@color/text_color"
+            android:textSize="17sp" />
+        <TextView
+            android:id="@+id/group_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/textView"
+            android:layout_alignTop="@+id/textView"
+            android:textColor="@color/text_color"
+            android:textSize="17sp" />
+        <TextView
+            android:id="@+id/textView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/group_type"
+            android:layout_marginTop="3dp"
+            android:text="@string/create_time"
+            android:textColor="@color/text_color"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tv_create_time_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:textSize="17sp"
+            android:layout_alignTop="@+id/textView7"
+            android:layout_toRightOf="@+id/textView7"
+            android:layout_toEndOf="@+id/textView7" />
+        <TextView
+            android:id="@+id/Task_Equipment_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/textView7"
+            android:layout_marginTop="3dp"
+            android:text="@string/device_name"
+            android:textColor="@color/text_color"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/Task_Equipment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:textSize="17sp"
+            android:layout_toRightOf="@id/Task_Equipment_tag"
+            android:layout_alignTop="@id/Task_Equipment_tag" />
+        <TextView
+            android:id="@+id/Task_description_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/Task_Equipment"
+            android:layout_marginTop="3dp"
+            android:text="@string/task_descr"
+            android:textColor="@color/text_color"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/Task_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:textSize="17sp"
+            android:layout_toRightOf="@id/Task_description_tag"
+            android:layout_alignTop="@id/Task_description_tag" />
+       <RelativeLayout
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_below="@+id/Task_description"
+           android:layout_marginTop="14dp">
+
+       <View
+           android:layout_width="2dp"
+           android:layout_height="wrap_content"
+           android:id="@+id/line"
+           android:background="@color/transparent"
+           android:layout_centerHorizontal="true">
+       </View>
+        <Button
+            android:id="@+id/pass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/yellow"
+            android:layout_toLeftOf="@+id/line"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:padding="3dp"
+            android:text="@string/pass"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+        <Button
+            android:id="@+id/Notpass"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/pass"
+            android:layout_toRightOf="@+id/line"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@color/yellow"
+            android:padding="3dp"
+            android:text="@string/Notpass"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+       </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>

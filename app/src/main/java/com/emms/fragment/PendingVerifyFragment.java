@@ -5,16 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -23,6 +29,7 @@ import com.emms.activity.TaskDetailsActivity;
 import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
@@ -34,6 +41,7 @@ import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/6/20.
+ *
  */
 public class PendingVerifyFragment extends BaseFragment {
 
@@ -42,13 +50,13 @@ public class PendingVerifyFragment extends BaseFragment {
     private ArrayList<ObjectElement> datas=new ArrayList<>();
     private Context mContext;
     private Handler handler=new Handler();
-    private String TaskClass;
-    private static int PAGE_SIZE=10;
+    //private String TaskClass="";
+    private  int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
+    private ArrayList<ObjectElement> submitData=new ArrayList<>();
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        TaskClass=this.getArguments().getString(Task.TASK_CLASS);
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView)v.findViewById(R.id.processing_list);
@@ -61,7 +69,7 @@ public class PendingVerifyFragment extends BaseFragment {
                     @Override
                     public void run() {
                         pageIndex=1;
-                        getCommandListFromServer();
+                        getVerifyListFromServer();
                         listView.onRefreshComplete();
                         //  Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
                     }
@@ -73,7 +81,7 @@ public class PendingVerifyFragment extends BaseFragment {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        getCommandListFromServer();
+                        getVerifyListFromServer();
                         listView.onRefreshComplete();
                         //Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
                     }
@@ -82,18 +90,22 @@ public class PendingVerifyFragment extends BaseFragment {
         });
         taskAdapter = new TaskAdapter(datas) {
             @Override
-            public View getCustomView(View convertView, int position, ViewGroup parent) {
-                TaskViewHolder holder;
+            public View getCustomView(View convertView, final int position, ViewGroup parent) {
+                final TaskViewHolder holder;
                 if (convertView == null) {
                     convertView = LayoutInflater.from(mContext).inflate(R.layout.item_activity_workload_verify, parent, false);
                     holder = new TaskViewHolder();
                     //显示6个内容，组别，报修人，状态，保修时间,开始时间，任务描述
                     holder.tv_group = (TextView) convertView.findViewById(R.id.group);
                     holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);
-                    //holder.tv_task_state = (TextView) convertView.findViewById(R.id.tv_task_state);
+                    holder.tv_task_state = (TextView) convertView.findViewById(R.id.standard_workload);
                     holder.tv_repair_time=(TextView)convertView.findViewById(R.id.tv_Warranty_time_process);
                     holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
+                    holder.editText=(EditText)convertView.findViewById(R.id.verify_workTime) ;
+                    holder.editText.setInputType(EditorInfo.TYPE_CLASS_PHONE);
+                    holder.editText2=(EditText)convertView.findViewById(R.id.verify_workTime_remark) ;
+                    holder.image=(ImageView)convertView.findViewById(R.id.image) ;
                     convertView.setTag(holder);
                 } else {
                     holder = (TaskViewHolder) convertView.getTag();
@@ -101,27 +113,98 @@ public class PendingVerifyFragment extends BaseFragment {
                 //待修改
                 holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
-                //    holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
+                holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkTime")));
+                holder.editText.setText(DataUtil.isDataElementNull(datas.get(position).get("Workload")));
+                holder.editText2.setText(DataUtil.isDataElementNull(datas.get(position).get("UpdateRemark")));
                 holder.tv_repair_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
                 holder.tv_start_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
+                if(datas.get(position).get("tag")!=null){
+                if(datas.get(position).get("tag").valueAsBoolean()){
+                   holder.image.setImageResource(R.mipmap.select_pressed);
+                }else {
+                    holder.image.setImageResource(R.mipmap.select_normal);
+                }
+                }
+                convertView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent=new Intent(mContext,TaskDetailsActivity.class);
+                        intent.putExtra(Task.TASK_ID,datas.get(position).get(Task.TASK_ID).valueAsString());
+                        intent.putExtra("TaskDetail",datas.get(position).toString());
+                        intent.putExtra(Task.TASK_CLASS,"T04");
+                        intent.putExtra("TaskStatus",2);
+                        startActivity(intent);
+                    }
+                });
+                holder.editText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        datas.get(position).set("Workload",s.toString());
+                    }
+                });
+                holder.editText2.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        datas.get(position).set("UpdateRemark",s.toString());
+                    }
+                });
+                holder.image.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                       // submitWorkload(datas.get(position),holder.editText.getText().toString(),holder.editText2.getText().toString());
+                        if(datas.get(position).get("tag").valueAsBoolean()){
+                           // holder.image.setImageResource(R.mipmap.select_pressed);
+                            datas.get(position).set("tag",false);
+                        }else {
+                          //  holder.image.setImageResource(R.mipmap.select_normal);
+                            datas.get(position).set("tag",true);
+                        }
+                        notifyDataSetChanged();
+                        //if()
+                    if(submitData.contains(datas.get(position))){
+                        submitData.remove(datas.get(position));
+                    }else {
+                        submitData.add(datas.get(position));
+                    }
+                    }
+                });
                 return convertView;
             }
         };
         listView.setAdapter(taskAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent=new Intent(mContext,TaskDetailsActivity.class);
-                intent.putExtra(Task.TASK_ID,datas.get(position-1).get(Task.TASK_ID).valueAsString());
-                intent.putExtra("TaskDetail",datas.get(position-1).toString());
-                intent.putExtra(Task.TASK_CLASS,TaskClass);
-                intent.putExtra("TaskStatus",1);
-                //startActivity(intent);
-                ((Activity)mContext).startActivityForResult(intent, Constants.REQUEST_CODE_PROCESSING_ORDER_TASK_DETAIL);
-            }
-        });
-        getCommandListFromServer();
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent=new Intent(mContext,TaskDetailsActivity.class);
+//                intent.putExtra(Task.TASK_ID,datas.get(position-1).get(Task.TASK_ID).valueAsString());
+//                intent.putExtra("TaskDetail",datas.get(position-1).toString());
+//                intent.putExtra(Task.TASK_CLASS,TaskClass);
+//                intent.putExtra("TaskStatus",1);
+//                startActivity(intent);
+//            }
+//        });
+        getVerifyListFromServer();
         return v;
     }
 
@@ -131,7 +214,7 @@ public class PendingVerifyFragment extends BaseFragment {
 
     }
 
-    private void getCommandListFromServer(){
+    private void getVerifyListFromServer(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
                 ToastUtil.showToastLong(R.string.noMoreData,mContext);
@@ -142,6 +225,7 @@ public class PendingVerifyFragment extends BaseFragment {
        // params.put("task_class",Task.REPAIR_TASK);
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
+        params.put("Verity",0);//0为未核验
         HttpUtils.get(mContext, "TaskWorkloadVerity", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -160,6 +244,9 @@ public class PendingVerifyFragment extends BaseFragment {
                         }
                         pageIndex++;
                         for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
+                            jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().set("Workload",
+                                    DataUtil.isDataElementNull(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("WorkTime")));
+                            jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().set("tag",false);
                             datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
                         handler.post(new Runnable() {
@@ -179,9 +266,7 @@ public class PendingVerifyFragment extends BaseFragment {
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
-                Toast toast=Toast.makeText(mContext,"获取列表失败，请检查网络",Toast.LENGTH_LONG);
-                toast.setGravity(Gravity.CENTER,0,0);
-                toast.show();
+               ToastUtil.showToastLong(R.string.FailGetList,mContext);
                 dismissCustomDialog();
             }
         });
@@ -195,7 +280,7 @@ public class PendingVerifyFragment extends BaseFragment {
     }
     public void doRefresh(){
         pageIndex=1;
-        getCommandListFromServer();
+        getVerifyListFromServer();
     }
 
     public void setTaskNumInteface(TaskNumInteface taskNumInteface) {
@@ -203,5 +288,90 @@ public class PendingVerifyFragment extends BaseFragment {
     }
 
     private TaskNumInteface taskNumInteface;
+    private void submitWorkload(final ObjectElement data, String workload,String UpdateRemark){
+        if(!DataUtil.isNum(workload)||workload.equals("")){
+            ToastUtil.showToastLong(R.string.pleaseInputNum,mContext);
+            return;
+        }
+        showCustomDialog(R.string.submitData);
+        HttpParams params=new HttpParams();
+        JsonObjectElement jsonObjectElement=new JsonObjectElement();
+        jsonObjectElement.set(Task.TASK_ID,DataUtil.isDataElementNull(data.get(Task.TASK_ID)));
+        jsonObjectElement.set("Workload",workload);
+        jsonObjectElement.set("UpdateRemark",UpdateRemark);
+       // jsonObjectElement.set("UpdateRemark");
+        ArrayList<ObjectElement> list=new ArrayList<>();
+        list.add(jsonObjectElement);
+        final JsonArrayElement jsonArrayElement=new JsonArrayElement(list.toString());
+        params.putJsonParams(jsonArrayElement.toJson());
+        HttpUtils.post(mContext, "TaskWorkloadVerity", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null){
+                    JsonObjectElement json=new JsonObjectElement(t);
+                    if(json.get(Data.SUCCESS).valueAsBoolean()){
+                        ToastUtil.showToastLong(R.string.SuccessVerify,mContext);
+                        datas.remove(data);
+                        taskAdapter.notifyDataSetChanged();
+                    }else {
+                        ToastUtil.showToastLong(R.string.FailVerify,mContext);
+                    }
+                }
+                dismissCustomDialog();
+            }
 
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.FailVerifyCauseByTimeOut,mContext);
+                dismissCustomDialog();
+            }
+        });
+    }
+    public void submitVerifyData(){
+        for(int i=0;i<submitData.size();i++) {
+            if (!DataUtil.isNum(DataUtil.isDataElementNull(submitData.get(i).get("Workload")).trim()) ||
+                    DataUtil.isDataElementNull(submitData.get(i).get("Workload")).equals("")) {
+                ToastUtil.showToastLong(R.string.pleaseInputNum, mContext);
+                return;
+            }
+        }
+        showCustomDialog(R.string.submitData);
+        HttpParams params=new HttpParams();
+        ArrayList<ObjectElement> list=new ArrayList<>();
+        for(int i=0;i<submitData.size();i++){
+            JsonObjectElement jsonObjectElement=new JsonObjectElement();
+            jsonObjectElement.set(Task.TASK_ID,DataUtil.isDataElementNull(submitData.get(i).get(Task.TASK_ID)));
+            jsonObjectElement.set("Workload",DataUtil.isDataElementNull(submitData.get(i).get("Workload")));
+            jsonObjectElement.set("UpdateRemark",DataUtil.isDataElementNull(submitData.get(i).get("UpdateRemark")));
+            list.add(jsonObjectElement);
+        }
+        final JsonArrayElement jsonArrayElement=new JsonArrayElement(list.toString());
+        params.putJsonParams(jsonArrayElement.toJson());
+        HttpUtils.post(mContext, "TaskWorkloadVerity", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null){
+                    JsonObjectElement json=new JsonObjectElement(t);
+                    if(json.get(Data.SUCCESS).valueAsBoolean()){
+                        ToastUtil.showToastLong(R.string.SuccessVerify,mContext);
+                        datas.remove(submitData);
+                        taskAdapter.notifyDataSetChanged();
+                    }else {
+                        ToastUtil.showToastLong(R.string.FailVerify,mContext);
+                    }
+                }
+                dismissCustomDialog();
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.FailVerifyCauseByTimeOut,mContext);
+                dismissCustomDialog();
+            }
+        });
+    }
 }

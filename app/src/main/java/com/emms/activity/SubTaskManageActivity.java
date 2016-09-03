@@ -65,7 +65,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
         TaskComplete=getIntent().getBooleanExtra("TaskComplete",false);
         TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         initView();
-        getTaskEquipmentFromServer();
+        //getTaskEquipmentFromServer();
     }
 
     private void initView() {
@@ -174,7 +174,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
                 holder.status.setText(DataUtil.isDataElementNull(datas.get(position).get("Status")));
                 holder.work_description.setText(DataUtil.isDataElementNull(datas.get(position).get("DataDescr")));
                 //holder.equipment_num.setText(DataUtil.isDataElementNull(datas.get(position).get("Equipment_ID")));
-                holder.equipment_num.setText(DataUtil.isDataElementNull(datas.get(position).get("OracleID")));
+                holder.equipment_num.setText(DataUtil.isDataElementNull(datas.get(position).get("AssetsID")));
                 return convertView;
             }
         };

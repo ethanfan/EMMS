@@ -40,6 +40,7 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * Created by jaffer.deng on 2016/6/3.
+ *
  */
 
 /*
@@ -122,11 +123,11 @@ public  class HttpUtils {
                     @Override
                     public void onFailure(int errorNo, String strMsg) {
                         super.onFailure(errorNo, strMsg);
-                        Toast.makeText(context,"请重新登录",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context,R.string.pleaseRelogin,Toast.LENGTH_SHORT).show();
                     }
                 });
             }else {
-                Toast.makeText(context,"请重新登录",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,R.string.pleaseRelogin,Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -155,7 +156,7 @@ public  class HttpUtils {
                     .encoding("UTF-8") //编码格式，默认为utf-8
                     .doTask();  //执行请求操作
         }else {
-            Toast.makeText(context,"请重新登录",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,R.string.pleaseRelogin,Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -188,7 +189,7 @@ public  class HttpUtils {
                     .encoding("UTF-8") //编码格式，默认为utf-8
                     .doTask();  //执行请求操作
         }else {
-            Toast.makeText(context,"请重新登录",Toast.LENGTH_SHORT).show();
+            Toast.makeText(context,R.string.pleaseRelogin,Toast.LENGTH_SHORT).show();
         }
     }
    private static boolean tag=true;

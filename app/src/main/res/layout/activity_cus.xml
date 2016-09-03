@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:background="@color/white"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#EDEDED">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
@@ -37,13 +37,22 @@
         <!--android:layout_marginLeft="25dp"-->
         <!--android:textColor="#FFFFFF"-->
         <!--android:textSize="17sp"/>-->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/UserName"
+            android:layout_alignBottom="@+id/WorkNum_tag"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/rootImage"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/UserName"
             android:textColor="#FFFFFF"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="15dp"
+            android:layout_toRightOf="@+id/rootImage"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="18dp"
+            android:text="daf"
             android:textSize="17sp"/>
         <TextView
             android:layout_width="wrap_content"
@@ -51,7 +60,8 @@
             android:layout_alignLeft="@+id/UserName"
             android:layout_below="@+id/UserName"
             android:id="@+id/WorkNum_tag"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="2dp"
+            android:text="daf"
             android:textColor="#FFFFFF"
             android:textSize="17sp"/>
         <!--<TextView-->
@@ -84,12 +94,14 @@
     <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="5dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:verticalSpacing="5dp"
+        android:horizontalSpacing="5dp"
+        android:background="#EDEDED"
         android:layout_below="@+id/lay"
-        android:background="@color/white"
-        android:id="@+id/model_list"
+        android:id="@+id/module_list"
         android:numColumns="3"
         >
     </GridView>

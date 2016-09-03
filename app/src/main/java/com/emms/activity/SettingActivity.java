@@ -102,7 +102,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
             return;
         }
         SharedPreferenceManager.setFactory(this,Factory.getText().toString());
-        ToastUtil.showToastLong("设置成功",this);
+        ToastUtil.showToastLong(R.string.setting_su,this);
         finish();
 
     }
@@ -165,13 +165,13 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                         }
                     });
                 } else {
-                    Toast.makeText(context, "出错了", Toast.LENGTH_SHORT).show();
+                    ToastUtil.showToastLong(R.string.error_occur,context);
                 }
             }
         });
         initDropSearchView(null, Factory.getmEditText(), context.getResources().
                         getString(R.string.factoryTitle),"OrganiseName",
-                1, "获取数据失败",Factory.getDropImage());
+                1, R.string.getDataFail,Factory.getDropImage());
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -225,7 +225,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
 
     private void initDropSearchView(
             final EditText condition,EditText subEditText,
-            final String searchTitle,final String searchName,final int searTag ,final String tips,ImageView imageView){
+            final String searchTitle,final String searchName,final int searTag ,final int tips,ImageView imageView){
         subEditText.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -248,7 +248,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
 
     }
     private void DropSearch(final EditText condition,
-                            final String searchTitle,final String searchName,final int searTag ,final String tips){
+                            final String searchTitle,final String searchName,final int searTag ,final int tips){
         ((Activity)context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -268,7 +268,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                        ToastUtil.showToastLong(tips,context);
                     }
                 } else {
                     if (searchDataLists.size() > 0) {
@@ -279,7 +279,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                        ToastUtil.showToastLong(tips,context);
                     }
                 }
             }

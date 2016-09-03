@@ -39,13 +39,14 @@ import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/6/21.
+ *
  */
 public class LinkedOrdersFragment extends BaseFragment{
     private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
     private Context mContext;
     private String[] mTitles ;
-    private ArrayList<ObjectElement> data=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> data=new ArrayList<>();
     private Handler handler=new Handler();
     private String TaskClass;
     private  int PAGE_SIZE=10;

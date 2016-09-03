@@ -77,9 +77,9 @@ public class SummaryActivity extends NfcActivity{
         TaskComplete=getIntent().getBooleanExtra("TaskComplete",false);
         if(getIntent().getStringExtra(Task.TASK_CLASS)!=null){
         TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);}
-        getSummaryFromServer();
         initView();
         initSearchView();
+        getSummaryFromServer();
     }
     public void initView(){
         //initTopToolbar
@@ -87,6 +87,10 @@ public class SummaryActivity extends NfcActivity{
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.fault_summary);
         }else {
             ((TextView)findViewById(R.id.tv_title)).setText(R.string.task_summary);
+            findViewById(R.id.ccccc).setVisibility(View.GONE);
+            findViewById(R.id.layout2).setVisibility(View.GONE);
+            findViewById(R.id.status_tag).setVisibility(View.GONE);
+            ((TextView)findViewById(R.id.description_tag)).setText(R.string.task_summary_tag);
         }
         findViewById(R.id.btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -180,14 +184,14 @@ public class SummaryActivity extends NfcActivity{
                         }
                     });
                 } else {
-                    Toast.makeText(context, "出错了", Toast.LENGTH_SHORT).show();
+                    ToastUtil.showToastLong(R.string.error_occur,context);
                 }
             }
         });
         getFaultType();
         initDropSearchView(null, type.getmEditText(), context.getResources().
                         getString(R.string.faultType), DataDictionary.DATA_NAME,
-                1, "获取数据失败",type.getDropImage());
+                1, R.string.getDataFail,type.getDropImage());
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -240,7 +244,7 @@ public class SummaryActivity extends NfcActivity{
 
     private void initDropSearchView(
             final EditText condition,EditText subEditText,
-            final String searchTitle,final String searchName,final int searTag ,final String tips,final ImageView imageView){
+            final String searchTitle,final String searchName,final int searTag ,final int tips,final ImageView imageView){
         subEditText.
                 setOnClickListener(
                         new View.OnClickListener() {
@@ -398,10 +402,10 @@ public class SummaryActivity extends NfcActivity{
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                     if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
                             jsonObjectElement.get("Success").valueAsBoolean()){
-                        ToastUtil.showToastLong("任务完成",context);
+                        ToastUtil.showToastLong(R.string.taskComplete,context);
                         startActivity(new Intent(context,CusActivity.class));
                     }else {
-                        ToastUtil.showToastLong("无法提交任务完成，请检查任务信息",context);
+                        ToastUtil.showToastLong(R.string.canNotSubmitTaskComplete,context);
                     }
                 }}
 
@@ -413,7 +417,7 @@ public class SummaryActivity extends NfcActivity{
         });
     }
     private void DropSearch(final EditText condition,
-               final String searchTitle,final String searchName,final int searTag ,final String tips){
+               final String searchTitle,final String searchName,final int searTag ,final int tips){
         ((Activity)context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -433,7 +437,7 @@ public class SummaryActivity extends NfcActivity{
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                        ToastUtil.showToastLong(tips,context);
                     }
                 } else {
                     if (searchDataLists.size() > 0) {
@@ -444,7 +448,7 @@ public class SummaryActivity extends NfcActivity{
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                        ToastUtil.showToastLong(tips,context);
                     }
                 }
 

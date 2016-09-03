@@ -23,6 +23,7 @@ import com.emms.activity.TaskDetailsActivity;
 import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.ui.CancelTaskDialog;
 import com.emms.ui.TaskCancelListener;
@@ -115,9 +116,9 @@ public class ProcessingFragment extends BaseFragment {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
                 //待修改
-               holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
+                holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
-            //    holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
+                //    holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
                 holder.tv_repair_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
                 holder.tv_start_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
@@ -138,21 +139,7 @@ public class ProcessingFragment extends BaseFragment {
                 ((Activity)mContext).startActivityForResult(intent, Constants.REQUEST_CODE_PROCESSING_ORDER_TASK_DETAIL);
             }
         });
-        listView.getRefreshableView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view,final int position, long id) {
-                //if(is班组长)
-                CancelTaskDialog cancleTaskDialog=new CancelTaskDialog(mContext);
-                cancleTaskDialog.setTaskCancelListener(new TaskCancelListener() {
-                    @Override
-                    public void submitCancel(String CancelReason) {
-                        datas.get(position-1);
-                    }
-                });
-                cancleTaskDialog.show();
-                return true;
-            }
-        });
+
         return v;
     }
 
@@ -244,5 +231,6 @@ public class ProcessingFragment extends BaseFragment {
     }
 
     private TaskNumInteface taskNumInteface;
+
 
 }

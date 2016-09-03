@@ -188,7 +188,7 @@
                 android:text="@string/sure"/>
         </LinearLayout>
         <!--
-        <com.emms.ui.WheelView
+        <com.ic_emms.ui.WheelView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/list"

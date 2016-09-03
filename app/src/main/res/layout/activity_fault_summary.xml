@@ -45,8 +45,28 @@
         android:layout_toRightOf="@id/summary_person_tag"
         android:textSize="18sp"/>
     <TextView
-        android:id="@+id/fault_type_tag"
+        android:id="@+id/equipment_name_tag"
         android:layout_below="@+id/summary_person"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/task_id_tag"
+        android:textColor="@color/text_color"
+        android:text="@string/equipment_name"
+        android:layout_marginBottom="6dp"
+        android:textSize="18sp"/>
+    <TextView
+        android:id="@+id/equipment_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:layout_alignTop="@+id/equipment_name_tag"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@id/equipment_name_tag"
+        android:textSize="18sp"/>
+    <TextView
+        android:id="@+id/fault_type_tag"
+        android:layout_below="@+id/equipment_name"
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

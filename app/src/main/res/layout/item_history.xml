@@ -86,6 +86,16 @@
             android:textSize="17sp"
             android:layout_alignTop="@+id/Warranty_person_tag"
             android:layout_toRightOf="@+id/Warranty_person_tag" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/command"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="25dp"
+            android:layout_alignTop="@+id/Warranty_person_tag"
+            android:textSize="17sp"
+            android:textColor="@color/esquel_red"
+            android:text="@string/NoCommand"/>
         <!--
         <TextView
             android:id="@+id/id_status"

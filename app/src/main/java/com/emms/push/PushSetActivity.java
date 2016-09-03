@@ -129,7 +129,7 @@ public class PushSetActivity extends InstrumentedActivity implements OnClickList
 	 */
 	private void setStyleBasic(){
 		BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(PushSetActivity.this);
-		builder.statusBarDrawable = R.drawable.ic_launcher;
+		builder.statusBarDrawable = R.drawable.ic_emms;
 		builder.notificationFlags = Notification.FLAG_AUTO_CANCEL;  //设置为点击后自动消失
 		builder.notificationDefaults = Notification.DEFAULT_SOUND;  //设置为铃声（ Notification.DEFAULT_SOUND）或者震动（ Notification.DEFAULT_VIBRATE）  
 		JPushInterface.setPushNotificationBuilder(1, builder);
@@ -142,7 +142,7 @@ public class PushSetActivity extends InstrumentedActivity implements OnClickList
 	 */
 	private void setStyleCustom(){
 		CustomPushNotificationBuilder builder = new CustomPushNotificationBuilder(PushSetActivity.this,R.layout.customer_notitfication_layout,R.id.icon, R.id.title, R.id.text);
-		builder.layoutIconDrawable = R.drawable.ic_launcher;
+		builder.layoutIconDrawable = R.drawable.ic_emms;
 		builder.developerArg0 = "developerArg2";
 		JPushInterface.setPushNotificationBuilder(2, builder);
 		Toast.makeText(PushSetActivity.this,"Custom Builder - 2", Toast.LENGTH_SHORT).show();

@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -71,7 +72,10 @@ public abstract class TaskAdapter extends BaseAdapter{
         public  TextView tv_repair_time;
         public TextView warranty_person;
         public Button acceptTaskButton;
+        public Button rejectTaskButton;
         public ListView listView;
         public ImageView image;
+        public EditText editText;
+        public EditText editText2;
     }
 }

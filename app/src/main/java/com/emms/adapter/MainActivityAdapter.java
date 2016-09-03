@@ -9,6 +9,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.flyco.tablayout.widget.MsgView;
 
 import java.util.ArrayList;
 
@@ -58,7 +59,8 @@ public abstract class MainActivityAdapter extends BaseAdapter{
     public abstract View getCustomView(View convertView,int position ,ViewGroup parent );
     public static   class TaskViewHolder {
         public  TextView taskNum;
-        public  TextView modelName;
+        public  TextView moduleName;
         public ImageView image;
+        public MsgView msgView;
     }
 }

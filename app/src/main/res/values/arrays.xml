@@ -5,6 +5,11 @@
         <item>待接单</item>
         <item>已结单</item>
     </string-array>
+    <string-array name="select_tab_task_history">
+        <item>待评价</item>
+        <item>所有任务</item>
+        <item>任务筛选</item>
+    </string-array>
     <string-array name="select_tab_verify_status">
         <item>未核验</item>
         <item>已核验</item>

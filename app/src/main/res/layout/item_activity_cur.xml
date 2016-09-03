@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:mv="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/repair_tag"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.emms.ui.SquareLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:id="@+id/square">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/module_image"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/cur_activity_repair" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:id="@+id/module_name"
+                android:layout_height="wrap_content"
+                android:text="@string/repair_tag"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="5dp"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/text_color"
+                android:textSize="17sp" />
+        </com.emms.ui.SquareLayout>
+        <com.flyco.tablayout.widget.MsgView
+            android:id="@+id/task_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="1dp"
+            android:layout_alignTop="@+id/square"
+            android:layout_alignRight="@+id/square"
+            android:layout_marginRight="12dp"
+            android:layout_marginTop="12dp"
+            android:textColor="#ffffff"
+            android:textSize="11.5sp"
+            android:text="0/0"
+            android:visibility="gone"
+            mv:mv_backgroundColor="#FD481F"
+            mv:mv_isRadiusHalfHeight="true"
+            mv:mv_strokeColor="#ffffff"
+            mv:mv_strokeWidth="1dp"/>
+    </RelativeLayout>
+</LinearLayout>

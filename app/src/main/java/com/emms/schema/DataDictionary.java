@@ -9,6 +9,7 @@ import com.datastore_android_sdk.schema.Model;
 
 /**
  * Created by jaffer.deng on 2016/7/10.
+ *
  */
 
 @DatabaseTable(tableName = "DataDictionary")
@@ -25,6 +26,7 @@ public class DataDictionary extends Model<Operator, Long> implements Identity<Lo
     public static final String DATA_VALUE2 = "DataValue2";
     public static final String DATA_VALUE3 = "DataValue3";
     public static final String STATUS = "Status";
+    public static final String SORT = "Sort";
     public static final String REMARK = "Remark";
     public static final String LASTUPDATETIME="LastUpdateTime";
 
@@ -34,12 +36,12 @@ public class DataDictionary extends Model<Operator, Long> implements Identity<Lo
     @Expose
     private Long data_id;
 
-    @DatabaseField(columnName = FACTORY_ID, canBeNull = false)
+    @DatabaseField(columnName = FACTORY_ID, canBeNull = false,defaultValue = "0")
     @SerializedName(FACTORY_ID)
     @Expose
     private String factory_id;
 
-    @DatabaseField(columnName = PDATA_ID, canBeNull = false)
+    @DatabaseField(columnName = PDATA_ID, canBeNull = false,defaultValue = "0")
     @SerializedName(PDATA_ID)
     @Expose
     private String pdata_id;
@@ -84,12 +86,17 @@ public class DataDictionary extends Model<Operator, Long> implements Identity<Lo
     @Expose
     private String status;
 
+    @DatabaseField(columnName = SORT, canBeNull = false ,defaultValue = "1")
+    @SerializedName(SORT)
+    @Expose
+    private String sort;
+
     @DatabaseField(columnName = REMARK, canBeNull = false,defaultValue = "")
     @SerializedName(REMARK)
     @Expose
     private String remark;
 
-    @DatabaseField(columnName = LASTUPDATETIME, canBeNull = false)
+    @DatabaseField(columnName = LASTUPDATETIME, canBeNull = false,defaultValue = "0")
     @SerializedName(LASTUPDATETIME)
     @Expose
     private String LastUpdateTime;
@@ -181,6 +188,14 @@ public class DataDictionary extends Model<Operator, Long> implements Identity<Lo
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getSort() {
+        return sort;
+    }
+
+    public void setSort(String sort) {
+        this.sort = sort;
     }
 
     public String getRemark() {

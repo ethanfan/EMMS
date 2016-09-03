@@ -31,6 +31,7 @@ public class TestActivity extends Activity {
         }else {
             startActivity(new Intent(this, LoginActivity.class));
         }
+        finish();
     }
 
 }

@@ -108,7 +108,7 @@ public class CommandActivity extends NfcActivity  {
                 if(nfcDialog!=null&&!nfcDialog.isShowing()){
                     nfcDialog.show();}
                 nfctag=1;
-                //postTaskCommandToServer();
+                postTaskCommandToServer();
             }
         });
         //initTopToolbar
@@ -157,7 +157,7 @@ public class CommandActivity extends NfcActivity  {
             Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             String iccardID = NfcUtils.dumpTagData(tag);
             if(nfctag==1){
-                postTaskCommandToServer(iccardID);
+                //postTaskCommandToServer(iccardID);
                 if(nfcDialog!=null&&nfcDialog.isShowing()){
                     nfcDialog.dismiss();
                 }
@@ -196,7 +196,7 @@ public class CommandActivity extends NfcActivity  {
             }
         });
     }
-    private void postTaskCommandToServer(final String iccardID){
+    private void postTaskCommandToServer(){
 
         if(nfcDialog!=null&&!nfcDialog.isShowing()){
             nfcDialog.show();}
@@ -218,7 +218,9 @@ public class CommandActivity extends NfcActivity  {
                 dismissCustomDialog();
                 if(t!=null){
                 ToastUtil.showToastLong(R.string.commandSuccess,context);
-                TaskComplete(iccardID);}else {
+               // TaskComplete(iccardID);
+                    finish();
+                }else {
                     ToastUtil.showToastLong(R.string.submitFail,context);
                 }
             }
@@ -278,104 +280,68 @@ public class CommandActivity extends NfcActivity  {
             }
         });
     }
-    private void TaskCompleteScan(){
-        //HttpParams httpParams=new HttpParams();
-        //getTaskEquipmentFromServerByTaskId();
-    }
-    private void TaskComplete(String iccardId){
-        HttpParams params=new HttpParams();
-        JsonObjectElement data=new JsonObjectElement();
-        data.set("Task_ID",task_id.getText().toString());
-        params.putJsonParams(data.toJson());
-        HttpUtils.post(this, "TaskFinish", params, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                if(t!=null){
-                JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
-                        jsonObjectElement.get("Success").valueAsBoolean()){
-                ToastUtil.showToastLong(R.string.taskComplete,context);
-                    if(nfcDialog!=null&&nfcDialog.isShowing()){
-                        nfcDialog.dismiss();
-                    }
-                    startActivity(new Intent(context,MainActivity.class));
-                }else {
-                    ToastUtil.showToastLong("无法提交任务完成，请检查任务信息",context);
-                }
-            }}
-
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.submitFail,context);
-            }
-        });
-    }
-
-
-    public void getOperatorInfoFromServer(String iccardID){
-        showCustomDialog(R.string.loadingData);
-        HttpParams httpParams=new HttpParams();
-        httpParams.put("ICCardID",Integer.valueOf(iccardID));
-        HttpUtils.getWithoutCookies(this, "Token", httpParams, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-                if(t!=null){
-                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.scanICCardSuccess,context);}
-                    else{
-                        ToastUtil.showToastLong("刷卡登录失败",context);
-                    }
-                }
-                dismissCustomDialog();
-            }
-
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.scanICCardFail,context);
-                dismissCustomDialog();
-            }
-        });
-    }
+//    private void TaskCompleteScan(){
+//        //HttpParams httpParams=new HttpParams();
+//        //getTaskEquipmentFromServerByTaskId();
+//    }
+//    private void TaskComplete(String iccardId){
+//        HttpParams params=new HttpParams();
+//        JsonObjectElement data=new JsonObjectElement();
+//        data.set("Task_ID",task_id.getText().toString());
+//        params.putJsonParams(data.toJson());
+//        HttpUtils.post(this, "TaskFinish", params, new HttpCallback() {
+//            @Override
+//            public void onSuccess(String t) {
+//                if(t!=null){
+//                JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+//                if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
+//                        jsonObjectElement.get("Success").valueAsBoolean()){
+//                ToastUtil.showToastLong(R.string.taskComplete,context);
+//                    if(nfcDialog!=null&&nfcDialog.isShowing()){
+//                        nfcDialog.dismiss();
+//                    }
+//                    finish();
+//                   // startActivity(new Intent(context,CusActivity.class));
+//                }else {
+//                    ToastUtil.showToastLong("无法提交任务完成，请检查任务信息",context);
+//                }
+//            }}
+//
+//            @Override
+//            public void onFailure(int errorNo, String strMsg) {
+//                super.onFailure(errorNo, strMsg);
+//                ToastUtil.showToastLong(R.string.submitFail,context);
+//            }
+//        });
+//    }
 
 
-    private void getTaskEquipmentFromServerByTaskId() {
+//    public void getOperatorInfoFromServer(String iccardID){
+//        showCustomDialog(R.string.loadingData);
+//        HttpParams httpParams=new HttpParams();
+//        httpParams.put("ICCardID",Integer.valueOf(iccardID));
+//        HttpUtils.getWithoutCookies(this, "Token", httpParams, new HttpCallback() {
+//            @Override
+//            public void onSuccess(String t) {
+//                super.onSuccess(t);
+//                if(t!=null){
+//                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+//                    if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
+//                        ToastUtil.showToastLong(R.string.scanICCardSuccess,context);}
+//                    else{
+//                        ToastUtil.showToastLong("刷卡登录失败",context);
+//                    }
+//                }
+//                dismissCustomDialog();
+//            }
+//
+//            @Override
+//            public void onFailure(int errorNo, String strMsg) {
+//                super.onFailure(errorNo, strMsg);
+//                ToastUtil.showToastLong(R.string.scanICCardFail,context);
+//                dismissCustomDialog();
+//            }
+//        });
+//    }
 
-        if (null == task_id.getText().toString()||task_id.getText().toString().equals("")) {
-            return;
-        }
-        showCustomDialog(R.string.loadingData);
-        HttpParams params = new HttpParams();
-        params.put("task_id", task_id.getText().toString());
-        params.put("pageSize",1000);
-        params.put("pageIndex",1);
-        //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
-        HttpUtils.get(this, "TaskDetailList", params, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-                dismissCustomDialog();
-                if (t != null) {
-                    ArrayElement jsonArrayElement = new JsonArrayElement(t);
-                    if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
-                        for(int i=0;i<jsonArrayElement.size();i++ ){
-                            if(!DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("Status")).equals(STATUS_DONE)){
-                                ToastUtil.showToastLong(R.string.TaskEquipmentNotComplete,context);
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-                dismissCustomDialog();
-                ToastUtil.showToastLong("获取设备状态失败，访问超时",context);
-            }
-        });
-    }
 }

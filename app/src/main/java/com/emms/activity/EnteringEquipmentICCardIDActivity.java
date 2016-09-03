@@ -43,6 +43,7 @@ import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/6/22.
+ *
  */
 public class EnteringEquipmentICCardIDActivity extends NfcActivity implements View.OnClickListener {
     private ResultListAdapter mResultAdapter;
@@ -202,13 +203,13 @@ private void initView(){
                         }
                     });
                 } else {
-                    Toast.makeText(context, "出错了", Toast.LENGTH_SHORT).show();
+                    ToastUtil.showToastLong(R.string.error_occur,context);
                 }
             }
         });
         initDropSearchView(null, equipment_id.getmEditText(), context.getResources().
-                        getString(R.string.work_num_dialog), Equipment.ORACLE_ID,
-                1, "获取数据失败",equipment_id.getDropImage());
+                        getString(R.string.work_num_dialog), Equipment.ASSETSID,
+                1, R.string.getDataFail,equipment_id.getDropImage());
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -262,7 +263,7 @@ private void initView(){
 
     private void initDropSearchView(
             final EditText condition,EditText subEditText,
-            final String searchTitle,final String searchName,final int searTag ,final String tips,ImageView imageView){
+            final String searchTitle,final String searchName,final int searTag ,final int tips,ImageView imageView){
         subEditText.setOnClickListener(
                         new View.OnClickListener() {
                             @Override
@@ -281,7 +282,7 @@ private void initView(){
        });
     }
     private void DropSearch(final EditText condition,
-                            final String searchTitle,final String searchName,final int searTag ,final String tips){
+                            final String searchTitle,final String searchName,final int searTag ,final int tips){
         ((Activity)context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -301,7 +302,7 @@ private void initView(){
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                        ToastUtil.showToastLong(tips,context);
                     }
                 } else {
                     if (searchDataLists.size() > 0) {
@@ -312,7 +313,7 @@ private void initView(){
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                        ToastUtil.showToastLong(tips,context);
                     }
                 }
             }

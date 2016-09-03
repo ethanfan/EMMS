@@ -47,6 +47,12 @@
                     android:text="0"
                     android:layout_toRightOf="@+id/textView17"
                     android:id="@+id/device_count" />
+                <com.emms.ui.ScrollViewWithListView
+                    android:layout_below="@+id/deal_count"
+                    android:id="@+id/problem_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                </com.emms.ui.ScrollViewWithListView>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -106,12 +112,7 @@
                     android:layout_alignTop="@+id/textView18"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true" />
-                <com.emms.ui.ScrollViewWithListView
-                    android:layout_below="@id/deal_count"
-                    android:id="@+id/problem_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                </com.emms.ui.ScrollViewWithListView>
+
                 <!--<LinearLayout-->
                     <!--android:id="@+id/line"-->
                     <!--android:layout_marginTop="5dp"-->
@@ -373,8 +374,25 @@
                             android:layout_height="wrap_content"
                             android:layout_alignLeft="@+id/repair_speed_tag"
                             android:layout_marginTop="15dp"
+                            android:id="@+id/mes"
                             android:text="@string/command_standard"
                             android:layout_below="@+id/repair_speed_tag"/>
+                        <Button
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/yellow"
+                            android:text="@string/sure"
+                            android:textColor="@color/white"
+                            android:layout_centerHorizontal="true"
+                            android:textSize="17sp"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:visibility="gone"
+                            android:id="@+id/submitCommand"
+                            android:layout_below="@+id/mes"
+                            />
                     </RelativeLayout>
                 </RelativeLayout>
 <!--
@@ -395,7 +413,7 @@
                         android:text="@string/task_reason_add"
                         android:id="@+id/textView21" />
 
-                    <com.emms.ui.DropEditText
+                    <com.ic_emms.ui.DropEditText
                         android:id="@+id/task_reason_edit"
                         android:layout_width="0dp"
                         android:layout_weight="1"
@@ -404,7 +422,7 @@
                         drop:dropMode="flow_parent"
                         drop:hint="@string/task_reason"
                         drop:hintColor="@color/text_color">
-                    </com.emms.ui.DropEditText>
+                    </com.ic_emms.ui.DropEditText>
                 </LinearLayout>
 
                 <LinearLayout

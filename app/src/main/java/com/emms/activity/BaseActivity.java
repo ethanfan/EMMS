@@ -52,6 +52,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 operator.setTeamId(json.get("Team_ID").valueAsString());
                 operator.setTeamName(json.get("TeamName").valueAsString());
                 operator.setName(json.get("Name").valueAsString());
+                operator.setMaintenMan(json.get("IsMaintenMan").valueAsBoolean());
                 operator.setOrganiseID(json.get("Organise_ID").valueAsString());
                 operator.setOperator_no(json.get("OperatorNo").valueAsString());
 //                operator = Operator.fromJson(userData, null, Operator.class);
@@ -74,6 +75,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 operator.setTeamId(json.get("Team_ID").valueAsString());
                 operator.setTeamName(json.get("TeamName").valueAsString());
                 operator.setName(json.get("Name").valueAsString());
+                operator.setMaintenMan(json.get("IsMaintenMan").valueAsBoolean());
                 operator.setOrganiseID(json.get("Organise_ID").valueAsString());
                 operator.setOperator_no(json.get("OperatorNo").valueAsString());
 //              operator = Operator.fromJson(userData, null, Operator.class);

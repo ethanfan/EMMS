@@ -6,6 +6,9 @@ import com.emms.schema.Task;
  * Created by Administrator on 2016/8/7.
  */
 public class RootUtil {
+    public static String ROOTREPAIRLEADER="2";
+    public static String ROOTREPAIR="1";
+    public static String ROOTWARRANTY="0";
     //权限机制
     public static boolean rootStatus(int ThisStatus,int CompareStatus){
         //1表示处理中任务

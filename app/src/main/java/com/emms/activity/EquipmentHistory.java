@@ -53,6 +53,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2016/8/22.
+ *
  */
 public class EquipmentHistory extends NfcActivity implements View.OnClickListener{
     private PullToRefreshListView listView;
@@ -60,7 +61,8 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
     private String Equipment_ID="";
     private String Task_Description="";
     private String EquipmentName="";
-    private static int PAGE_SIZE=10;
+    private String FaultType="";
+    private int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
     private Handler handler=new Handler();
@@ -90,7 +92,8 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
         //createTextData();
         initView();
         if(Equipment_ID!=null || EquipmentName!=null || Task_Description!=null){
-        getEquipmentHistoryFromServer();
+            findViewById(R.id.search_filter).setVisibility(View.INVISIBLE);
+            getEquipmentHistoryFromServer();
         }
         initData();
         initSearchView();
@@ -139,12 +142,14 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent=new Intent(context,EquipmentFaultSummaryActivity.class);
                 intent.putExtra("FaultDetail",fault_summary_list.get(position-1).asObjectElement().toString());
+                intent.putExtra(Equipment.EQUIPMENT_NAME,EquipmentName);
                 startActivity(intent);
             }
         });
         findViewById(R.id.filter).setOnClickListener(this);
         findViewById(R.id.filter).setVisibility(View.VISIBLE);
         findViewById(R.id.search_button).setOnClickListener(this);
+        findViewById(R.id.search_filter).setOnClickListener(this);
         adapter=new TaskAdapter(fault_summary_list) {
             @Override
             public View getCustomView(View convertView, int position, ViewGroup parent) {
@@ -171,63 +176,58 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
         listView.setAdapter(adapter);
     }
     private void getEquipmentHistoryFromServer(){
-        showCustomDialog(R.string.loadingData);
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
                 ToastUtil.showToastLong(R.string.noMoreData,context);
                 return;
             }}
-        if(!(EquipmentName!=null&& !EquipmentName.equals("")&& Task_Description!=null&& !Task_Description.equals(""))){
-            if (equipment_name.getText().equals("")) {
-                EquipmentName=equipment_name.getText();
-            }
-            if (task_description.getText().equals("")) {
-                Task_Description=task_description.getText();
-            }
-        }
-//        if(EquipmentName.equals("")){
-//            ToastUtil.showToastLong(R.string.pleaseSelectEquipmentName,context);
-//            return;
-//        }
-//        if(Task_Description.equals("")){
-//            ToastUtil.showToastLong(R.string.pleaseSelectTaskDescription,context);
-//            return;
-//        }
-
+        showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
-        params.put("pageSize",PAGE_SIZE);
-        params.put("pageIndex",pageIndex);
-//        params.put(Equipment.EQUIPMENT_NAME,EquipmentName);
-//        params.put(Task.TASK_DESCRIPTION,Task_Description);
-        HttpUtils.get(this, "TaskEquipmentHistoryList", params, new HttpCallback() {
+        JsonObjectElement json=new JsonObjectElement();
+        json.set("pageSize",PAGE_SIZE);
+        json.set("pageIndex",pageIndex);
+//        params.put("pageSize",PAGE_SIZE);
+//        params.put("pageIndex",pageIndex);
+        if(EquipmentName!=null&&!EquipmentName.equals("")){
+        //params.put("equipmentClass",EquipmentName);
+            json.set("EquipmentClass",EquipmentName);
+        }
+        if(Task_Description!=null&&!Task_Description.equals("")){
+       // params.put("taskDescr",Task_Description);
+            json.set("TaskDescr",Task_Description);
+        }
+        if(FaultType!=null&&!FaultType.equals("")){
+            //params.put("troubleType",FaultType);
+            json.set("TroubleType",FaultType);
+        }
+        params.putJsonParams(json.toJson());
+        HttpUtils.post(this, "TaskEquipmentHistoryList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
-                super.onSuccess(t);
+                    super.onSuccess(t);
                 if(t!=null){
+                    if (pageIndex == 1) {
+                        fault_summary_list.clear();
+                    }
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    // int RecCount=jsonObjectElement.get("RecCount").valueAsInt();
-                    //  if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()==0){
-                    //提示没有处理中的任务
-                    //  }
                     if(jsonObjectElement.get("PageData")!=null
                             &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
                         RecCount = jsonObjectElement.get("RecCount").valueAsInt();
-                        if (pageIndex == 1) {
-                            fault_summary_list.clear();
-                        }
                         pageIndex++;
                         for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
                             fault_summary_list.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.setDatas(fault_summary_list);
-                                adapter.notifyDataSetChanged();
-                            }
-                        });
                         //      setData(datas);
+                    }else {
+                        ToastUtil.showToastLong(R.string.noData,context);
                     }
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.setDatas(fault_summary_list);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
 
                 }
                 dismissCustomDialog();
@@ -260,6 +260,9 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                     //findViewById(R.id.search_filter).setVisibility(View.GONE);
                     buttonAnim(false);
                 }
+                break;
+            }
+            case R.id.search_filter:{
                 break;
             }
             case R.id.search_button:{
@@ -304,29 +307,31 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                                     break;}
                                 case 2:{
                                     task_description.getmEditText().setText(searchResult);
+                                    Task_Description=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(DataDictionary.DATA_CODE));
                                     break;
                                 }
                                 case 3:{
                                     fault_type.getmEditText().setText(searchResult);
+                                    FaultType=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(DataDictionary.DATA_CODE));
                                 }
                             }
                             mDrawer_layout.closeDrawer(Gravity.RIGHT);
                         }
                     });
                 } else {
-                    Toast.makeText(context, "出错了", Toast.LENGTH_SHORT).show();
+                    ToastUtil.showToastLong(R.string.error_occur,context);
                 }
             }
         });
         initDropSearchView(null, equipment_name.getmEditText(), context.getResources().
                         getString(R.string.title_search_equipment_name),Equipment.EQUIPMENT_NAME,
-                1, "获取数据失败",equipment_name.getDropImage());
+                1, R.string.getDataFail,equipment_name.getDropImage());
         initDropSearchView(null, task_description.getmEditText(), context.getResources().
                         getString(R.string.simpleDescription), DataDictionary.DATA_NAME,
-                2, "请选择设备名称或该设备名称无对应任务描述",task_description.getDropImage());
+                2, R.string.pleaseSelectEquipmentNameOrNoData,task_description.getDropImage());
         initDropSearchView(null, fault_type.getmEditText(), context.getResources().
                         getString(R.string.faultType),DataDictionary.DATA_NAME,
-                3, "请选择设备名称或该设备名称无对应任务描述",fault_type.getDropImage());
+                3, R.string.pleaseSelectEquipmentName,fault_type.getDropImage());
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -379,7 +384,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
     }
     private void initDropSearchView(
             final EditText condition, EditText subEditText,
-            final String searchTitle, final String searchName, final int searTag , final String tips, ImageView imageView){
+            final String searchTitle, final String searchName, final int searTag , final int tips, ImageView imageView){
         subEditText.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -397,7 +402,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
         });
     }
     private void DropSearch(final EditText condition,
-                            final String searchTitle,final String searchName,final int searTag ,final String tips){
+                            final String searchTitle,final String searchName,final int searTag ,final int tips){
         ((Activity)context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -425,7 +430,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                        ToastUtil.showToastLong(tips,context);
                     }
                 } else {
                     if (searchDataLists.size() > 0) {
@@ -436,7 +441,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        Toast.makeText(context, tips, Toast.LENGTH_SHORT).show();
+                        ToastUtil.showToastLong(tips,context);
                     }
                 }
             }
@@ -480,7 +485,12 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                     for (int i=0;i<element.asArrayElement().size();i++){
                         task_description_list.add(element.asArrayElement().get(i).asObjectElement());
                     }
+
                 }
+                JsonObjectElement jsonObjectElement=new JsonObjectElement();
+                jsonObjectElement.set(DataDictionary.DATA_NAME,getResources().getString(R.string.other));
+                jsonObjectElement.set(DataDictionary.DATA_CODE,"00");
+                task_description_list.add(0,jsonObjectElement);
             }
 
             @Override

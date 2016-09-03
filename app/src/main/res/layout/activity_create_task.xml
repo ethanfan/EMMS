@@ -352,6 +352,7 @@
                             android:minHeight="40dip"
                             android:textColor="@color/text_color"
                             android:hint="@string/task_description_hint"
+                            android:background="@color/transparent"
                             android:id="@+id/task_description"
                             >
                         </EditText>

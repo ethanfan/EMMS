@@ -74,11 +74,13 @@ public class MultiAdapter extends BaseAdapter {
 
     List<Integer> listItemID;
     //HashSet<Integer> OperatorSet=new HashSet<Integer>();
+    private boolean tag=false;
     @SuppressLint("UseSparseArrays")
     private Map<Integer, View> viewMap = new HashMap<Integer, View>();
-    public MultiAdapter(Context context, List<ObjectElement> listItems) {
+    public MultiAdapter(Context context, List<ObjectElement> listItems,boolean tag) {
         // TODO Auto-generated constructor stub
         this.ctx = context;
+        this.tag=tag;
         this.listItems = listItems;
         for (int i = 0; i < listItems.size(); i++) {// 遍历且设置CheckBox默认状态为未选中
             mChecked.add(false);
@@ -157,6 +159,9 @@ public class MultiAdapter extends BaseAdapter {
             convertView.setTag(holder);
         }else{
             holder = (ViewHolder)convertView.getTag();
+        }
+        if(!tag){
+           convertView.findViewById(R.id.layout).setVisibility(View.GONE);
         }
         holder.workname.setText(DataUtil.isDataElementNull(Operator.get("Name")));
         holder.tech.setText(DataUtil.isDataElementNull(Operator.get("Skill")));

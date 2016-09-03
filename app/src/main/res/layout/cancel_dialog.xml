@@ -12,37 +12,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
-        android:textSize="25sp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
+        android:textSize="18sp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:layout_centerInParent="true"
         android:textColor="@color/text_color"
         android:text="@string/cancleTask"/>
     </RelativeLayout>
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:layout_below="@+id/title"
-        android:id="@+id/line1"
-        android:background="#0000FF"></View>
-      <TextView
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="10dp"
-          android:layout_marginLeft="30dp"
-          android:layout_below="@+id/line1"
-          android:layout_alignLeft="@+id/title"
-          android:textSize="20sp"
-          android:textColor="@color/text_color"
-          android:id="@+id/label"
-          android:text="@string/pleaseInputCancleTaskReason"/>
+        android:id="@+id/line1"></View>
+
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="140dp"
-        android:layout_below="@+id/label"
+        android:layout_height="160dp"
+        android:layout_below="@+id/line1"
         android:id="@+id/layout"
         android:background="@color/white"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="30dp"
         android:layout_alignLeft="@+id/label">
     <EditText
         android:layout_width="match_parent"
@@ -50,16 +38,15 @@
         android:textColor="@color/text_color"
         android:padding="10dp"
         android:id="@+id/CancelReason"
-        android:hint="@string/pleaseInput"
+        android:background="@color/transparent"
+        android:hint="@string/pleaseInputCancleTaskReason"
         android:textColorHint="@color/hint_color"/>
     </RelativeLayout>
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginTop="20dp"
+        android:layout_height="1dp"
         android:layout_below="@+id/layout"
-        android:id="@+id/line2"
-        android:background="#0000FF"></View>
+        android:id="@+id/line2"></View>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -69,8 +56,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:textColor="@color/text_color"
-            android:layout_toLeftOf="@+id/aaaa"
+            android:textColor="@color/esquel_red"
+            android:layout_toRightOf="@+id/aaaa"
             android:id="@+id/comfirm"
             android:text="@string/sure"
             android:textSize="20sp"/>
@@ -79,13 +66,12 @@
             android:layout_height="30dp"
             android:id="@+id/aaaa"
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:background="#0000FF"></View>
+            android:layout_centerVertical="true"></View>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:layout_toRightOf="@+id/aaaa"
+            android:layout_toLeftOf="@+id/aaaa"
             android:id="@+id/cancel"
             android:textColor="@color/text_color"
             android:text="@string/cancel"

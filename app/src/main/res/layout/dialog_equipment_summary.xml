@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pleaseSelectEquipmentName"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/text_color"
+        android:id="@+id/title"
+        android:padding="10dp"
+        android:textSize="20sp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_below="@+id/title"
+        android:id="@+id/line1"
+        android:layout_height="2dp"
+        android:background="#EDEDED"
+        />
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/line1"
+        android:id="@+id/list"
+        android:divider="#EDEDED"
+        android:dividerHeight="1dp">
+    </ListView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@+id/list"
+        android:id="@+id/line2"
+        android:background="#EDEDED"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textSize="20sp"
+        android:layout_below="@+id/line2"
+        android:id="@+id/cancel"
+        android:background="@color/white"
+        android:textColor="@color/text_color"
+        android:text="@string/cancel"/>
+</RelativeLayout>

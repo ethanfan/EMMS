@@ -105,7 +105,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         findViewById(R.id.systemSetting).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShowPopWindow(v);
+                startActivity(new Intent(mContext,SystemSettingActivity.class));
             }
         });
     }
@@ -168,7 +168,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                         SharedPreferenceManager.setUserName(LoginActivity.this, userid);
                         SharedPreferenceManager.setPassWord(LoginActivity.this, password);
                         LoginSuccessEvent(t,true);
-
                     }
                 });
                 break;
@@ -367,19 +366,19 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 }
             }
        for(int i=0;i<data.asArrayElement().size();i++){
-           Log.e("","");
         getSqliteStore().updateElement(DataUtil.isDataElementNull(data.asArrayElement().get(i).asObjectElement().get(s)),
                 data.asArrayElement().get(i), resource, new StoreCallback() {
                     @Override
                     public void success(DataElement element, String resource) {
-                        Log.e("","");
+                        Log.e("SuccessUpdate","SuccessUpdate");
                     }
 
                     @Override
                     public void failure(DatastoreException ex, String resource) {
-                       Log.e("","");
+                       Log.e("FailUpdate","FailUpdate");
                     }
                 });
+
        }
     }
       /*  for(int i=0;i<data.asArrayElement().size();i++) {
@@ -495,10 +494,11 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     }
     private void setStyleBasic(){
         BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(this);
-        builder.statusBarDrawable = R.drawable.ic_launcher;
+        builder.statusBarDrawable = R.drawable.ic_emms;
         builder.notificationFlags = Notification.FLAG_AUTO_CANCEL;  //设置为点击后自动消失
-        builder.notificationDefaults = Notification.DEFAULT_SOUND;  //设置为铃声（ Notification.DEFAULT_SOUND）或者震动（ Notification.DEFAULT_VIBRATE）
-        JPushInterface.setPushNotificationBuilder(1, builder);
+        builder.notificationDefaults = Notification.DEFAULT_SOUND;
+        //设置为铃声（ Notification.DEFAULT_SOUND）或者震动（ Notification.DEFAULT_VIBRATE）
+        JPushInterface.setPushNotificationBuilder(3, builder);
     }
 
     @Override
@@ -539,7 +539,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 try{
                     HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
                     dismissCustomDialog();
-                    ToastUtil.showToastLong("数据文件下载完毕",mContext);}catch (Exception e){
+                    ToastUtil.showToastLong(R.string.SuccessDownloadDB,mContext);}catch (Exception e){
                 }
             }
 

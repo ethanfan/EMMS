@@ -38,8 +38,6 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
         setContentView(R.layout.activity_main);
         //做动态定制化开发，由服务器返回窗口列表，APP根据ID来展示
         //使用gripView，Item为模块入口
-
-
         //维修工权限展现内容
         MaintenanceWorkerView();
         //维修工班组长以上角色展现内容

@@ -67,7 +67,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
         }
         taskId=getIntent().getStringExtra(Task.TASK_ID) ;
         getTaskOperatorListFromServer();
-        adapter=new MultiAdapter(InvitorActivity.this,listItems);
+        adapter=new MultiAdapter(InvitorActivity.this,listItems,true);
         mListView = (PullToRefreshListView) findViewById(R.id.id_wait_list);
         mListView.setAdapter(adapter);
         mGroupListView = (ListView) findViewById(R.id.group_list);
@@ -137,7 +137,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                         mListView.onRefreshComplete();
                         // Toast.makeText(mContext,"dada",Toast.LENGTH_SHORT).show();
                     }
-                },500);
+                },0);
             }
         });
     }
@@ -181,9 +181,8 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                         adapter.setListItems(listItems);
                 }
                 else{
-                    Toast toast=Toast.makeText(context,"获取数据失败",Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER,0,0);
-                    toast.show();}
+                    ToastUtil.showToastLong(R.string.getDataFail,context);
+                    }
                 }
                 dismissCustomDialog();
             }
@@ -312,7 +311,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                     if(json.get(Data.SUCCESS)!=null&&json.get(Data.SUCCESS).valueAsBoolean()){
                 if(isExChangeOrder){
                     //setResult(1);
-                    startActivity(new Intent(context,MainActivity.class));
+                    startActivity(new Intent(context,CusActivity.class));
                     Toast.makeText(InvitorActivity.this,R.string.exchangeOrderSuccess,Toast.LENGTH_LONG).show();
                 }else{
                 Toast.makeText(InvitorActivity.this,R.string.inviteSuccess,Toast.LENGTH_LONG).show();}

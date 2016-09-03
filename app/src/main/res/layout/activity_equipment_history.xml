@@ -17,6 +17,7 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
         android:id="@+id/equipment_history_list"
+        android:background="#EDEDED"
         android:divider="@android:color/transparent">
     </com.handmark.pulltorefresh.library.PullToRefreshListView>
             <LinearLayout
@@ -25,7 +26,6 @@
                 android:layout_height="wrap_content"
                 android:background="#E6ECF8"
                 android:id="@+id/search_filter"
-                android:visibility="invisible"
                 android:layout_below="@+id/toolbar">
         <LinearLayout
             android:layout_width="match_parent"
