@@ -25,8 +25,10 @@ import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.ui.CancelTaskDialog;
 import com.emms.ui.TaskCancelListener;
+import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.RootUtil;
+import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -117,6 +119,9 @@ public class AllTaskHistoryFragment extends BaseFragment {
                 if(DataUtil.isDataElementNull(data.get(position).get("IsEvaluated")).equals("1")){
                     holder.tv_creater.setText(getResources().getString(R.string.isCommand));
                     holder.tv_creater.setTextColor(getResources().getColor(R.color.order_color));
+                }else{
+                    holder.tv_creater.setText(getResources().getString(R.string.NoCommand));
+                    holder.tv_creater.setTextColor(getResources().getColor(R.color.esquel_red));
                 }
                 if(map.get(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_CLASS)))!=null) {
                     holder.tv_device_name.setText(map.get(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_CLASS))));
@@ -135,7 +140,10 @@ public class AllTaskHistoryFragment extends BaseFragment {
                 intent.putExtra(Task.TASK_CLASS,DataUtil.isDataElementNull(data.get(position-1).get(Task.TASK_CLASS)));
                 intent.putExtra("TaskStatus",taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))));
                 intent.putExtra("isTaskHistory",true);
-                startActivity(intent);
+                intent.putExtra("FromFragment","1");
+                intent.putExtra("IsEvaluated",DataUtil.isDataElementNull(data.get(position-1).get("IsEvaluated")));
+                startActivityForResult(intent, Constants.REQUEST_CODE_TASKHISTORY);
+               // startActivity(intent);
             }
 //                else {
 //                    Intent intent=new Intent(mContext,CommandActivity.class);
@@ -144,27 +152,32 @@ public class AllTaskHistoryFragment extends BaseFragment {
 //                }
 //           }
         });
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.getRefreshableView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                //待修改，权限
-                if(!RootUtil.ROOTREPAIRLEADER.equals("2")&&taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status")))==2){
-                    return;
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                //TODO
+                if ( Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))>4 || (taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))) == 2
+                ||taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))) == 3)) {
+                    return true;
                 }
-                CancelTaskDialog cancleTaskDialog=new CancelTaskDialog(mContext);
+                CancelTaskDialog cancleTaskDialog = new CancelTaskDialog(mContext);
                 cancleTaskDialog.setTaskCancelListener(new TaskCancelListener() {
                     @Override
                     public void submitCancel(String CancelReason) {
-                        CancelTask(data.get(position-1),CancelReason);
+                        CancelTask(data.get(position-1), CancelReason);
                     }
                 });
                 cancleTaskDialog.show();
+                return true;
             }
         });
         getTaskHistory();
         return v;
     }
-
+    public void doRefresh(){
+        pageIndex=1;
+        getTaskHistory();
+    }
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -191,7 +204,7 @@ public class AllTaskHistoryFragment extends BaseFragment {
         map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car));
         map.put(Task.OTHER_TASK,getResources().getString(R.string.other));
 
-        taskStatusMap.put(getResources().getString(R.string.pending_orders),0);
+        taskStatusMap.put(getResources().getString(R.string.waitingDeal),0);
         taskStatusMap.put(getResources().getString(R.string.start),1);
         taskStatusMap.put(getResources().getString(R.string.linked_order),2);
         taskStatusMap.put(getResources().getString(R.string.cancel),3);
@@ -204,9 +217,11 @@ public class AllTaskHistoryFragment extends BaseFragment {
             }}
         showCustomDialog(R.string.loadingData);
         HttpParams params = new HttpParams();
-        params.put("pageSize",PAGE_SIZE);
-        params.put("pageIndex",pageIndex);
-        HttpUtils.get(mContext, "TaskHistoryList", params, new HttpCallback() {
+        JsonObjectElement objectElement=new JsonObjectElement();
+        objectElement.set("pageSize",PAGE_SIZE);
+        objectElement.set("pageIndex",pageIndex);
+        params.putJsonParams(objectElement.toJson());
+        HttpUtils.post(mContext, "TaskHistoryList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

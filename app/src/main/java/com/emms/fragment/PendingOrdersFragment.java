@@ -66,6 +66,7 @@ public class PendingOrdersFragment extends BaseFragment{
                     @Override
                     public void run() {
                         pageIndex=1;
+                        removeNum=0;
                         getPendingOrderTaskDataFromServer();
                         listView.onRefreshComplete();
                      //   Toast.makeText(mContext,"获取数据成功",Toast.LENGTH_SHORT).show();
@@ -180,10 +181,10 @@ public class PendingOrdersFragment extends BaseFragment{
                 super.onSuccess(t);
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0)
                     RecCount=jsonObjectElement.get("RecCount").valueAsInt();
                     if(taskNumInteface!=null){
-                    taskNumInteface.ChangeTaskNumListener(1,RecCount);}
+                        taskNumInteface.ChangeTaskNumListener(1,RecCount);}
+                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0)
                     if(pageIndex==1){
                         datas.clear();
                     }
@@ -195,7 +196,7 @@ public class PendingOrdersFragment extends BaseFragment{
                         @Override
                         public void run() {
                             taskAdapter.setDatas(datas);
-                            taskAdapter.notifyDataSetChanged();
+                            //taskAdapter.notifyDataSetChanged();
                         }
                     });
                 }
@@ -240,7 +241,6 @@ public class PendingOrdersFragment extends BaseFragment{
                 super.onSuccess(t);
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                     if(jsonObjectElement!=null){
                          if(jsonObjectElement.get("Success").valueAsBoolean()){
                              //成功，通知用户接单成功
                              Toast toast=Toast.makeText(mContext,"接单成功",Toast.LENGTH_LONG);
@@ -256,7 +256,7 @@ public class PendingOrdersFragment extends BaseFragment{
 
                          taskAdapter.setDatas(datas);
                          taskAdapter.notifyDataSetChanged();
-                     }
+
                 }
             }
 
@@ -321,6 +321,7 @@ public class PendingOrdersFragment extends BaseFragment{
 
     private TaskNumInteface taskNumInteface;
     public void doRefresh(){
+        removeNum=0;
         pageIndex=1;
         getPendingOrderTaskDataFromServer();
     }
@@ -346,6 +347,7 @@ public class PendingOrdersFragment extends BaseFragment{
                     JsonObjectElement returnData=new JsonObjectElement(t);
                     if(returnData.get(Data.SUCCESS).valueAsBoolean()){
                         ToastUtil.showToastLong(R.string.SuccessCancelTask,mContext);
+                        removeNum=0;
                         pageIndex=1;
                         getPendingOrderTaskDataFromServer();
                     }else {

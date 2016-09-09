@@ -13,7 +13,7 @@ import java.util.Locale;
 /**
  * Created by jaffer.deng on 2016/6/3.
  */
-public class AppAplication extends Application {
+public class AppApplication extends Application {
 
     private EPassSqliteStoreOpenHelper sqliteStoreOpenHelper;
 

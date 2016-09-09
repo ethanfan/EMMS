@@ -176,6 +176,7 @@
                     android:layout_marginTop="20dp"
                     android:id="@+id/task_complete"
                     android:layout_below="@+id/line1"
+                    android:visibility="gone"
                     android:layout_alignLeft="@+id/textView19">
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -183,20 +184,28 @@
                     android:background="#DFDFDF"
                     android:visibility="gone"
                     android:id="@+id/fault_summary">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:id="@+id/out">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/fault_summary"
                         android:textColor="@color/esquel_red"
                         android:id="@+id/fault_title"
-                        android:layout_marginTop="5dp"
                         android:textSize="20sp"
                         android:layout_centerHorizontal="true"/>
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_below="@+id/out">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/fault_title"
-                        android:layout_marginTop="5dp"
                         android:textSize="17sp"
                         android:id="@+id/fault_type_tag"
                         android:textColor="@color/text_color"
@@ -208,6 +217,7 @@
                         android:textSize="17sp"
                         android:textColor="@color/text_color"
                         android:id="@+id/fault_type"
+                        android:layout_marginRight="5dp"
                         android:layout_toRightOf="@+id/fault_type_tag"/>
                     <TextView
                         android:layout_width="wrap_content"
@@ -225,6 +235,7 @@
                         android:layout_alignTop="@+id/fault_description_tag"
                         android:textColor="@color/text_color"
                         android:id="@+id/fault_description"
+                        android:layout_marginRight="5dp"
                         android:layout_toRightOf="@+id/fault_description_tag"/>
                     <TextView
                         android:layout_width="wrap_content"
@@ -243,7 +254,9 @@
                         android:textColor="@color/text_color"
                         android:id="@+id/repair_status"
                         android:layout_marginBottom="5dp"
+                        android:layout_marginRight="5dp"
                         android:layout_toRightOf="@+id/repair_status_tag"/>
+                </RelativeLayout>
                 </RelativeLayout>
                 <RelativeLayout
                     android:layout_width="match_parent"

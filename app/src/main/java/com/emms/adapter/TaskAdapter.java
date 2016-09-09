@@ -17,6 +17,7 @@ import java.util.List;
 
 /**
  * Created by jaffer.deng on 2016/6/21.
+ *
  */
 public abstract class TaskAdapter extends BaseAdapter{
 

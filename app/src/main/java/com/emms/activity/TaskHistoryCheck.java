@@ -3,6 +3,7 @@ package com.emms.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -39,7 +40,10 @@ import com.emms.schema.Task;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
+import com.emms.util.Bimp;
+import com.emms.util.Constants;
 import com.emms.util.DataUtil;
+import com.emms.util.FileUtils;
 import com.emms.util.ToastUtil;
 import com.emms.util.ViewFindUtils;
 import com.flyco.tablayout.SlidingTabLayout;
@@ -48,6 +52,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -445,10 +450,25 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
             findViewById(R.id.search_filter).startAnimation(operatingAnim2);
 
         }
-
+    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case Constants.REQUEST_CODE_TASKHISTORY:{
+                if(resultCode==0){
+                    ((PendingCommandFragment)mFragments.get(0)).doRefresh();
+                }else if(resultCode==1) {
+                    ((AllTaskHistoryFragment)mFragments.get(1)).doRefresh();
+                }else {
+                    ((FliterTaskHistoryFragment)mFragments.get(2)).doRefresh();
+                }
+                break;
+            }
+        }
+    }
         //findViewById(R.id.btn_menu).clearAnimation();
 
-}
+
     private class MyPagerAdapter extends FragmentPagerAdapter {
         public MyPagerAdapter(FragmentManager fm) {
             super(fm);

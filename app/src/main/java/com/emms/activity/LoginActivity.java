@@ -15,17 +15,23 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
+import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.DataElement;
+import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.datastore_android_sdk.rxvolley.toolbox.Loger;
+import com.datastore_android_sdk.schema.Query;
+import com.emms.ConfigurationManager;
 import com.emms.R;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
@@ -39,6 +45,7 @@ import com.emms.schema.Operator;
 import com.emms.schema.TaskOrganiseRelation;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.PopMenuLoginActivity;
+import com.emms.ui.UserRoleDialog;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.SharedPreferenceManager;
@@ -48,11 +55,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 import cn.jpush.android.api.BasicPushNotificationBuilder;
+import cn.jpush.android.api.CustomPushNotificationBuilder;
 import cn.jpush.android.api.JPushInterface;
 
 public class LoginActivity extends NfcActivity implements View.OnClickListener {
@@ -85,15 +94,8 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
 
     private void initView() {
         login = (TextView) findViewById(R.id.login);
-       // machine = (TextView) findViewById(R.id.machine);
         inputPassWord = (EditText) findViewById(R.id.inputPassWord);
         inputname = (EditText) findViewById(R.id.inputUserName);
-//        inputname.setText("GET0259106");
-//        inputPassWord.setText("888888");
-    //    SharedPreferenceManager.getUserName(this);
-    //    SharedPreferenceManager.getPassWord(this);
-     //   inputname.setText("GET0006236");
-     //   inputPassWord.setText("888888");
       inputname.setText(SharedPreferenceManager.getUserName(this));
       inputPassWord.setText(SharedPreferenceManager.getPassWord(this));
         login.setOnClickListener(this);
@@ -275,6 +277,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     }*/
     }
     private void getDataBaseUpdateFromServer(DataElement dataElement){
+
         HttpParams params=new HttpParams();
         JsonObjectElement data=new JsonObjectElement();
         data.set("LastUpdateTime_BaseOrganise", DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_BaseOrganise")));
@@ -282,13 +285,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         data.set("LastUpdateTime_DataType",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataType")));
         data.set("LastUpdateTime_Equipment",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_Equipment")));
         data.set("LastUpdateTime_TaskOrganiseRelation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_TaskOrganiseRelation")));
-
-//        data.set("LastUpdateTime_BaseOrganise","0x0000000000014985");
-//        data.set("LastUpdateTime_DataDictionary","0x0000000000014985");
-//        data.set("LastUpdateTime_DataType","0x0000000000014985");
-//        data.set("LastUpdateTime_Equipment","0x0000000000014985");
-//        data.set("LastUpdateTime_TaskOrganiseRelation","0x0000000000014985");
-
         if(SharedPreferenceManager.getFactory(this)==null){
         data.set("Factory_ID",def_Factory);}
         else {
@@ -321,8 +317,8 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     if(json.get("TaskOrganiseRelation")!=null&&json.get("TaskOrganiseRelation").asArrayElement().size()>0){
                         updateData(json.get("TaskOrganiseRelation"),EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION);}
                 }
+                ConfigurationManager.getInstance().startToGetNewConfig(mContext);
             }
-
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
@@ -366,21 +362,47 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 }
             }
        for(int i=0;i<data.asArrayElement().size();i++){
-        getSqliteStore().updateElement(DataUtil.isDataElementNull(data.asArrayElement().get(i).asObjectElement().get(s)),
-                data.asArrayElement().get(i), resource, new StoreCallback() {
-                    @Override
-                    public void success(DataElement element, String resource) {
-                        Log.e("SuccessUpdate","SuccessUpdate");
-                    }
+//           if(s==DataDictionary.DATA_ID){
+//               ObjectElement objectElement=data.asArrayElement().get(i).asObjectElement();
+//               String sql="UPDATE DATADICTIONARY SET "
+//                       + DataDictionary.FACTORY_ID+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.FACTORY_ID))
+//                       +"',"+DataDictionary.PDATA_ID+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.PDATA_ID))
+//                       +"',"+DataDictionary.DATA_TYPE+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_TYPE))
+//                       +"',"+DataDictionary.DATA_NAME+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_NAME))
+//                       +"',"+DataDictionary.DATA_DESCR+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_DESCR))
+//                       +"',"+DataDictionary.DATA_VALUE1+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_VALUE1))
+//                       +"',"+DataDictionary.DATA_VALUE2+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_VALUE2))
+//                       +"',"+DataDictionary.DATA_VALUE3+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_VALUE3))
+//                       +"',"+DataDictionary.LASTUPDATETIME+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.LASTUPDATETIME))
+//                       +"' WHERE "+DataDictionary.DATA_ID+"="+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_ID));
+//               getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
+//                   @Override
+//                   public void success(DataElement element, String resource) {
+//                       Log.e("","");
+//                   }
+//
+//                   @Override
+//                   public void failure(DatastoreException ex, String resource) {
+//                     Log.e("","");
+//                   }
+//               });
+//           }else {
+               getSqliteStore().updateElement(DataUtil.isDataElementNull(data.asArrayElement().get(i).asObjectElement().get(s)),
+                       data.asArrayElement().get(i), resource, new StoreCallback() {
+                           @Override
+                           public void success(DataElement element, String resource) {
+                               Log.e("SuccessUpdate", "SuccessUpdate");
+                           }
 
-                    @Override
-                    public void failure(DatastoreException ex, String resource) {
-                       Log.e("FailUpdate","FailUpdate");
-                    }
-                });
-
+                           @Override
+                           public void failure(DatastoreException ex, String resource) {
+                               Log.e("FailUpdate", "FailUpdate");
+                           }
+                       });
+           //}
        }
     }
+
       /*  for(int i=0;i<data.asArrayElement().size();i++) {
             getSqliteStore().updateElements(new Query(), data.asArrayElement().get(i),resource, new StoreCallback() {
                 @Override
@@ -436,13 +458,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_EXTRAS = "extras";
 
-    public void registerMessageReceiver() {
-        mMessageReceiver = new MessageReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
-        filter.addAction(MESSAGE_RECEIVED_ACTION);
-        registerReceiver(mMessageReceiver, filter);
-    }
 
     @Override
     public void resolveNfcMessage(Intent intent) {
@@ -498,7 +513,16 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         builder.notificationFlags = Notification.FLAG_AUTO_CANCEL;  //设置为点击后自动消失
         builder.notificationDefaults = Notification.DEFAULT_SOUND;
         //设置为铃声（ Notification.DEFAULT_SOUND）或者震动（ Notification.DEFAULT_VIBRATE）
-        JPushInterface.setPushNotificationBuilder(3, builder);
+        JPushInterface.setDefaultPushNotificationBuilder(builder);
+        JPushInterface.setPushNotificationBuilder(4, builder);
+    }
+    private void setStyleCustom(){
+        CustomPushNotificationBuilder builder = new CustomPushNotificationBuilder(this,R.layout.customer_notitfication_layout,R.id.icon, R.id.title, R.id.text);
+        builder.layoutIconDrawable = R.drawable.ic_emms;
+        builder.notificationFlags = Notification.FLAG_AUTO_CANCEL;  //设置为点击后自动消失
+        builder.notificationDefaults = Notification.DEFAULT_VIBRATE;
+        builder.developerArg0 = "developerArg2";
+        JPushInterface.setPushNotificationBuilder(2, builder);
     }
 
     @Override
@@ -588,28 +612,32 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     //boolean isSuccess = jsonObject.get("Success").equals(true);
                     if ((code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS ||
                             code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) ) {
+                        String Msg=jsonObject.getString("Msg");
+                        SharedPreferenceManager.setMsg(LoginActivity.this,Msg);
                         String userData =jsonObject.getString("UserData");
                         SharedPreferenceManager.setUserData(LoginActivity.this, userData);
-                        String data=jsonObject.getString("Data");
+                        final String data=jsonObject.getString("Data");
                         SharedPreferenceManager.setLoginData(LoginActivity.this,data);
-                        startActivity(new Intent(LoginActivity.this, CusActivity.class));
-
-                        //调用JPush API设置Tag\
-                        String Organise_ID=new JSONObject(data).get("Organise_ID").toString();
-                        Set<String> tagSet = new LinkedHashSet<String>();
-                        //tagSet.add(userid);
-                        tagSet.add("1002");
-                        String[]or=Organise_ID.split(",");
-                        for(int k=0;k<or.length;k++){
-                            tagSet.add(or[k]);
+                        JsonObjectElement json=new JsonObjectElement(Msg);
+                        final ArrayElement arrayElement=json.get("UserRoles").asArrayElement();
+                        if(arrayElement.size()==0){
+                            ToastUtil.showToastLong(R.string.NoRoleInfo,mContext);
+                        }else if(arrayElement.size()==1){
+                            SetRole(arrayElement.get(0).asObjectElement(),data);
+                        }else {
+                            final ArrayList<ObjectElement> list=new ArrayList<>();
+                            for(int i=0;i<arrayElement.size();i++){
+                                list.add(arrayElement.get(i).asObjectElement());
+                            }
+                            UserRoleDialog userRoleDialog=new UserRoleDialog(mContext,list);
+                            userRoleDialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    SetRole(list.get(position), data);
+                                }
+                            });
+                            userRoleDialog.show();
                         }
-                        tagSet.add(new JSONObject(data).get(Operator.OPERATOR_ID).toString());
-                        // PushService.registerMessageReceiver(mContext);
-                        JPushInterface.init(mContext);
-                        JPushInterface.resumePush(mContext);
-                        setStyleBasic();
-                        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, tagSet));
-                        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "1001"));
                     } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
                         Toast.makeText(mContext, getResources().getString(R.string.warning_message_frozen), Toast.LENGTH_SHORT).show();
                     } else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
@@ -634,5 +662,33 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             }
         }
         dismissCustomDialog();
+    }
+    private void initPush(String data){
+      try {
+    //调用JPush API设置Tag\
+    String Organise_ID = new JSONObject(data).get("Organise_ID").toString();
+    Set<String> tagSet = new LinkedHashSet<String>();
+    //tagSet.add(userid);
+    tagSet.add("1002");
+    String[] or = Organise_ID.split(",");
+    for (int k = 0; k < or.length; k++) {
+        tagSet.add(or[k]);
+    }
+    tagSet.add(new JSONObject(data).get(Operator.OPERATOR_ID).toString());
+    JPushInterface.init(mContext);
+    JPushInterface.resumePush(mContext);
+    setStyleCustom();
+    pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, tagSet));
+    pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "1001"));
+          }catch (Exception e){
+          }
+    }
+    private void SetRole(ObjectElement objectElement,String data){
+        SharedPreferenceManager.setUserRoleID(mContext,DataUtil.isDataElementNull(objectElement.get("UserRole_ID")));
+        SharedPreferenceManager.setUserModuleList(mContext,DataUtil.isDataElementNull(objectElement.get("AppInterfaceList")));
+        Intent intent=new Intent(LoginActivity.this,CusActivity.class);
+        intent.putExtra("Module_ID_List",DataUtil.isDataElementNull(objectElement.get("AppInterfaceList")));
+        startActivity(intent);
+        initPush(data);
     }
 }

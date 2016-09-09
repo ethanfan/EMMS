@@ -3,6 +3,7 @@ package com.emms.adapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -55,5 +56,6 @@ public abstract class SubTaskAdapter extends BaseAdapter{
         public  TextView status;
         public  TextView work_description;
         public  TextView equipment_num;
+        public ImageView imageView;
     }
 }

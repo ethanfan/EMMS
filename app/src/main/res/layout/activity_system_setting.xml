@@ -16,7 +16,7 @@
         android:horizontalSpacing="5dp"
         android:background="#EDEDED"
         android:layout_below="@+id/toolbar"
-        android:id="@+id/model_list"
+        android:id="@+id/module_list"
         android:numColumns="3"
         >
     </GridView>

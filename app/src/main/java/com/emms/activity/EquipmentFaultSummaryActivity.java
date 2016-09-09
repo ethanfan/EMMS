@@ -13,6 +13,7 @@ import com.emms.util.DataUtil;
 
 /**
  * Created by Administrator on 2016/8/24.
+ *
  */
 public class EquipmentFaultSummaryActivity extends NfcActivity implements View.OnClickListener{
     @Override
@@ -38,7 +39,8 @@ public class EquipmentFaultSummaryActivity extends NfcActivity implements View.O
         ((TextView)findViewById(R.id.fault_type)).setText(DataUtil.isDataElementNull(Detail.get("TroubleType")));
         ((TextView)findViewById(R.id.fault_description)).setText(DataUtil.isDataElementNull(Detail.get("TroubleDescribe")));
         ((TextView)findViewById(R.id.repair_status)).setText(DataUtil.isDataElementNull(Detail.get("MaintainDescribe")));
-        ((TextView)findViewById(R.id.equipment_name)).setText(getIntent().getStringExtra(Equipment.EQUIPMENT_NAME));
+        ((TextView)findViewById(R.id.equipment_name)).setText(DataUtil.isDataElementNull(Detail.get("TaskEquipmentList")));
+
 
     }
     @Override

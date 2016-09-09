@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -33,7 +32,6 @@ import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
-import com.emms.adapter.WorkloadAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
@@ -47,7 +45,6 @@ import com.emms.ui.KProgressHUD;
 import com.emms.ui.NFCDialog;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
-import com.emms.util.RootUtil;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.SoftInputUtil;
 import com.emms.util.ToastUtil;
@@ -59,12 +56,10 @@ import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 
 /**
  * Created by jaffer.deng on 2016/6/7.
@@ -383,9 +378,10 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
             @Override
             public void afterTextChanged(Editable s) {
+                //TODO
                     if(s.toString().equals(getResources().getString(R.string.other))){
                         findViewById(R.id.task_description_layout).setVisibility(View.VISIBLE);
-                        if(getLoginInfo().isMaintenMan()){
+                        if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))!=7){
                         findViewById(R.id.layout_standard_workload).setVisibility(View.VISIBLE);
                         }
                     }else{
@@ -940,7 +936,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                     if(findViewById(R.id.task_description).getVisibility()==View.VISIBLE){
                         simpledescription=task_description.getText().toString();}
                     //待修改，等待权限
-                    if(RootUtil.ROOTREPAIRLEADER.equals("2")) {
+                    //TODO
+                    if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))!=7) {
                         if (standard_workload.getmEditText().getText().toString().equals("")){
                             ToastUtil.showToastLong(R.string.NoWorkload,mContext);
                             return;
@@ -1194,8 +1191,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             task.set("TaskEquipment",jsonArrayElement);
         }
        //包装数据
-
-
+      //填写创建人角色
+       task.set("UserRole_ID",SharedPreferenceManager.getUserRoleID(this));
         params.putJsonParams(task.toJson());
         HttpUtils.postWithoutCookie(this, "TaskCollection", params, new HttpCallback() {
             @Override
@@ -1451,7 +1448,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private void initWorkloadData(){
         try {
             String rawQuery = "select DataCode,DataName from DataDictionary where DataType='WorkTime'  order by Data_ID asc";
-            ListenableFuture<DataElement> elemt = ((AppAplication) ((Activity)mContext).getApplication()).getSqliteStore().performRawQuery(rawQuery,
+            ListenableFuture<DataElement> elemt = ((AppApplication) ((Activity)mContext).getApplication()).getSqliteStore().performRawQuery(rawQuery,
                     EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, null);
             Futures.addCallback(elemt, new FutureCallback<DataElement>() {
                 @Override

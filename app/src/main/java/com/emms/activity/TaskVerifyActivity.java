@@ -16,9 +16,11 @@ import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.datastore_android_sdk.rxvolley.http.VolleyError;
 import com.emms.R;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
@@ -76,7 +78,7 @@ public class TaskVerifyActivity extends NfcActivity {
                 holder.tv_group.setText(DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.ORGANISE_NAME)));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.TASK_DESCRIPTION)));
                 holder.tv_create_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.APPLICANT_TIME))));
-                holder.tv_device_name.setText(DataUtil.getDate(DataUtil.isDataElementNull(VerifyTaskList.get(position).get("EquipmentName"))));
+                holder.tv_device_name.setText(DataUtil.getDate(DataUtil.isDataElementNull(VerifyTaskList.get(position).get("TaskEquipmentList"))));
                 holder.acceptTaskButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -87,7 +89,7 @@ public class TaskVerifyActivity extends NfcActivity {
                 holder.rejectTaskButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TaskPass(position,0);
+                        TaskPass(position,2);
                     }
                 });
                 return convertView;
@@ -131,8 +133,37 @@ public class TaskVerifyActivity extends NfcActivity {
         });
         getVerfyTaskListFromServer();
     }
-    private void TaskPass(int position,int status){
+    private void TaskPass(final int position, int status){
+        showCustomDialog(R.string.submitData);
+        HttpParams params=new HttpParams();
+        JsonObjectElement jsonObjectElement=new JsonObjectElement();
+        jsonObjectElement.set(Task.TASK_ID,DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.TASK_ID)));
+        jsonObjectElement.set("CheckStatus",status);
+        params.putJsonParams(jsonObjectElement.toJson());
+        HttpUtils.post(this, "Task", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null){
+                    JsonObjectElement json=new JsonObjectElement(t);
+                    if(json.get(Data.SUCCESS).valueAsBoolean()){
+                        VerifyTaskList.remove(position);
+                        adapter.notifyDataSetChanged();
+                       ToastUtil.showToastLong(R.string.SuccessToVerify,mContext);
+                    }else {
+                        ToastUtil.showToastLong(R.string.FailToVerify,mContext);
+                    }
+                }
+                dismissCustomDialog();
+            }
 
+            @Override
+            public void onFailure(VolleyError error) {
+                super.onFailure(error);
+                ToastUtil.showToastLong(R.string.FailToVerifyCauseByTimeOut,mContext);
+                dismissCustomDialog();
+            }
+        });
     }
     @Override
     public void resolveNfcMessage(Intent intent) {
@@ -149,32 +180,35 @@ public class TaskVerifyActivity extends NfcActivity {
         //  JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
         //  String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
         //  params.put("operator_id",operator_id);
-        params.put("status",0);
-        params.put("taskClass","T01");
-        params.put("pageSize",PAGE_SIZE);
-        params.put("pageIndex",pageIndex);
-        HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
+//        params.put("status",0);
+//        params.put("taskClass","T01");
+//        params.put("pageSize",PAGE_SIZE);
+//        params.put("pageIndex",pageIndex);
+        HttpUtils.post(mContext, "TaskList?pageSize="+PAGE_SIZE+"&pageIndex="+pageIndex, params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0)
-                        RecCount=jsonObjectElement.get("RecCount").valueAsInt();
-                    if(pageIndex==1){
-                        VerifyTaskList.clear();
-                    }
-                    pageIndex++;
-                    for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
-                        VerifyTaskList.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
-                    }
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.setDatas(VerifyTaskList);
-                            adapter.notifyDataSetChanged();
+                    if (jsonObjectElement.get("PageData") != null && jsonObjectElement.get("PageData").asArrayElement().size() > 0) {
+                        RecCount = jsonObjectElement.get("RecCount").valueAsInt();
+                        if (pageIndex == 1) {
+                            VerifyTaskList.clear();
                         }
-                    });
+                        pageIndex++;
+                        for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
+                            VerifyTaskList.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
+                        }
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.setDatas(VerifyTaskList);
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    }else {
+                        ToastUtil.showToastLong(R.string.noData,mContext);
+                    }
                 }
                 dismissCustomDialog();
             }

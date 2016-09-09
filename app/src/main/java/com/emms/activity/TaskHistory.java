@@ -43,6 +43,7 @@ import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
 import com.emms.ui.TaskCancelListener;
 import com.emms.util.DataUtil;
+import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -151,19 +152,20 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(getLoginInfo().isMaintenMan()){
+                //if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(context))!=7){
                     Intent intent=new Intent(context,TaskDetailsActivity.class);
                     intent.putExtra("TaskDetail",data.get(position-1).asObjectElement().toString());
                     intent.putExtra(Task.TASK_ID,DataUtil.isDataElementNull(data.get(position-1).get(Task.TASK_ID)));
                     intent.putExtra(Task.TASK_CLASS,DataUtil.isDataElementNull(data.get(position-1).get(Task.TASK_CLASS)));
                     intent.putExtra("TaskStatus",taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))));
                     intent.putExtra("isTaskHistory",true);
-                startActivity(intent);}
-                else {
-                    Intent intent=new Intent(context,CommandActivity.class);
-                    intent.putExtra("TaskDetail",data.get(position-1).asObjectElement().toString());
-                    startActivity(intent);
-                }
+                startActivity(intent);
+            //}
+//                else {
+//                    Intent intent=new Intent(context,CommandActivity.class);
+//                    intent.putExtra("TaskDetail",data.get(position-1).asObjectElement().toString());
+//                    startActivity(intent);
+//                }
             }
         });
         listView.setMode(PullToRefreshListView.Mode.BOTH);
@@ -197,7 +199,8 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
         listView.getRefreshableView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view,final int position, long id) {
-                if(!getLoginInfo().isMaintenMan()){
+                //TODO
+                if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(context))>4){
                     return true;
                 }
                 if(DataUtil.isDataElementNull(data.get(position-1).get("Status")).equals(getResources().getString(R.string.linked_order))){

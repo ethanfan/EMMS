@@ -3,28 +3,20 @@ package com.emms.ui;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
-import android.text.StaticLayout;
 import android.text.TextWatcher;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +27,7 @@ import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.emms.R;
-import com.emms.activity.AppAplication;
+import com.emms.activity.AppApplication;
 import com.emms.activity.dialogOnSubmitInterface;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.bean.WorkInfo;
@@ -45,13 +37,11 @@ import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
 import com.emms.schema.Task;
-import com.emms.schema.Team;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -400,9 +390,9 @@ public class CustomDialog extends Dialog {
 
     //根据工作编号取工作信息
     private ListenableFuture<DataElement> getWorkInfoByWorkCode(String workCode) {
-        // SqliteStore sqliteStore =  ((AppAplication) getApplication()).getSqliteStore();
+        // SqliteStore sqliteStore =  ((AppApplication) getApplication()).getSqliteStore();
 
-        SqliteStore sqliteStore = ((AppAplication) context.getApplicationContext()).getSqliteStore();
+        SqliteStore sqliteStore = ((AppApplication) context.getApplicationContext()).getSqliteStore();
 
         String rawQuery = "select DataCode,DataName,DataDescr,DataValue1 from Datadictionary where DataCode =" + "'" + workCode + "'";
         ListenableFuture<DataElement> elemt = sqliteStore.performRawQuery(rawQuery,
@@ -592,7 +582,7 @@ public class CustomDialog extends Dialog {
     private void initWorkNumListData(){
         try {
             String rawQuery = "select * from DataDictionary where DataType='WorkTime'  order by Data_ID asc";
-            ListenableFuture<DataElement> elemt = ((AppAplication) ((Activity)context).getApplication()).getSqliteStore().performRawQuery(rawQuery,
+            ListenableFuture<DataElement> elemt = ((AppApplication) ((Activity)context).getApplication()).getSqliteStore().performRawQuery(rawQuery,
                     EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, null);
             Futures.addCallback(elemt, new FutureCallback<DataElement>() {
                 @Override

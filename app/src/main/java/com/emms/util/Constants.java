@@ -16,4 +16,6 @@ public class Constants {
     public final static int REQUEST_CODE_EXCHANGE_ORDER=116;
     public final static int REQUEST_CODE_PROCESSING_ORDER_TASK_DETAIL=117;
 
+    public final static int REQUEST_CODE_TASKHISTORY=118;
+
 }

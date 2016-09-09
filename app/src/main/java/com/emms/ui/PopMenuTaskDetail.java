@@ -262,6 +262,10 @@ public abstract class PopMenuTaskDetail {
 			ToastUtil.showToastLong("只有主负责人可以进行转单",context);
 			return;
 		}
+		if(taskComplete){
+			ToastUtil.showToastLong(R.string.TaskEquipmentIsCompleteCanNotChangeOrder,context);
+			return;
+		}
 		Intent intent=new Intent(context, InvitorActivity.class);
 		intent.putExtra(Task.TASK_ID,String.valueOf(TaskId));
 		intent.putExtra("isExChangeOrder",true);
@@ -270,6 +274,10 @@ public abstract class PopMenuTaskDetail {
 	private void InviteHelp(){
 		if(!is_Main_person_in_charge_Operator_id){
 			ToastUtil.showToastLong("只有主负责人可以进行邀请协助",context);
+			return;
+		}
+		if(taskComplete){
+			ToastUtil.showToastLong(R.string.TaskEquipmentIsCompleteCanNotInvite,context);
 			return;
 		}
 		Intent intent=new Intent(context, InvitorActivity.class);

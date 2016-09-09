@@ -175,7 +175,8 @@
     <string name="please_select">请选择</string>
     <string name="fault_summary">故障总结</string>
     <string name="task_summary">任务总结</string>
-    <string name="task_summary_tag">任务总结:</string>
+    <string name="task_summary_tag">任务总结：</string>
+    <string name="task_other_summary_tag">任务总结:</string>
     <string name="fault_type">故障类型:</string>
     <string name="fault_t">故障类型：</string>
     <string name="summary_person">总结人员:</string>
@@ -202,6 +203,7 @@
     <string name="pleaseScanICcard">请先扫描工卡获取创建人信息</string>
     <string name="pleaseInputCancleTaskReason">请输入取消原因</string>
     <string name="pleaseRelogin">请重新登录</string>
+    <string name="pleaseSelectRole">选择角色</string>
     <string name="getCommandFail">获取任务评价失败，请检查网络</string>
     <string name="preStep">上一步</string>
     <string name="nextStep">下一步</string>
@@ -223,6 +225,7 @@
     <string name="percent">(单位：%)</string>
     <string name="noMoreData">没有更多数据了</string>
     <string name="noData">无数据</string>
+    <string name="noCommandData">无待评价任务</string>
     <string name="judgeWorkloadSum">工作量总和不等于100%，提交失败</string>
     <string name="submitSuccess">提交成功</string>
     <string name="commandSuccess">评价成功</string>
@@ -258,6 +261,8 @@
     <string name="pleaseSelectExchangeOrderTarget">请选择转单对象</string>
     <string name="pleaseSelectInviteTarget">请选择邀请对象</string>
     <string name="TaskEquipmentNotComplete">该任务中存在设备处于未完成状态，不可提交任务完成</string>
+    <string name="TaskEquipmentIsCompleteCanNotChangeOrder">该任务中设备已完成，不可转单</string>
+    <string name="TaskEquipmentIsCompleteCanNotInvite">该任务中设备已完成，不可邀请</string>
     <string name="unauthorization">您的账号未授权，请联系管理员</string>
     <string name="getEquipmentNumSuccess">获取机台号成功</string>
     <string name="pleaseInputNum">请输入数字</string>
@@ -313,6 +318,9 @@
     <string name="SuccessSubmitPicture">上传图片成功</string>
     <string name="SuccessCreateTask">任务创建成功</string>
     <string name="SuccessChangeStatus">修改设备状态成功</string>
+    <string name="SuccessToVerify">审核成功</string>
+    <string name="FailToVerify">审核失败</string>
+    <string name="FailToVerifyCauseByTimeOut">审核失败,请检查网络</string>
     <string name="ErrorCauseByNoDataBase">程序数据库出错，请重新登陆</string>
     <string name="pass">通过</string>
     <string name="Notpass">退回</string>
@@ -323,8 +331,12 @@
     <string name="FailGetList">获取列表失败，请检查网络</string>
     <string name="NoWorkload">工作编号不能为空</string>
     <string name="NoCommand">未评价</string>
+    <string name="NoRoleInfo">该账号无角色信息，请联系管理员</string>
     <string name="isCommand">已评价</string>
     <string name="ReGetEquipmentList">重新获取设备列表中,请稍候</string>
     <string name="EquipmentBinding">绑定设备</string>
     <string name="FactorySetting">地址设置</string>
+    <string name="retry">重试</string>
+    <string name="back">返回</string>
+    <string name="downloading">下载中</string>
 </resources>

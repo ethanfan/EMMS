@@ -92,7 +92,7 @@ public class LinkedVerifyFragment extends BaseFragment {
             @Override
             public View getCustomView(View convertView, final int position, ViewGroup parent) {
                 final TaskViewHolder holder;
-                if (convertView == null) {
+//                if (convertView == null) {
                     convertView = LayoutInflater.from(mContext).inflate(R.layout.item_activity_workload_verify, parent, false);
                     holder = new TaskViewHolder();
                     //显示6个内容，组别，报修人，状态，保修时间,开始时间，任务描述
@@ -107,9 +107,9 @@ public class LinkedVerifyFragment extends BaseFragment {
                     holder.editText.setInputType(EditorInfo.TYPE_CLASS_PHONE);
                     holder.image=(ImageView)convertView.findViewById(R.id.image) ;
                     convertView.setTag(holder);
-                } else {
-                    holder = (TaskViewHolder) convertView.getTag();
-                }
+//                } else {
+//                    holder = (TaskViewHolder) convertView.getTag();
+//                }
                 //待修改
                 holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));

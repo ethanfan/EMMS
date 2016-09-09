@@ -178,32 +178,33 @@ public class MultiAdapter extends BaseAdapter {
                holder.select.setVisibility(View.INVISIBLE);
                holder.selectNormal.setVisibility(View.VISIBLE);
            }
-        holder.multi_item.setOnClickListener(new View.OnClickListener() {
+
+            holder.multi_item.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
-               if(!DataUtil.isDataElementNull(Operator.get("Status")).equals("1")){
-                    if(mChecked.get(position))//当前已选中，点击后取消选中
-                    {
-                        holder.select.setVisibility(View.INVISIBLE);
-                        holder.selectNormal.setVisibility(View.VISIBLE);
-                        mChecked.set(position, false);
+                    if (!DataUtil.isDataElementNull(Operator.get("Status")).equals("1")) {
+                        if (mChecked.get(position))//当前已选中，点击后取消选中
+                        {
+                            holder.select.setVisibility(View.INVISIBLE);
+                            holder.selectNormal.setVisibility(View.VISIBLE);
+                            mChecked.set(position, false);
+                        } else {
+                            holder.select.setVisibility(View.VISIBLE);
+                            holder.selectNormal.setVisibility(View.INVISIBLE);
+                            holder.select.setImageResource(R.mipmap.select_pressed);
+                            mChecked.set(position, true);
+                        }
+                        ClickResult(ctx);
+                    } else {
+                        ToastUtil.showToastLong(R.string.thisWorkerIsBusy, ctx);
                     }
-                    else
-                    {
-                        holder.select.setVisibility(View.VISIBLE);
-                        holder.selectNormal.setVisibility(View.INVISIBLE);
-                        holder.select.setImageResource(R.mipmap.select_pressed);
-                        mChecked.set(position, true);
-                    }
-                   ClickResult(ctx);
-                }else {
-                   ToastUtil.showToastLong(R.string.thisWorkerIsBusy,ctx);
-               }
                 }
             });
-
+        if(!tag) {
+            holder.multi_item.setEnabled(false);
+        }
             viewMap.put(position, convertView);
 
 

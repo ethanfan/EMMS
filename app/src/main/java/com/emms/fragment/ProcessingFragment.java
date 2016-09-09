@@ -178,11 +178,11 @@ public class ProcessingFragment extends BaseFragment {
                   //  if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()==0){
                       //提示没有处理中的任务
                   //  }
+                    RecCount = jsonObjectElement.get("RecCount").valueAsInt();
+                    if(taskNumInteface!=null){
+                        taskNumInteface.ChangeTaskNumListener(0,RecCount);}
                     if(jsonObjectElement!=null&&jsonObjectElement.get("PageData")!=null
                             &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
-                        RecCount = jsonObjectElement.get("RecCount").valueAsInt();
-                        if(taskNumInteface!=null){
-                        taskNumInteface.ChangeTaskNumListener(0,RecCount);}
                         if (pageIndex == 1) {
                             datas.clear();
                         }

@@ -61,6 +61,7 @@ import com.emms.util.DataUtil;
 import com.emms.util.FileUtils;
 import com.emms.util.ListViewUtility;
 import com.emms.util.RootUtil;
+import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -627,7 +628,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 }
                 break;}
             case Constants.REQUEST_CODE_EXCHANGE_ORDER:{
-                if(requestCode==1){
+                if(resultCode==1){
                 setResult(2);
                 finish();
                 }
@@ -1280,18 +1281,18 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         });
     }
     private void initViewWhenTaskClassIsRepairAndTaskStatusIsComplete(){
+        fault_type=(TextView)findViewById(R.id.fault_type);
+        fault_description=(TextView)findViewById(R.id.fault_description);
+        repair_status=(TextView)findViewById(R.id.repair_status);
         if(TaskStatus==2){
             findViewById(R.id.task_complete).setVisibility(View.VISIBLE);
             if(TaskClass.equals(Task.REPAIR_TASK)){
             findViewById(R.id.fault_summary).setVisibility(View.VISIBLE);
-            fault_type=(TextView)findViewById(R.id.fault_type);
-            fault_description=(TextView)findViewById(R.id.fault_description);
-            repair_status=(TextView)findViewById(R.id.repair_status);
             getSummaryFromServer();
             }else if(TaskClass.equals(Task.OTHER_TASK)){
                 findViewById(R.id.fault_summary).setVisibility(View.VISIBLE);
                 ((TextView)findViewById(R.id.fault_title)).setText(R.string.task_summary);
-                ((TextView)findViewById(R.id.fault_description)).setText(R.string.task_summary_tag);
+                ((TextView)findViewById(R.id.fault_description_tag)).setText(R.string.task_summary_tag);
                 findViewById(R.id.fault_type_tag).setVisibility(View.GONE);
                 findViewById(R.id.fault_type).setVisibility(View.GONE);
                 findViewById(R.id.repair_status_tag).setVisibility(View.GONE);
@@ -1299,7 +1300,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 getSummaryFromServer();
             }
             //待权限
-            if(RootUtil.ROOTWARRANTY.equals("0")) {
+            //TODO
+            if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))!=7) {
                 initWorkload();
             }
             initTaskCommand();
@@ -1307,10 +1309,11 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     }
     private TaskAdapter WorkloadAdapter;
     private ArrayList<ObjectElement> workloadData=new ArrayList<>();
+    private ListView workloadList;
     private void initWorkload(){
         //workload_num
         //workloadList
-        ListView workloadList=(ListView) findViewById(R.id.workloadList);
+        workloadList=(ListView) findViewById(R.id.workloadList);
         WorkloadAdapter=new TaskAdapter(workloadData) {
             @Override
             public View getCustomView(View convertView, int position, ViewGroup parent) {
@@ -1368,6 +1371,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 workloadData.add(ViewData.get("TaskOperator").asArrayElement().get(i).asObjectElement());
             }
             WorkloadAdapter.notifyDataSetChanged();
+            ListViewUtility.setListViewHeightBasedOnChildren(workloadList);
         }
     }
     private ArrayList<Integer> response_speed_list=new ArrayList<>();
@@ -1400,6 +1404,19 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
          repair_speed_adapter=new commandAdapter(this,repair_speed_list);
         repair_speed.setAdapter(repair_speed_adapter);
+        //TODO
+        if(getIntent().getStringExtra("IsEvaluated")!=null
+                &&getIntent().getStringExtra("IsEvaluated").equals("0")
+                && (Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))==RootUtil.ROOT_WARRANTY
+        ||Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))<5    )  ){
+                    findViewById(R.id.submitCommand).setVisibility(View.VISIBLE);
+                    findViewById(R.id.submitCommand).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            postTaskCommandToServer();
+                        }
+                    });
+        }
         initListViewOnItemClickEvent();
         getTaskCommandFromServer();
     }
@@ -1426,20 +1443,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                             setCommandData(objectElement.get("RespondSpeed").valueAsInt(),"response_speed",response_speed_list,response_speed_adapter);
                             setCommandData(objectElement.get("ServiceAttitude").valueAsInt(),"service_attitude",service_attitude_list,service_attitude_adapter);
                             setCommandData(objectElement.get("MaintainSpeed").valueAsInt(),"repair_speed",repair_speed_list,repair_speed_adapter);
-                        }else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                findViewById(R.id.submitCommand).setVisibility(View.VISIBLE);
-                                findViewById(R.id.submitCommand).setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        postTaskCommandToServer();
-                                    }
-                                });
-                            }
-                        });
-                    }
+                        }
                     }
                 }
             }
@@ -1463,7 +1467,11 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         });
     }
     private void initListViewOnItemClickEvent(){
-        if(TaskStatus!=2){
+        //TODO
+        if(TaskStatus!=2||getIntent().getStringExtra("IsEvaluated")==null
+                ||getIntent().getStringExtra("IsEvaluated").equals("1")
+                || Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))==RootUtil.ROOT_REPAIR
+                || Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))==RootUtil.ROOT_REPAIR_ENGERINEER ){
             return;
         }
         response_speed.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -1504,6 +1512,15 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 if(t!=null){
                     ToastUtil.showToastLong(R.string.commandSuccess,mContext);
                     // TaskComplete(iccardID);
+                    if(getIntent().getStringExtra("FromFragment")!=null){
+                        if(getIntent().getStringExtra("FromFragment").equals("0")){
+                            setResult(0);
+                        }else  if(getIntent().getStringExtra("FromFragment").equals("1")){
+                            setResult(1);
+                        }else {
+                            setResult(2);
+                        }
+                    }
                     finish();
                 }else {
                     ToastUtil.showToastLong(R.string.submitFail,mContext);

@@ -44,11 +44,32 @@
             android:textColor="@color/text_color"
             android:layout_alignTop="@+id/fault_type_tag"
             android:layout_marginLeft="5dp"
+            android:layout_marginRight="40dp"
             android:layout_toRightOf="@id/fault_type_tag"
             android:textSize="17sp"/>
         <TextView
+            android:id="@+id/equipment_name_tag"
+            android:layout_below="@+id/fault_type"
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/fault_type_tag"
+            android:textColor="@color/text_color"
+            android:text="@string/equipment_name"
+            android:textSize="17sp"/>
+        <TextView
+            android:id="@+id/equipment_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:layout_alignTop="@+id/equipment_name_tag"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="40dp"
+            android:layout_toRightOf="@id/equipment_name_tag"
+            android:textSize="17sp"/>
+        <TextView
             android:id="@+id/summary_person_tag"
-            android:layout_below="@+id/fault_type_tag"
+            android:layout_below="@+id/equipment_name"
             android:layout_marginTop="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

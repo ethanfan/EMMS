@@ -96,7 +96,7 @@ public class DataDictionary extends Model<Operator, Long> implements Identity<Lo
     @Expose
     private String remark;
 
-    @DatabaseField(columnName = LASTUPDATETIME, canBeNull = false,defaultValue = "0")
+    @DatabaseField(columnName = LASTUPDATETIME, canBeNull = false,defaultValue = "")
     @SerializedName(LASTUPDATETIME)
     @Expose
     private String LastUpdateTime;

@@ -90,7 +90,7 @@ public class SummaryActivity extends NfcActivity{
             findViewById(R.id.ccccc).setVisibility(View.GONE);
             findViewById(R.id.layout2).setVisibility(View.GONE);
             findViewById(R.id.status_tag).setVisibility(View.GONE);
-            ((TextView)findViewById(R.id.description_tag)).setText(R.string.task_summary_tag);
+            ((TextView)findViewById(R.id.description_tag)).setText(R.string.task_other_summary_tag);
         }
         findViewById(R.id.btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -330,6 +330,7 @@ public class SummaryActivity extends NfcActivity{
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.loadingFail,context);
                 dismissCustomDialog();
             }
         });

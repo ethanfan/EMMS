@@ -159,8 +159,9 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                     holder = new TaskViewHolder();
                     holder.tv_creater=(TextView)convertView.findViewById(R.id.task_id);//任务单号
                     holder.tv_task_describe=(TextView)convertView.findViewById(R.id.fault_type);//故障类型
-                    holder.warranty_person=(TextView)convertView.findViewById(R.id.summary_person);
+                    holder.warranty_person=(TextView)convertView.findViewById(R.id.summary_person);//总结人员
                     holder.tv_task_state=(TextView)convertView.findViewById(R.id.sequence_number);//序号
+                    holder.tv_group=(TextView)convertView.findViewById(R.id.equipment_name);//设备名称
                     convertView.setTag(holder);
                 } else {
                     holder = (TaskViewHolder) convertView.getTag();
@@ -169,6 +170,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                holder.tv_creater.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get(Task.TASK_ID)));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("TroubleType")));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("Name")));
+                holder.tv_group.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("TaskEquipmentList")));
                 holder.tv_task_state.setText(String.valueOf(position+1));
                 return convertView;
             }
@@ -527,14 +529,14 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
             }
         });
     }
-    private void createTextData(){
-        for(int i=0;i<20;i++){
-        JsonObjectElement jsonObjectElement=new JsonObjectElement();
-        jsonObjectElement.set(Task.TASK_ID,"1234");
-        jsonObjectElement.set("FaultType","asdfasdfasdfasdfasd");
-        jsonObjectElement.set("summary_person","aaaa");
-        fault_summary_list.add(jsonObjectElement);}
-    }
+//    private void createTextData(){
+//        for(int i=0;i<20;i++){
+//        JsonObjectElement jsonObjectElement=new JsonObjectElement();
+//        jsonObjectElement.set(Task.TASK_ID,"1234");
+//        jsonObjectElement.set("FaultType","asdfasdfasdfasdfasd");
+//        jsonObjectElement.set("summary_person","aaaa");
+//        fault_summary_list.add(jsonObjectElement);}
+//    }
     private void buttonAnim(final boolean showChannelFilterView){
         if(showChannelFilterView){
             Animation operatingAnim2 = AnimationUtils.loadAnimation(this, R.anim.expand);

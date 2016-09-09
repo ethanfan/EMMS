@@ -67,6 +67,7 @@ public class Operator extends Model<Operator, Long> implements Identity<Long> {
 	public static final String WX_USER_SYSUSERLOGINID = "WX_User_SysUserLoginId";
     public static final String KY_UPDATE_LOG_DATE = "Ky_update_log_date";
 	public static final String ORGANISE_ID = "Organise_ID";
+	public static final String USER_ROLE_ID="UserRole_ID";
 
 
 
@@ -246,7 +247,25 @@ public class Operator extends Model<Operator, Long> implements Identity<Long> {
 
 	private boolean IsMaintenMan=false;
 
+	public int getUserRole_ID() {
+		return UserRole_ID;
+	}
 
+	public void setUserRole_ID(int userRole_ID) {
+		UserRole_ID = userRole_ID;
+	}
+
+	private int UserRole_ID;
+
+	public String getModuleList() {
+		return ModuleList;
+	}
+
+	public void setModuleList(String moduleList) {
+		ModuleList = moduleList;
+	}
+
+	private String ModuleList;
 
 
 	@Override

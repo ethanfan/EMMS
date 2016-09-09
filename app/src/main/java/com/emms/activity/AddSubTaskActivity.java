@@ -1,26 +1,19 @@
 package com.emms.activity;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.nfc.NdefRecord;
-import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -40,30 +33,16 @@ import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
-import com.emms.schema.Operator;
 import com.emms.schema.Task;
-import com.emms.schema.Team;
-import com.emms.ui.CustomDialog;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
-import com.emms.ui.KProgressHUD;
-import com.emms.ui.NFCDialog;
-import com.emms.util.BuildConfig;
 import com.emms.util.DataUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
-import org.apache.commons.lang.StringUtils;
-
-import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -323,9 +302,9 @@ public class AddSubTaskActivity extends NfcActivity implements View.OnClickListe
 
         //根据工作编号取工作信息
         private ListenableFuture<DataElement> getWorkInfoByWorkCode(String workCode) {
-            // SqliteStore sqliteStore =  ((AppAplication) getApplication()).getSqliteStore();
+            // SqliteStore sqliteStore =  ((AppApplication) getApplication()).getSqliteStore();
 
-            SqliteStore sqliteStore = ((AppAplication) context.getApplicationContext()).getSqliteStore();
+            SqliteStore sqliteStore = ((AppApplication) context.getApplicationContext()).getSqliteStore();
 
             String rawQuery = "select DataCode,DataName,DataDescr,DataValue1 from Datadictionary where DataCode =" + "'" + workCode + "'";
             ListenableFuture<DataElement> elemt = sqliteStore.performRawQuery(rawQuery,
@@ -498,7 +477,7 @@ public class AddSubTaskActivity extends NfcActivity implements View.OnClickListe
         private void initWorkNumListData(){
             try {
                 String rawQuery = "select * from DataDictionary where DataType='WorkTime' And DataCode like 'OHZK%' order by Data_ID asc";
-                ListenableFuture<DataElement> elemt = ((AppAplication) ((Activity)context).getApplication()).getSqliteStore().performRawQuery(rawQuery,
+                ListenableFuture<DataElement> elemt = ((AppApplication) ((Activity)context).getApplication()).getSqliteStore().performRawQuery(rawQuery,
                         EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, null);
                 Futures.addCallback(elemt, new FutureCallback<DataElement>() {
                     @Override

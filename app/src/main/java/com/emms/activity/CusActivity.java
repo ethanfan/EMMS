@@ -3,6 +3,7 @@ package com.emms.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,8 @@ import com.flyco.tablayout.widget.MsgView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import cn.jpush.android.api.JPushInterface;
 
 /**
  * Created by Administrator on 2016/8/23.
@@ -110,31 +113,54 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             }
         });
         module_list.setAdapter(adapter);
-        if(getLoginInfo().isMaintenMan()){
-            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.repairer);
-        }else {
+//        if(getLoginInfo().isMaintenMan()){
+//            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.repairer);
+//        }else {
+//            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.applicant);
+//        }
+        //TODO
+        if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(this))==7){
             ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.applicant);
+        }else if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(this))<5){
+            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.repairerleader);
+        }else {
+            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.repairer);
         }
     }
     private void initData(){
-        if(getLoginInfo().isMaintenMan()){
-        for(int i=0;i<10;i++ ){
-            JsonObjectElement jsonObjectElement=new JsonObjectElement();
-            jsonObjectElement.set("module_ID",i+1);
-            jsonObjectElement=moduleMatchingRule(jsonObjectElement);
-            ID_module_map.put(i+1,jsonObjectElement);
-            moduleList.add(jsonObjectElement);
-        }
-        }else {
-            int[] a={1,7};
-            for(int i=0;i<a.length;i++){
-                JsonObjectElement jsonObjectElement=new JsonObjectElement();
-                jsonObjectElement.set("module_ID",a[i]);
-                jsonObjectElement=moduleMatchingRule(jsonObjectElement);
-                ID_module_map.put(a[i],jsonObjectElement);
+        JsonObjectElement data=new JsonObjectElement(SharedPreferenceManager.getLoginData(this));
+        if(getIntent().getStringExtra("Module_ID_List")!=null&&!getIntent().getStringExtra("Module_ID_List").equals("")) {
+            String module = getIntent().getStringExtra("Module_ID_List");
+            String[] modules = module.split(",");
+            for (int i = 0; i < modules.length; i++) {
+                JsonObjectElement jsonObjectElement = new JsonObjectElement();
+                jsonObjectElement.set("module_ID", Integer.valueOf(modules[i]));
+                jsonObjectElement = moduleMatchingRule(jsonObjectElement);
+                ID_module_map.put(Integer.valueOf(modules[i]), jsonObjectElement);
                 moduleList.add(jsonObjectElement);
             }
+        }else {
+            if(!SharedPreferenceManager.getUserModuleList(this).equals("")){
+                String module = SharedPreferenceManager.getUserModuleList(this);
+                String[] modules = module.split(",");
+                for (int i = 0; i < modules.length; i++) {
+                    JsonObjectElement jsonObjectElement = new JsonObjectElement();
+                    jsonObjectElement.set("module_ID", Integer.valueOf(modules[i]));
+                    jsonObjectElement = moduleMatchingRule(jsonObjectElement);
+                    ID_module_map.put(Integer.valueOf(modules[i]), jsonObjectElement);
+                    moduleList.add(jsonObjectElement);
+                }
+            }else {
+                for (int i = 0; i < 10; i++) {
+                    JsonObjectElement jsonObjectElement = new JsonObjectElement();
+                    jsonObjectElement.set("module_ID", i + 1);
+                    jsonObjectElement = moduleMatchingRule(jsonObjectElement);
+                    ID_module_map.put(i + 1, jsonObjectElement);
+                    moduleList.add(jsonObjectElement);
+                }
+            }
         }
+
 //        if(moduleList.size()<=6){
 //            module_list.setNumColumns(2);
 //        }
@@ -281,6 +307,8 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                 public void onSuccess(String t) {
                     super.onSuccess(t);
                     dismissCustomDialog();
+                    if(!JPushInterface.isPushStopped(context)){
+                    JPushInterface.stopPush(context);}
                     logout();
                 }
 
@@ -288,6 +316,9 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                 public void onFailure(int errorNo, String strMsg) {
                     super.onFailure(errorNo, strMsg);
                     dismissCustomDialog();
+                    if(!JPushInterface.isPushStopped(context)) {
+                        JPushInterface.stopPush(context);
+                    }
                     logout();
                 }
             });
@@ -302,6 +333,8 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         SharedPreferenceManager.setCookie(CusActivity.this,null);
         SharedPreferenceManager.setLoginData(CusActivity.this,null);
         SharedPreferenceManager.setUserData(CusActivity.this,null);
+        SharedPreferenceManager.setMsg(CusActivity.this,null);
+        SharedPreferenceManager.setUserRoleID(CusActivity.this,null);
         startActivity(new Intent(CusActivity.this, LoginActivity.class));
     }
 }

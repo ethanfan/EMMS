@@ -30,6 +30,7 @@ import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.Task;
+import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -121,6 +122,9 @@ public class PendingCommandFragment extends BaseFragment {
                 if(DataUtil.isDataElementNull(data.get(position).get("IsEvaluated")).equals("1")){
                     holder.tv_creater.setText(getResources().getString(R.string.isCommand));
                     holder.tv_creater.setTextColor(getResources().getColor(R.color.order_color));
+                }else{
+                    holder.tv_creater.setText(getResources().getString(R.string.NoCommand));
+                    holder.tv_creater.setTextColor(getResources().getColor(R.color.esquel_red));
                 }
                 if(map.get(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_CLASS)))!=null) {
                     holder.tv_device_name.setText(map.get(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_CLASS))));
@@ -138,8 +142,11 @@ public class PendingCommandFragment extends BaseFragment {
                     intent.putExtra(Task.TASK_ID,DataUtil.isDataElementNull(data.get(position-1).get(Task.TASK_ID)));
                     intent.putExtra(Task.TASK_CLASS,DataUtil.isDataElementNull(data.get(position-1).get(Task.TASK_CLASS)));
                     intent.putExtra("TaskStatus",taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))));
+                    intent.putExtra("IsEvaluated",DataUtil.isDataElementNull(data.get(position-1).get("IsEvaluated")));
+                    intent.putExtra("FromFragment","0");
                     intent.putExtra("isTaskHistory",true);
-                    startActivity(intent);
+                    startActivityForResult(intent, Constants.REQUEST_CODE_TASKHISTORY);
+                    //startActivity(intent);
             }
 //                else {
 //                    Intent intent=new Intent(mContext,CommandActivity.class);
@@ -151,7 +158,10 @@ public class PendingCommandFragment extends BaseFragment {
         getTaskHistory();
         return v;
     }
-
+    public void doRefresh(){
+        pageIndex=1;
+        getTaskHistory();
+    }
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -178,7 +188,7 @@ public class PendingCommandFragment extends BaseFragment {
         map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car));
         map.put(Task.OTHER_TASK,getResources().getString(R.string.other));
 
-        taskStatusMap.put(getResources().getString(R.string.pending_orders),0);
+        taskStatusMap.put(getResources().getString(R.string.waitingDeal),0);
         taskStatusMap.put(getResources().getString(R.string.start),1);
         taskStatusMap.put(getResources().getString(R.string.linked_order),2);
         taskStatusMap.put(getResources().getString(R.string.cancel),3);
@@ -191,10 +201,13 @@ public class PendingCommandFragment extends BaseFragment {
             }}
         showCustomDialog(R.string.loadingData);
         HttpParams params = new HttpParams();
-        params.put("pageSize",PAGE_SIZE);
-        params.put("pageIndex",pageIndex);
-        params.put("status",2);
-        HttpUtils.get(mContext, "TaskHistoryList", params, new HttpCallback() {
+        JsonObjectElement jsonObjectElement=new JsonObjectElement();
+        jsonObjectElement.set("pageSize",PAGE_SIZE);
+        jsonObjectElement.set("pageIndex",pageIndex);
+        jsonObjectElement.set("Status",2);
+        jsonObjectElement.set("IsEvaluated",0);
+        params.putJsonParams(jsonObjectElement.toJson());
+        HttpUtils.post(mContext, "TaskHistoryList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -210,7 +223,7 @@ public class PendingCommandFragment extends BaseFragment {
                             data.add(dataElement.asObjectElement());
                         }
                     }else{
-                        ToastUtil.showToastLong(R.string.noData,mContext);
+                        ToastUtil.showToastLong(R.string.noCommandData,mContext);
                     }
                     taskAdapter.notifyDataSetChanged();
                 }

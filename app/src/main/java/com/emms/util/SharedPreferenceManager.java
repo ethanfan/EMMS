@@ -26,6 +26,11 @@ public final class SharedPreferenceManager {
 
 	public static final String FACTORY="Factory";
 
+	public static final String MSG="Msg";
+
+	public static final String USER_ROLE_ID="UserRole_ID";
+
+	public static final String USER_MODULE_LIST="Module_ID_List";
 	private SharedPreferenceManager() {
 
 	}
@@ -100,6 +105,39 @@ public final class SharedPreferenceManager {
 				.getDefaultSharedPreferences(context);
 		pref.edit().putString(LOGIN_DATA, Data).commit();
 	}
+
+	public static void setMsg(Context context, String Data) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putString(MSG, Data).commit();
+	}
+	public static String getMsg(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getString(MSG, null);
+	}
+
+	public static void setUserRoleID(Context context, String Data) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putString(USER_ROLE_ID, Data).commit();
+	}
+	public static String getUserRoleID(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getString(USER_ROLE_ID, null);
+	}
+	public static void setUserModuleList(Context context, String Data) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putString(USER_MODULE_LIST, Data).commit();
+	}
+	public static String getUserModuleList(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getString(USER_MODULE_LIST, null);
+	}
+
 	public static String getFactory(Context context) {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);

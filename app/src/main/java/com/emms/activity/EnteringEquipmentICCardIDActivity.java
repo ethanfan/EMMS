@@ -29,6 +29,7 @@ import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
 import com.emms.schema.Equipment;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
@@ -126,26 +127,36 @@ private void initView(){
             ToastUtil.showToastLong(R.string.pleaseScanICcardNum,this);
             return;
         }
+        showCustomDialog(R.string.submitData);
         submitData.set(Equipment.EQUIPMENT_ID,
                 SelectItem);
         submitData.set("ICCardID",iccard_id.getText().toString());
         params.putJsonParams(submitData.toJson());
-        HttpUtils.post(this, "Equipment", params, new HttpCallback() {
+        HttpUtils.postWithoutCookie(this, "Equipment", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                if(t!=null){
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    if(jsonObjectElement.get(Data.SUCCESS).valueAsBoolean()){
                 ToastUtil.showToastLong(R.string.submitSuccess,context);
+                    }else {
+                        ToastUtil.showToastLong(R.string.submit_Fail,context);
+                    }
+                }
+                dismissCustomDialog();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
                 ToastUtil.showToastLong(R.string.submitFail,context);
             }
         });
     }
     private void initData(){
-        String rawQuery="select ifnull(OracleID,'')OracleID,Equipment_ID from Equipment";
+        String rawQuery="select AssetsID,Equipment_ID from Equipment";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -155,7 +166,11 @@ private void initView(){
                     if(element.asArrayElement().size()>0){
                     EquipmentList.clear();
                         for (int i=0;i<element.asArrayElement().size();i++){
-                    EquipmentList.add(element.asArrayElement().get(i).asObjectElement());}
+                            if(element.asArrayElement().get(i).asObjectElement().get(Equipment.ASSETSID)!=null&&
+                                    !DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(Equipment.ASSETSID)).equals("")) {
+                                EquipmentList.add(element.asArrayElement().get(i).asObjectElement());
+                            }
+                        }
                     }
                 }
             }

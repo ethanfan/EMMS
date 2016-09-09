@@ -19,24 +19,23 @@
         android:textColor="@color/text_color"
         android:textSize="17sp"
         android:layout_toRightOf="@+id/name_tag"/>
+
     <TextView
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/workload_value_tag"
+        android:textColor="@color/text_color"
+        android:layout_toLeftOf="@+id/workload_value"
+        android:text="@string/workload"
+        android:textSize="17sp"
+        android:layout_alignTop="@+id/workload_value"/>
+    <TextView
+        android:layout_width="70dp"
         android:layout_height="wrap_content"
         android:id="@+id/workload_value"
         android:textColor="@color/text_color"
         android:layout_alignParentRight="true"
         android:textSize="17sp"
         android:layout_alignTop="@+id/name_tag"
-        android:layout_marginRight="20dp"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/workload_value_tag"
-        android:textColor="@color/text_color"
-        android:text="@string/workload"
-        android:textSize="17sp"
-        android:layout_toLeftOf="@+id/workload_value"
-        android:layout_alignTop="@+id/workload_value"
         />
 </RelativeLayout>
