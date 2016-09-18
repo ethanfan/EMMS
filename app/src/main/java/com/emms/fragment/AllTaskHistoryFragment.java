@@ -1,5 +1,6 @@
 package com.emms.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -142,7 +143,7 @@ public class AllTaskHistoryFragment extends BaseFragment {
                 intent.putExtra("isTaskHistory",true);
                 intent.putExtra("FromFragment","1");
                 intent.putExtra("IsEvaluated",DataUtil.isDataElementNull(data.get(position-1).get("IsEvaluated")));
-                startActivityForResult(intent, Constants.REQUEST_CODE_TASKHISTORY);
+                ((Activity)mContext).startActivityForResult(intent, Constants.REQUEST_CODE_TASKHISTORY);
                // startActivity(intent);
             }
 //                else {

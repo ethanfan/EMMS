@@ -11,7 +11,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
    <include layout="@layout/toolbar"
-       android:id="@+id/toolbar"></include>
+       android:id="@+id/toolbar"/>
     <com.handmark.pulltorefresh.library.PullToRefreshListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -20,18 +20,22 @@
         android:background="#EDEDED"
         android:divider="@android:color/transparent">
     </com.handmark.pulltorefresh.library.PullToRefreshListView>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/toolbar"
+                android:id="@+id/search_filter"
+                android:background="@color/transparent">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="vertical"
                 android:layout_height="wrap_content"
-                android:background="#E6ECF8"
-                android:id="@+id/search_filter"
-                android:layout_below="@+id/toolbar">
+                android:background="@color/white">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="18dp"
             android:orientation="horizontal">
             <TextView
                 android:layout_width="0dp"
@@ -115,29 +119,50 @@
                         drop:hintColor="@color/hint_color" />
 
                 </LinearLayout>
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:id="@+id/search_button"
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp">
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/search_image"
-                        android:src="@mipmap/search"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_toRightOf="@+id/search_image"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp"
-                        android:textSize="18sp"
-                        android:text="@string/hint_search_box"/>
-                </RelativeLayout>
+                    android:background="#EDEDED"
+                    />
+                <!--<RelativeLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center_horizontal"-->
+                    <!--android:id="@+id/search_button"-->
+                    <!--android:layout_marginTop="10dp"-->
+                    <!--android:layout_marginBottom="10dp">-->
+                    <!--<ImageView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:id="@+id/search_image"-->
+                        <!--android:src="@mipmap/search"/>-->
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_toRightOf="@+id/search_image"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:layout_marginLeft="10dp"-->
+                        <!--android:textSize="18sp"-->
+                        <!--android:text="@string/hint_search_box"/>-->
+                <!--</RelativeLayout>-->
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sure"
+                    android:id="@+id/search_button"
+                    android:background="@color/white"
+                    android:textColor="@color/esquel_red"
+                    android:textSize="18sp"
+                    android:padding="15dp"/>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#EDEDED"
+                    />
             </LinearLayout>
     </RelativeLayout>
+        </RelativeLayout>
     </FrameLayout>
     <include layout="@layout/activity_search"
         android:layout_width="wrap_content"

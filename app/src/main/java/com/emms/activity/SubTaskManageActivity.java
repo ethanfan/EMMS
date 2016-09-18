@@ -95,7 +95,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.sub_task);
         ((TextView)findViewById(R.id.group_type)).setText(DataUtil.isDataElementNull(TaskDetail.get(Task.ORGANISE_NAME)));
         ((TextView)findViewById(R.id.task_number)).setText(DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
-        ((TextView)findViewById(R.id.task_state)).setText(DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_STATUS)));
+       // ((TextView)findViewById(R.id.task_state)).setText(DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_STATUS)));
         sub_task_listView=(PullToRefreshListView)findViewById(R.id.sub_task_list);
         add_sub_task=(LinearLayout)findViewById(R.id.add_sub_task);
         sub_task_listView.setMode(PullToRefreshListView.Mode.BOTH);

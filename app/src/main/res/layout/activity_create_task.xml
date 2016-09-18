@@ -186,12 +186,41 @@
                             drop:hintColor="@color/hint_color" />
 
                     </LinearLayout>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="16dp"
                         android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1.6"
+                            android:gravity="end"
+                            android:text="@string/hasEquipment"
+                            android:textColor="@color/text_color"
+                            android:textSize="18sp" />
+
+                        <com.emms.ui.DropEditText
+                            android:id="@+id/hasEquipment"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            drop:drawableRight="@mipmap/drop_down"
+                            drop:dropMode="flow_parent"
+                            drop:hint="@string/select"
+                            drop:hintColor="@color/hint_color" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="10dp"
+                        android:id="@+id/equipment_name"
                         android:orientation="horizontal">
 
                         <TextView
@@ -222,6 +251,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginRight="16dp"
                         android:layout_marginTop="10dp"
+                        android:id="@+id/equipment_num"
                         android:orientation="horizontal">
 
                         <TextView
@@ -358,47 +388,47 @@
                         </EditText>
                     </RelativeLayout>
                     </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="16dp"
-                        android:layout_marginTop="12dp"
-                        android:id="@+id/layout_standard_workload"
-                        android:visibility="gone"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:gravity="end"
-                            android:layout_weight="1.6"
-                            android:text="@string/work_num"
-                            android:textSize="18sp"
-                            android:textColor="@color/text_color"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginRight="8dp"/>
-                        <RelativeLayout
-                            android:layout_width="0dp"
-                            android:layout_height="40dip"
-                            android:gravity="center_vertical"
-                            android:layout_weight="3"
-                            android:background="@color/white"
-                            android:layout_below="@+id/simple_description">
-                    <com.emms.ui.DropEditText
-                        android:layout_height="wrap_content"
-                        android:id="@+id/standard_workload"
-                        android:layout_width="match_parent"
-                        android:background="@color/white"
-                        android:gravity="center_vertical"
-                        drop:drawableRight="@mipmap/drop_down"
-                        drop:dropMode="flow_parent"
-                        drop:hint="@string/select"
-                        drop:hintColor="@color/hint_color"
-                        android:textColor="@color/text_color"
-                        android:textColorHint="@color/hint_color"
-                        android:textSize="18sp"/>
-                        </RelativeLayout>
+                    <!--<LinearLayout-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_marginRight="16dp"-->
+                        <!--android:layout_marginTop="12dp"-->
+                        <!--android:id="@+id/layout_standard_workload"-->
+                        <!--android:visibility="gone"-->
+                        <!--android:orientation="horizontal">-->
+                        <!--<TextView-->
+                            <!--android:layout_width="0dp"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:gravity="end"-->
+                            <!--android:layout_weight="1.6"-->
+                            <!--android:text="@string/work_num"-->
+                            <!--android:textSize="18sp"-->
+                            <!--android:textColor="@color/text_color"-->
+                            <!--android:layout_gravity="center_vertical"-->
+                            <!--android:layout_marginRight="8dp"/>-->
+                        <!--<RelativeLayout-->
+                            <!--android:layout_width="0dp"-->
+                            <!--android:layout_height="40dip"-->
+                            <!--android:gravity="center_vertical"-->
+                            <!--android:layout_weight="3"-->
+                            <!--android:background="@color/white"-->
+                            <!--android:layout_below="@+id/simple_description">-->
+                    <!--<com.emms.ui.DropEditText-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:id="@+id/standard_workload"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:background="@color/white"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--drop:drawableRight="@mipmap/drop_down"-->
+                        <!--drop:dropMode="flow_parent"-->
+                        <!--drop:hint="@string/select"-->
+                        <!--drop:hintColor="@color/hint_color"-->
+                        <!--android:textColor="@color/text_color"-->
+                        <!--android:textColorHint="@color/hint_color"-->
+                        <!--android:textSize="18sp"/>-->
+                        <!--</RelativeLayout>-->
 
-                    </LinearLayout>
+                    <!--</LinearLayout>-->
                     <Button
                         android:id="@+id/sure"
                         android:layout_width="280dp"

@@ -40,6 +40,10 @@
     <string name="group">所属组别：</string>
     <string name="belongGroup">所属组别:</string>
     <string name="equipment_name"> 设备名称: </string>
+    <string name="hasEquipment">有无设备:</string>
+    <string name="IsHasEquipment">任务属性</string>
+    <string name="haveEquipment">设备相关</string>
+    <string name="NothaveEquipment">设备无关</string>
     <string name="task_subtype_name"> 任务子类型: </string>
     <string name="task_description"> 任务描述:</string>
     <string name="task_status">任务状态:</string>
@@ -72,7 +76,7 @@
     <string name="device_num">设备编号：</string>
     <string name="device_name">设备名称：</string>
     <string name="task_state">任务状态： </string>
-    <string name="repair_time">报修时间：</string>
+    <string name="repair_time">创建时间：</string>
     <string name="start_time">开始时间： </string>
     <string name="end_time">结束时间：</string>
     <string name="task_descripbe">任务描述：</string>
@@ -126,7 +130,7 @@
     <string name="sub_task">子任务</string>
     <string name="sub_task_equipment_num">机台编号:</string>
     <string name="sure">确定</string>
-    <string name="warranty_person">报修人员：</string>
+    <string name="warranty_person">创建人员：</string>
     <string name="task_main_person">主负责人：</string>
     <!--<string name="error">Error</string>-->
     <!--<string name="no_nfc">No NFC found on this device</string>-->
@@ -141,6 +145,7 @@
     <string name="error_tag_empty">tag不能为空</string>
     <string name="error_tag_gs_empty">格式不对</string>
     <string name="error_network">网络连接异常,初始化失败 请检查网络！</string>
+    <string name="error_add_equipment">该任务为无设备任务，不可添加设备</string>
     <string name="setting_su">设置成功</string>
 
     <string name="invitor_help">邀请协助</string>
@@ -195,6 +200,7 @@
     <string name="change_equipment_status">修改设备状态</string>
     <string name="hours">小时</string>
     <string name="pleaseSelectTaskClass">请选择任务类型</string>
+    <string name="pleaseSelectGroupFirst">请选择组别</string>
     <string name="pleaseSelectGroup">请先选择组别或无该组别设备信息</string>
     <string name="pleaseSelectEquipmentName">请选择设备名称</string>
     <string name="pleaseSelectEquipmentNameOrNoData">请选择设备名称或该设备名称无对应任务描述</string>
@@ -204,6 +210,7 @@
     <string name="pleaseInputCancleTaskReason">请输入取消原因</string>
     <string name="pleaseRelogin">请重新登录</string>
     <string name="pleaseSelectRole">选择角色</string>
+    <string name="pleaseSelectSubmitData">请选择需要提交的内容</string>
     <string name="getCommandFail">获取任务评价失败，请检查网络</string>
     <string name="preStep">上一步</string>
     <string name="nextStep">下一步</string>
@@ -245,7 +252,9 @@
     <string name="noWorkTimeData">无工作编号数据</string>
     <string name="simpleDescription">简要描述</string>
     <string name="factory">分厂:</string>
-    <string name="factoryTitle">分厂</string>
+    <string name="network">服务器:</string>
+    <string name="networkTitle">设置服务器</string>
+    <string name="factoryTitle">设置分厂</string>
     <string name="pleaseSelectFactory">请选择分厂</string>
     <string name="equipment_status">设备状态：</string>
     <string name="setting">设置</string>
@@ -286,8 +295,11 @@
     <string name="FaultSummaryDetail">故障总结详情</string>
     <string name="pleaseAddEquipment">该任务中无设备，请先添加设备 </string>
     <string name="pleaseInputWorkload">请输入工作量</string>
+    <string name="pleaseInputFilterTime">请输入查询天数</string>
+    <string name="pleaseSelectCondition">请选择查询条件</string>
     <string name="workloadVerify">工时审核</string>
-    <string name="pleaseInputInteger">请输入整数</string>
+    <string name="pleaseInputInteger">请输入大于或等于0的整数</string>
+    <string name="pleaseInputIntegerLargeThanZero">请输入大于0的整数</string>
     <string name="taskComplete">任务完成</string>
     <string name="canNotSubmitTaskComplete">无法提交任务完成，请检查任务信息</string>
     <string name="standardWorkload">标准工时:</string>
@@ -297,6 +309,7 @@
     <string name="NoEquipmentDescription">无该设备的简要描述</string>
     <string name="NoEquipmentNum">目前该设备没有机台号</string>
     <string name="NoGroupEquipment">无所属组别设备数据</string>
+    <string name="NoDataToSubmit">无可提交数据</string>
     <string name="sweetTips">温馨提示</string>
     <string name="pleaseInputPasswordOrScanICcard">请输入用户名密码或者直接刷员工卡进行登录</string>
     <string name="OneDay">一天内</string>
@@ -314,6 +327,8 @@
     <string name="FailCreateTask">任务创建失败</string>
     <string name="FailChangeEquipmentStatusCauseByTimeOut">修改设备状态失败,请检查网络</string>
     <string name="FailChangeEquipmentStatusCauseByOperator">修改设备状态失败,请检查参与人状态</string>
+    <string name="FailToScanEquipment">该设备不属于所选组别,不允许添加</string>
+    <string name="FailGetTaskOperatorListCauseByTimeOut">获取任务参与人状态列表失败，请检查网络</string>
     <string name="SuccessCancelTask">取消任务成功</string>
     <string name="SuccessSubmitPicture">上传图片成功</string>
     <string name="SuccessCreateTask">任务创建成功</string>
@@ -331,7 +346,12 @@
     <string name="FailGetList">获取列表失败，请检查网络</string>
     <string name="NoWorkload">工作编号不能为空</string>
     <string name="NoCommand">未评价</string>
+    <string name="NoEquipment">无设备</string>
     <string name="NoRoleInfo">该账号无角色信息，请联系管理员</string>
+    <string name="NoFaultSummaryType">请选择故障类型</string>
+    <string name="NoFaultSummary">请填写故障描述</string>
+    <string name="NoRepairStatus">请填写维修情况</string>
+    <string name="NoTaskSummary">请填写任务总结</string>
     <string name="isCommand">已评价</string>
     <string name="ReGetEquipmentList">重新获取设备列表中,请稍候</string>
     <string name="EquipmentBinding">绑定设备</string>
@@ -339,4 +359,36 @@
     <string name="retry">重试</string>
     <string name="back">返回</string>
     <string name="downloading">下载中</string>
+    <string name="sureDeleteEquipment">确定删除设备?</string>
+    <string name="measure_point_id">测点编号：</string>
+    <string name="measure_point_name">测点名称：</string>
+    <string name="measure_point_unit">测点单位：</string>
+    <string name="measure_point_type">测点类型：</string>
+    <string name="measure_point_status">测点状态：</string>
+    <string name="measure_point_result">测量结果：</string>
+    <string name="measure_point_range">测量范围：</string>
+    <string name="measure_point_content_input">测点信息录入</string>
+    <string name="measure_point_list">测点列表</string>
+    <!--vary view helper-->
+    <string name="empty_tips">空空如也╮(╯▽╰)╭</string>
+    <string name="error_tips">加载失败╮(╯▽╰)╭</string>
+    <string name="error_refresh">点击重试</string>
+    <string name="loading_tips">正在加载...</string>
+
+    <string name="txt_show_data">显示数据页面</string>
+    <string name="txt_show_empty">显示数据为空页面</string>
+    <string name="txt_show_error">显示加载错误页面</string>
+    <string name="txt_show_loading">显示正在加载页面</string>
+    <string name="innerNetWork">内网</string>
+    <string name="outerNetWork">外网</string>
+    <string name="changeTaskOperatorStatus">修改状态</string>
+    <string name="version_info">版本信息</string>
+    <string name="version_num">版本号：</string>
+    <string name="connect_email">联系邮箱：</string>
+    <string name="pleaseSelectHasEquipment">请选择有设备再扫卡</string>
+    <string name="filterCondition">查询条件:</string>
+    <string name="filterConditionTitle">查询条件</string>
+    <string name="filterCondition1">已逾期</string>
+    <string name="filterCondition2">已月结</string>
+    <string name="filterCondition3">按结束时长查询</string>
 </resources>

@@ -100,7 +100,7 @@ public class WorkLoadActivity extends NfcActivity{
                     holder.name=(TextView)convertView.findViewById(R.id.name) ;
                     holder.skill=(TextView)convertView.findViewById(R.id.skill) ;
                     holder.startTime=(TextView)convertView.findViewById(R.id.start_time);
-                    holder.endTime=(TextView)convertView.findViewById(R.id.end_time) ;
+                   // holder.endTime=(TextView)convertView.findViewById(R.id.end_time) ;
                     holder.workload=(EditText)convertView.findViewById(R.id.workload) ;
                     holder.workload.setInputType(EditorInfo.TYPE_CLASS_PHONE);
                     convertView.setTag(holder);
@@ -110,7 +110,7 @@ public class WorkLoadActivity extends NfcActivity{
                 holder.name.setText(DataUtil.isDataElementNull(datas.get(position).get("OperatorName")));
                 holder.skill.setText(DataUtil.isDataElementNull(datas.get(position).get("Skill")));
                 holder.startTime.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("StartTime"))));
-                holder.endTime.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("FinishTime"))));
+                //holder.endTime.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("FinishTime"))));
                 if(DataUtil.isFloat(DataUtil.isDataElementNull(datas.get(position).get("Coefficient")))){
                     if(  !(((int)Float.parseFloat(DataUtil.isDataElementNull(datas.get(position).get("Coefficient"))))==0)    ){
                         holder.workload.setText(String.valueOf( (int)(Float.valueOf(DataUtil.isDataElementNull(datas.get(position).get("Coefficient"))) * 100)));
@@ -236,7 +236,9 @@ public class WorkLoadActivity extends NfcActivity{
                 ToastUtil.showToastLong(R.string.pleaseInputWorkload,this);
                 return;
             }
-            if(!DataUtil.isInt(workloadMap.get(workloadKeylist.get(i)).getText().toString())){
+            if(    !DataUtil.isNum(workloadMap.get(workloadKeylist.get(i)).getText().toString())
+                   || !DataUtil.isInt(workloadMap.get(workloadKeylist.get(i)).getText().toString())
+                   ||  Integer.parseInt(workloadMap.get(workloadKeylist.get(i)).getText().toString())<0 ){
                 ToastUtil.showToastLong(R.string.pleaseInputInteger,this);
                 return;
             }

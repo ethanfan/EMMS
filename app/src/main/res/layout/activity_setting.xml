@@ -22,6 +22,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/bbbb"
                         android:layout_marginRight="16dp"
+                        android:layout_marginLeft="10dp"
                         android:layout_marginTop="8dp"
                         android:orientation="horizontal">
                 <TextView
@@ -38,6 +39,7 @@
                 <com.emms.ui.DropEditText
                     android:layout_width="0dp"
                     android:layout_weight="3"
+                    android:layout_marginLeft="5dp"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/factory_tag"
                     android:layout_alignParentRight="true"
@@ -49,6 +51,41 @@
                     drop:hint="@string/select"
                     drop:hintColor="@color/hint_color"/>
         </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cccc"
+                    android:layout_below="@+id/bbbb"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="38dp"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1.0"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="end"
+                        android:textColor="@color/black"
+                        android:id="@+id/NetWork_tag"
+                        android:textSize="18sp"
+                        android:text="@string/network"/>
+                    <com.emms.ui.DropEditText
+                        android:layout_width="0dp"
+                        android:layout_weight="3"
+                        android:layout_marginLeft="5dp"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/NetWork_tag"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignTop="@+id/NetWork_tag"
+                        android:layout_alignBottom="@+id/NetWork_tag"
+                        android:id="@+id/NetWork"
+                        drop:drawableRight="@mipmap/drop_down"
+                        drop:dropMode="flow_parent"
+                        drop:hint="@string/select"
+                        drop:hintColor="@color/hint_color"/>
+                </LinearLayout>
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

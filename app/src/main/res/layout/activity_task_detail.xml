@@ -47,12 +47,85 @@
                     android:text="0"
                     android:layout_toRightOf="@+id/textView17"
                     android:id="@+id/device_count" />
-                <com.emms.ui.ScrollViewWithListView
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:layout_below="@+id/deal_count"
+                    android:id="@+id/oooooo">
+                <com.emms.ui.ScrollViewWithListView
                     android:id="@+id/problem_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
                 </com.emms.ui.ScrollViewWithListView>
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/click_item"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:visibility="gone"
+                    android:id="@+id/NoEquipmentLayout"
+                    >
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/device_name_order"
+                        android:id="@+id/equipment_name_tag"
+                        android:textSize="17sp"
+                        android:layout_marginTop="5dp"
+                        android:textColor="@color/text_color"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/equipment_name"
+                        android:textSize="17sp"
+                        android:text="@string/NoEquipment"
+                        android:layout_alignTop="@+id/equipment_name_tag"
+                        android:layout_toRightOf="@+id/equipment_name_tag"
+                        android:textColor="@color/text_color"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/participant"
+                        android:textSize="17sp"
+                        android:textColor="@color/text_color"
+                        android:layout_alignRight="@+id/equipment_name_tag"
+                        android:id="@+id/taskOperatorStatus_tag"
+                        android:layout_below="@+id/equipment_name"/>
+                    <ListView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/taskOperatorStatus_tag"
+                        android:layout_toRightOf="@+id/taskOperatorStatus_tag"
+                        android:id="@+id/taskOperatorStatus"/>
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_alignLeft="@+id/equipment_name_tag"
+                        android:layout_below="@+id/taskOperatorStatus_tag"
+                        android:text="@string/changeTaskOperatorStatus"
+                        android:textSize="18sp"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        android:padding="10dp"
+                        android:background="@color/yellow"
+                        android:id="@+id/changeTaskOperatorStatus"
+                        />
+
+                </RelativeLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="10dp"
+                        android:layout_height="1dp"
+                        android:id="@+id/line"
+                        android:layerType="software"
+                        android:background="@drawable/dashedline"/>
+                </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -113,25 +186,9 @@
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true" />
 
-                <!--<LinearLayout-->
-                    <!--android:id="@+id/line"-->
-                    <!--android:layout_marginTop="5dp"-->
-                    <!--android:layout_below="@id/problem_count"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:background="@color/hint_color"-->
-                    <!--android:layout_height="0.5dp"-->
-                    <!--android:orientation="horizontal">-->
-                <!--</LinearLayout>-->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_marginTop="10dp"
-                    android:layout_below="@+id/problem_count"
-                    android:layout_height="1dp"
-                    android:id="@+id/line"
-                    android:layerType="software"
-                    android:background="@drawable/dashedline"/>
+
                 <TextView
-                    android:layout_below="@id/line"
+                    android:layout_below="@id/oooooo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="13dp"

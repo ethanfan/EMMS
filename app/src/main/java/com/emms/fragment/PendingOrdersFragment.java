@@ -106,6 +106,7 @@ public class PendingOrdersFragment extends BaseFragment{
                     holder.tv_task_state = (TextView) convertView.findViewById(R.id.Task_status);
                     holder.tv_create_time = (TextView) convertView.findViewById(R.id.tv_create_time_order);
                     holder.tv_device_name = (TextView) convertView.findViewById(R.id.Task_Equipment);
+                    holder.tv_device_num= (TextView) convertView.findViewById(R.id.Task_Equipment_Num);
                     holder.acceptTaskButton=(Button)convertView.findViewById(R.id.btn_order);
                     convertView.setTag(holder);
                 }else {
@@ -117,6 +118,7 @@ public class PendingOrdersFragment extends BaseFragment{
                 holder.tv_task_state.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS))));
                 holder.tv_create_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
                 holder.tv_device_name.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("EquipmentName"))));
+                holder.tv_device_num.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("EquipmentAssetsIDList"))));
                 holder.acceptTaskButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -284,9 +286,13 @@ public class PendingOrdersFragment extends BaseFragment{
                             toast.show();
                         }else{
                             //失败，通知用户接单失败，单已经被接
-                            Toast toast=Toast.makeText(mContext,DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),Toast.LENGTH_SHORT);
+                            Toast toast=Toast.makeText(mContext,DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),Toast.LENGTH_LONG);
                             toast.setGravity(Gravity.CENTER,0,0);
                             toast.show();
+                            if(jsonObjectElement.get("Tag").valueAsInt()==2){
+                                dismissCustomDialog();
+                                return;
+                            }
                         }
                         datas.remove(position);
                         removeNum++;
@@ -296,7 +302,6 @@ public class PendingOrdersFragment extends BaseFragment{
                         }
                         taskAdapter.setDatas(datas);
                         taskAdapter.notifyDataSetChanged();
-
                 }
                 dismissCustomDialog();
             }

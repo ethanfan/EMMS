@@ -313,6 +313,9 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
         this.mCurrentPositionOffset = positionOffset;
         scrollToCurrentTab();
         invalidate();
+        if(onPageSelectListener!=null){
+            onPageSelectListener.onPageChange(mCurrentTab);
+        }
     }
 
     @Override
@@ -892,4 +895,10 @@ public class SlidingTabLayout extends HorizontalScrollView implements ViewPager.
         final float scale = this.mContext.getResources().getDisplayMetrics().scaledDensity;
         return (int) (sp * scale + 0.5f);
     }
+
+    public void setOnPageSelectListener(OnPageSelectListener onPageSelectListener) {
+        this.onPageSelectListener = onPageSelectListener;
+    }
+
+    private OnPageSelectListener onPageSelectListener;
 }

@@ -29,6 +29,8 @@ import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
+import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
@@ -44,6 +46,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2016/8/10.
+ *
  */
 public class SettingActivity extends NfcActivity implements View.OnClickListener{
     private ResultListAdapter mResultAdapter;
@@ -58,8 +61,11 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
     private Context context=this;
     private ArrayList<ObjectElement> FactoryList=new ArrayList<ObjectElement>();
-    private DropEditText Factory;
+    private ArrayList<ObjectElement> NetWorkList=new ArrayList<>();
+    private DropEditText Factory,NetWork;
     private String SelectItem="";
+    private final int FACTORY_SETTING=1;
+    private final int NETWORK_SETTING=2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +79,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
         findViewById(R.id.btn_right_action).setOnClickListener(this);
         findViewById(R.id.comfirm).setOnClickListener(this);
         Factory=(DropEditText)findViewById(R.id.factory);
+        NetWork=(DropEditText)findViewById(R.id.NetWork);
     }
 
 
@@ -95,18 +102,20 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
         }
     }
     private void submitEquipmentData(){
-        HttpParams params=new HttpParams();
-        JsonObjectElement submitData=new JsonObjectElement();
         if(Factory.getText().equals("")){
             ToastUtil.showToastLong(R.string.pleaseSelectFactory,this);
             return;
         }
-        SharedPreferenceManager.setFactory(this,Factory.getText().toString());
+        SharedPreferenceManager.setFactory(this,Factory.getText());
         ToastUtil.showToastLong(R.string.setting_su,this);
         finish();
 
     }
     private void initData(){
+        initFactory();
+        initNewWork();
+    }
+    private void initFactory(){
         String rawQuery="select * from BaseOrganise where  OrganiseType = 1";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
@@ -127,6 +136,14 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                 System.out.println(throwable.getMessage());
             }
         });
+    }
+    private void initNewWork(){
+        JsonObjectElement json1=new JsonObjectElement();
+        json1.set(DataDictionary.DATA_NAME,getResources().getString(R.string.innerNetWork));
+        JsonObjectElement json2=new JsonObjectElement();
+        json2.set(DataDictionary.DATA_NAME,getResources().getString(R.string.outerNetWork));
+        NetWorkList.add(json1);
+        NetWorkList.add(json2);
     }
     private void initSearchView() {
         searchBox = (EditText) findViewById(R.id.et_search);
@@ -157,8 +174,11 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                         @Override
                         public void run() {
                             switch (searchtag) {
-                                case 1:
+                                case FACTORY_SETTING:
                                     Factory.getmEditText().setText(searchResult);
+                                    break;
+                                case NETWORK_SETTING:
+                                    NetWork.getmEditText().setText(searchResult);
                                     break;
                             }
                             mDrawer_layout.closeDrawer(Gravity.RIGHT);
@@ -171,7 +191,9 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
         });
         initDropSearchView(null, Factory.getmEditText(), context.getResources().
                         getString(R.string.factoryTitle),"OrganiseName",
-                1, R.string.getDataFail,Factory.getDropImage());
+                FACTORY_SETTING, R.string.getDataFail,Factory.getDropImage());
+        initDropSearchView(null,NetWork.getmEditText(),context.getResources().getString(R.string.networkTitle),DataDictionary.DATA_NAME,
+                NETWORK_SETTING,R.string.getDataFail,NetWork.getDropImage());
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -254,10 +276,15 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
             public void run() {
                 searchDataLists.clear();
                 switch (searTag) {
-                    case 1:{
+                    case FACTORY_SETTING:{
                         searchDataLists.addAll(FactoryList);
                         break;
-                    }}
+                    }
+                    case NETWORK_SETTING:{
+                        searchDataLists.addAll(NetWorkList);
+                        break;
+                    }
+                }
                 searchtag = searTag;
                 if (condition != null) {
                     if (!condition.getText().toString().equals("") && searchDataLists.size() > 0) {

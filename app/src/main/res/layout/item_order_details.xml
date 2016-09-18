@@ -141,6 +141,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/equipment_opeartor_list"
             android:layout_toRightOf="@+id/textView20"
+            android:divider="@null"
+            android:layout_alignTop="@+id/textView20"
             android:layout_below="@+id/id_status">
         </ListView>
     </RelativeLayout>

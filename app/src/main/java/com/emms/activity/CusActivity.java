@@ -45,8 +45,10 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         TaskClass_moduleID_map.put(Task.MAINTAIN_TASK,2);
         TaskClass_moduleID_map.put(Task.MOVE_CAR_TASK,4);
         TaskClass_moduleID_map.put(Task.OTHER_TASK,5);
+        TaskClass_moduleID_map.put("C2",8);
+        TaskClass_moduleID_map.put("C1",10);
     }
-    private HashMap<Integer,ObjectElement> ID_module_map=new HashMap<Integer, ObjectElement>();
+    private HashMap<Integer,ObjectElement> ID_module_map=new HashMap<>();
     private MainActivityAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,6 +227,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                 obj.set("module_image",R.mipmap.cur_activity_workload_verify);
                 obj.set("module_name",R.string.workloadVerify);
                 obj.set("Class",packageName+"WorkloadVerifyActivity");
+                obj.set("TaskNum","0");
                 break;
             }
             case 9:{//otherTask
@@ -237,6 +240,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                 obj.set("module_image",R.mipmap.cur_activity_verify);
                 obj.set("module_name",R.string.TaskVerify);
                 obj.set("Class",packageName+"TaskVerifyActivity");
+                obj.set("TaskNum","0");
                 break;
             }
         }
@@ -267,12 +271,17 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                             //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                             if(json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1")!=null&&
                                     json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0")!=null) {
-                                String taskNumToShow = json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1").valueAsString() + "/" +
-                                        json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0").valueAsString();
-                                if(ID_module_map.get(TaskClass_moduleID_map.get(DataUtil.isDataElementNull(json.get("PageData").asArrayElement()
-                                        .get(i).asObjectElement().get("DataCode"))))!=null){
-                               ID_module_map.get(TaskClass_moduleID_map.get(DataUtil.isDataElementNull(json.get("PageData").asArrayElement()
-                                        .get(i).asObjectElement().get("DataCode")))).set("TaskNum",taskNumToShow);
+                                ObjectElement jsonObjectElement=json.get("PageData").asArrayElement().get(i).asObjectElement();
+                                String taskNumToShow="0";
+                                if(DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")).equals("C1")
+                                        ||DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")).equals("C2")){
+                                    taskNumToShow=DataUtil.isDataElementNull(jsonObjectElement.get("S0"));
+                                }else {
+                                    taskNumToShow = DataUtil.isDataElementNull(jsonObjectElement.get("S1")) + "/" +
+                                            DataUtil.isDataElementNull(jsonObjectElement.get("S0"));
+                                }
+                                if(ID_module_map.get(TaskClass_moduleID_map.get(DataUtil.isDataElementNull(jsonObjectElement.get("DataCode"))))!=null){
+                               ID_module_map.get(TaskClass_moduleID_map.get(DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")))).set("TaskNum",taskNumToShow);
                                 }
                             }
                         }
@@ -335,6 +344,8 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         SharedPreferenceManager.setUserData(CusActivity.this,null);
         SharedPreferenceManager.setMsg(CusActivity.this,null);
         SharedPreferenceManager.setUserRoleID(CusActivity.this,null);
-        startActivity(new Intent(CusActivity.this, LoginActivity.class));
+        Intent intent=new Intent(CusActivity.this, LoginActivity.class);
+        intent.putExtra("FromCusActivity",true);
+        startActivity(intent);
     }
 }

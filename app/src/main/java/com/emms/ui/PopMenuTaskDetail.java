@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -25,17 +23,13 @@ import android.widget.TextView;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
-import com.emms.activity.CommandActivity;
 import com.emms.activity.CreateTaskActivity;
 import com.emms.activity.InvitorActivity;
 import com.emms.activity.SubTaskManageActivity;
 import com.emms.activity.SummaryActivity;
 import com.emms.activity.WorkLoadActivity;
-import com.emms.activity.dialogOnSubmitInterface;
-import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.Constants;
-import com.emms.util.ListViewUtility;
 import com.emms.util.RootUtil;
 import com.emms.util.ToastUtil;
 
@@ -63,7 +57,7 @@ public abstract class PopMenuTaskDetail {
 		this.TaskDetail=new JsonObjectElement(taskDetail);
 		TaskId=TaskDetail.get(Task.TASK_ID).valueAsLong();
 		TaskClass=taskClass;
-		itemList = new ArrayList<String>(5);
+		itemList = new ArrayList<>(5);
 		View view = LayoutInflater.from(context)
 				.inflate(R.layout.popmenu, null);
 		final RelativeLayout layout=(RelativeLayout)view.findViewById(R.id.popup_view_cont);
@@ -133,8 +127,8 @@ public abstract class PopMenuTaskDetail {
 
 	// 批量添加菜单项
 	public void addItems(String[] items) {
-		for (String s : items)
-			itemList.add(s);
+		for (String s : items){
+			itemList.add(s);}
 	}
 
 	// 批量添加菜单项
@@ -254,9 +248,9 @@ public abstract class PopMenuTaskDetail {
 		intent.putExtra("TaskDetail",TaskDetail.toString());
 		context.startActivity(intent);
 	}
-	private void Scan(){
-
-	}
+//	private void Scan(){
+//
+//	}
 	private void ExChangeOrder(){
 		if(!is_Main_person_in_charge_Operator_id){
 			ToastUtil.showToastLong("只有主负责人可以进行转单",context);
@@ -292,12 +286,12 @@ public abstract class PopMenuTaskDetail {
 		intent.putExtra("TaskDetail",TaskDetail.toString());
 		context.startActivity(intent);
 	}
-	private void FailureSummary(){
-
-	}
-	private void setTaskIdFromActivity(Long taskId){
-		this.TaskId=taskId;
-	}
+//	private void FailureSummary(){
+//
+//	}
+//	private void setTaskIdFromActivity(Long taskId){
+//		this.TaskId=taskId;
+//	}
 	private void FaultSummary(){
 		if(!is_Main_person_in_charge_Operator_id){
 			ToastUtil.showToastLong("只有主负责人可以进行故障总结",context);

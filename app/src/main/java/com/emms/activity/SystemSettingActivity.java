@@ -42,6 +42,7 @@ public class SystemSettingActivity extends NfcActivity implements View.OnClickLi
         initData();
     }
     private void initView(){
+        ((TextView)findViewById(R.id.tv_title)).setText(R.string.systemSetting);
         findViewById(R.id.btn_right_action).setOnClickListener(this);
         module_list=(GridView)findViewById(R.id.module_list);
         adapter=new MainActivityAdapter(moduleList) {
@@ -81,7 +82,7 @@ public class SystemSettingActivity extends NfcActivity implements View.OnClickLi
         module_list.setAdapter(adapter);
     }
     private void initData(){
-            for(int i=0;i<2;i++ ){
+            for(int i=0;i<3;i++ ){
                 JsonObjectElement jsonObjectElement=new JsonObjectElement();
                 jsonObjectElement.set("module_ID",i+1);
                 jsonObjectElement=moduleMatchingRule(jsonObjectElement);
@@ -102,6 +103,12 @@ public class SystemSettingActivity extends NfcActivity implements View.OnClickLi
                 obj.set("module_image", R.mipmap.system_setting_activity_binding);
                 obj.set("module_name", R.string.EquipmentBinding);
                 obj.set("Class", packageName + "EnteringEquipmentICCardIDActivity");
+                break;
+            }
+            case 3: {//maintainTask
+                obj.set("module_image", R.mipmap.system_setting_activity_binding);
+                obj.set("module_name", R.string.version_info);
+                obj.set("Class", packageName + "VersionInfoActivity");
                 break;
             }
 

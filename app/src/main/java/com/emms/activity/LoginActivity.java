@@ -88,8 +88,9 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         //init();
         initView();
         //  registerMessageReceiver();
-
-       getNewDataFromServer();
+       if(!getIntent().getBooleanExtra("FromCusActivity",false)) {
+           getNewDataFromServer();
+       }
     }
 
     private void initView() {
@@ -317,7 +318,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     if(json.get("TaskOrganiseRelation")!=null&&json.get("TaskOrganiseRelation").asArrayElement().size()>0){
                         updateData(json.get("TaskOrganiseRelation"),EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION);}
                 }
-                ConfigurationManager.getInstance().startToGetNewConfig(mContext);
+               // ConfigurationManager.getInstance().startToGetNewConfig(mContext);
             }
             @Override
             public void onFailure(int errorNo, String strMsg) {
@@ -440,7 +441,8 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
             @Override
             public void success(DataElement element, String resource) {
-                getDataBaseUpdateFromServer(element.asArrayElement().get(0));
+                ConfigurationManager.getInstance().startToGetNewConfig(mContext);
+                //getDataBaseUpdateFromServer(element.asArrayElement().get(0));
             }
 
             @Override
@@ -690,5 +692,14 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         intent.putExtra("Module_ID_List",DataUtil.isDataElementNull(objectElement.get("AppInterfaceList")));
         startActivity(intent);
         initPush(data);
+    }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        startActivity(intent);
     }
 }

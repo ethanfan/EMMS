@@ -1,8 +1,10 @@
 package com.emms.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.Log;
@@ -49,7 +51,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     public void setEquipemntStatus(int equipemntStatus) {
         EquipemntStatus = equipemntStatus;
     }
-
+    public final static String DELETE="delete";
     private int EquipemntStatus=-1;
     //private ArrayList<String> status=new ArrayList<String>();
     //private int tag=1;
@@ -57,7 +59,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
  //   private Button equipment_resume,equipment_complete,equipment_wait_material,equipment_pause,equipment_start,quit,material_requisition;
     private ObjectElement TaskEquipmentData;
     private boolean is_Main_person_in_charge_operator_id=false;
-
+    private boolean isNoEuqipment=false;
     public void setOperator_Status(int operator_Status) {
         Operator_Status = operator_Status;
 
@@ -95,13 +97,14 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         Equipment_OperatorID_Status = equipment_OperatorID_Status;
     }*/
    // private HashMap<String,Integer> Equipment_OperatorID_Status=new HashMap<String, Integer>();
-    public ChangeEquipmentDialog(Context context, int layout, int style,boolean tag,boolean tag2) {
+    public ChangeEquipmentDialog(Context context, int layout, int style,boolean tag,boolean tag2,boolean tag3) {
         super(context, style);
         this.context = context;
         setContentView(layout);
         hud=KProgressHUD.create(context);
         is_Main_person_in_charge_operator_id=tag;
         isOneOperator=tag2;
+        isNoEuqipment=tag3;
         //if(Equipment_OperatorID_Status.get())
       //  Collections.addAll(status,context.getResources().getStringArray(R.array.equip_status));
         initMap();
@@ -162,16 +165,15 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                     holder = (TaskViewHolder) convertView.getTag();
                 }
                // if(!showList.get(position).get("Type").valueAsString().equals("delete")){
-                  if(showList.get(position).get("Type").valueAsString().equals("EquipmentStatus")) {
+                  if(showList.get(position).get("Type").valueAsString().equals("EquipmentStatus"))
+                  {
                     holder.image.setImageResource(R.mipmap.equipment_status);
-                     }
-                  else {
+                  }else if(showList.get(position).get("Type").valueAsString().equals("EquipmentOperatorStatus"))
+                  {
                     holder.image.setImageResource(R.mipmap.equipment_operator_status_mipmap);
-                       }
-//                }
-//            else {
-//                   holder.image.setImageBitmap(null);
-//                }
+                  }else {
+                   holder.image.setImageResource(R.mipmap.delete_equipment);
+                  }
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(showList.get(position).get("Status")));
                 return convertView;
             }
@@ -186,11 +188,24 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                     postTaskEquipment(Equipment_Status_Name_ID_map.get(DataUtil.isDataElementNull(showList.get(position).get("Status"))));
                 }else if(showList.get(position).get("Type").valueAsString().equals("EquipmentOperatorStatus")){
                     //修改设备参与人状态
-                    postTaskOperatorEquipment(Equipment_Operator_Status_Name_ID_map.get(DataUtil.isDataElementNull(showList.get(position).get("Status"))));
+                    if(isNoEuqipment){
+                        ChangeTaskOperatorStatus(Equipment_Operator_Status_Name_ID_map.get(DataUtil.isDataElementNull(showList.get(position).get("Status"))));
+                    }else {
+                        postTaskOperatorEquipment(Equipment_Operator_Status_Name_ID_map.get(DataUtil.isDataElementNull(showList.get(position).get("Status"))));
+                    }
                 }
-//                else if(showList.get(position).get("Type").valueAsString().equals("delete")){
-//                    deleteEquipment();
-//                }
+                else if(showList.get(position).get("Type").valueAsString().equals(DELETE)){
+                    AlertDialog.Builder builder=new AlertDialog.Builder(context);
+                    builder.setMessage(R.string.sureDeleteEquipment);
+                    builder.setPositiveButton(R.string.sure, new OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            deleteEquipment();
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.show();
+                }
             }
         });
     }
@@ -294,59 +309,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 */
     @Override
     public void onClick(View v) {
-        int id = v.getId();
-   /*     switch (id){
-            case R.id.equipment_resume:{
-                if(tag==1){
-                    postTaskOperatorEquipment(0);
-                }else {
-                    postTaskEquipment(1);
-                }
-                break;
-            }
-            case R.id.equipment_complete:{
-                if(tag==1){
-                    postTaskOperatorEquipment(5);
-                }else{
-                    postTaskEquipment(4);
-                }
-                break;
-            }
-            case R.id.equipment_wait_material:{
-                if(tag==1){
-                    postTaskOperatorEquipment(4);
-                }else{
-                    postTaskEquipment(3);
-                }
-                break;
-            }
-            case R.id.equipment_pause:{
-                if(tag==1){
-                    postTaskOperatorEquipment(1);
-                }else{
-                    postTaskEquipment(2);
-                }
-                break;
-            }
-            case R.id.equipment_start:{
-                if(tag==1){
-                    postTaskOperatorEquipment(0);
-                }
-                else{
-                    postTaskEquipment(1);
-                }
-                break;
-            }
-            case R.id.quit:{
-                postTaskOperatorEquipment(2);
-                break;
-            }
-            case R.id.material_requisition:{
-                postTaskOperatorEquipment(3);
-                break;
-            }
-        }*/
-
+       // int id = v.getId();
     }
 
     private void initTagButton(){
@@ -473,6 +436,17 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         showList.addAll(Equipment_Status_List);
         }
         showList.addAll(Equipment_Operator_Status_List);
+        if(isOneOperator&&!isNoEuqipment){//单人操作
+        JsonObjectElement json=new JsonObjectElement();
+        json.set("Status",context.getResources().getString(R.string.deleteEquipment));
+        json.set("Type",DELETE);
+        showList.add(0,json);
+        }else if(is_Main_person_in_charge_operator_id&&!isOneOperator&&!isNoEuqipment){//多人操作，主负责人控制
+            JsonObjectElement json=new JsonObjectElement();
+            json.set("Status",context.getResources().getString(R.string.deleteEquipment));
+            json.set("Type",DELETE);
+            showList.add(0,json);
+        }
        // adapter.notifyDataSetChanged();
     }
     private void initMap(){
@@ -545,8 +519,11 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         showCustomDialog(R.string.deletingEquipment);
         HttpParams params=new HttpParams();
         //IDList即TaskEquipmentId对应删除字段
-        params.put("id",TaskEquipmentId);
-        HttpUtils.get(context, "TaskEquipmentCollection", params, new HttpCallback() {
+        //params.put("id",TaskEquipmentId);
+        JsonObjectElement jsonObjectElement=new JsonObjectElement();
+        jsonObjectElement.set("IDList",TaskEquipmentId);
+        params.putJsonParams(jsonObjectElement.toJson());
+        HttpUtils.post(context, "TaskEquipment/TaskEquipmentDelete", params, new HttpCallback() {
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
@@ -578,4 +555,41 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 
     private boolean isOneOperator=false;
 
+    public void setTaskOperatorID(int taskOperatorID) {
+        TaskOperatorID = taskOperatorID;
+    }
+
+    private int TaskOperatorID=0;
+   private void ChangeTaskOperatorStatus(int Status){
+       showCustomDialog(R.string.submitData);
+       HttpParams params=new HttpParams();
+       JsonObjectElement submitData=new JsonObjectElement();
+       submitData.set("TaskOperator_ID",TaskOperatorID);
+       submitData.set("Status",Status);
+       submitData.set("IsMain",is_Main_person_in_charge_operator_id);
+       params.putJsonParams(submitData.toJson());
+       HttpUtils.post(context, "TaskOperator", params, new HttpCallback() {
+           @Override
+           public void onSuccess(String t) {
+               super.onSuccess(t);
+               if(t!=null){
+                   JsonObjectElement data=new JsonObjectElement(t);
+                   if(data.get(Data.SUCCESS).valueAsBoolean()){
+                       onSubmitInterface.onsubmit();
+                       dismiss();
+                   }else {
+                       ToastUtil.showToastLong(R.string.CanNotChangeStatus,context);
+                   }
+               }
+               dismissCustomDialog();
+           }
+
+           @Override
+           public void onFailure(int errorNo, String strMsg) {
+               super.onFailure(errorNo, strMsg);
+               ToastUtil.showToastLong(R.string.failToChangeStatus,context);
+               dismissCustomDialog();
+           }
+       });
+   }
 }

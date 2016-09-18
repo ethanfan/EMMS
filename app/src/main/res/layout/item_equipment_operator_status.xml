@@ -8,7 +8,7 @@
         android:textSize="17sp"
         android:textColor="@color/text_color"
         android:id="@+id/operator_name"
-        android:layout_marginTop="5dp"/>
+        android:layout_marginBottom="5dp"/>
 
     <TextView
         android:layout_width="wrap_content"

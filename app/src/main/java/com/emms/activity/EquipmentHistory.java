@@ -93,6 +93,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
         initView();
         if(Equipment_ID!=null || EquipmentName!=null || Task_Description!=null){
             findViewById(R.id.search_filter).setVisibility(View.INVISIBLE);
+            pageIndex=1;
             getEquipmentHistoryFromServer();
         }
         initData();
@@ -108,6 +109,9 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
         equipment_name=(DropEditText)findViewById(R.id.equipment_name);
         task_description=(DropEditText)findViewById(R.id.task_description) ;
         fault_type=(DropEditText)findViewById(R.id.fault_type) ;
+        if(EquipmentName!=null) {
+            equipment_name.getmEditText().setText(EquipmentName);
+        }
         listView=(PullToRefreshListView)findViewById(R.id.equipment_history_list);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {

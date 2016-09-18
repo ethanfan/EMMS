@@ -1,5 +1,6 @@
 package com.emms.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -143,7 +144,7 @@ public class FliterTaskHistoryFragment extends BaseFragment {
                 intent.putExtra("IsEvaluated",DataUtil.isDataElementNull(data.get(position-1).get("IsEvaluated")));
                 intent.putExtra("FromFragment","2");
                 intent.putExtra("isTaskHistory", true);
-                startActivityForResult(intent, Constants.REQUEST_CODE_TASKHISTORY);
+                ((Activity)mContext).startActivityForResult(intent, Constants.REQUEST_CODE_TASKHISTORY);
                // startActivity(intent);
             }
         });

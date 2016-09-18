@@ -56,10 +56,15 @@ public class PendingVerifyFragment extends BaseFragment {
     private int pageIndex=1;
     private int RecCount=0;
     private ArrayList<ObjectElement> submitData=new ArrayList<>();
+    private HashMap<String,String> taskClass_map=new HashMap<>();
 //    private HashMap<Integer,String> mapVerifyWorkTime=new HashMap<>();
 //    private HashMap<Integer,String> mapVerifyStates=new HashMap<>();
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        taskClass_map.put(Task.REPAIR_TASK,getResources().getString(R.string.repair_task));
+        taskClass_map.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintain_task));
+        taskClass_map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car_task));
+        taskClass_map.put(Task.OTHER_TASK,getResources().getString(R.string.other_task));
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView)v.findViewById(R.id.processing_list);
@@ -105,6 +110,7 @@ public class PendingVerifyFragment extends BaseFragment {
                     holder.tv_repair_time=(TextView)convertView.findViewById(R.id.tv_Warranty_time_process);
                     holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
+                    holder.tv_end_time=(TextView) convertView.findViewById(R.id.tv_end_time_process);
                     holder.editText=(EditText)convertView.findViewById(R.id.verify_workTime) ;
                     holder.editText.setInputType(EditorInfo.TYPE_CLASS_PHONE);
                     holder.editText2=(EditText)convertView.findViewById(R.id.verify_workTime_remark) ;
@@ -119,6 +125,7 @@ public class PendingVerifyFragment extends BaseFragment {
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkTime")));
                 holder.editText.setText(DataUtil.isDataElementNull(datas.get(position).get("Workload")));
                 holder.editText2.setText(DataUtil.isDataElementNull(datas.get(position).get("UpdateRemark")));
+                holder.tv_end_time.setText(DataUtil.isDataElementNull(datas.get(position).get("FinishTime")));
 //                if(mapVerifyWorkTime.get(datas.get(position).get(Task.TASK_ID).valueAsInt())!=null) {
 //                    holder.editText.setText(mapVerifyWorkTime.get(datas.get(position).get(Task.TASK_ID).valueAsInt()));
 //                }
@@ -173,9 +180,9 @@ public class PendingVerifyFragment extends BaseFragment {
                     @Override
                     public void onClick(View v) {
                         Intent intent=new Intent(mContext,TaskDetailsActivity.class);
-                        intent.putExtra(Task.TASK_ID,datas.get(position).get(Task.TASK_ID).valueAsString());
+                        intent.putExtra(Task.TASK_ID,DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_ID)));
                         intent.putExtra("TaskDetail",datas.get(position).toString());
-                        intent.putExtra(Task.TASK_CLASS,"T04");
+                        intent.putExtra(Task.TASK_CLASS,DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_CLASS)));
                         intent.putExtra("TaskStatus",2);
                         startActivity(intent);
                     }
@@ -346,6 +353,10 @@ public class PendingVerifyFragment extends BaseFragment {
         });
     }
     public void submitVerifyData(){
+        if(submitData.size()<=0){
+            ToastUtil.showToastLong(R.string.pleaseSelectSubmitData,mContext);
+            return;
+        }
         for(int i=0;i<submitData.size();i++) {
             if (!DataUtil.isNum(DataUtil.isDataElementNull(submitData.get(i).get("Workload")).trim()) ||
                     DataUtil.isDataElementNull(submitData.get(i).get("Workload")).equals("")) {
@@ -375,6 +386,7 @@ public class PendingVerifyFragment extends BaseFragment {
                         ToastUtil.showToastLong(R.string.SuccessVerify,mContext);
                         datas.removeAll(submitData);
                         taskAdapter.notifyDataSetChanged();
+                        taskNumInteface.refreshProcessingFragment();
                     }else {
                         ToastUtil.showToastLong(R.string.FailVerify,mContext);
                     }

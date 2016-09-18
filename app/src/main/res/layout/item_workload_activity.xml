@@ -69,30 +69,30 @@
         android:textSize="18sp"
         android:layout_alignTop="@+id/start_time_tag"
         />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/end_time_tag"
-        android:text="@string/end_time"
-        android:layout_marginTop="10dp"
-        android:textColor="@color/black"
-        android:layout_below="@+id/start_time_tag"
-        android:textSize="18sp"
-        android:layout_alignLeft="@id/start_time_tag"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/end_time"
-        android:textColor="@color/black"
-        android:layout_toRightOf="@+id/end_time_tag"
-        android:textSize="18sp"
-        android:layout_alignTop="@+id/end_time_tag"
-        />
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/end_time_tag"-->
+        <!--android:text="@string/end_time"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:textColor="@color/black"-->
+        <!--android:layout_below="@+id/start_time_tag"-->
+        <!--android:textSize="18sp"-->
+        <!--android:layout_alignLeft="@id/start_time_tag"/>-->
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:id="@+id/end_time"-->
+        <!--android:textColor="@color/black"-->
+        <!--android:layout_toRightOf="@+id/end_time_tag"-->
+        <!--android:textSize="18sp"-->
+        <!--android:layout_alignTop="@+id/end_time_tag"-->
+        <!--/>-->
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/end_time_tag"
-        android:layout_alignLeft="@id/end_time_tag"
+        android:layout_below="@+id/start_time"
+        android:layout_alignLeft="@id/start_time_tag"
         android:layout_alignRight="@+id/skill">
     <TextView
         android:layout_width="wrap_content"

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.os.PersistableBundle;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
@@ -24,8 +25,10 @@ import android.widget.Toast;
 
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
+import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -34,6 +37,7 @@ import com.emms.adapter.ResultListAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
+import com.emms.schema.Equipment;
 import com.emms.schema.Task;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
@@ -45,6 +49,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import net.minidev.json.JSONUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Administrator on 2016/7/25.
@@ -264,7 +269,26 @@ public class SummaryActivity extends NfcActivity{
         });
     }
     private void submitFaultSummaryToServer(){
-        showCustomDialog(R.string.submitData);
+        if(TaskClass.equals(Task.REPAIR_TASK)) {
+            if (type.getText().trim().equals("")) {
+                ToastUtil.showToastLong(R.string.NoFaultSummaryType,context);
+                return;
+            }
+            if(description.getText().toString().trim().equals("")){
+                ToastUtil.showToastLong(R.string.NoFaultSummary,context);
+                return;
+            }
+            if (repair_status.getText().toString().trim().equals("")) {
+                ToastUtil.showToastLong(R.string.NoRepairStatus,context);
+                return;
+            }
+        }else {
+            if (description.getText().toString().trim().equals("")) {
+                ToastUtil.showToastLong(R.string.NoTaskSummary, context);
+                return;
+            }
+        }
+      showCustomDialog(R.string.submitData);
       HttpParams httpParams=new HttpParams();
         JsonObjectElement  FaultSummary=new JsonObjectElement();
         FaultSummary.set(Task.TASK_ID,DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
@@ -355,7 +379,7 @@ public class SummaryActivity extends NfcActivity{
     }
     private void setFaultData(String data){
         JsonObjectElement jsonObjectElement=new JsonObjectElement(data);
-        if(jsonObjectElement!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
+        if(jsonObjectElement.get("PageData").asArrayElement().size()>0){
            final ObjectElement faultData=jsonObjectElement.get("PageData").asArrayElement().get(0).asObjectElement();
             runOnUiThread(new Runnable() {
                 @Override
@@ -401,7 +425,7 @@ public class SummaryActivity extends NfcActivity{
             public void onSuccess(String t) {
                 if(t!=null){
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
+                    if(jsonObjectElement.get("Success")!=null&&
                             jsonObjectElement.get("Success").valueAsBoolean()){
                         ToastUtil.showToastLong(R.string.taskComplete,context);
                         startActivity(new Intent(context,CusActivity.class));
@@ -453,6 +477,38 @@ public class SummaryActivity extends NfcActivity{
                     }
                 }
 
+            }
+        });
+    }
+
+
+    private void getTaskEquipmentFromServerByTaskId() {
+        showCustomDialog(R.string.loadingData);
+        HttpParams params = new HttpParams();
+        params.put("task_id", DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
+        params.put("pageSize",1000);
+        params.put("pageIndex",1);
+        //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
+        HttpUtils.get(context, "TaskDetailList", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if (t != null) {
+                    ArrayElement jsonArrayElement = new JsonArrayElement(t);
+                    if(jsonArrayElement.size()==0){
+                        initData();
+                    }else {
+                        initData();
+                    }
+                    dismissCustomDialog();
+                }
+            }
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                initData();
+                dismissCustomDialog();
+               // ToastUtil.showToastLong(R.string.FailGetEquipmentList,context);
             }
         });
     }

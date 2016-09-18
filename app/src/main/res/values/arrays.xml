@@ -13,6 +13,7 @@
     <string-array name="select_tab_verify_status">
         <item>未核验</item>
         <item>已核验</item>
+        <item>条件查询</item>
     </string-array>
     <string-array name="select_tab_time">
         <item>1个月内</item>

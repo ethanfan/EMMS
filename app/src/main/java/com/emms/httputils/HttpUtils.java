@@ -102,7 +102,7 @@ public  class HttpUtils {
                     .httpMethod(RxVolley.Method.POST) //default GET or POST/PUT/DELETE/HEAD/OPTIONS/TRACE/PATCH
                     .contentType(RxVolley.ContentType.JSON)//default FORM or JSON
                     .params(params)
-                    .retryPolicy(new DefaultRetryPolicy(5000,0,1f))
+                    .retryPolicy(new DefaultRetryPolicy(10000,0,1f))
                     .callback(callback)
                     .encoding("UTF-8") //default
                     .doTask();
@@ -326,7 +326,7 @@ public  class HttpUtils {
                     .httpMethod(RxVolley.Method.POST) //default GET or POST/PUT/DELETE/HEAD/OPTIONS/TRACE/PATCH
                     .contentType(RxVolley.ContentType.JSON)//default FORM or JSON
                     .params(params)
-                    .retryPolicy(new DefaultRetryPolicy(5000,0,1f))
+                    .retryPolicy(new DefaultRetryPolicy(10000,0,1f))
                     .callback(callback)
                     .encoding("UTF-8") //default
                     .doTask();
