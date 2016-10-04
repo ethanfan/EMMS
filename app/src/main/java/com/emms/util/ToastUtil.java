@@ -25,7 +25,7 @@ public class ToastUtil {
      * @param context The Context of the Applicant or Activity
      */
     public static void showToastLong(String string, Context context){
-        Toast toast=Toast.makeText(context,string,Toast.LENGTH_LONG);
+        Toast toast=Toast.makeText(context,string,Toast.LENGTH_SHORT);
         toast.setGravity(Gravity.CENTER,0,0);
         toast.show();
     }

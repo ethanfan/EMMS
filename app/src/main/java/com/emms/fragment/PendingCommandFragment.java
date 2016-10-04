@@ -193,6 +193,8 @@ public class PendingCommandFragment extends BaseFragment {
         taskStatusMap.put(getResources().getString(R.string.start),1);
         taskStatusMap.put(getResources().getString(R.string.linked_order),2);
         taskStatusMap.put(getResources().getString(R.string.cancel),3);
+        taskStatusMap.put(getResources().getString(R.string.verity),4);
+        taskStatusMap.put(getResources().getString(R.string.MonthlyStatement),5);
     }
     private void getTaskHistory(){
         if(RecCount!=0){

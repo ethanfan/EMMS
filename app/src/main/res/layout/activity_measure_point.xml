@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<com.emms.ui.CustomDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:drop="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:id="@+id/search_page"
     android:layout_height="match_parent">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
     <include layout="@layout/toolbar"
         android:id="@+id/toolbar"
         />
@@ -9,6 +18,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/measure_point_list"
-        android:layout_below="@+id/toolbar"
+        android:divider="@null"
         android:background="#EDEDED"/>
-</RelativeLayout>
+        </LinearLayout>
+</FrameLayout>
+    <include layout="@layout/activity_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"/>
+    </com.emms.ui.CustomDrawerLayout>

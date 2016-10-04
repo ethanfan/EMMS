@@ -30,7 +30,7 @@
         android:textSize="17sp"
         android:layout_alignTop="@+id/workload_value"/>
     <TextView
-        android:layout_width="70dp"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:id="@+id/workload_value"
         android:textColor="@color/text_color"

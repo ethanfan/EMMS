@@ -48,6 +48,7 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
     private ArrayList<ObjectElement> RepairTask=new ArrayList<ObjectElement>();
     private Handler handler;
     private String TaskClass;
+    private String TaskSubClass;
     private SlidingTabLayout tabLayout_2;
     //private HashMap<String,Integer> TaskClass_Position_map=new HashMap<>()
     @Override
@@ -56,12 +57,13 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
         setContentView(R.layout.activity_repair_task);
         mContext = this;
         TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
+        TaskSubClass=getIntent().getStringExtra(Task.TASK_SUBCLASS);
         initView();
         //getRepairTaskFromServer();
         mTitles =getResources().getStringArray(R.array.select_tab_status);
         for (int i =0;i< mTitles.length;i++) {
             if (i==0) {
-                ProcessingFragment processingFragment=ProcessingFragment.newInstance(TaskClass);
+                ProcessingFragment processingFragment=ProcessingFragment.newInstance(TaskClass,TaskSubClass);
                 processingFragment.setTaskNumInteface(new TaskNumInteface() {
                     @Override
                     public void ChangeTaskNumListener(int tag, int num) {
@@ -73,7 +75,7 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
                 });
                 mFragments.add(processingFragment);
             }else if (i ==1){
-                PendingOrdersFragment pendingOrdersFragment=PendingOrdersFragment.newInstance(TaskClass);
+                PendingOrdersFragment pendingOrdersFragment=PendingOrdersFragment.newInstance(TaskClass,TaskSubClass);
                 pendingOrdersFragment.setTaskNumInteface(new TaskNumInteface() {
                     @Override
                     public void ChangeTaskNumListener(int tag, int num) {
@@ -87,7 +89,7 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
                 });
                 mFragments.add(pendingOrdersFragment);
             }else if (i ==2){
-                mFragments.add(LinkedOrdersFragment.newInstance(TaskClass));
+                mFragments.add(LinkedOrdersFragment.newInstance(TaskClass,TaskSubClass));
             }
         }
         View decorView = getWindow().getDecorView();
@@ -121,7 +123,14 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
                break;
            }
            case Task.MAINTAIN_TASK:{
+               if(TaskSubClass==null){
                ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.maintain_task));
+               }
+               else if(TaskSubClass.equals(Task.ROUTING_INSPECTION)){
+                   ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.routingInspectionTask));
+               }else {
+                   ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.upkeepTask));
+               }
                break;
            }
            case Task.MOVE_CAR_TASK:{

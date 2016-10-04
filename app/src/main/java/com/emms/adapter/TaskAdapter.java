@@ -6,11 +6,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.emms.ui.DropEditText;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,5 +80,8 @@ public abstract class TaskAdapter extends BaseAdapter{
         public ImageView image;
         public EditText editText;
         public EditText editText2;
+        public DropEditText dropEditText;
+        public DropEditText dropEditText2;
+        public GridView gridView;
     }
 }

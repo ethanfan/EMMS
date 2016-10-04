@@ -172,6 +172,7 @@
                             android:layout_weight="1.6"
                             android:gravity="end"
                             android:text="@string/belongGroup"
+                            android:id="@+id/organise"
                             android:textColor="@color/text_color"
                             android:textSize="18sp" />
 

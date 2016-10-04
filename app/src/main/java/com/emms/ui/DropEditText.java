@@ -56,6 +56,8 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 		super.onFinishInflate();
 
 		mEditText = (EditText) findViewById(R.id.dropview_edit);
+		mEditText.setFocusable(false);
+		mEditText.setFocusableInTouchMode(false);
 		mDropImage = (ImageView) findViewById(R.id.dropview_image);
 		//mEditText.setSingleLine(true);
 

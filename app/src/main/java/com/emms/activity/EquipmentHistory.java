@@ -161,20 +161,22 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                 if (convertView == null) {
                     convertView = LayoutInflater.from(context).inflate(R.layout.item_equipment_history, parent, false);
                     holder = new TaskViewHolder();
-                    holder.tv_creater=(TextView)convertView.findViewById(R.id.task_id);//任务单号
+                    holder.tv_creater=(TextView)convertView.findViewById(R.id.task_description);//任务描述
                     holder.tv_task_describe=(TextView)convertView.findViewById(R.id.fault_type);//故障类型
-                    holder.warranty_person=(TextView)convertView.findViewById(R.id.summary_person);//总结人员
+                    holder.warranty_person=(TextView)convertView.findViewById(R.id.summary_description);//故障描述
                     holder.tv_task_state=(TextView)convertView.findViewById(R.id.sequence_number);//序号
                     holder.tv_group=(TextView)convertView.findViewById(R.id.equipment_name);//设备名称
+                    holder.tv_create_time=(TextView)convertView.findViewById(R.id.repair_status);//设备名称
                     convertView.setTag(holder);
                 } else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
                 //待修改
-               holder.tv_creater.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get(Task.TASK_ID)));
+                holder.tv_creater.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get(Task.TASK_DESCRIPTION)));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("TroubleType")));
-                holder.warranty_person.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("Name")));
+                holder.warranty_person.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("TroubleDescribe")));
                 holder.tv_group.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("TaskEquipmentList")));
+                holder.tv_create_time.setText(DataUtil.isDataElementNull(fault_summary_list.get(position).get("MaintainDescribe")));
                 holder.tv_task_state.setText(String.valueOf(position+1));
                 return convertView;
             }
@@ -459,7 +461,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
         getFaultTypeFromDataBaseByEquipmentName("");
     }
     private void getEquipmentListFromDataBase(){
-        String rawQuery ="select  distinct EquipmentName,EquipmentClass from Equipment where  EquipmentName is not null";
+        String rawQuery ="select  distinct EquipmentName,EquipmentClass from Equipment where  EquipmentName is not null and EquipmentName is not ''";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -489,13 +491,14 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                 task_description_list.clear();
                 if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
                     for (int i=0;i<element.asArrayElement().size();i++){
-                        task_description_list.add(element.asArrayElement().get(i).asObjectElement());
+                        if(!DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_CODE)).equals("Default")) {
+                            task_description_list.add(element.asArrayElement().get(i).asObjectElement());
+                        }
                     }
-
                 }
                 JsonObjectElement jsonObjectElement=new JsonObjectElement();
                 jsonObjectElement.set(DataDictionary.DATA_NAME,getResources().getString(R.string.other));
-                jsonObjectElement.set(DataDictionary.DATA_CODE,"00");
+                jsonObjectElement.set(DataDictionary.DATA_CODE,"Default");
                 task_description_list.add(0,jsonObjectElement);
             }
 

@@ -32,6 +32,7 @@ import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.j256.ormlite.field.types.IntegerObjectType;
 
 import java.util.ArrayList;
 
@@ -57,12 +58,14 @@ public class ProcessingFragment extends BaseFragment {
     private Context mContext;
     private Handler handler=new Handler();
     private String TaskClass;
+    private String TaskSubClass;
     private  int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         TaskClass=this.getArguments().getString(Task.TASK_CLASS);
+        TaskSubClass=this.getArguments().getString(Task.TASK_SUBCLASS);
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView) v.findViewById(R.id.processing_list);
@@ -134,7 +137,10 @@ public class ProcessingFragment extends BaseFragment {
                 intent.putExtra(Task.TASK_ID,datas.get(position-1).get(Task.TASK_ID).valueAsString());
                 intent.putExtra("TaskDetail",datas.get(position-1).toString());
                 intent.putExtra(Task.TASK_CLASS,TaskClass);
+                intent.putExtra("FromProcessingFragment","1");
                 intent.putExtra("TaskStatus",1);
+                if(TaskSubClass!=null&&!TaskSubClass.equals("")){
+                intent.putExtra(Task.TASK_SUBCLASS,TaskSubClass);}
                 //startActivity(intent);
                 ((Activity)mContext).startActivityForResult(intent, Constants.REQUEST_CODE_PROCESSING_ORDER_TASK_DETAIL);
             }
@@ -166,6 +172,9 @@ public class ProcessingFragment extends BaseFragment {
       //  params.put("operator_id",operator_id);
         params.put("status",1);//状态1，即处理中任务
         params.put("taskClass",TaskClass);
+        if(TaskSubClass!=null&&!TaskSubClass.equals("")){
+            params.put("taskSubClass",TaskSubClass);
+        }
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
@@ -214,10 +223,13 @@ public class ProcessingFragment extends BaseFragment {
             }
         });
     }
-    public static ProcessingFragment newInstance(String TaskClass){
+    public static ProcessingFragment newInstance(String TaskClass,String TaskSubClass){
         ProcessingFragment fragment = new ProcessingFragment();
         Bundle bundle = new Bundle();
         bundle.putString(Task.TASK_CLASS, TaskClass);
+        if(TaskSubClass!=null&&!TaskSubClass.equals("")){
+            bundle.putString(Task.TASK_SUBCLASS,TaskSubClass);
+        }
         fragment.setArguments(bundle);
         return fragment;
     }

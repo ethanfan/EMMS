@@ -523,7 +523,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         JsonObjectElement jsonObjectElement=new JsonObjectElement();
         jsonObjectElement.set("IDList",TaskEquipmentId);
         params.putJsonParams(jsonObjectElement.toJson());
-        HttpUtils.post(context, "TaskEquipment/TaskEquipmentDelete", params, new HttpCallback() {
+        HttpUtils.post(context, "TaskEquipmentStatus/TaskEquipmentDelete", params, new HttpCallback() {
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
@@ -566,9 +566,8 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
        JsonObjectElement submitData=new JsonObjectElement();
        submitData.set("TaskOperator_ID",TaskOperatorID);
        submitData.set("Status",Status);
-       submitData.set("IsMain",is_Main_person_in_charge_operator_id);
        params.putJsonParams(submitData.toJson());
-       HttpUtils.post(context, "TaskOperator", params, new HttpCallback() {
+       HttpUtils.post(context, "TaskOperatorStatus/TaskOperatorStatusChange", params, new HttpCallback() {
            @Override
            public void onSuccess(String t) {
                super.onSuccess(t);

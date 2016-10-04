@@ -2,7 +2,6 @@
 <com.emms.ui.CustomDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     xmlns:drop="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/tools"
     android:id="@+id/search_page"
     android:layout_height="match_parent">
 <FrameLayout
@@ -111,10 +110,10 @@
                         android:id="@+id/filter_time"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/border_bg"
-                        android:paddingTop="10dp"
+                        android:background="@drawable/bg_edit_normal"
+                        android:paddingTop="8dp"
                         android:digits="1234567890"
-                        android:paddingBottom="10dp"
+                        android:paddingBottom="8dp"
                         android:paddingLeft="5dp"
                         android:textColor="@color/text_color"
                         android:textColorHint="@color/hint_color"

@@ -56,15 +56,15 @@ public class PendingVerifyFragment extends BaseFragment {
     private int pageIndex=1;
     private int RecCount=0;
     private ArrayList<ObjectElement> submitData=new ArrayList<>();
-    private HashMap<String,String> taskClass_map=new HashMap<>();
+//   private HashMap<String,String> taskClass_map=new HashMap<>();
 //    private HashMap<Integer,String> mapVerifyWorkTime=new HashMap<>();
 //    private HashMap<Integer,String> mapVerifyStates=new HashMap<>();
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        taskClass_map.put(Task.REPAIR_TASK,getResources().getString(R.string.repair_task));
-        taskClass_map.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintain_task));
-        taskClass_map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car_task));
-        taskClass_map.put(Task.OTHER_TASK,getResources().getString(R.string.other_task));
+//        taskClass_map.put(Task.REPAIR_TASK,getResources().getString(R.string.repair_task));
+//        taskClass_map.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintain_task));
+//        taskClass_map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car_task));
+//        taskClass_map.put(Task.OTHER_TASK,getResources().getString(R.string.other_task));
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView)v.findViewById(R.id.processing_list);
@@ -254,11 +254,12 @@ public class PendingVerifyFragment extends BaseFragment {
                     //  if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()==0){
                     //提示没有处理中的任务
                     //  }
-                    if(jsonObjectElement!=null&&jsonObjectElement.get("PageData")!=null
+                    if(jsonObjectElement.get("PageData")!=null
                             &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
                         RecCount = jsonObjectElement.get("RecCount").valueAsInt();
                         if (pageIndex == 1) {
                             datas.clear();
+                            submitData.clear();
                         }
                         pageIndex++;
                         for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
@@ -312,7 +313,8 @@ public class PendingVerifyFragment extends BaseFragment {
 
     private TaskNumInteface taskNumInteface;
     private void submitWorkload(final ObjectElement data, String workload,String UpdateRemark){
-        if(!DataUtil.isNum(workload)||workload.equals("")){
+        if(!DataUtil.isNum(workload)
+                ||workload.equals("")){
             ToastUtil.showToastLong(R.string.pleaseInputNum,mContext);
             return;
         }
@@ -358,8 +360,9 @@ public class PendingVerifyFragment extends BaseFragment {
             return;
         }
         for(int i=0;i<submitData.size();i++) {
-            if (!DataUtil.isNum(DataUtil.isDataElementNull(submitData.get(i).get("Workload")).trim()) ||
-                    DataUtil.isDataElementNull(submitData.get(i).get("Workload")).equals("")) {
+            if ( !DataUtil.isNum(DataUtil.isDataElementNull(submitData.get(i).get("Workload")).trim())
+                    || DataUtil.isDataElementNull(submitData.get(i).get("Workload")).equals("")
+                    || !DataUtil.isFloat(DataUtil.isDataElementNull(submitData.get(i).get("Workload")).trim())) {
                 ToastUtil.showToastLong(R.string.pleaseInputNum, mContext);
                 return;
             }

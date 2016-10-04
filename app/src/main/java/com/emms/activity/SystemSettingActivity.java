@@ -1,7 +1,6 @@
 package com.emms.activity;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,19 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.datastore_android_sdk.datastore.Build;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
 import com.emms.adapter.MainActivityAdapter;
-import com.emms.schema.Task;
 import com.emms.util.DataUtil;
-import com.flyco.tablayout.widget.MsgView;
 
 import java.util.ArrayList;
 
@@ -106,7 +101,7 @@ public class SystemSettingActivity extends NfcActivity implements View.OnClickLi
                 break;
             }
             case 3: {//maintainTask
-                obj.set("module_image", R.mipmap.system_setting_activity_binding);
+                obj.set("module_image", R.mipmap.module_version_info);
                 obj.set("module_name", R.string.version_info);
                 obj.set("Class", packageName + "VersionInfoActivity");
                 break;

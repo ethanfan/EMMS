@@ -49,6 +49,7 @@ public class LinkedOrdersFragment extends BaseFragment{
     private ArrayList<ObjectElement> data=new ArrayList<>();
     private Handler handler=new Handler();
     private String TaskClass;
+    private String TaskSubClass;
     private  int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
@@ -93,6 +94,7 @@ public class LinkedOrdersFragment extends BaseFragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
        TaskClass=this.getArguments().getString(Task.TASK_CLASS);
+        TaskSubClass=this.getArguments().getString(Task.TASK_SUBCLASS);
         mTitles = getResources().getStringArray(R.array.select_tab_time);
         taskAdapter =new TaskAdapter(data) {
             @Override
@@ -152,6 +154,9 @@ public class LinkedOrdersFragment extends BaseFragment{
        // params.put("operator_id",operator_id);
         params.put("status",2);
         params.put("taskClass",TaskClass);
+        if(TaskSubClass!=null&&!TaskSubClass.equals("")){
+            params.put("taskSubClass",TaskSubClass);
+        }
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
@@ -194,10 +199,13 @@ public class LinkedOrdersFragment extends BaseFragment{
             }
         });
     }
-    public static Fragment newInstance(String TaskClass){
+    public static Fragment newInstance(String TaskClass,String TaskSubClass){
         LinkedOrdersFragment fragment = new LinkedOrdersFragment();
         Bundle bundle = new Bundle();
         bundle.putString(Task.TASK_CLASS, TaskClass);
+        if(TaskSubClass!=null&&!TaskSubClass.equals("")){
+            bundle.putString(Task.TASK_SUBCLASS,TaskSubClass);
+        }
         fragment.setArguments(bundle);
         return fragment;
     }

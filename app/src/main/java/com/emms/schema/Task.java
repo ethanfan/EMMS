@@ -9,6 +9,7 @@ public class Task {
     public static final String OPERATOR_ID = "Operator_ID";
     public static final String TEAM_ID = "Team_ID";
     public static final String TASK_CLASS = "TaskClass";
+    public static final String TASK_SUBCLASS="TaskSubClass";
     public static final String APPLICANT="Applicant";//申请人
     public static final String APPLICANT_TIME="ApplicantTime";
     public static final String START_TIME="StartTime";
@@ -20,4 +21,6 @@ public class Task {
     public static final String  MAINTAIN_TASK= "T02";
     public static final String  MOVE_CAR_TASK= "T03";
     public static final String  OTHER_TASK= "T04";
+    public static final String  ROUTING_INSPECTION="T0202";
+    public static final String  UPKEEP="T0201";
 }

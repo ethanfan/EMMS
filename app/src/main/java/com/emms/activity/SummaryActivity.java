@@ -416,6 +416,7 @@ public class SummaryActivity extends NfcActivity{
 
     }
     private void TaskComplete(){
+        showCustomDialog(R.string.submitData);
         HttpParams params=new HttpParams();
         JsonObjectElement data=new JsonObjectElement();
         data.set(Task.TASK_ID,DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
@@ -430,14 +431,27 @@ public class SummaryActivity extends NfcActivity{
                         ToastUtil.showToastLong(R.string.taskComplete,context);
                         startActivity(new Intent(context,CusActivity.class));
                     }else {
-                        ToastUtil.showToastLong(R.string.canNotSubmitTaskComplete,context);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ToastUtil.showToastLong(R.string.canNotSubmitTaskComplete,context);
+                            }
+                        });
                     }
-                }}
+                }
+            dismissCustomDialog();
+            }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.submitFail,context);
+                dismissCustomDialog();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtil.showToastLong(R.string.submitFail,context);
+                    }
+                });
             }
         });
     }

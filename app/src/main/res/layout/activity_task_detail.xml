@@ -85,6 +85,11 @@
                         android:layout_alignTop="@+id/equipment_name_tag"
                         android:layout_toRightOf="@+id/equipment_name_tag"
                         android:textColor="@color/text_color"/>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/equipment_name"
+                        android:id="@+id/lalalala">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -92,22 +97,23 @@
                         android:text="@string/participant"
                         android:textSize="17sp"
                         android:textColor="@color/text_color"
-                        android:layout_alignRight="@+id/equipment_name_tag"
                         android:id="@+id/taskOperatorStatus_tag"
-                        android:layout_below="@+id/equipment_name"/>
+                        />
                     <ListView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:divider="@null"
                         android:layout_alignTop="@+id/taskOperatorStatus_tag"
                         android:layout_toRightOf="@+id/taskOperatorStatus_tag"
                         android:id="@+id/taskOperatorStatus"/>
+                    </RelativeLayout>
                     <Button
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_marginBottom="10dp"
                         android:layout_alignLeft="@+id/equipment_name_tag"
-                        android:layout_below="@+id/taskOperatorStatus_tag"
+                        android:layout_below="@+id/lalalala"
                         android:text="@string/changeTaskOperatorStatus"
                         android:textSize="18sp"
                         android:textColor="@color/white"

@@ -52,8 +52,8 @@ public class WorkLoadActivity extends NfcActivity{
     private ObjectElement TaskDetail;
     private Context context=this;
     private WorkloadAdapter workloadAdapter;
-    private ArrayList<ObjectElement> datas=new ArrayList<ObjectElement>();
-    private HashMap<Integer,EditText> workloadMap=new HashMap<Integer, EditText>();
+    private ArrayList<ObjectElement> datas=new ArrayList<>();
+    private HashMap<Integer,EditText> workloadMap=new HashMap<>();
     private boolean TaskComplete=false;
     private ArrayList<Integer> workloadKeylist=new ArrayList<Integer>();
  //   private HashMap<Integer,String> workloadEditTextNum=new HashMap<Integer, String>();
@@ -64,7 +64,7 @@ public class WorkLoadActivity extends NfcActivity{
         setContentView(R.layout.activity_workload);
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
         TaskComplete=getIntent().getBooleanExtra("TaskComplete",false);
-        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
+        TaskClass=DataUtil.isDataElementNull(TaskDetail.get(TaskClass));
         initView();
         getWorkLoadFromServer();
     }
@@ -309,28 +309,32 @@ public class WorkLoadActivity extends NfcActivity{
 
     }
     private void TaskComplete(){
+        showCustomDialog(R.string.submitData);
         HttpParams params=new HttpParams();
         JsonObjectElement data=new JsonObjectElement();
-        data.set("Task_ID",task_id.getText().toString());
+        data.set(Task.TASK_ID,task_id.getText().toString());
         params.putJsonParams(data.toJson());
         HttpUtils.post(this, "TaskFinish", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 if(t!=null){
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
+                    if(jsonObjectElement.get("Success")!=null&&
                             jsonObjectElement.get("Success").valueAsBoolean()){
                         ToastUtil.showToastLong(R.string.taskComplete,context);
                         startActivity(new Intent(context,CusActivity.class));
                     }else {
                         ToastUtil.showToastLong(R.string.canNotSubmitTaskComplete,context);
                     }
-                }}
+                }
+            dismissCustomDialog();
+            }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.submitFail,context);
+                dismissCustomDialog();
+                ToastUtil.showToastLong(R.string.canNotSubmitTaskCompleteCauseByTimeOut,context);
             }
         });
     }

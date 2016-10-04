@@ -39,17 +39,17 @@ import java.util.zip.Inflater;
 
 /**
  * Created by jaffer.deng on 2016/6/6.
+ *
  */
 public class SubTaskManageActivity extends NfcActivity implements View.OnClickListener {
    private PullToRefreshListView sub_task_listView;
-   private LinearLayout add_sub_task;
     private SubTaskAdapter adapter;
-    private ArrayList<ObjectElement> datas=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> datas=new ArrayList<>();
     private String taskId;
     private ObjectElement TaskDetail;
     private Handler handler=new Handler();
-    private HashMap<String,String> Status_Colors=new HashMap<String,String>();
-    private ArrayList<ObjectElement> EquipmentList=new ArrayList<ObjectElement>();
+    private HashMap<String,String> Status_Colors=new HashMap<>();
+    private ArrayList<ObjectElement> EquipmentList=new ArrayList<>();
     private boolean TaskComplete=false;
     private Context context=this;
     private String TaskClass=null;
@@ -97,7 +97,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
         ((TextView)findViewById(R.id.task_number)).setText(DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
        // ((TextView)findViewById(R.id.task_state)).setText(DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_STATUS)));
         sub_task_listView=(PullToRefreshListView)findViewById(R.id.sub_task_list);
-        add_sub_task=(LinearLayout)findViewById(R.id.add_sub_task);
+        LinearLayout add_sub_task = (LinearLayout) findViewById(R.id.add_sub_task);
         sub_task_listView.setMode(PullToRefreshListView.Mode.BOTH);
         sub_task_listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
@@ -161,7 +161,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
                     holder.work_num = (TextView) convertView.findViewById(R.id.work_num);
                     holder.approve_work_hours = (TextView) convertView.findViewById(R.id.approve_work_hours);
                     holder.work_name = (TextView) convertView.findViewById(R.id.work_name);
-                    holder.status = (TextView) convertView.findViewById(R.id.status);
+                   // holder.status = (TextView) convertView.findViewById(R.id.status);
                     holder.work_description = (TextView) convertView.findViewById(R.id.work_description);
                     holder.equipment_num = (TextView) convertView.findViewById(R.id.equipment_num);
                     convertView.setTag(holder);
@@ -171,7 +171,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
                 holder.work_num.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkCode")));
                 holder.approve_work_hours.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkTime")));
                 holder.work_name.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkName")));
-                holder.status.setText(DataUtil.isDataElementNull(datas.get(position).get("Status")));
+                //holder.status.setText(DataUtil.isDataElementNull(datas.get(position).get("Status")));
                 holder.work_description.setText(DataUtil.isDataElementNull(datas.get(position).get("DataDescr")));
                 //holder.equipment_num.setText(DataUtil.isDataElementNull(datas.get(position).get("Equipment_ID")));
                 holder.equipment_num.setText(DataUtil.isDataElementNull(datas.get(position).get("AssetsID")));
@@ -224,7 +224,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
                 super.onSuccess(t);
                 if(t!=null){
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement!=null&&jsonObjectElement.get("PageData")!=null
+                    if(jsonObjectElement.get("PageData")!=null
                             &&jsonObjectElement.get("PageData").asArrayElement().size()>0){
                         RecCount = jsonObjectElement.get("RecCount").valueAsInt();
                         if (pageIndex == 1) {
@@ -256,7 +256,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
             }
 
             HttpParams params = new HttpParams();
-            params.put("task_id", taskId.toString());
+            params.put("task_id", taskId);
         params.put("pageSize",1000);
         params.put("pageIndex",1);
             //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
@@ -270,7 +270,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
                    //     if (!jsonObjectElement.get("PageData").isNull()) {
                  //           ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
                         ArrayElement jsonArrayElement=new JsonArrayElement(t);
-                            if (jsonArrayElement != null && jsonArrayElement.size() > 0) {
+                            if ( jsonArrayElement.size() > 0) {
 
                                 int dealDeviceCount = 0;
                                 for (int i = 0; i < jsonArrayElement.size(); i++) {

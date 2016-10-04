@@ -95,7 +95,7 @@
     <string name="receive_time">接单时间：</string>
     <string name="device_count">设备总数：</string>
     <string name="dealed_count">已处理：</string>
-    <string name="participant">参与人：</string>
+    <string name="participant">参与人员：</string>
     <string name="task_details">任务详情</string>
     <string name="task_state_details_non">未执行</string>
     <string name="task_state_details_finish">已完成</string>
@@ -164,9 +164,9 @@
     <string name="task_complete_time">完成时间:</string>
     <string name="task_id">任务单号:</string>
     <string name="taskid">任务单号：</string>
-    <string name="response_speed">响应速度:</string>
-    <string name="service_attitude">服务态度:</string>
-    <string name="repair_speed">维修速度:</string>
+    <string name="response_speed">响应速度：</string>
+    <string name="service_attitude">服务态度：</string>
+    <string name="repair_speed">维修速度：</string>
     <string name="command_standard">评分标准：1-5星，5星最高</string>
     <string name="waitingDeal">待处理</string>
     <string name="start">处理中</string>
@@ -208,6 +208,8 @@
     <string name="pleaseSelectTaskDescription">请选择任务描述</string>
     <string name="pleaseScanICcard">请先扫描工卡获取创建人信息</string>
     <string name="pleaseInputCancleTaskReason">请输入取消原因</string>
+    <string name="pleaseInputMeasureData">请输入测量值</string>
+    <string name="pleaseInputMeasureDataStandard">请输入标准值</string>
     <string name="pleaseRelogin">请重新登录</string>
     <string name="pleaseSelectRole">选择角色</string>
     <string name="pleaseSelectSubmitData">请选择需要提交的内容</string>
@@ -243,6 +245,7 @@
     <string name="failToChangeStatus">修改状态失败，请检查网络</string>
     <string name="SuccessToChangeStatus">修改状态成功</string>
     <string name="SuccessDownloadDB">数据文件下载完毕</string>
+    <string name="FailDownloadDB">数据文件下载失败，请重新下载</string>
     <string name="CanNotChangeStatus">不允许修改状态</string>
     <string name="judgeTaskClass">只有维修任务能进行故障总结</string>
     <string name="onlyTaskChargerCanChangeEquipmentStatus">只有任务主负责人可以修改设备状态</string>
@@ -267,6 +270,7 @@
     <string name="AddEquipmentSuccess">添加设备成功</string>
     <string name="OnlyDealingTaskCanAddPhoto">不可添加照片</string>
     <string name="CanNotChangeEquipmentStatus">设备状态为已完成，不可修改状态</string>
+    <string name="CanNotCompleteTask">该任务中存在参与人处于未完成状态，不可提交任务完成</string>
     <string name="pleaseSelectExchangeOrderTarget">请选择转单对象</string>
     <string name="pleaseSelectInviteTarget">请选择邀请对象</string>
     <string name="TaskEquipmentNotComplete">该任务中存在设备处于未完成状态，不可提交任务完成</string>
@@ -275,6 +279,7 @@
     <string name="unauthorization">您的账号未授权，请联系管理员</string>
     <string name="getEquipmentNumSuccess">获取机台号成功</string>
     <string name="pleaseInputNum">请输入数字</string>
+    <string name="pleaseSelectValue">请选择测量值</string>
     <string name="thisGroupHasNoPerson">无该组人员信息</string>
     <string name="logout">退出登录中，请稍候</string>
     <string name="logoutFail">退出登录失败</string>
@@ -302,6 +307,7 @@
     <string name="pleaseInputIntegerLargeThanZero">请输入大于0的整数</string>
     <string name="taskComplete">任务完成</string>
     <string name="canNotSubmitTaskComplete">无法提交任务完成，请检查任务信息</string>
+    <string name="canNotSubmitTaskCompleteCauseByTimeOut">无法提交任务完成，请检查网络</string>
     <string name="standardWorkload">标准工时:</string>
     <string name="NoCardDetail">无该卡信息</string>
     <string name="NoOperatorGroup">未找到操作员的分组</string>
@@ -325,10 +331,12 @@
     <string name="FailSubmitPicture">上传图片失败</string>
     <string name="FailSubmitPictureCauseByTimeOut">上传图片失败，请检查网络</string>
     <string name="FailCreateTask">任务创建失败</string>
+    <string name="FailCreateTaskCauseByTimeout">任务创建失败,连接超时</string>
     <string name="FailChangeEquipmentStatusCauseByTimeOut">修改设备状态失败,请检查网络</string>
     <string name="FailChangeEquipmentStatusCauseByOperator">修改设备状态失败,请检查参与人状态</string>
     <string name="FailToScanEquipment">该设备不属于所选组别,不允许添加</string>
     <string name="FailGetTaskOperatorListCauseByTimeOut">获取任务参与人状态列表失败，请检查网络</string>
+    <string name="FailGetMeasurePointListCauseByTimeOut">获取测点列表失败，请检查网络</string>
     <string name="SuccessCancelTask">取消任务成功</string>
     <string name="SuccessSubmitPicture">上传图片成功</string>
     <string name="SuccessCreateTask">任务创建成功</string>
@@ -361,7 +369,10 @@
     <string name="downloading">下载中</string>
     <string name="sureDeleteEquipment">确定删除设备?</string>
     <string name="measure_point_id">测点编号：</string>
+    <string name="id">编号：</string>
     <string name="measure_point_name">测点名称：</string>
+    <string name="measure_point_content">测点内容：</string>
+    <string name="measure_point_standard">检查标准：</string>
     <string name="measure_point_unit">测点单位：</string>
     <string name="measure_point_type">测点类型：</string>
     <string name="measure_point_status">测点状态：</string>
@@ -369,6 +380,7 @@
     <string name="measure_point_range">测量范围：</string>
     <string name="measure_point_content_input">测点信息录入</string>
     <string name="measure_point_list">测点列表</string>
+    <string name="upkeep_point_list">保养点列表</string>
     <!--vary view helper-->
     <string name="empty_tips">空空如也╮(╯▽╰)╭</string>
     <string name="error_tips">加载失败╮(╯▽╰)╭</string>
@@ -391,4 +403,30 @@
     <string name="filterCondition1">已逾期</string>
     <string name="filterCondition2">已月结</string>
     <string name="filterCondition3">按结束时长查询</string>
+    <string name="verity">核验</string>
+    <string name="MonthlyStatement">已月结</string>
+    <string name="OnlyMainPersonCanWriteWorkload">只有主负责人可以录入工作量</string>
+    <string name="OnlyMainPersonCanChangeOrder">只有主负责人可以进行转单</string>
+    <string name="OnlyMainPersonCanInvitePeople">只有主负责人可以进行邀请协助</string>
+    <string name="OnlyMainPersonCanWriteFaultSummary">只有主负责人可以进行故障总结</string>
+    <string name="OnlyMainPersonCanSubmitTaskComplete">只有主负责人可以提交任务完成</string>
+    <string name="ServerTeam">服务车间:</string>
+    <string name="routingInspection">点巡检</string>
+    <string name="upkeep">保养</string>
+    <string name="routingInspectionTask">巡检任务</string>
+    <string name="upkeepTask">保养任务</string>
+    <string name="MeasureValue">实际测值：</string>
+    <string name="StandardValue">标准测值：</string>
+    <string name="StateValue">测点备注：</string>
+    <string name="MPT01">保养子任务</string>
+    <string name="MPT02">过程测点</string>
+    <string name="MPT03">观察测点</string>
+    <string name="MPT04">校验测点</string>
+    <string name="IsCheck">已检测</string>
+    <string name="IsNotCheck">未检测</string>
+    <string name="MeasureValueInput">测值录入</string>
+    <string name="CreateNewTask">创建任务</string>
+    <string name="CreateNewTaskTips">测点测量结果为异常，是否创建新任务？</string>
+    <string name="checkResult">检查结果：</string>
+    <string name="SettingMeasureResult">设定测值：</string>
 </resources>

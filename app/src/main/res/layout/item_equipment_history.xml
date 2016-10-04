@@ -9,31 +9,31 @@
         android:background="@drawable/item_click">
 
         <TextView
-            android:id="@+id/task_id_tag"
+            android:id="@+id/task_description_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="6dp"
-            android:text="@string/task_id"
+            android:text="@string/task_description"
             android:layout_toRightOf="@+id/sequence_number"
             android:textSize="17sp"/>
         <TextView
-            android:id="@+id/task_id"
+            android:id="@+id/task_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
-            android:layout_alignTop="@+id/task_id_tag"
+            android:layout_alignTop="@+id/task_description_tag"
             android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@id/task_id_tag"
+            android:layout_toRightOf="@id/task_description_tag"
             android:textSize="17sp"/>
         <TextView
             android:id="@+id/fault_type_tag"
-            android:layout_below="@+id/task_id_tag"
+            android:layout_below="@+id/task_description"
             android:layout_marginTop="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/task_id_tag"
+            android:layout_alignLeft="@+id/task_description_tag"
             android:textColor="@color/text_color"
             android:text="@string/fault_type"
             android:textSize="17sp"/>
@@ -62,30 +62,55 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
+            android:singleLine="true"
             android:layout_alignTop="@+id/equipment_name_tag"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="40dp"
             android:layout_toRightOf="@id/equipment_name_tag"
             android:textSize="17sp"/>
         <TextView
-            android:id="@+id/summary_person_tag"
+            android:id="@+id/summary_description_tag"
             android:layout_below="@+id/equipment_name"
             android:layout_marginTop="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/fault_type_tag"
             android:textColor="@color/text_color"
-            android:text="@string/summary_person"
+            android:text="@string/fault_description"
             android:layout_marginBottom="6dp"
             android:textSize="17sp"/>
         <TextView
-            android:id="@+id/summary_person"
+            android:id="@+id/summary_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
-            android:layout_alignTop="@+id/summary_person_tag"
+            android:layout_alignTop="@+id/summary_description_tag"
             android:layout_marginLeft="5dp"
-            android:layout_toRightOf="@id/summary_person_tag"
+            android:layout_marginRight="40dp"
+            android:singleLine="true"
+            android:layout_toRightOf="@id/summary_description_tag"
+            android:textSize="17sp"/>
+        <TextView
+        android:id="@+id/repair_status_tag"
+        android:layout_below="@+id/summary_description"
+        android:layout_marginTop="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/fault_type_tag"
+        android:textColor="@color/text_color"
+        android:text="@string/repair_status"
+        android:layout_marginBottom="6dp"
+        android:textSize="17sp"/>
+        <TextView
+            android:id="@+id/repair_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:singleLine="true"
+            android:layout_marginRight="40dp"
+            android:layout_alignTop="@+id/repair_status_tag"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/repair_status_tag"
             android:layout_marginBottom="6dp"
             android:textSize="17sp"/>
         <TextView

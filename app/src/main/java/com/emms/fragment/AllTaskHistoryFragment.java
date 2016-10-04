@@ -142,7 +142,7 @@ public class AllTaskHistoryFragment extends BaseFragment {
                 intent.putExtra("TaskStatus",taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))));
                 intent.putExtra("isTaskHistory",true);
                 intent.putExtra("FromFragment","1");
-                intent.putExtra("IsEvaluated",DataUtil.isDataElementNull(data.get(position-1).get("IsEvaluated")));
+               // intent.putExtra("IsEvaluated",DataUtil.isDataElementNull(data.get(position-1).get("IsEvaluated")));
                 ((Activity)mContext).startActivityForResult(intent, Constants.REQUEST_CODE_TASKHISTORY);
                // startActivity(intent);
             }
@@ -157,8 +157,8 @@ public class AllTaskHistoryFragment extends BaseFragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 //TODO
-                if ( Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))>4 || (taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))) == 2
-                ||taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))) == 3)) {
+                if ( Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))>4
+                || (taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))) >= 2)) {
                     return true;
                 }
                 CancelTaskDialog cancleTaskDialog = new CancelTaskDialog(mContext);
@@ -209,6 +209,8 @@ public class AllTaskHistoryFragment extends BaseFragment {
         taskStatusMap.put(getResources().getString(R.string.start),1);
         taskStatusMap.put(getResources().getString(R.string.linked_order),2);
         taskStatusMap.put(getResources().getString(R.string.cancel),3);
+        taskStatusMap.put(getResources().getString(R.string.verity),4);
+        taskStatusMap.put(getResources().getString(R.string.MonthlyStatement),5);
     }
     private void getTaskHistory(){
         if(RecCount!=0){

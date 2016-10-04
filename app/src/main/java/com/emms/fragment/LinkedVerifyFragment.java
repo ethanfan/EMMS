@@ -249,6 +249,7 @@ public class LinkedVerifyFragment extends BaseFragment {
                         RecCount = jsonObjectElement.get("RecCount").valueAsInt();
                         if (pageIndex == 1) {
                             datas.clear();
+                            submitData.clear();
                         }
                         pageIndex++;
                         for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
@@ -286,6 +287,7 @@ public class LinkedVerifyFragment extends BaseFragment {
     }
     public void doRefresh(){
         pageIndex=1;
+
         getCommandListFromServer();
     }
 
@@ -338,7 +340,8 @@ public class LinkedVerifyFragment extends BaseFragment {
         }
         for(int i=0;i<submitData.size();i++) {
             if (!DataUtil.isNum(DataUtil.isDataElementNull(submitData.get(i).get("Workload")).trim()) ||
-                    DataUtil.isDataElementNull(submitData.get(i).get("Workload")).equals("")) {
+                    DataUtil.isDataElementNull(submitData.get(i).get("Workload")).equals("")
+                    || !DataUtil.isFloat(DataUtil.isDataElementNull(submitData.get(i).get("Workload")).trim())) {
                 ToastUtil.showToastLong(R.string.pleaseInputNum, mContext);
                 return;
             }

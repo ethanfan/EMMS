@@ -50,6 +50,12 @@ public abstract class PopMenuTaskDetail {
 	}
     private boolean taskComplete=false;
 	private boolean is_Main_person_in_charge_Operator_id=false;
+
+	public void setHasEquipment(boolean hasEquipment) {
+		this.hasEquipment = hasEquipment;
+	}
+
+	private boolean hasEquipment=false;
 	// private OnItemClickListener listener;
 	public PopMenuTaskDetail(Context context, int width,String taskDetail,String taskClass) {
 		// TODO Auto-generated constructor stub
@@ -240,7 +246,7 @@ public abstract class PopMenuTaskDetail {
 	private void WorkloadInput(){
 
 		if(!is_Main_person_in_charge_Operator_id){
-			ToastUtil.showToastLong("只有主负责人可以录入工作量",context);
+			ToastUtil.showToastLong(R.string.OnlyMainPersonCanWriteWorkload,context);
 			return;
 		}
 		Intent intent=new Intent(context, WorkLoadActivity.class);
@@ -253,7 +259,7 @@ public abstract class PopMenuTaskDetail {
 //	}
 	private void ExChangeOrder(){
 		if(!is_Main_person_in_charge_Operator_id){
-			ToastUtil.showToastLong("只有主负责人可以进行转单",context);
+			ToastUtil.showToastLong(R.string.OnlyMainPersonCanChangeOrder,context);
 			return;
 		}
 		if(taskComplete){
@@ -267,7 +273,7 @@ public abstract class PopMenuTaskDetail {
 	}
 	private void InviteHelp(){
 		if(!is_Main_person_in_charge_Operator_id){
-			ToastUtil.showToastLong("只有主负责人可以进行邀请协助",context);
+			ToastUtil.showToastLong(R.string.OnlyMainPersonCanInvitePeople,context);
 			return;
 		}
 		if(taskComplete){
@@ -294,7 +300,7 @@ public abstract class PopMenuTaskDetail {
 //	}
 	private void FaultSummary(){
 		if(!is_Main_person_in_charge_Operator_id){
-			ToastUtil.showToastLong("只有主负责人可以进行故障总结",context);
+			ToastUtil.showToastLong(R.string.OnlyMainPersonCanWriteFaultSummary,context);
 			return;
 		}
 		if(RootUtil.rootTaskClass(TaskClass,Task.REPAIR_TASK)){
@@ -307,11 +313,15 @@ public abstract class PopMenuTaskDetail {
 	}
 	private void TaskComplete(){
 		if(!is_Main_person_in_charge_Operator_id){
-			ToastUtil.showToastLong("只有主负责人可以提交任务完成",context);
+			ToastUtil.showToastLong(R.string.OnlyMainPersonCanSubmitTaskComplete,context);
 			return;
 		}
 		if(!taskComplete){
-			ToastUtil.showToastLong(R.string.TaskEquipmentNotComplete,context);
+			if(hasEquipment) {
+				ToastUtil.showToastLong(R.string.TaskEquipmentNotComplete, context);
+			}else {
+				ToastUtil.showToastLong(R.string.CanNotCompleteTask,context);
+			}
 			return;
 		}
 		Intent intent=new Intent(context, SubTaskManageActivity.class);

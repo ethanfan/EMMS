@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/6/21.
+ *
  */
 public abstract class StatusAdapter extends BaseAdapter{
 

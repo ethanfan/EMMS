@@ -141,7 +141,7 @@ public class FliterTaskHistoryFragment extends BaseFragment {
                 intent.putExtra(Task.TASK_ID, DataUtil.isDataElementNull(data.get(position - 1).get(Task.TASK_ID)));
                 intent.putExtra(Task.TASK_CLASS, DataUtil.isDataElementNull(data.get(position - 1).get(Task.TASK_CLASS)));
                 intent.putExtra("TaskStatus", taskStatusMap.get(DataUtil.isDataElementNull(data.get(position - 1).get("Status"))));
-                intent.putExtra("IsEvaluated",DataUtil.isDataElementNull(data.get(position-1).get("IsEvaluated")));
+                //intent.putExtra("IsEvaluated",DataUtil.isDataElementNull(data.get(position-1).get("IsEvaluated")));
                 intent.putExtra("FromFragment","2");
                 intent.putExtra("isTaskHistory", true);
                 ((Activity)mContext).startActivityForResult(intent, Constants.REQUEST_CODE_TASKHISTORY);
@@ -152,8 +152,8 @@ public class FliterTaskHistoryFragment extends BaseFragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 //TODO
-                if ( Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))>4   || taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))) == 2
-                        ||taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))) == 3) {
+                if ( Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))>4
+                        || taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))) >= 2) {
                     return true;
                 }
                 CancelTaskDialog cancleTaskDialog = new CancelTaskDialog(mContext);
@@ -203,6 +203,8 @@ public class FliterTaskHistoryFragment extends BaseFragment {
         taskStatusMap.put(getResources().getString(R.string.start),1);
         taskStatusMap.put(getResources().getString(R.string.linked_order),2);
         taskStatusMap.put(getResources().getString(R.string.cancel),3);
+        taskStatusMap.put(getResources().getString(R.string.verity),4);
+        taskStatusMap.put(getResources().getString(R.string.MonthlyStatement),5);
     }
     public void getTaskHistory(){
         if(RecCount!=0){

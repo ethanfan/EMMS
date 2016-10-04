@@ -104,6 +104,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private ArrayList<ObjectElement> datas=new ArrayList<>();
     private Context mContext;
     private PopMenuTaskDetail popMenuTaskDetail;
+    private String TaskSubClass;
    // private ChangeEquipmentDialog changeEquipmentDialog;
     private String TaskDetail = null;//任务详细
     private String TaskClass=null;//任务类型
@@ -148,6 +149,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         taskId = Long.valueOf(getIntent().getStringExtra(Task.TASK_ID));
         TaskStatus=getIntent().getIntExtra("TaskStatus",-1);
         isTaskHistory=getIntent().getBooleanExtra("isTaskHistory",false);
+        TaskSubClass=getIntent().getStringExtra(Task.TASK_SUBCLASS);
         if(TaskDetail!=null) {
             JsonObjectElement jsonObjectElement = new JsonObjectElement(TaskDetail);
             if(jsonObjectElement.get("IsExsitTaskEquipment")!=null) {
@@ -273,12 +275,26 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 holder.tv_end_time.setText(endTime);
                 //  holder.tv_task_state.setText(equipmentStatus);
                 holder.tv_task_state.setText(taskEquipmentStatus.get(equipmentStatus));
-
+                if(TaskSubClass!=null&&TaskClass!=null&&TaskStatus==1&&TaskClass.equals(Task.MAINTAIN_TASK)) {
+                    convertView.setOnClickListener(new AdapterView.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent=new Intent(mContext,MeasurePointActivity.class);
+                            intent.putExtra(Task.TASK_ID,taskId.toString());
+                            intent.putExtra("TaskEquipment",datas.get(position).toString());
+                            if(TaskSubClass!=null&&!TaskSubClass.equals("")) {
+                                intent.putExtra(Task.TASK_SUBCLASS, TaskSubClass);
+                            }
+                            startActivity(intent);
+                        }
+                    });
+                }
                 return convertView;
             }
 
         };
         mListview.setAdapter(taskAdapter);
+
 //        scrollview.post(new Runnable() {
 //            @Override
 //            public void run() {
@@ -290,6 +306,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private ListView TaskOperatorListView;
     private ArrayList<ObjectElement> TaskOperatorList=new ArrayList<>();
     private boolean isGetTaskOperatorListSuccess=false;
+    private TaskAdapter TaskOperatorAdapter;
     private void initDatas() {
         {
             Equipment_Operator_Status_Name_ID_map.put("0",getResources().getString(R.string.start));
@@ -303,7 +320,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
             findViewById(R.id.NoEquipmentLayout).setVisibility(View.VISIBLE);
             TaskOperatorListView=(ListView)findViewById(R.id.taskOperatorStatus);
-            TaskOperatorListView.setAdapter(new TaskAdapter(TaskOperatorList) {
+
+            TaskOperatorAdapter= new TaskAdapter(TaskOperatorList) {
                 @Override
                 public View getCustomView(View convertView, int position1, ViewGroup parent1) {
                     TaskViewHolder holder1;
@@ -320,9 +338,11 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     holder1.tv_task_state.setText(Equipment_Operator_Status_Name_ID_map.get(DataUtil.isDataElementNull(TaskOperatorList.get(position1).get("Status"))));
                     return convertView;
                 }
-            });
+            };
+            TaskOperatorListView.setAdapter(TaskOperatorAdapter);
             getTaskOperatorStatus();
-            if(RootUtil.rootStatus(TaskStatus,1)) {
+            if(RootUtil.rootStatus(TaskStatus,1)
+                    && getIntent().getStringExtra("FromProcessingFragment")!=null) {
                 findViewById(R.id.changeTaskOperatorStatus).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -455,8 +475,10 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         String[] mTitles = getResources().getStringArray(R.array.menu_list);
 
         popMenuTaskDetail.addItems(mTitles);
-
-
+        popMenuTaskDetail.setHasEquipment(HasTaskEquipment);
+        if(TaskClass!=null&&!TaskClass.equals(Task.REPAIR_TASK)){
+            findViewById(R.id.serchDeviceHistory).setVisibility(View.GONE);
+        }
         findViewById(R.id.serchDeviceHistory).setOnClickListener(this);
         //维修任务并且是已接单任务的情况下加载并显示故障总结
         initViewWhenTaskClassIsRepairAndTaskStatusIsComplete();
@@ -643,8 +665,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     public void photo() {
 
         File dir = new File(mContext.getExternalFilesDir(null) + "/btp/");
-        if (!dir.exists()) dir.mkdirs();
-
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
         try {
             Intent openCameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             File file = new File(dir, String.valueOf(System.currentTimeMillis())
@@ -712,8 +735,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     /**
      * bitmap转为base64
      *
-     * @param bitmap
-     * @return
+     * @param bitmap b
+     * @return b
      */
     public static String bitmapToBase64(Bitmap bitmap) {
 
@@ -748,8 +771,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     /**
      * base64转为bitmap
      *
-     * @param base64Data
-     * @return
+     * @param base64Data b
+     * @return b
      */
     public static Bitmap base64ToBitmap(String base64Data) {
         byte[] bytes = Base64.decode(base64Data, Base64.DEFAULT);
@@ -1357,7 +1380,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         fault_type=(TextView)findViewById(R.id.fault_type);
         fault_description=(TextView)findViewById(R.id.fault_description);
         repair_status=(TextView)findViewById(R.id.repair_status);
-        if(TaskStatus==2){
+        if(TaskStatus>=2){
             findViewById(R.id.task_complete).setVisibility(View.VISIBLE);
             if(TaskClass.equals(Task.REPAIR_TASK)){
             findViewById(R.id.fault_summary).setVisibility(View.VISIBLE);
@@ -1485,18 +1508,43 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         //条件1：可评价任务；条件2未评价任务，条件3报修人或者维修工班组长，条件4属于报修人班组
         if( getIntent().getStringExtra("IsEvaluated")!=null
                 &&getIntent().getStringExtra("IsEvaluated").equals("0")
+                &&TaskStatus==2
                 && (Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))==RootUtil.ROOT_WARRANTY
               ||Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))<5    )
-                &&OrganiseList.contains(String.valueOf(getLoginInfo().getId()))    ){
-                    findViewById(R.id.submitCommand).setVisibility(View.VISIBLE);
-                    findViewById(R.id.submitCommand).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            postTaskCommandToServer();
+                //&&OrganiseList.contains(getLoginInfo().getOrganiseID())
+                ){
+            for(int i=0;i<getLoginInfo().getOrganiseID().split(",").length;i++){
+                if(OrganiseList.contains(getLoginInfo().getOrganiseID().split(",")[i])){
+                    if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))==RootUtil.ROOT_WARRANTY){
+                        if(TaskDetail!=null&&!TaskDetail.equals("")) {
+                            JsonObjectElement jsonObjectElement = new JsonObjectElement(TaskDetail);
+                            if(DataUtil.isDataElementNull(jsonObjectElement.get(Task.APPLICANT)).equals(getLoginInfo().getName())){
+                                findViewById(R.id.submitCommand).setVisibility(View.VISIBLE);
+                                initListViewOnItemClickEvent();
+                                findViewById(R.id.submitCommand).setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        postTaskCommandToServer();
+                                    }
+                                });
+                                break;
+                            }
                         }
-                    });
+                    }else {
+                        findViewById(R.id.submitCommand).setVisibility(View.VISIBLE);
+                        initListViewOnItemClickEvent();
+                        findViewById(R.id.submitCommand).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                postTaskCommandToServer();
+                            }
+                        });
+                        break;
+                    }
+                }
+            }
         }
-        initListViewOnItemClickEvent();
+        //initListViewOnItemClickEvent();
         getTaskCommandFromServer();
     }
     private void getTaskCommandFromServer(){
@@ -1546,14 +1594,32 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         });
     }
     private void initListViewOnItemClickEvent(){
-        //TODO
-        if( TaskStatus!=2||getIntent().getStringExtra("IsEvaluated")==null  //任务未完成
-                || getIntent().getStringExtra("IsEvaluated").equals("1")      //任务未评价
-                || Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))==RootUtil.ROOT_REPAIR  //维修工
-                || Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))==RootUtil.ROOT_REPAIR_ENGERINEER  //维修工程师
-                || !OrganiseList.contains(String.valueOf(getLoginInfo().getId()))){  //不属于报修人班组
-            return;
-        }
+//        //TODO
+//        if( TaskStatus!=2||getIntent().getStringExtra("IsEvaluated")==null  //任务未完成
+//                || getIntent().getStringExtra("IsEvaluated").equals("1")      //任务未评价
+//                || Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))==RootUtil.ROOT_REPAIR  //维修工
+//                || Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))==RootUtil.ROOT_REPAIR_ENGERINEER  //维修工程师
+//                //|| !OrganiseList.contains(getLoginInfo().getOrganiseID())
+//                ){  //不属于报修人班组
+//            return;
+//        }
+//        boolean tag=true;
+//        for(int i=0;i<getLoginInfo().getOrganiseID().split(",").length;i++){
+//            if(OrganiseList.contains(getLoginInfo().getOrganiseID().split(",")[i])) {
+//                tag=false;
+//            }
+//        }
+//        if(tag){
+//            return;
+//        }
+//        if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))==RootUtil.ROOT_WARRANTY){
+//            if(TaskDetail!=null&&!TaskDetail.equals("")) {
+//                JsonObjectElement jsonObjectElement = new JsonObjectElement(TaskDetail);
+//               if(!DataUtil.isDataElementNull(jsonObjectElement.get(Task.APPLICANT)).equals(getLoginInfo().getName())){
+//                   return;
+//               }
+//            }
+//        }
         response_speed.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -1640,8 +1706,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ((TaskAdapter)TaskOperatorListView.getAdapter()).notifyDataSetChanged();
-                                ListViewUtility.setListViewHeightBasedOnChildren(TaskOperatorListView);
+                                TaskOperatorAdapter.notifyDataSetChanged();
+                               ListViewUtility.setListViewHeightBasedOnChildren(TaskOperatorListView);
                             }
                         });
                         isGetTaskOperatorListSuccess=true;
@@ -1665,9 +1731,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         JsonObjectElement submitData=new JsonObjectElement();
         submitData.set("TaskOperator_ID",0);
         submitData.set("Status",0);
-        submitData.set("IsMain", RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id));
         params.putJsonParams(submitData.toJson());
-        HttpUtils.post(mContext, "TaskOperator", params, new HttpCallback() {
+        HttpUtils.post(mContext, "TaskOperatorStatus/TaskOperatorStatusChange", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

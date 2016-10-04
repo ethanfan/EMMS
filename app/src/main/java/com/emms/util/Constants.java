@@ -18,4 +18,6 @@ public class Constants {
 
     public final static int REQUEST_CODE_TASKHISTORY=118;
 
+    public final static int REQUEST_CODE_MEASURE_POINT=119;
+
 }

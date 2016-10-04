@@ -4,8 +4,8 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.nfc.NfcAdapter;
@@ -25,12 +25,10 @@ import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.datastore_android_sdk.rxvolley.toolbox.Loger;
-import com.datastore_android_sdk.schema.Query;
 import com.emms.ConfigurationManager;
 import com.emms.R;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
@@ -39,6 +37,7 @@ import com.emms.push.ExampleUtil;
 import com.emms.push.PushService;
 import com.emms.schema.BaseOrganise;
 import com.emms.schema.DataDictionary;
+import com.emms.schema.DataRelation;
 import com.emms.schema.DataType;
 import com.emms.schema.Equipment;
 import com.emms.schema.Operator;
@@ -48,6 +47,7 @@ import com.emms.ui.PopMenuLoginActivity;
 import com.emms.ui.UserRoleDialog;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
+import com.emms.util.DownloadCallback;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 
@@ -67,7 +67,6 @@ import cn.jpush.android.api.JPushInterface;
 public class LoginActivity extends NfcActivity implements View.OnClickListener {
     private static final String TAG = "LoginActivity";
     private Context mContext;
-    private TextView login;
     //private TextView machine;
     private EditText inputPassWord;
     private EditText inputname;
@@ -94,7 +93,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     }
 
     private void initView() {
-        login = (TextView) findViewById(R.id.login);
+        TextView login = (TextView) findViewById(R.id.login);
         inputPassWord = (EditText) findViewById(R.id.inputPassWord);
         inputname = (EditText) findViewById(R.id.inputUserName);
       inputname.setText(SharedPreferenceManager.getUserName(this));
@@ -133,13 +132,13 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     return;
                 }
 
-                if (userid == null || userid.length() == 0) {
+                if (userid.length() == 0) {
 //                    showDialog(getString(R.string.warning_title),
 //                            getString(R.string.warning_message_no_user));
                     ToastUtil.showToastLong(R.string.warning_message_no_user,mContext);
                     return;
                 }
-                if (password == null || password.length() == 0) {
+                if (password.length() == 0) {
 //                    showDialog(getString(R.string.warning_title),
 //                            getString(R.string.warning_message_no_password));
                     ToastUtil.showToastLong(R.string.warning_message_no_password,mContext);
@@ -286,6 +285,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         data.set("LastUpdateTime_DataType",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataType")));
         data.set("LastUpdateTime_Equipment",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_Equipment")));
         data.set("LastUpdateTime_TaskOrganiseRelation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_TaskOrganiseRelation")));
+        data.set("LastUpdateTime_DataRelation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataRelation")));
         if(SharedPreferenceManager.getFactory(this)==null){
         data.set("Factory_ID",def_Factory);}
         else {
@@ -306,17 +306,18 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                         Log.e("dd","bb");
                     }*/
                 JsonObjectElement json=new JsonObjectElement(t);
-                    if(json.get("DataType")!=null&&json.get("DataType").asArrayElement().size()>0){
+                    if(json.get("DataType")!=null&&json.get("DataType").isArray()&&json.get("DataType").asArrayElement().size()>0){
                     updateData(json.get("DataType"), EPassSqliteStoreOpenHelper.SCHEMA_DATATYPE);}
-                    if(json.get("BaseOrganise")!=null&&json.get("BaseOrganise").asArrayElement().size()>0){
+                    if(json.get("BaseOrganise")!=null&&json.get("BaseOrganise").isArray()&&json.get("BaseOrganise").asArrayElement().size()>0){
                         updateData(json.get("BaseOrganise"),EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE);}
-                    if(json.get("DataDictionary")!=null&&json.get("DataDictionary").asArrayElement().size()>0){
-                         updateData(json.get("DataDictionary"),EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY);
-                    }
-                    if(json.get("Equipment")!=null&&json.get("Equipment").asArrayElement().size()>0){
+                    if(json.get("DataDictionary")!=null&&json.get("DataDictionary").isArray()&&json.get("DataDictionary").asArrayElement().size()>0){
+                         updateData(json.get("DataDictionary"),EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY);}
+                    if(json.get("Equipment")!=null&&json.get("Equipment").isArray()&&json.get("Equipment").asArrayElement().size()>0){
                         updateData(json.get("Equipment"),EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT);}
-                    if(json.get("TaskOrganiseRelation")!=null&&json.get("TaskOrganiseRelation").asArrayElement().size()>0){
+                    if(json.get("TaskOrganiseRelation")!=null&&json.get("TaskOrganiseRelation").isArray()&&json.get("TaskOrganiseRelation").asArrayElement().size()>0){
                         updateData(json.get("TaskOrganiseRelation"),EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION);}
+                    if(json.get("DataRelation")!=null&&json.get("DataRelation").isArray()&&json.get("DataRelation").asArrayElement().size()>0){
+                        updateData(json.get("DataRelation"),EPassSqliteStoreOpenHelper.SCHEMA_DATA_RELATION);}
                 }
                // ConfigurationManager.getInstance().startToGetNewConfig(mContext);
             }
@@ -359,6 +360,10 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 }
                 case "TaskOrganiseRelation":{
                     s= TaskOrganiseRelation.TEAM_SERVICE_ID;
+                    break;
+                }
+                case "DataRelation":{
+                    s= DataRelation.DATARELATION_ID;
                     break;
                 }
             }
@@ -433,21 +438,22 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         popMenuLoginActivity.showAsDropDown(v);
     }
     private void getDBDataLastUpdateTime(){
-        String sql="    select * from (select max(LastUpdateTime) LastUpdateTime_BaseOrganise from BaseOrganise)," +
+        String sql="    select * from ( select max(LastUpdateTime) LastUpdateTime_BaseOrganise from BaseOrganise)," +
                 "    (select max(LastUpdateTime) LastUpdateTime_DataDictionary from DataDictionary)," +
                 "    (select max(LastUpdateTime) LastUpdateTime_DataType from DataType)," +
                 "    (select max(LastUpdateTime) LastUpdateTime_Equipment from Equipment)," +
-                "    (select max(LastUpdateTime) LastUpdateTime_TaskOrganiseRelation from TaskOrganiseRelation)";
+                "    (select max(LastUpdateTime) LastUpdateTime_TaskOrganiseRelation from TaskOrganiseRelation),"+
+                "    (select max(LastUpdateTime) LastUpdateTime_DataRelation from DataRelation) ";
         getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
             @Override
             public void success(DataElement element, String resource) {
                 ConfigurationManager.getInstance().startToGetNewConfig(mContext);
-                //getDataBaseUpdateFromServer(element.asArrayElement().get(0));
+                getDataBaseUpdateFromServer(element.asArrayElement().get(0));
             }
 
             @Override
             public void failure(DatastoreException ex, String resource) {
-
+                ConfigurationManager.getInstance().startToGetNewConfig(mContext);
             }
         });
     }
@@ -544,15 +550,15 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 super.onSuccess(t);
               if(t!=null){
                   JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                  if(jsonObjectElement!=null){
                   downloadDB(dbFile,DataUtil.isDataElementNull(jsonObjectElement.get("DownloadUrl")));
-                  }
+
               }
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+
             }
         });
     }
@@ -563,16 +569,28 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 try{
-                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
-                    dismissCustomDialog();
-                    ToastUtil.showToastLong(R.string.SuccessDownloadDB,mContext);}catch (Exception e){
+                    com.emms.util.FileUtils fileUtil=new com.emms.util.FileUtils();
+                    fileUtil.upZipFile(dbFile, dbFile.getParentFile().getAbsolutePath(), mContext, new DownloadCallback() {
+                        @Override
+                        public void success(boolean hasUpdate) {
+                            getDBDataLastUpdateTime();
+                        }
+                        @Override
+                        public void fail(Exception e) {
+                        }
+                    });
+                }catch (Exception e){
+                    Log.e("","");
                 }
+                dismissCustomDialog();
+                ToastUtil.showToastLong(R.string.SuccessDownloadDB,mContext);
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.loadingFail,mContext);
+                showErrorDownloadDatabaseDialog();
+                //ToastUtil.showToastLong(R.string.loadingFail,mContext);
                 dismissCustomDialog();
             }
         });
@@ -669,7 +687,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
       try {
     //调用JPush API设置Tag\
     String Organise_ID = new JSONObject(data).get("Organise_ID").toString();
-    Set<String> tagSet = new LinkedHashSet<String>();
+    Set<String> tagSet = new LinkedHashSet<>();
     //tagSet.add(userid);
     tagSet.add("1002");
     String[] or = Organise_ID.split(",");
@@ -701,5 +719,18 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         startActivity(intent);
+    }
+    private void showErrorDownloadDatabaseDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.FailDownloadDB);
+        builder.setPositiveButton(R.string.retry,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        getNewDataFromServer();
+                    }
+                });
+        builder.setCancelable(false);
+        builder.show();
     }
 }

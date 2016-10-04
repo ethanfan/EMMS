@@ -155,7 +155,11 @@ public class OverDueVerifyFragment extends BaseFragment {
        // params.put("task_class",Task.REPAIR_TASK);
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
-        params.put("Verity",Verity);//2为逾期
+        if(Verity==4){
+            params.put("dateLength",filterTime);
+        }else {
+            params.put("Verity",Verity);
+        }
         HttpUtils.get(mContext, "TaskWorkloadVerity", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -166,26 +170,26 @@ public class OverDueVerifyFragment extends BaseFragment {
                     //  if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()==0){
                     //提示没有处理中的任务
                     //  }
+                    if (pageIndex == 1) {
+                        datas.clear();
+                    }
+                    RecCount = jsonObjectElement.get("RecCount").valueAsInt();
                     if(jsonObjectElement.get("PageData")!=null
                             &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
-                        RecCount = jsonObjectElement.get("RecCount").valueAsInt();
-                        if (pageIndex == 1) {
-                            datas.clear();
-                        }
                         pageIndex++;
                         for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
                             datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                taskAdapter.setDatas(datas);
-                                taskAdapter.notifyDataSetChanged();
-                            }
-                        });
-                        //      setData(datas);
+                    }else {
+                        ToastUtil.showToastLong(R.string.noData,mContext);
                     }
-
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            taskAdapter.setDatas(datas);
+                            taskAdapter.notifyDataSetChanged();
+                        }
+                    });
                 }
                 dismissCustomDialog();
             }

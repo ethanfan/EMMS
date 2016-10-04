@@ -108,6 +108,8 @@
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
             android:textSize="17sp"
+            android:singleLine="true"
+            android:layout_marginRight="40dp"
             android:layout_toRightOf="@id/Task_Equipment_tag"
             android:layout_alignTop="@id/Task_Equipment_tag" />
         <TextView
@@ -127,6 +129,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
             android:textSize="17sp"
+            android:singleLine="true"
             android:layout_toRightOf="@id/Task_Equipment_Num_tag"
             android:layout_alignTop="@id/Task_Equipment_Num_tag" />
         <TextView

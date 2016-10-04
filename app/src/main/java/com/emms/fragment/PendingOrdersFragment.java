@@ -47,6 +47,7 @@ public class PendingOrdersFragment extends BaseFragment{
     private Context mContext;
     private Handler handler=new Handler();
     private String TaskClass;
+    private String TaskSubClass;
     private  int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
@@ -93,6 +94,7 @@ public class PendingOrdersFragment extends BaseFragment{
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         TaskClass=this.getArguments().getString(Task.TASK_CLASS);
+        TaskSubClass=this.getArguments().getString(Task.TASK_SUBCLASS);
         taskAdapter = new TaskAdapter(datas) {
             @Override
             public View getCustomView(View convertView, final int position, ViewGroup parent) {
@@ -115,10 +117,14 @@ public class PendingOrdersFragment extends BaseFragment{
                 holder.tv_creater.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
                 holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
-                holder.tv_task_state.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS))));
+                holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
                 holder.tv_create_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
-                holder.tv_device_name.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("EquipmentName"))));
-                holder.tv_device_num.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("EquipmentAssetsIDList"))));
+               if(datas.get(position).get("IsExsitTaskEquipment").valueAsBoolean()){
+                   holder.tv_device_name.setText(DataUtil.isDataElementNull(datas.get(position).get("EquipmentName")));
+               }else {
+                   holder.tv_device_name.setText(R.string.NoEquipment);
+               }
+                holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get("EquipmentAssetsIDList")));
                 holder.acceptTaskButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -175,6 +181,9 @@ public class PendingOrdersFragment extends BaseFragment{
       //  params.put("operator_id",operator_id);
         params.put("status",0);
         params.put("taskClass",TaskClass);
+        if(TaskSubClass!=null&&!TaskSubClass.equals("")){
+            params.put("taskSubClass",TaskSubClass);
+        }
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
         HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
@@ -313,10 +322,13 @@ public class PendingOrdersFragment extends BaseFragment{
             }
         });
     }
-    public static PendingOrdersFragment newInstance(String TaskClass){
+    public static PendingOrdersFragment newInstance(String TaskClass,String TaskSubClass){
         PendingOrdersFragment fragment = new PendingOrdersFragment();
         Bundle bundle = new Bundle();
         bundle.putString(Task.TASK_CLASS, TaskClass);
+        if(TaskSubClass!=null&&!TaskSubClass.equals("")){
+            bundle.putString(Task.TASK_SUBCLASS,TaskSubClass);
+        }
         fragment.setArguments(bundle);
         return fragment;
     }
