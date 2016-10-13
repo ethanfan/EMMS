@@ -2,8 +2,10 @@ package com.emms.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -165,7 +167,13 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
 
     @Override
     public void resolveNfcMessage(Intent intent) {
-
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+            Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            String iccardID = NfcUtils.dumpTagData(tag);
+        }
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
@@ -307,5 +315,8 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
                 dismissCustomDialog();
             }
         });
+    }
+    private void getTaskByICcardID(String ICcardID){
+
     }
 }

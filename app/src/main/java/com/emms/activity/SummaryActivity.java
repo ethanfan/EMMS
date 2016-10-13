@@ -74,6 +74,7 @@ public class SummaryActivity extends NfcActivity{
     private boolean TaskComplete=false;
     private String TaskTrouble_ID="";
     private String TaskClass=Task.REPAIR_TASK;
+    private String TroubleType;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -171,7 +172,7 @@ public class SummaryActivity extends NfcActivity{
         mResultListView.setAdapter(mResultAdapter);
         mResultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 isSearchview = true ;
                 final int inPosition = position;
                 String itemNam = mResultAdapter.getItemName();
@@ -183,6 +184,7 @@ public class SummaryActivity extends NfcActivity{
                             switch (searchtag) {
                                 case 1:
                                     type.getmEditText().setText(searchResult);
+                                    TroubleType=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(DataDictionary.DATA_CODE));
                                     break;
                             }
                             mDrawer_layout.closeDrawer(Gravity.RIGHT);
@@ -300,7 +302,7 @@ public class SummaryActivity extends NfcActivity{
             FaultSummary.set("TaskTrouble_ID",Integer.valueOf(TaskTrouble_ID));
         }
        // FaultSummary.set("TroubleType",type.getText().toString());
-        FaultSummary.set("TroubleType",type.getText().toString());
+        FaultSummary.set("TroubleType",TroubleType);
         FaultSummary.set("TroubleDescribe",description.getText().toString());
         FaultSummary.set("MaintainDescribe",repair_status.getText().toString());
         httpParams.putJsonParams(FaultSummary.toJson());

@@ -8,23 +8,23 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
-import android.provider.MediaStore;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
@@ -40,23 +40,20 @@ import com.emms.adapter.StatusAdapter;
 import com.emms.adapter.TaskAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
-import com.emms.schema.Equipment;
 import com.emms.schema.MeasurePoint;
 import com.emms.schema.Task;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
-import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-import org.apache.http.impl.client.TunnelRefusedException;
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -92,10 +89,13 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
     private HashMap<String,String> MeasureValueMap2=new HashMap<>();
     private ArrayList<ObjectElement> submitData=new ArrayList<>();
     private ArrayList<String> ObPointValueList=new ArrayList<>();
+    private int hour=60*60*1000;
+    private String TaskSubClass;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_measure_point);
+        TaskSubClass=getIntent().getStringExtra(Task.TASK_SUBCLASS);
         initData();
 //        initView();
 //        //TestData();
@@ -121,6 +121,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                     holder = new TaskViewHolder();
                     holder.tv_group = (TextView) convertView.findViewById(R.id.measure_point_name);
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.measure_point_content);
+                    holder.tv_repair_time=(TextView)convertView.findViewById(R.id.measure_point_standard_tag);
                     holder.tv_create_time = (TextView) convertView.findViewById(R.id.measure_point_standard);
                     holder.tv_device_name = (TextView) convertView.findViewById(R.id.measure_point_status);
                     holder.tv_task_state=(TextView)convertView.findViewById(R.id.sequence_number);
@@ -133,6 +134,9 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                    holder.dropEditText2=(DropEditText) convertView.findViewById(R.id.MeasureValueStandard);
                    holder.gridView=(GridView)convertView.findViewById(R.id.ObPointValueList);
 
+                   holder.editText2=(EditText)convertView.findViewById(R.id.CollectionPoint);
+                   holder.tv_end_time=(TextView)convertView.findViewById(R.id.ValueUnit);
+                   holder.warranty_person=(TextView)convertView.findViewById(R.id.MeasureStandard_value);
                   // holder.tv_start_time=(TextView)convertView.findViewById(R.id.MeasureValueStandard_text);
 //                    convertView.setTag(holder);
 //                }else {
@@ -151,6 +155,9 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                         if(measure_point_list.get(position).get("tag").valueAsBoolean()){
                             measure_point_list.get(position).set("tag",false);
                         }else {
+                            if (checkResultValue(measure_point_list.get(position),holder.editText2)){
+                                return;
+                            }
                             measure_point_list.get(position).set("tag",true);
                         }
                         notifyDataSetChanged();
@@ -166,156 +173,105 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                 if(measure_point_list.get(position).get("IsResultSubmit").valueAsBoolean()){
                     holder.tv_device_name.setText(R.string.IsCheck);
                     holder.tv_device_name.setTextColor(getResources().getColor(R.color.order_color));
-                   // holder.tv_repair_time.setVisibility(View.VISIBLE);
-                    //holder.tv_end_time.setVisibility(View.VISIBLE);
-                   // holder.tv_start_time.setVisibility(View.VISIBLE);
-                  //  holder.editText.setVisibility(View.GONE);
-                  //  holder.dropEditText2.setVisibility(View.GONE);
-                  //  holder.dropEditText.setVisibility(View.GONE);
-                    //holder.image.setVisibility(View.GONE);
                 }else {
                     holder.tv_device_name.setText(R.string.IsNotCheck);
                     holder.tv_device_name.setTextColor(getResources().getColor(R.color.esquel_red));
-                    // holder.image.setVisibility(View.VISIBLE);
-                    // holder.dropEditText.setVisibility(View.VISIBLE);
-                    // holder.editText.setVisibility(View.VISIBLE);
-                    //  holder.dropEditText2.setVisibility(View.VISIBLE);
-                    //  holder.tv_repair_time.setVisibility(View.GONE);
-                    // holder.tv_start_time.setVisibility(View.GONE);
-                    //holder.tv_end_time.setVisibility(View.GONE);
                 }
+                   holder.editText2.setInputType(EditorInfo.TYPE_CLASS_PHONE);
                    holder.dropEditText.getmEditText().setInputType(EditorInfo.TYPE_CLASS_PHONE);
                    holder.dropEditText2.getmEditText().setInputType(EditorInfo.TYPE_CLASS_PHONE);
+                   holder.dropEditText.getmEditText().setImeOptions(EditorInfo.IME_ACTION_DONE);
+                   holder.dropEditText2.getmEditText().setImeOptions(EditorInfo.IME_ACTION_DONE);
                    // holder.editText.setInputType(EditorInfo.TYPE_CLASS_PHONE);
-                initDropSearchView(null,holder.dropEditText.getmEditText(),getResources().getString(R.string.MeasureValueInput), DataDictionary.DATA_NAME,position,R.string.nothing_found,holder.dropEditText.getDropImage());
-                initDropSearchView(null,holder.dropEditText2.getmEditText(),getResources().getString(R.string.MeasureValueInput), DataDictionary.DATA_NAME,position,R.string.nothing_found,holder.dropEditText2.getDropImage());
+                initDropSearchView(null,holder.dropEditText.getmEditText(),getResources().getString(R.string.MeasureValueInput), DataDictionary.DATA_NAME,position,R.string.nothing_found,holder.dropEditText.getDropImage(),measure_point_list.get(position));
+                initDropSearchView(null,holder.dropEditText2.getmEditText(),getResources().getString(R.string.StandardValueInput), DataDictionary.DATA_NAME,position,R.string.nothing_found,holder.dropEditText2.getDropImage(),measure_point_list.get(position));
                 SetTextChangeListener(holder.editText,measure_point_list.get(position),"Remarks");
+                SetTextChangeListener(holder.editText2,measure_point_list.get(position),"ResultValue");
                 SetTextChangeListener(holder.dropEditText.getmEditText(),measure_point_list.get(position),"ResultValue");
                 SetTextChangeListener(holder.dropEditText2.getmEditText(),measure_point_list.get(position),"ReferenceValue");
-//                holder.editText.addTextChangedListener(new TextWatcher() {
-//                    @Override
-//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//                    }
-//
-//                    @Override
-//                    public void afterTextChanged(Editable s) {
-//                        measure_point_list.get(position).set("Remarks",s.toString());
-//                        measure_point_list.get(position).set("tag",true);
-//                        //adapter.notifyDataSetChanged();
-//                    }
-//                });
-//                holder.dropEditText.getmEditText().addTextChangedListener(new TextWatcher() {
-//                    @Override
-//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//                    }
-//
-//                    @Override
-//                    public void afterTextChanged(Editable s) {
-//                        measure_point_list.get(position).set("ResultValue",s.toString());
-//                        measure_point_list.get(position).set("tag",true);
-//                        //adapter.notifyDataSetChanged();
-//                    }
-//                });
-//                holder.dropEditText2.getmEditText().addTextChangedListener(new TextWatcher() {
-//                    @Override
-//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//                    }
-//
-//                    @Override
-//                    public void afterTextChanged(Editable s) {
-//                        measure_point_list.get(position).set("ReferenceValue",s.toString());
-//                        measure_point_list.get(position).set("tag",true);
-//                        //adapter.notifyDataSetChanged();
-//                    }
-//                });
                 String pointType=DataUtil.isDataElementNull(measure_point_list.get(position).get("PointType"));
-                if(pointType.equals(MeasurePoint.OBVERSE_MEASURE_POINT)){
-                    convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.GONE);
+                //等于-1为计数器测点，等于T0203为采集器测点
+                if(DataUtil.isDataElementNull(measure_point_list.get(position).get("MaintainWorkItem_ID")).equals("-1")
+                        ||(DataUtil.isDataElementNull(measure_point_list.get(position).get("TaskSubClass")).equals("T0203"))){
                     holder.dropEditText.setVisibility(View.GONE);
-                    ((TextView)convertView.findViewById(R.id.MeasureValueSelect_tag)).setText(R.string.checkResult);
-                    ((TextView)convertView.findViewById(R.id.MeasureValueStandard_tag)).setText(R.string.StandardValue);
-                    holder.gridView.setVisibility(View.VISIBLE);
-                    holder.gridView.setAdapter(new StatusAdapter(ObPointValueList) {
-                        @Override
-                        public View getCustomView(View convertView1, int position1, ViewGroup parent1) {
-                            StatusAdapter.ViewHolder viewHolder;
-                            if(convertView1==null){
-                                convertView1 = LayoutInflater.from(context).inflate(R.layout.item_ob_point, parent1, false);
-                                viewHolder = new ViewHolder();
-                                viewHolder.statu=(TextView)convertView1.findViewById(R.id.obValue);
-                                convertView1.setTag(viewHolder);
-                            }else {
-                                viewHolder=(ViewHolder) convertView1.getTag();
-                            }
-                            viewHolder.statu.setText(ObPointValueList.get(position1));
-                            if(viewHolder.statu.getText().toString().equals(
-                                    DataUtil.isDataElementNull(measure_point_list.get(position).get("ResultValue")))){
-                                viewHolder.statu.setTextColor(Color.WHITE);
-                                viewHolder.statu.setBackgroundResource(R.drawable.bg_edit_select);
-                            }else {
-                                viewHolder.statu.setTextColor(Color.BLACK);
-                                viewHolder.statu.setBackgroundResource(R.drawable.bg_edit_normal);
-                            }
-                            return convertView1;
-                        }
-                    });
-                    holder.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent2, View view2, int position2, long id) {
-                            measure_point_list.get(position).set("ResultValue",ObPointValueList.get(position2));
-                            measure_point_list.get(position).set("tag", true);
-                            if(!submitData.contains(measure_point_list.get(position))){
-                                submitData.add(measure_point_list.get(position));
-                            }
-                            notifyDataSetChanged();
-//                            for(int i=0;i<parent.getChildCount();i++){
-//                                if(i==position){
-//                                    View v=parent.getChildAt(position);
-//                                    TextView tv=(TextView)v.findViewById(R.id.obValue);
-//                                    tv.setTextColor(Color.WHITE);
-//                                    //tv.setBackgroundColor(Color.RED);
-//                                    tv.setBackgroundResource(R.drawable.bg_edit_select);
-//                                }
-//                                else{
-//                                    View v=parent.getChildAt(i);
-//                                    TextView tv=(TextView)v.findViewById(R.id.obValue);
-//                                    tv.setTextColor(Color.BLACK);
-//                                    tv.setBackgroundResource(R.drawable.bg_edit_normal);
-//                                }
-//                            }
-                        }
-                    });
-                }else if(pointType.equals(MeasurePoint.PROCESS_MEASURE_POINT)){
-                    convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.VISIBLE);
+                    holder.dropEditText2.setVisibility(View.GONE);
                     holder.gridView.setVisibility(View.GONE);
-                    holder.dropEditText.setVisibility(View.VISIBLE);
-                    ((TextView)convertView.findViewById(R.id.MeasureValueSelect_tag)).setText(R.string.MeasureValue);
-                    ((TextView)convertView.findViewById(R.id.MeasureValueStandard_tag)).setText(R.string.SettingMeasureResult);
+                    holder.tv_create_time.setVisibility(View.GONE);
+                    holder.tv_repair_time.setVisibility(View.GONE);
+                    holder.warranty_person.setVisibility(View.VISIBLE);
+                    convertView.findViewById(R.id.CollectionPoint_layout).setVisibility(View.VISIBLE);
+                    convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.VISIBLE);
                 }else {
-                    convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.VISIBLE);
-                    holder.gridView.setVisibility(View.GONE);
-                    holder.dropEditText.setVisibility(View.VISIBLE);
-                    ((TextView)convertView.findViewById(R.id.MeasureValueSelect_tag)).setText(R.string.MeasureValue);
-                    ((TextView)convertView.findViewById(R.id.MeasureValueStandard_tag)).setText(R.string.StandardValue);
+                    if (pointType.equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
+                        holder.tv_create_time.setVisibility(View.GONE);
+                        holder.tv_repair_time.setVisibility(View.GONE);
+                        convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.GONE);
+                        holder.dropEditText.setVisibility(View.GONE);
+                        ((TextView) convertView.findViewById(R.id.MeasureValueSelect_tag)).setText(R.string.checkResult);
+                        ((TextView) convertView.findViewById(R.id.MeasureValueStandard_tag)).setText(R.string.StandardValue);
+                        holder.gridView.setVisibility(View.VISIBLE);
+                        if (holder.gridView.getAdapter() != null) {
+                            ((StatusAdapter) holder.gridView.getAdapter()).notifyDataSetChanged();
+                        } else {
+                            holder.gridView.setAdapter(new StatusAdapter(ObPointValueList) {
+                                @Override
+                                public View getCustomView(View convertView1, int position1, ViewGroup parent1) {
+                                    StatusAdapter.ViewHolder viewHolder;
+                                    if (convertView1 == null) {
+                                        convertView1 = LayoutInflater.from(context).inflate(R.layout.item_ob_point, parent1, false);
+                                        viewHolder = new ViewHolder();
+                                        viewHolder.statu = (TextView) convertView1.findViewById(R.id.obValue);
+                                        convertView1.setTag(viewHolder);
+                                    } else {
+                                        viewHolder = (ViewHolder) convertView1.getTag();
+                                    }
+                                    viewHolder.statu.setText(ObPointValueList.get(position1));
+                                    if (viewHolder.statu.getText().toString().equals(
+                                            DataUtil.isDataElementNull(measure_point_list.get(position).get("ResultValue")))) {
+                                        viewHolder.statu.setTextColor(Color.WHITE);
+                                        viewHolder.statu.setBackgroundResource(R.drawable.bg_edit_select);
+                                    } else {
+                                        viewHolder.statu.setTextColor(Color.BLACK);
+                                        viewHolder.statu.setBackgroundResource(R.drawable.bg_edit_normal);
+                                    }
+                                    return convertView1;
+                                }
+                            });
+                        }
+                        holder.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent2, View view2, int position2, long id) {
+                                measure_point_list.get(position).set("ResultValue", ObPointValueList.get(position2));
+                                measure_point_list.get(position).set("tag", true);
+                                if (!submitData.contains(measure_point_list.get(position))) {
+                                    submitData.add(measure_point_list.get(position));
+                                }
+                                notifyDataSetChanged();
+                            }
+                        });
+                    } else if (pointType.equals(MeasurePoint.PROCESS_MEASURE_POINT)) {
+                        holder.tv_create_time.setVisibility(View.VISIBLE);
+                        holder.tv_repair_time.setVisibility(View.VISIBLE);
+                        convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.VISIBLE);
+                        holder.gridView.setVisibility(View.GONE);
+                        holder.dropEditText.setVisibility(View.VISIBLE);
+                        ((TextView) convertView.findViewById(R.id.MeasureValueSelect_tag)).setText(R.string.MeasureValue);
+                        ((TextView) convertView.findViewById(R.id.MeasureValueStandard_tag)).setText(R.string.StandardValue);
+                    } else {
+                        holder.tv_create_time.setVisibility(View.VISIBLE);
+                        holder.tv_repair_time.setVisibility(View.VISIBLE);
+                        convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.VISIBLE);
+                        holder.gridView.setVisibility(View.GONE);
+                        holder.dropEditText.setVisibility(View.VISIBLE);
+                        ((TextView) convertView.findViewById(R.id.MeasureValueSelect_tag)).setText(R.string.MeasureValue);
+                        ((TextView) convertView.findViewById(R.id.MeasureValueStandard_tag)).setText(R.string.SettingMeasureResult);
+                    }
                 }
+                holder.editText2.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("ResultValue")));
+               //TODO 计数器测量值单位
+                holder.tv_end_time.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("Unit")));
+                holder.warranty_person.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("ReferenceValue")));
+
 
                 holder.tv_task_state.setText(String.valueOf(position+1));
                 holder.editText.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("Remarks")));
@@ -392,30 +348,34 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
         getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
             @Override
             public void success(DataElement element, String resource) {
-                for(int i=0;i<element.asArrayElement().size();i++){
-                    ObjectElement jsonObjectElement=element.asArrayElement().get(i).asObjectElement();
-                  //  MeasurePointType.put(DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")),
-                   //         DataUtil.isDataElementNull(jsonObjectElement.get("DataName")));
-                    MeasureValueList.add(jsonObjectElement);
-                    MeasureValueMap.put(DataUtil.isDataElementNull(jsonObjectElement.get(DataDictionary.DATA_NAME)),
-                            DataUtil.isDataElementNull(jsonObjectElement.get(DataDictionary.DATA_CODE)));
-                    MeasureValueMap2.put(DataUtil.isDataElementNull(jsonObjectElement.get(DataDictionary.DATA_CODE)),
-                            DataUtil.isDataElementNull(jsonObjectElement.get(DataDictionary.DATA_NAME)));
-                    ObPointValueList.add(DataUtil.isDataElementNull(jsonObjectElement.get(DataDictionary.DATA_NAME)));
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        initView();
-                        //TestData();
-                        initSearchView();
-                        GetMeasurePointList();
+                if(element.asArrayElement().size()<=0){
+                    ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,context);
+                }else {
+                    for (int i = 0; i < element.asArrayElement().size(); i++) {
+                        ObjectElement jsonObjectElement = element.asArrayElement().get(i).asObjectElement();
+                        //  MeasurePointType.put(DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")),
+                        //         DataUtil.isDataElementNull(jsonObjectElement.get("DataName")));
+                        MeasureValueList.add(jsonObjectElement);
+                        MeasureValueMap.put(DataUtil.isDataElementNull(jsonObjectElement.get(DataDictionary.DATA_NAME)),
+                                DataUtil.isDataElementNull(jsonObjectElement.get(DataDictionary.DATA_CODE)));
+                        MeasureValueMap2.put(DataUtil.isDataElementNull(jsonObjectElement.get(DataDictionary.DATA_CODE)),
+                                DataUtil.isDataElementNull(jsonObjectElement.get(DataDictionary.DATA_NAME)));
+                        ObPointValueList.add(DataUtil.isDataElementNull(jsonObjectElement.get(DataDictionary.DATA_NAME)));
                     }
-                });
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initView();
+                            //TestData();
+                            initSearchView();
+                            GetMeasurePointList();
+                        }
+                    });
+                }
             }
             @Override
             public void failure(DatastoreException ex, String resource) {
-                 ToastUtil.showToastLong("获取数据失败，请重启App",context);
+                 ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,context);
             }
         });
         MeasurePointType.put(MeasurePoint.UPKEEP_POINT,getResources().getString(R.string.MPT01));
@@ -542,7 +502,12 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
 
     private void initDropSearchView(
             final EditText condition, final EditText subEditText,
-            final String searchTitle, final String searchName, final int searTag , final int tips, ImageView imageView){
+            final String searchTitle, final String searchName, final int searTag , final int tips, ImageView imageView,final ObjectElement objectElement){
+//优化adapter
+//        if(subEditText.getTag(tips)!=null){
+//            return;
+//        }
+//        subEditText.setTag(tips,123);
         subEditText.setFocusable(true);
         subEditText.setFocusableInTouchMode(true);
         subEditText.setHint(R.string.pleaseInput);
@@ -558,11 +523,15 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-             if(DataUtil.isDataElementNull(measure_point_list.get(searTag).get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
-                 DropSearch(condition,
-                         searchTitle, searchName, searTag, tips);
+             if(DataUtil.isDataElementNull(measure_point_list.get(searTag).get("MaintainWorkItem_ID")).equals("-1")) {
+                ToastUtil.showToastLong(R.string.pleaseInputMeasureValue,context);
              }else {
                  subEditText.setText(MeasureValueMap2.get("MPR03"));
+                 objectElement.set("tag",true);
+                 if(!submitData.contains(objectElement)){
+                     submitData.add(objectElement);
+                 }
+                 adapter.notifyDataSetChanged();
              }
             }
         });
@@ -679,31 +648,35 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                 ToastUtil.showToastLong(s,context);
                 return;
             }
-            if(!DataUtil.isDataElementNull(submitData.get(i).get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)){
-             if(submitData.get(i).get("ReferenceValue")==null||DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).equals("")){
-                String s=getResources().getString(R.string.pleaseInputMeasureDataStandard)+","
-                        +getResources().getString(R.string.id)
-                        +DataUtil.isDataElementNull(submitData.get(i).get("num"));
-                ToastUtil.showToastLong(s,context);
-                return;
-             }
-            if(MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")))==null) {
-                    if (!DataUtil.isNum(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).trim())
-                            || !DataUtil.isFloat(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).trim())) {
-                        String s = getResources().getString(R.string.pleaseInputNum) + ","
+            //TODO
+            if(!DataUtil.isDataElementNull(submitData.get(i).get("MaintainWorkItem_ID")).equals("-1")
+                    && !(DataUtil.isDataElementNull(submitData.get(i).get("TaskSubClass")).equals("T0203")) ) {
+                if (!DataUtil.isDataElementNull(submitData.get(i).get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
+                    if (submitData.get(i).get("ReferenceValue") == null || DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).equals("")) {
+                        String s = getResources().getString(R.string.pleaseInputMeasureDataStandard) + ","
                                 + getResources().getString(R.string.id)
                                 + DataUtil.isDataElementNull(submitData.get(i).get("num"));
                         ToastUtil.showToastLong(s, context);
                         return;
                     }
-                }
-            }else {
-                if(MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")))==null) {
+                    if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))) == null) {
+                        if (!DataUtil.isNum(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).trim())
+                                || !DataUtil.isFloat(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).trim())) {
+                            String s = getResources().getString(R.string.pleaseInputNum) + ","
+                                    + getResources().getString(R.string.id)
+                                    + DataUtil.isDataElementNull(submitData.get(i).get("num"));
+                            ToastUtil.showToastLong(s, context);
+                            return;
+                        }
+                    }
+                } else {
+                    if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue"))) == null) {
                         String s = getResources().getString(R.string.pleaseSelectValue) + ","
                                 + getResources().getString(R.string.id)
                                 + DataUtil.isDataElementNull(submitData.get(i).get("num"));
                         ToastUtil.showToastLong(s, context);
                         return;
+                    }
                 }
             }
             if(MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")))==null) {
@@ -729,12 +702,14 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
             }else {
                 jsonObjectElement.set("ResultValue", DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")));
             }
-           //TODO
-            if(!DataUtil.isDataElementNull(submitData.get(i).get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
-                if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))) != null) {
-                    //jsonObjectElement.set("ReferenceValue", MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))));
-                } else {
-                    jsonObjectElement.set("ReferenceValue", DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")));
+            if(!DataUtil.isDataElementNull(submitData.get(i).get("MaintainWorkItem_ID")).equals("-1")
+                    && !(DataUtil.isDataElementNull(submitData.get(i).get("TaskSubClass")).equals("T0203")) ) {
+                if (!DataUtil.isDataElementNull(submitData.get(i).get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
+                    if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))) != null) {
+                        //jsonObjectElement.set("ReferenceValue", MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))));
+                    } else {
+                        jsonObjectElement.set("ReferenceValue", DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")));
+                    }
                 }
             }
             jsonObjectElement.set("Remarks", DataUtil.isDataElementNull(submitData.get(i).get("Remarks")));
@@ -765,8 +740,8 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                     if (DataUtil.isDataElementNull(data.get(i).asObjectElement().get("EventType")).equals("ET01")) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(
                                 context);
-                        builder.setMessage("\""+DataUtil.isDataElementNull(data.get(i).asObjectElement().get("MaintainWorkItemName"))
-                                +"\""+getResources().getString(R.string.CreateNewTaskTips));
+                        builder.setMessage("["+DataUtil.isDataElementNull(data.get(i).asObjectElement().get("MaintainWorkItemName"))
+                                +"]"+getResources().getString(R.string.CreateNewTaskTips));
                         builder.setPositiveButton(R.string.CreateNewTask, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -781,11 +756,15 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                         builder.show();
                         break;
                     }
+                    if(DataUtil.isDataElementNull(data.get(i).asObjectElement().get("EventType")).equals("ET02")){
+                       Toast.makeText(context,"["+DataUtil.isDataElementNull(data.get(i).asObjectElement().get("MaintainWorkItemName"))
+                                +"]"+getResources().getString(R.string.MeasurePointValueTips),Toast.LENGTH_SHORT).show();
+                    }
                 }
 
 
                 }else {
-                    ToastUtil.showToastLong(R.string.submitFail,context);
+                    ToastUtil.showToastLong(R.string.submit_Fail,context);
                 }
             }
 
@@ -817,7 +796,13 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
             intent.putExtra("FromMeasurePointActivity","FromMeasurePointActivity");
             startActivity(intent);
     }
-    private void SetTextChangeListener(EditText editText,final ObjectElement objectElement, final String key){
+    private void SetTextChangeListener(final EditText editText, final ObjectElement objectElement, final String key){
+/*优化adapter
+        if(editText.getTag(R.id.aaaa)!=null){
+            return;
+        }
+        editText.setTag(R.id.aaaa,123);
+        */
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -830,10 +815,104 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
 
             @Override
             public void afterTextChanged(Editable s) {
+//                if(!s.toString().equals(DataUtil.isDataElementNull(objectElement.get(key)))){
+
+//                }
                 objectElement.set(key,s.toString());
-                //objectElement.set("tag",true);
-                //adapter.notifyDataSetChanged();
             }
         });
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId==EditorInfo.IME_ACTION_DONE){
+                if(checkResultValue(objectElement,editText)){
+                       return true;
+                }
+                objectElement.set(key,editText.getText().toString());
+                objectElement.set("tag",true);
+                if(!submitData.contains(objectElement)){
+                submitData.add(objectElement);
+                 }
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(editText.getWindowToken(),0);
+                adapter.notifyDataSetChanged();
+                }
+                return true;
+            }
+        });
+//        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if(!hasFocus){
+//                    objectElement.set("tag",true);
+//                    if(!submitData.contains(objectElement)){
+//                        submitData.add(objectElement);
+//                    }
+//                    adapter.notifyDataSetChanged();
+//                }
+//            }
+//        });
     }
+    private boolean checkResultValue(ObjectElement objectElement,final EditText editText){
+        if(DataUtil.isDataElementNull(objectElement.get("MaintainWorkItem_ID")).equals("-1")
+                ||(DataUtil.isDataElementNull(objectElement.get("TaskSubClass")).equals("T0203")) ){
+            //TODO  检查用户输入
+            if(!DataUtil.isDataElementNull(objectElement.get("ReferenceValue")).equals("")
+                    &&DataUtil.isNum(DataUtil.isDataElementNull(objectElement.get("ReferenceValue")))){
+            if(!DataUtil.isDataElementNull(objectElement.get("UnitCode")).equals("")
+                 && DataUtil.isDataElementNull(objectElement.get("UnitCode")).equals("MSNU02")
+                     &&DataUtil.isDataElementNull(objectElement.get("MaintainWorkItem_ID")).equals("-1")
+                      &&!DataUtil.isDataElementNull(objectElement.get("UpdateTime")).equals("")){
+                //TODO 根据ReferenceValue以及时间进行限制
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat(getResources().getString(R.string.UpdateTime));
+                    long updateTime = sdf.parse(DataUtil.isDataElementNull(objectElement.get("UpdateTime"))).getTime();
+                    long currentTime = new Date().getTime();
+                    int Time = (int) ((currentTime - updateTime) / hour);
+                    if(objectElement.get("ResultValue").valueAsFloat()<objectElement.get("ReferenceValue").valueAsFloat()
+                            || objectElement.get("ResultValue").valueAsFloat()>(objectElement.get("ReferenceValue").valueAsFloat()+Time)){
+                    String s=getResources().getString(R.string.pleaseInputRightValue)
+                            + DataUtil.isDataElementNull(objectElement.get("ReferenceValue"))
+                            +"-"+String.valueOf(objectElement.get("ReferenceValue").valueAsFloat()+Time);
+                    showdialog(s,editText);
+                    return true;
+                    }
+                }catch (Exception e) {
+                    if(objectElement.get("ResultValue").valueAsFloat()<objectElement.get("ReferenceValue").valueAsFloat()
+                            ) {
+                        String s=getResources().getString(R.string.pleaseInputRightValue)+"大于"+
+                                DataUtil.isDataElementNull(objectElement.get("ReferenceValue"));
+                        showdialog(s, editText);
+                        return true;
+                    }
+                 }
+            }else {
+                //TODO 根据ReferenceValue进行限制
+                if(objectElement.get("ResultValue").valueAsFloat()<objectElement.get("ReferenceValue").valueAsFloat()){
+                    String s=getResources().getString(R.string.pleaseInputRightValue)+"大于"+
+                            DataUtil.isDataElementNull(objectElement.get("ReferenceValue"));
+                    showdialog(s,editText);
+                    return true;
+               }
+            }
+
+            }
+        }
+        return false;
+    }
+private void showdialog(String message,final EditText editText){
+    AlertDialog.Builder builder = new AlertDialog.Builder(
+            context);
+    builder.setMessage(message);
+    builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            editText.setText("");
+            dialog.dismiss();
+        }
+    });
+    builder.show();
+}
+
+
 }

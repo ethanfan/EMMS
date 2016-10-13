@@ -21,7 +21,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
@@ -321,6 +320,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                                 case 3:{
                                     fault_type.getmEditText().setText(searchResult);
                                     FaultType=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(DataDictionary.DATA_CODE));
+                                    break;
                                 }
                             }
                             mDrawer_layout.closeDrawer(Gravity.RIGHT);
@@ -551,19 +551,16 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
 
                 @Override
                 public void onAnimationStart(Animation animation) {
-                    // TODO Auto-generated method stub
 
                 }
 
                 @Override
                 public void onAnimationRepeat(Animation animation) {
-                    // TODO Auto-generated method stub
 
                 }
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    // TODO Auto-generated method stub
                     findViewById(R.id.search_filter).setVisibility(View.VISIBLE);
                     //o.pause();
                     //findViewById(R.id.btn_menu).clearAnimation();
@@ -583,19 +580,16 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
 
                 @Override
                 public void onAnimationStart(Animation animation) {
-                    // TODO Auto-generated method stub
 
                 }
 
                 @Override
                 public void onAnimationRepeat(Animation animation) {
-                    // TODO Auto-generated method stub
 
                 }
 
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    // TODO Auto-generated method stub
                     findViewById(R.id.search_filter).setVisibility(View.GONE);
                     //o.pause();
 

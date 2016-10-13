@@ -110,10 +110,14 @@ public class LinkedOrdersFragment extends BaseFragment{
                     holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
                     holder.tv_end_time= (TextView) convertView.findViewById(R.id.tv_end_time_process);
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
+                    holder.tv_create_time=(TextView)convertView.findViewById(R.id.Task_Equipment);
+                    holder.tv_device_num=(TextView)convertView.findViewById(R.id.Task_Equipment_Num);
                     convertView.setTag(holder);
                 }else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
+                holder.tv_create_time.setText(DataUtil.isDataElementNull(data.get(position).get("EquipmentName")));
+                holder.tv_device_num.setText(DataUtil.isDataElementNull(data.get(position).get("EquipmentAssetsIDList")));
                 holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT)));
                // holder.tv_task_state.setText(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_STATUS)));

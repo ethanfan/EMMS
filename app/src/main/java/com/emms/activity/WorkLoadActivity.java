@@ -64,7 +64,7 @@ public class WorkLoadActivity extends NfcActivity{
         setContentView(R.layout.activity_workload);
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
         TaskComplete=getIntent().getBooleanExtra("TaskComplete",false);
-        TaskClass=DataUtil.isDataElementNull(TaskDetail.get(TaskClass));
+        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         initView();
         getWorkLoadFromServer();
     }
@@ -112,7 +112,7 @@ public class WorkLoadActivity extends NfcActivity{
                 holder.startTime.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("StartTime"))));
                 //holder.endTime.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("FinishTime"))));
                 if(DataUtil.isFloat(DataUtil.isDataElementNull(datas.get(position).get("Coefficient")))){
-                    if(  !(((int)Float.parseFloat(DataUtil.isDataElementNull(datas.get(position).get("Coefficient"))))==0)    ){
+                    if(  !(((int)(Float.parseFloat(DataUtil.isDataElementNull(datas.get(position).get("Coefficient")))*100))==0)    ){
                         holder.workload.setText(String.valueOf( (int)(Float.valueOf(DataUtil.isDataElementNull(datas.get(position).get("Coefficient"))) * 100)));
                         datas.get(position).set("Work",DataUtil.isDataElementNull(datas.get(position).get("Coefficient")));
                     }
@@ -186,7 +186,7 @@ public class WorkLoadActivity extends NfcActivity{
             @Override
             public void onSuccess(final String t) {
                 super.onSuccess(t);
-                if(t!=null){
+                if(t!=null&&!t.equals("null")){
                    runOnUiThread(new Runnable() {
                        @Override
                        public void run() {
@@ -194,6 +194,8 @@ public class WorkLoadActivity extends NfcActivity{
                       SetViewData(jsonObjectElement);
                        }
                    });
+                }else {
+                    ToastUtil.showToastLong(R.string.loading_Fail,context);
                 }
                 dismissCustomDialog();
             }
@@ -201,6 +203,7 @@ public class WorkLoadActivity extends NfcActivity{
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.loadingFail,context);
                 dismissCustomDialog();
             }
         });

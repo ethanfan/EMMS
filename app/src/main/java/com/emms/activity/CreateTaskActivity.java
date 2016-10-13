@@ -506,7 +506,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 //        }
         try {
             String rawQuery = "SELECT * FROM Equipment WHERE EquipmentName=" + "'" + equipmentName
-                    + "'" + " AND Organise_ID_use =" + teamId ;
+                    + "'" + " AND Organise_ID_use =" + teamId +" order by AssetsID asc";
             ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                     EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, null);
             Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -1198,10 +1198,12 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         taskDetail.set("TaskApplicantOrg",teamId);
         taskDetail.set("Factory",SharedPreferenceManager.getFactory(this));
         taskDetail.set("IsExsitTaskEquipment",HasEquipment_map.get(hasEquipment.getText()));
+        //TODO 先注释掉，待确认
         if(getIntent().getStringExtra(Task.TASK_ID)!=null){
             taskDetail.set("FromTask_ID",getIntent().getStringExtra(Task.TASK_ID));
-            taskDetail.set("TaskSubClass",Task.UPKEEP);
+         //   taskDetail.set("TaskSubClass",Task.UPKEEP);
         }
+
         if(FromTask_ID!=null) {
             taskDetail.set("FromTask_ID", FromTask_ID);
         }
@@ -1264,7 +1266,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                             }
                         });
                     } else {
-                        ToastUtil.showToastLong(R.string.FailCreateTask,mContext);
+                        ToastUtil.showToastLong(R.string.FailCreateTask+","+DataUtil.isDataElementNull(data.get("Msg")),mContext);
                     }
                 }
             }
@@ -1518,51 +1520,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         jsonObjectElement.set(DataDictionary.DATA_CODE,"00");
         mSimpleDescriptionList.add(0,jsonObjectElement);
     }
-    private void initWorkloadData(){
-        try {
-            String rawQuery = "select DataCode,DataName from DataDictionary where DataType='WorkTime'  order by Data_ID asc";
-            ListenableFuture<DataElement> elemt = ((AppApplication) ((Activity)mContext).getApplication()).getSqliteStore().performRawQuery(rawQuery,
-                    EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, null);
-            Futures.addCallback(elemt, new FutureCallback<DataElement>() {
-                @Override
-                public void onSuccess(DataElement dataElement) {
-                    mWorkLoadNoList.clear();
-                    if (dataElement != null && dataElement.isArray()
-                            && dataElement.asArrayElement().size() > 0) {
-                        for (int i = 0; i < dataElement.asArrayElement().size(); i++) {
-                            dataElement.asArrayElement().get(i).asObjectElement().set(DataDictionary.DATA_NAME,
-                                    DataUtil.isDataElementNull(dataElement.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_CODE))+"("+
-                                            DataUtil.isDataElementNull(dataElement.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_NAME))+")");
-                            mWorkLoadNoList.add(dataElement.asArrayElement().get(i).asObjectElement());
-                        }
-                    }
-//                    else {
-//                        ((Activity)mContext).runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Toast.makeText(mContext, "目前该设备没有工作编号", Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
 
-                  // }
-                }
-
-                @Override
-                public void onFailure(Throwable throwable) {
-
-                }
-            });
-        }catch (Exception e) {
-            e.printStackTrace();
-//            ((Activity)mContext).runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Toast.makeText(mContext, "目前该设备没有工作编号", Toast.LENGTH_SHORT).show();
-//                }
-//            });
-        }
-
-    }
     private void initHasEquipmentData(){
         JsonObjectElement data1=new JsonObjectElement();
         data1.set(DataDictionary.DATA_NAME,getResources().getString(R.string.haveEquipment));
@@ -1595,7 +1553,10 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         equipmentName = DataUtil.isDataElementNull(TaskEquipment.get(Equipment.EQUIPMENT_NAME));
         device_name.getmEditText().setText(DataUtil.isDataElementNull(TaskEquipment.get(Equipment.EQUIPMENT_NAME)));
         equipmentID = DataUtil.isDataElementNull(TaskEquipment.get(Equipment.EQUIPMENT_ID));
-        task_type.setText(getResources().getString(R.string.maintenance));
+        //TODO  现改为维修，待确认
+        //task_type.setText(getResources().getString(R.string.maintenance));
+        task_type.setText(getResources().getString(R.string.repair));
+
         getOrganiseNameAndEquipmentNameByEquipmentID(equipmentID);
 //        String sql="select * from Equipment where Equipment_ID="+equipmentID;
 //        getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, new StoreCallback() {

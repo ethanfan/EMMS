@@ -7,9 +7,9 @@ android {
     defaultConfig {
         applicationId "com.emms"
         minSdkVersion 14
-        targetSdkVersion 22
-        versionCode 8
-        versionName "1.0.08"
+        targetSdkVersion 20
+        versionCode 16
+        versionName "1.0.16"
     }
     buildTypes {
         release {

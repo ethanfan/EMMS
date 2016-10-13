@@ -24,6 +24,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
+            android:layout_toLeftOf="@+id/measure_point_status"
+            android:singleLine="true"
             android:layout_toRightOf="@id/measure_point_name_tag"
             android:textSize="17sp"/>
         <TextView
@@ -97,8 +99,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/measure_point_standard"
-            android:layout_alignLeft="@+id/measure_point_standard_tag"
+            android:layout_below="@+id/measure_point_standard_tag"
+            android:layout_alignLeft="@+id/measure_point_name_tag"
             android:layout_toLeftOf="@+id/imageLayout"
             android:id="@+id/MeasureValueInputLayout"
             android:orientation="vertical">
@@ -135,6 +137,13 @@
                     drop:hint="@string/pleaseInput"
                     drop:hintColor="@color/hint_color"
                     android:id="@+id/MeasureValueStandard"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="17sp"
+                    android:visibility="gone"
+                    android:id="@+id/MeasureStandard_value"/>
             </LinearLayout>
 
             <LinearLayout
@@ -150,14 +159,14 @@
                     android:layout_gravity="center_vertical"
                     android:id="@+id/MeasureValueSelect_tag"
                     android:text="@string/MeasureValue"/>
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:textColor="@color/text_color"-->
-                    <!--android:textSize="17sp"-->
-                    <!--android:id="@+id/result_text"-->
-                    <!--android:visibility="gone"-->
-                    <!--android:layout_gravity="center_vertical"/>-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:textSize="17sp"
+                    android:id="@+id/result_text"
+                    android:visibility="gone"
+                    android:layout_gravity="center_vertical"/>
                 <com.emms.ui.DropEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -168,32 +177,6 @@
                     drop:hintColor="@color/hint_color"
                     android:visibility="gone"
                     android:id="@+id/MeasureValueSelect"/>
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:background="@drawable/bg_edit_normal"-->
-                    <!--android:padding="8dp"-->
-                    <!--android:textColor="@color/text_color"-->
-                    <!--android:text="正常"/>-->
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:background="@drawable/bg_edit_normal"-->
-                    <!--android:layout_centerHorizontal="true"-->
-                    <!--android:textColor="@color/text_color"-->
-                    <!--android:padding="8dp"-->
-                    <!--android:text="无法检测"/>-->
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:background="@drawable/bg_edit_normal"-->
-                    <!--android:padding="8dp"-->
-                    <!--android:layout_alignParentRight="true"-->
-                    <!--android:textColor="@color/text_color"-->
-                    <!--android:text="异常"/>-->
                     <GridView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -201,20 +184,39 @@
                         android:numColumns="3"
                         android:visibility="gone"
                         />
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/CollectionPoint_layout"
+                    android:visibility="gone"
+                    >
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_edit_normal"
+                        android:textSize="17sp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="5dp"
+                        android:id="@+id/CollectionPoint"
+                        android:imeOptions="actionDone"
+                        android:digits="0123456789."
+                        android:layout_centerVertical="true"
+                        android:hint="@string/pleaseInput"
+                        android:layout_toLeftOf="@+id/ValueUnit"
+                        android:textColorHint="@color/hint_color"
+                        android:textColor="@color/text_color"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ValueUnit"
+                        android:textSize="17sp"
+                        android:paddingLeft="5dp"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:textColor="@color/text_color"
+                        />
                 </RelativeLayout>
-
-                <!--<EditText-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:background="@drawable/bg_edit_normal"-->
-                <!--android:paddingTop="8dp"-->
-                <!--android:paddingBottom="8dp"-->
-                <!--android:paddingLeft="5dp"-->
-                <!--android:layout_marginRight="50dp"-->
-                <!--android:hint="@string/pleaseInput"-->
-                <!--android:id="@+id/MeasureValueInput"-->
-                <!--android:textColorHint="@color/hint_color"-->
-                <!--android:visibility="gone"/>-->
             </LinearLayout>
 
         </LinearLayout>
@@ -250,6 +252,8 @@
                 android:paddingBottom="8dp"
                 android:paddingLeft="5dp"
                 android:hint="@string/pleaseInput"
+                android:imeOptions="actionDone"
+                android:inputType="text"
                 android:id="@+id/StateValueInput"
                 android:textColorHint="@color/hint_color"/>
         </LinearLayout>

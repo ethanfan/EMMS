@@ -87,14 +87,35 @@
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
             android:textSize="17sp"
+            android:singleLine="true"
             android:layout_toRightOf="@id/Task_Equipment_tag"
             android:layout_alignTop="@id/Task_Equipment_tag" />
+        <TextView
+            android:id="@+id/Task_Equipment_num_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/Task_Equipment_tag"
+            android:layout_marginTop="3dp"
+            android:text="@string/task_equipment_num"
+            android:textColor="@color/text_color"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/Task_Equipment_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:textSize="17sp"
+            android:singleLine="true"
+            android:layout_toRightOf="@id/Task_Equipment_num_tag"
+            android:layout_alignTop="@id/Task_Equipment_num_tag" />
         <TextView
             android:id="@+id/Task_description_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_below="@+id/Task_Equipment"
+            android:layout_below="@+id/Task_Equipment_num_tag"
             android:layout_marginTop="3dp"
             android:text="@string/task_descr"
             android:textColor="@color/text_color"
@@ -114,28 +135,47 @@
            android:layout_below="@+id/Task_description"
            android:layout_marginTop="14dp">
 
-       <View
-           android:layout_width="2dp"
-           android:layout_height="wrap_content"
-           android:id="@+id/line"
-           android:background="@color/transparent"
-           android:layout_centerHorizontal="true">
-       </View>
+       <!--<View-->
+           <!--android:layout_width="2dp"-->
+           <!--android:layout_height="wrap_content"-->
+           <!--android:id="@+id/line"-->
+           <!--android:background="@color/transparent"-->
+           <!--android:layout_centerHorizontal="true">-->
+       <!--</View>-->
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="horizontal">
         <Button
-            android:id="@+id/pass"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/yellow"
-            android:layout_toLeftOf="@+id/line"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:padding="3dp"
-            android:text="@string/pass"
-            android:textColor="@color/white"
-            android:textSize="17sp" />
+           android:id="@+id/pass"
+           android:layout_width="0dp"
+            android:layout_weight="1"
+           android:layout_height="wrap_content"
+           android:background="@color/yellow"
+           android:layout_toLeftOf="@+id/line"
+           android:layout_marginLeft="5dp"
+           android:layout_marginRight="5dp"
+           android:padding="3dp"
+           android:text="@string/pass"
+           android:textColor="@color/white"
+           android:textSize="17sp" />
+           <Button
+               android:id="@+id/endTask"
+               android:layout_width="0dp"
+               android:layout_weight="1"
+               android:layout_height="wrap_content"
+               android:background="@color/yellow"
+               android:layout_toLeftOf="@+id/line"
+               android:layout_marginLeft="5dp"
+               android:layout_marginRight="5dp"
+               android:padding="3dp"
+               android:text="@string/EndTask"
+               android:textColor="@color/white"
+               android:textSize="17sp" />
         <Button
             android:id="@+id/Notpass"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/pass"
             android:layout_toRightOf="@+id/line"
@@ -143,9 +183,10 @@
             android:layout_marginRight="5dp"
             android:background="@color/yellow"
             android:padding="3dp"
-            android:text="@string/Notpass"
+            android:text="@string/NotPass"
             android:textColor="@color/white"
             android:textSize="17sp" />
+           </LinearLayout>
        </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

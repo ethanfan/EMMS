@@ -103,6 +103,13 @@ public class PendingOrdersFragment extends BaseFragment{
                     convertView = LayoutInflater.from(mContext).inflate(R.layout.item_fr_pendingorder, parent, false);
                     holder = new TaskViewHolder();
                     holder.tv_creater = (TextView) convertView.findViewById(R.id.tv_creater_order);
+                    if(TaskSubClass!=null){
+                        convertView.findViewById(R.id.textView6).setVisibility(View.GONE);
+                        holder.tv_creater.setVisibility(View.GONE);
+                    }else {
+                        convertView.findViewById(R.id.textView6).setVisibility(View.VISIBLE);
+                        holder.tv_creater.setVisibility(View.VISIBLE);
+                    }
                     holder.tv_group = (TextView) convertView.findViewById(R.id.group_type);
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.Task_description);
                     holder.tv_task_state = (TextView) convertView.findViewById(R.id.Task_status);
@@ -290,9 +297,7 @@ public class PendingOrdersFragment extends BaseFragment{
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                         if(jsonObjectElement.get("Success").valueAsBoolean()){
                             //成功，通知用户接单成功
-                            Toast toast=Toast.makeText(mContext,"接单成功",Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER,0,0);
-                            toast.show();
+                            ToastUtil.showToastLong(R.string.SuccessReceiveTask,mContext);
                         }else{
                             //失败，通知用户接单失败，单已经被接
                             Toast toast=Toast.makeText(mContext,DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),Toast.LENGTH_LONG);

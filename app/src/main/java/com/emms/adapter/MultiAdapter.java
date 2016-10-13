@@ -184,7 +184,7 @@ public class MultiAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
-                    if (!DataUtil.isDataElementNull(Operator.get("Status")).equals("1")) {
+                    if (!DataUtil.isDataElementNull(Operator.get("Status")).equals("1")||isFromTaskInfoEnteringActivity) {
                         if (mChecked.get(position))//当前已选中，点击后取消选中
                         {
                             holder.select.setVisibility(View.INVISIBLE);
@@ -226,4 +226,10 @@ public class MultiAdapter extends BaseAdapter {
         ImageView selectNormal;
         LinearLayout multi_item;
     }
+
+    public void setFromTaskInfoEnteringActivity(boolean fromTaskInfoEnteringActivity) {
+        isFromTaskInfoEnteringActivity = fromTaskInfoEnteringActivity;
+    }
+
+    private boolean isFromTaskInfoEnteringActivity=false;
 }

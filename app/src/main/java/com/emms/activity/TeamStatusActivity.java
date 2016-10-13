@@ -162,7 +162,7 @@ public class TeamStatusActivity extends NfcActivity implements View.OnClickListe
     public void getGroupData() {
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
-        params.put(Task.OPERATOR_ID,String.valueOf(getLoginInfo().getId()));
+        params.put(Task.TASK_ID,0);
         HttpUtils.get(this, "BaseOrganiseTeam", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {

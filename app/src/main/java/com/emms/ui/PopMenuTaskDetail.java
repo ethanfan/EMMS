@@ -56,6 +56,12 @@ public abstract class PopMenuTaskDetail {
 	}
 
 	private boolean hasEquipment=false;
+
+	public void setEquipmentNum(int equipmentNum) {
+		EquipmentNum = equipmentNum;
+	}
+
+	private int EquipmentNum=0;
 	// private OnItemClickListener listener;
 	public PopMenuTaskDetail(Context context, int width,String taskDetail,String taskClass) {
 		// TODO Auto-generated constructor stub
@@ -251,6 +257,7 @@ public abstract class PopMenuTaskDetail {
 		}
 		Intent intent=new Intent(context, WorkLoadActivity.class);
 		//intent.putExtra(Task.TASK_ID,TaskId);
+		intent.putExtra(Task.TASK_CLASS,TaskClass);
 		intent.putExtra("TaskDetail",TaskDetail.toString());
 		context.startActivity(intent);
 	}
@@ -314,6 +321,10 @@ public abstract class PopMenuTaskDetail {
 	private void TaskComplete(){
 		if(!is_Main_person_in_charge_Operator_id){
 			ToastUtil.showToastLong(R.string.OnlyMainPersonCanSubmitTaskComplete,context);
+			return;
+		}
+		if(hasEquipment&&EquipmentNum<=0){
+			ToastUtil.showToastLong(R.string.TaskHasNoEquipment,context);
 			return;
 		}
 		if(!taskComplete){

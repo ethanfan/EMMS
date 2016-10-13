@@ -3,6 +3,7 @@
     xmlns:drop="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:id="@+id/search_page"
+    android:background="@color/white"
     android:layout_height="match_parent">
     <FrameLayout
         android:layout_width="match_parent"
@@ -174,7 +175,16 @@
         android:visibility="gone"
         android:id="@+id/lineChart">
     </lecho.lib.hellocharts.view.LineChartView>
-
+    <WebView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_below="@+id/measure_point_range"
+        android:background="@color/white"
+        android:id="@+id/chart"
+        />
         <!--<Button-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="50dp"-->

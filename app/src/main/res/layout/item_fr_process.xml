@@ -166,7 +166,47 @@
             android:layout_toRightOf="@+id/id_end_time_description"
             android:textSize="17sp"/>
 
+        <TextView
+            android:id="@+id/Task_Equipment_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/id_end_time_description"
+            android:layout_marginTop="3dp"
+            android:text="@string/device_name"
+            android:textColor="@color/text_color"
+            android:textSize="17sp" />
 
+        <TextView
+            android:id="@+id/Task_Equipment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:textSize="17sp"
+            android:singleLine="true"
+            android:layout_marginRight="40dp"
+            android:layout_toRightOf="@id/Task_Equipment_tag"
+            android:layout_alignTop="@id/Task_Equipment_tag" />
+        <TextView
+            android:id="@+id/Task_Equipment_Num_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/Task_Equipment"
+            android:layout_marginTop="3dp"
+            android:text="@string/device_num"
+            android:textColor="@color/text_color"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/Task_Equipment_Num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:textSize="17sp"
+            android:singleLine="true"
+            android:layout_toRightOf="@id/Task_Equipment_Num_tag"
+            android:layout_alignTop="@id/Task_Equipment_Num_tag" />
         <TextView
             android:id="@+id/id_task_description"
             android:layout_width="wrap_content"
@@ -174,7 +214,7 @@
             android:layout_marginTop="5dp"
             android:text="@string/task_descripbe"
             android:textColor="@color/text_color"
-            android:layout_below="@+id/id_end_time_description"
+            android:layout_below="@+id/Task_Equipment_Num"
             android:layout_alignParentLeft="true"
             android:textSize="17sp"/>
 

@@ -65,9 +65,14 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
         if(isExChangeOrder){
             ((TextView)findViewById(R.id.tv_title)).setText(R.string.exchangeOrder);
         }
+
         taskId=getIntent().getStringExtra(Task.TASK_ID) ;
         getTaskOperatorListFromServer();
         adapter=new MultiAdapter(InvitorActivity.this,listItems,true);
+        if(getIntent().getStringExtra("Tag")!=null){
+            ((TextView)findViewById(R.id.tv_title)).setText(R.string.AddTaskPeople);
+            adapter.setFromTaskInfoEnteringActivity(true);
+        }
         mListView = (PullToRefreshListView) findViewById(R.id.id_wait_list);
         mListView.setAdapter(adapter);
         mGroupListView = (ListView) findViewById(R.id.group_list);
@@ -198,7 +203,12 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
     public void getGroupData() {
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
-        params.put(Task.OPERATOR_ID,String.valueOf(getLoginInfo().getId()));
+        //params.put(Task.OPERATOR_ID,String.valueOf(getLoginInfo().getId()));
+        if(taskId!=null&&!taskId.equals("")) {
+            params.put("task_id", taskId);
+        }else {
+            params.put("task_id", 0);
+        }
         HttpUtils.get(this, "BaseOrganiseTeam", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -309,18 +319,28 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                 if(t!=null){
                     JsonObjectElement json=new JsonObjectElement(t);
                     if(json.get(Data.SUCCESS)!=null&&json.get(Data.SUCCESS).valueAsBoolean()){
-                if(isExChangeOrder){
-                    //setResult(1);
-                    startActivity(new Intent(context,CusActivity.class));
-                    Toast.makeText(InvitorActivity.this,R.string.exchangeOrderSuccess,Toast.LENGTH_LONG).show();
-                }else{
-                Toast.makeText(InvitorActivity.this,R.string.inviteSuccess,Toast.LENGTH_LONG).show();}
+                 if(getIntent().getStringExtra("Tag")==null) {
+                     if (isExChangeOrder) {
+                         //setResult(1);
+                         startActivity(new Intent(context, CusActivity.class));
+                         Toast.makeText(InvitorActivity.this, R.string.exchangeOrderSuccess, Toast.LENGTH_LONG).show();
+                     } else {
+                         Toast.makeText(InvitorActivity.this, R.string.inviteSuccess, Toast.LENGTH_LONG).show();
+                     }
+                 }else {
+                     Toast.makeText(InvitorActivity.this, R.string.SuccessAddTaskPeople, Toast.LENGTH_LONG).show();
+                     setResult(3);
+                 }
                 finish();
             }else {
+                        if(getIntent().getStringExtra("Tag")==null) {
                         if(isExChangeOrder){
                             ToastUtil.showToastLong(R.string.exchangeOrderFail,context);
                         }else {
                             ToastUtil.showToastLong(R.string.inviteFail,context);
+                        }
+                        }else {
+                            ToastUtil.showToastLong(R.string.FailAddTaskPeople,context);
                         }
                     }
                 }
@@ -329,6 +349,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastLong(R.string.submitFail,context);
                 dismissCustomDialog();
             }
         });

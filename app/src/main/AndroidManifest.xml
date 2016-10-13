@@ -54,7 +54,7 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
     </activity>
-        <!--<activity android:name=".activity.MeasurePointActivity"-->
+        <!--<activity android:name=".activity.TaskInfoEnteringActivity"-->
             <!--android:screenOrientation="portrait">-->
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN" />-->
@@ -69,6 +69,10 @@
             android:screenOrientation="portrait">
         </activity>
         <activity android:name=".activity.CusActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".activity.TaskInfoEnteringActivity"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait">
         </activity>
         <activity android:name=".activity.EquipmentFaultSummaryActivity"

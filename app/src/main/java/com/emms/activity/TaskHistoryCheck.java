@@ -126,6 +126,8 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
         task_class=(DropEditText)findViewById(R.id.task_class) ;
         task_status=(DropEditText)findViewById(R.id.task_status) ;
         time=(DropEditText)findViewById(R.id.time) ;
+        task_class.getmEditText().setText(R.string.repair);
+        time.getmEditText().setText(R.string.OneDay);
         findViewById(R.id.filter).setOnClickListener(this);
         findViewById(R.id.search_button).setOnClickListener(this);
     }
@@ -456,11 +458,11 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case Constants.REQUEST_CODE_TASKHISTORY:{
-                if(resultCode==0){
+                if(resultCode==3){
                     ((PendingCommandFragment)mFragments.get(0)).doRefresh();
                 }else if(resultCode==1) {
                     ((AllTaskHistoryFragment)mFragments.get(1)).doRefresh();
-                }else {
+                }else if(resultCode==2){
                     ((FliterTaskHistoryFragment)mFragments.get(2)).doRefresh();
                 }
                 break;

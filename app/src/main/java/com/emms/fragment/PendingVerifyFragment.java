@@ -388,6 +388,7 @@ public class PendingVerifyFragment extends BaseFragment {
                     if(json.get(Data.SUCCESS).valueAsBoolean()){
                         ToastUtil.showToastLong(R.string.SuccessVerify,mContext);
                         datas.removeAll(submitData);
+                        submitData.clear();
                         taskAdapter.notifyDataSetChanged();
                         taskNumInteface.refreshProcessingFragment();
                     }else {

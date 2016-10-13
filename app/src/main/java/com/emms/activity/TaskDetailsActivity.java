@@ -361,7 +361,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         }
                         if (tag) {
                             ChangeEquipmentDialog dialog = new ChangeEquipmentDialog(mContext, R.layout.dialog_equipment_status, R.style.MyDialog,
-                                    RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()), Main_person_in_charge_Operator_id), true, true);
+                                    RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()), Main_person_in_charge_Operator_id), true, true,TaskSubClass!=null);
                             dialog.setTaskOperatorID(TaskOperator_ID);
                             dialog.setOnSubmitInterface(new dialogOnSubmitInterface() {
                                 @Override
@@ -860,7 +860,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     Euqipment_ID_STATUS_map.clear();
                     TaskEquipment_OperatorID_Status.clear();
                     popMenuTaskDetail.setTaskComplete(false);
-
+                    popMenuTaskDetail.setEquipmentNum(jsonArrayElement.size());
                     /////
                         if (jsonArrayElement.size() > 0) {
 
@@ -1027,7 +1027,13 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     //进行判断，若任务未有该设备号，添加
                   //  if(!TaskDeviceIdList.contains(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))){
                     if(!TaskDeviceIdList.contains(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))){
-                    postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),"0",0);}
+                   runOnUiThread(new Runnable() {
+                       @Override
+                       public void run() {
+                           postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),"0",0);
+                       }
+                   });
+                    }
                     else{
                         runOnUiThread(new Runnable() {
                             @Override
@@ -1056,7 +1062,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                 }
                               //  if(changeEquipmentDialog==null) {
                                 ChangeEquipmentDialog changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.dialog_equipment_status, R.style.MyDialog,
-                                            RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id),isOneOperator,false);
+                                            RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id),isOneOperator,false,TaskSubClass!=null);
                                     changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
                                             Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
                                    // changeEquipmentDialog.setMainPersonInChargeOperatorId(Main_person_in_charge_Operator_id.equals(String.valueOf(getLoginInfo().getId())));
@@ -1127,7 +1133,10 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     }
 
     private void postTaskEquipment(String equipmentID, String TaskEquipment_ID, int status) {
-
+     if(TaskSubClass!=null){
+        ToastUtil.showToastLong(R.string.can_not_add_equipment,mContext);
+        return;
+     }
         HttpParams params = new HttpParams();
 
         JsonObjectElement taskEquepment = new JsonObjectElement();
@@ -1354,7 +1363,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 super.onSuccess(t);
                 if(t!=null){
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement.get("PageData").asArrayElement().size()>0){
+                    if(jsonObjectElement.get("PageData")!=null
+                            &&jsonObjectElement.get("PageData").asArrayElement().size()>0){
                         final ObjectElement faultData=jsonObjectElement.get("PageData").asArrayElement().get(0).asObjectElement();
                         runOnUiThread(new Runnable() {
                             @Override
@@ -1402,7 +1412,10 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             }else {
                 findViewById(R.id.workload).setVisibility(View.GONE);
             }
-            initTaskCommand();
+            if(TaskClass!=null&&!TaskClass.equals(Task.MAINTAIN_TASK)) {
+                findViewById(R.id.Command_layout).setVisibility(View.VISIBLE);
+                initTaskCommand();
+            }
     }
     }
     private TaskAdapter WorkloadAdapter;
@@ -1508,7 +1521,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         //条件1：可评价任务；条件2未评价任务，条件3报修人或者维修工班组长，条件4属于报修人班组
         if( getIntent().getStringExtra("IsEvaluated")!=null
                 &&getIntent().getStringExtra("IsEvaluated").equals("0")
-                &&TaskStatus==2
+                &&TaskStatus>=2
                 && (Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))==RootUtil.ROOT_WARRANTY
               ||Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))<5    )
                 //&&OrganiseList.contains(getLoginInfo().getOrganiseID())
@@ -1660,7 +1673,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     // TaskComplete(iccardID);
                     if(getIntent().getStringExtra("FromFragment")!=null){
                         if(getIntent().getStringExtra("FromFragment").equals("0")){
-                            setResult(0);
+                            setResult(3);
                         }else  if(getIntent().getStringExtra("FromFragment").equals("1")){
                             setResult(1);
                         }else {

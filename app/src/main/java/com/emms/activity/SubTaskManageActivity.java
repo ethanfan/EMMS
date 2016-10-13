@@ -168,8 +168,8 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
                 } else {
                     holder = (SubTaskAdapter.TaskViewHolder) convertView.getTag();
                 }
-                holder.work_num.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkCode")));
-                holder.approve_work_hours.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkTime")));
+                holder.work_num.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkTimeCode")));
+                holder.approve_work_hours.setText(DataUtil.isDataElementNull(datas.get(position).get("PlanManhour")));
                 holder.work_name.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkName")));
                 //holder.status.setText(DataUtil.isDataElementNull(datas.get(position).get("Status")));
                 holder.work_description.setText(DataUtil.isDataElementNull(datas.get(position).get("DataDescr")));

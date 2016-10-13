@@ -24,6 +24,10 @@ import cn.jpush.android.api.JPushInterface;
  */
 public abstract class NfcActivity extends BaseActivity implements NfcInterface{
 
+    public NfcAdapter getmAdapter() {
+        return mAdapter;
+    }
+
     protected NfcAdapter mAdapter;
     protected PendingIntent mPendingIntent;
     protected NdefMessage mNdefPushMessage;
@@ -32,7 +36,7 @@ public abstract class NfcActivity extends BaseActivity implements NfcInterface{
         super.onResume();
         if (mAdapter != null) {
             if (!mAdapter.isEnabled()) {
-                showWirelessSettingsDialog();
+                //showWirelessSettingsDialog();
             }
             mAdapter.enableForegroundDispatch(this, mPendingIntent, null, null);
             mAdapter.enableForegroundNdefPush(this, mNdefPushMessage);
@@ -77,16 +81,16 @@ public abstract class NfcActivity extends BaseActivity implements NfcInterface{
         return new NdefRecord(NdefRecord.TNF_WELL_KNOWN, NdefRecord.RTD_TEXT, new byte[0], data);
     }
 
-    private void showWirelessSettingsDialog() {
+    protected void showWirelessSettingsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.nfc_disabled);
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialogInterface, int i) {
                 Intent intent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
                 startActivity(intent);
             }
         });
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialogInterface, int i) {
                 finish();
             }

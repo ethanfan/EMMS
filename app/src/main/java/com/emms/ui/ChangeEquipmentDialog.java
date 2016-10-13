@@ -97,7 +97,8 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         Equipment_OperatorID_Status = equipment_OperatorID_Status;
     }*/
    // private HashMap<String,Integer> Equipment_OperatorID_Status=new HashMap<String, Integer>();
-    public ChangeEquipmentDialog(Context context, int layout, int style,boolean tag,boolean tag2,boolean tag3) {
+    private boolean isMaintainTask=false;
+    public ChangeEquipmentDialog(Context context, int layout, int style,boolean tag,boolean tag2,boolean tag3,boolean tag4) {
         super(context, style);
         this.context = context;
         setContentView(layout);
@@ -105,6 +106,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         is_Main_person_in_charge_operator_id=tag;
         isOneOperator=tag2;
         isNoEuqipment=tag3;
+        isMaintainTask=tag4;
         //if(Equipment_OperatorID_Status.get())
       //  Collections.addAll(status,context.getResources().getStringArray(R.array.equip_status));
         initMap();
@@ -238,9 +240,12 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                         ToastUtil.showToastLong(R.string.SuccessChangeStatus,context);
                         dismiss();
                             onSubmitInterface.onsubmit();}else{
-                            ToastUtil.showToastLong(R.string.FailChangeEquipmentStatusCauseByOperator,context);
+                            if(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")).equals("")){
+                                ToastUtil.showToastLong(R.string.FailChangeEquipmentStatusCauseByOperator,context);
+                            }else {
+                                ToastUtil.showToastLong(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),context);
+                            }
                         }
-
                 }
                 dismissCustomDialog();
             }
@@ -391,7 +396,11 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                         onSubmitInterface.onsubmit();
                         dismiss();
                     }else {
-                        ToastUtil.showToastLong(R.string.CanNotChangeStatus,context);
+                        if(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")).equals("")){
+                            ToastUtil.showToastLong(R.string.CanNotChangeStatus,context);
+                        }else {
+                            ToastUtil.showToastLong(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),context);
+                        }
                     }
                 }
                 dismissCustomDialog();
@@ -436,12 +445,12 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         showList.addAll(Equipment_Status_List);
         }
         showList.addAll(Equipment_Operator_Status_List);
-        if(isOneOperator&&!isNoEuqipment){//单人操作
+        if(isOneOperator&&!isNoEuqipment&&!isMaintainTask){//单人操作
         JsonObjectElement json=new JsonObjectElement();
         json.set("Status",context.getResources().getString(R.string.deleteEquipment));
         json.set("Type",DELETE);
         showList.add(0,json);
-        }else if(is_Main_person_in_charge_operator_id&&!isOneOperator&&!isNoEuqipment){//多人操作，主负责人控制
+        }else if(is_Main_person_in_charge_operator_id&&!isOneOperator&&!isNoEuqipment&&!isMaintainTask){//多人操作，主负责人控制
             JsonObjectElement json=new JsonObjectElement();
             json.set("Status",context.getResources().getString(R.string.deleteEquipment));
             json.set("Type",DELETE);
@@ -560,7 +569,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     }
 
     private int TaskOperatorID=0;
-   private void ChangeTaskOperatorStatus(int Status){
+    private void ChangeTaskOperatorStatus(int Status){
        showCustomDialog(R.string.submitData);
        HttpParams params=new HttpParams();
        JsonObjectElement submitData=new JsonObjectElement();
@@ -577,7 +586,11 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                        onSubmitInterface.onsubmit();
                        dismiss();
                    }else {
+                       if(DataUtil.isDataElementNull(data.get("Msg")).equals("")){
                        ToastUtil.showToastLong(R.string.CanNotChangeStatus,context);
+                       }else {
+                           ToastUtil.showToastLong(DataUtil.isDataElementNull(data.get("Msg")),context);
+                       }
                    }
                }
                dismissCustomDialog();

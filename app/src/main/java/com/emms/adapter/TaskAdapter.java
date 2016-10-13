@@ -76,6 +76,7 @@ public abstract class TaskAdapter extends BaseAdapter{
         public TextView warranty_person;
         public Button acceptTaskButton;
         public Button rejectTaskButton;
+        public Button EndTaskButton;
         public ListView listView;
         public ImageView image;
         public EditText editText;

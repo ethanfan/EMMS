@@ -90,6 +90,9 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
        if(!getIntent().getBooleanExtra("FromCusActivity",false)) {
            getNewDataFromServer();
        }
+        if (!mAdapter.isEnabled()) {
+            showWirelessSettingsDialog();
+        }
     }
 
     private void initView() {
@@ -519,17 +522,25 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(this);
         builder.statusBarDrawable = R.drawable.ic_emms;
         builder.notificationFlags = Notification.FLAG_AUTO_CANCEL;  //设置为点击后自动消失
-        builder.notificationDefaults = Notification.DEFAULT_SOUND;
+        builder.notificationDefaults = Notification.DEFAULT_ALL;
         //设置为铃声（ Notification.DEFAULT_SOUND）或者震动（ Notification.DEFAULT_VIBRATE）
         JPushInterface.setDefaultPushNotificationBuilder(builder);
         JPushInterface.setPushNotificationBuilder(4, builder);
     }
+
     private void setStyleCustom(){
         CustomPushNotificationBuilder builder = new CustomPushNotificationBuilder(this,R.layout.customer_notitfication_layout,R.id.icon, R.id.title, R.id.text);
         builder.layoutIconDrawable = R.drawable.ic_emms;
+        builder.layoutIconId=R.drawable.ic_emms;
+        builder.statusBarDrawable=R.drawable.ic_emms;
+//        builder.layoutIconDrawable = R.mipmap.emmsa;
+//        builder.layoutIconId=R.mipmap.emmsa;
+//        builder.statusBarDrawable=R.mipmap.emmsa;
         builder.notificationFlags = Notification.FLAG_AUTO_CANCEL;  //设置为点击后自动消失
-        builder.notificationDefaults = Notification.DEFAULT_VIBRATE;
+        //builder.notificationDefaults = Notification.DEFAULT_VIBRATE;
+        builder.notificationDefaults = Notification.DEFAULT_ALL;
         builder.developerArg0 = "developerArg2";
+        JPushInterface.setDefaultPushNotificationBuilder(builder);
         JPushInterface.setPushNotificationBuilder(2, builder);
     }
 
@@ -694,12 +705,13 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     for (int k = 0; k < or.length; k++) {
         tagSet.add(or[k]);
     }
-    tagSet.add(new JSONObject(data).get(Operator.OPERATOR_ID).toString());
+    //tagSet.add(new JSONObject(data).get(Operator.OPERATOR_ID).toString());
     JPushInterface.init(mContext);
     JPushInterface.resumePush(mContext);
+    //setStyleBasic();
     setStyleCustom();
     pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, tagSet));
-    pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "1001"));
+    pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, new JSONObject(data).get(Operator.OPERATOR_ID).toString()));
           }catch (Exception e){
           }
     }

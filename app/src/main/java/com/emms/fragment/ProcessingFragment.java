@@ -108,17 +108,30 @@ public class ProcessingFragment extends BaseFragment {
                     //显示6个内容，组别，报修人，状态，保修时间,开始时间，任务描述
                     convertView.findViewById(R.id.id_end_time_description).setVisibility(View.GONE);
                     convertView.findViewById(R.id.tv_end_time_process).setVisibility(View.GONE);
+
                     holder.tv_group = (TextView) convertView.findViewById(R.id.group);
                     holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);
+                    if(TaskSubClass!=null){
+                        convertView.findViewById(R.id.Warranty_person_tag).setVisibility(View.GONE);
+                        holder.warranty_person.setVisibility(View.GONE);
+                    }else {
+                        convertView.findViewById(R.id.Warranty_person_tag).setVisibility(View.VISIBLE);
+                        holder.warranty_person.setVisibility(View.VISIBLE);
+                    }
                     //holder.tv_task_state = (TextView) convertView.findViewById(R.id.tv_task_state);
                     holder.tv_repair_time=(TextView)convertView.findViewById(R.id.tv_Warranty_time_process);
                     holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
+                    holder.tv_create_time=(TextView)convertView.findViewById(R.id.Task_Equipment);
+                    holder.tv_device_num=(TextView)convertView.findViewById(R.id.Task_Equipment_Num);
                     convertView.setTag(holder);
                 } else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
                 //待修改
+
+                holder.tv_create_time.setText(DataUtil.isDataElementNull(datas.get(position).get("EquipmentName")));
+                holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get("EquipmentAssetsIDList")));
                 holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
                 //    holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));

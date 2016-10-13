@@ -39,7 +39,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
     private GridView module_list;
     private Context context=this;
     private ArrayList<ObjectElement> moduleList=new ArrayList<>();
-    private static HashMap<String,Integer> TaskClass_moduleID_map=new HashMap<String, Integer>();{
+    private static HashMap<String,Integer> TaskClass_moduleID_map=new HashMap<>();{
         TaskClass_moduleID_map.put(Task.REPAIR_TASK,3);
         TaskClass_moduleID_map.put(Task.MAINTAIN_TASK,2);
         TaskClass_moduleID_map.put(Task.MOVE_CAR_TASK,4);
@@ -306,7 +306,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                             if(json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1")!=null&&
                                     json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0")!=null) {
                                 ObjectElement jsonObjectElement=json.get("PageData").asArrayElement().get(i).asObjectElement();
-                                String taskNumToShow="0";
+                                String taskNumToShow;
                                 if(DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")).equals("C1")
                                         ||DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")).equals("C2")
                                         ||DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")).equals("C3")){
@@ -381,6 +381,14 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         SharedPreferenceManager.setUserRoleID(CusActivity.this,null);
         Intent intent=new Intent(CusActivity.this, LoginActivity.class);
         intent.putExtra("FromCusActivity",true);
+        startActivity(intent);
+    }
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
         startActivity(intent);
     }
 }

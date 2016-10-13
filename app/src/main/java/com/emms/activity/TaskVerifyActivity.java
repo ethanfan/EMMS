@@ -22,6 +22,7 @@ import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.Task;
+import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -68,17 +69,20 @@ public class TaskVerifyActivity extends NfcActivity {
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.Task_description);
                     holder.tv_create_time = (TextView) convertView.findViewById(R.id.tv_create_time_order);
                     holder.tv_device_name = (TextView) convertView.findViewById(R.id.Task_Equipment);
+                    holder.tv_device_num=(TextView)convertView.findViewById(R.id.Task_Equipment_num);
                     holder.acceptTaskButton=(Button)convertView.findViewById(R.id.pass);
                     holder.rejectTaskButton=(Button)convertView.findViewById(R.id.Notpass) ;
+                    holder.EndTaskButton=(Button)convertView.findViewById(R.id.endTask) ;
                     convertView.setTag(holder);
                 }else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
+                holder.tv_device_num.setText(DataUtil.isDataElementNull(VerifyTaskList.get(position).get("EquipmentAssetsIDList")));
                 holder.tv_creater.setText(DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.APPLICANT)));
                 holder.tv_group.setText(DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.ORGANISE_NAME)));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.TASK_DESCRIPTION)));
                 holder.tv_create_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.APPLICANT_TIME))));
-                holder.tv_device_name.setText(DataUtil.isDataElementNull(VerifyTaskList.get(position).get("TaskEquipmentList")));
+                holder.tv_device_name.setText(DataUtil.isDataElementNull(VerifyTaskList.get(position).get("EquipmentName")));
                 holder.acceptTaskButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -90,6 +94,14 @@ public class TaskVerifyActivity extends NfcActivity {
                     @Override
                     public void onClick(View v) {
                         TaskPass(position,2);
+                    }
+                });
+                holder.EndTaskButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent=new Intent(mContext,TaskInfoEnteringActivity.class);
+                        intent.putExtra("TaskDetail",VerifyTaskList.get(position).toString());
+                        startActivityForResult(intent, Constants.REQUEST_CODE_END_TASK);
                     }
                 });
                 return convertView;
@@ -140,7 +152,7 @@ public class TaskVerifyActivity extends NfcActivity {
         jsonObjectElement.set(Task.TASK_ID,DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.TASK_ID)));
         jsonObjectElement.set("CheckStatus",status);
         params.putJsonParams(jsonObjectElement.toJson());
-        HttpUtils.post(this, "Task", params, new HttpCallback() {
+        HttpUtils.post(this, "Task/TaskCheck", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -190,25 +202,25 @@ public class TaskVerifyActivity extends NfcActivity {
                 super.onSuccess(t);
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                    RecCount = jsonObjectElement.get("RecCount").valueAsInt();
+                    if (pageIndex == 1) {
+                        VerifyTaskList.clear();
+                    }
                     if (jsonObjectElement.get("PageData") != null && jsonObjectElement.get("PageData").asArrayElement().size() > 0) {
-                        RecCount = jsonObjectElement.get("RecCount").valueAsInt();
-                        if (pageIndex == 1) {
-                            VerifyTaskList.clear();
-                        }
                         pageIndex++;
                         for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
                             VerifyTaskList.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.setDatas(VerifyTaskList);
-                                adapter.notifyDataSetChanged();
-                            }
-                        });
                     }else {
                         ToastUtil.showToastLong(R.string.noData,mContext);
                     }
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.setDatas(VerifyTaskList);
+                            adapter.notifyDataSetChanged();
+                        }
+                    });
                 }
                 dismissCustomDialog();
             }
@@ -219,6 +231,18 @@ public class TaskVerifyActivity extends NfcActivity {
                 dismissCustomDialog();
             }
         });
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case Constants.REQUEST_CODE_END_TASK:{
+                if(resultCode==1){
+                    pageIndex=1;
+                    getVerfyTaskListFromServer();
+                }
+            }
+        }
     }
 }

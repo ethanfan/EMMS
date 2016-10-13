@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
@@ -17,6 +20,7 @@ import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.MeasurePoint;
 import com.emms.ui.DropEditText;
@@ -49,22 +53,11 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
     private HashMap<String,String> MeasurePointType=new HashMap<>();
     private Context context=this;
     private DropEditText MeasurePointValue;
+    private WebView webView;
 
-//    private ResultListAdapter mResultAdapter;
-//    private ListView mResultListView;
-//    private String TaskId;
-//    private TextView menuSearchTitle;
-//    private EditText searchBox;
-//    private ImageView clearBtn;
-//    private ViewGroup emptyView;
-//    private boolean isSearchview ;
-//    private int  searchtag =0;
-//    private CustomDrawerLayout mDrawer_layout;
-//    private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
     private ArrayList<ObjectElement> MeasureValueList=new ArrayList<>();
     private HashMap<String,String> MeasureValueMap=new HashMap<>();
 
-    private String SubmitData;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +65,22 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
         initData();
         initView();
         getMeasurePointHistory();
-        //initSearchView();
+        webView = (WebView)findViewById(R.id.chart);
+        webView.getSettings().setJavaScriptEnabled(true);//支持js
+        webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+        webView.loadUrl("file:///android_asset/echart.html");
+        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return true;
+            }
+            public void onPageFinished(WebView view, String url){
+               // view.loadUrl("javascript:showContent([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],[5, 20, 36, 10, 10,5, 20, 36, 10, 10,5, 20, 36, 10, 10,5, 20, 36, 10, 10])");
+            }
+        });
+    //initSearchView();
     }
     private JsonObjectElement measure_point_detail;
     private void initView(){
@@ -85,10 +93,12 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
         ((TextView)findViewById(R.id.measure_point_unit)).setText(DataUtil.isDataElementNull(measure_point_detail.get("Unit")));
         //((TextView)findViewById(R.id.measure_point_range)).setText("10-20");
         if(measure_point_detail.get("Value")!=null&&measure_point_detail.get("Value").isArray()) {
-           ObjectElement value=measure_point_detail.get("Value").asArrayElement().get(0).asObjectElement();
-            String s=DataUtil.isDataElementNull(value.get("MinValue"))+"-"
-                    +DataUtil.isDataElementNull(value.get("MaxValue"));
-            ((TextView)findViewById(R.id.measure_point_range)).setText(s);
+            if(measure_point_detail.get("Value").asArrayElement().size()>0) {
+                ObjectElement value = measure_point_detail.get("Value").asArrayElement().get(0).asObjectElement();
+                String s = DataUtil.isDataElementNull(value.get("MinValue")) + "-"
+                        + DataUtil.isDataElementNull(value.get("MaxValue"));
+                ((TextView) findViewById(R.id.measure_point_range)).setText(s);
+            }
         }
 //        if(DataUtil.isDataElementNull(measure_point_detail.get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)){
 //            findViewById(R.id.measure_point_result).setVisibility(View.VISIBLE);
@@ -143,7 +153,7 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
 
             @Override
             public void failure(DatastoreException ex, String resource) {
-                ToastUtil.showToastLong("获取数据失败，请重启App",context);
+                ToastUtil.showToastLong(R.string.FailToGetData,context);
             }
         });
 
@@ -230,7 +240,7 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
             lineChart.setMaxZoom((float) 1);//最大放大比例
             lineChart.setContainerScrollEnabled(false, ContainerScrollType.HORIZONTAL);
             lineChart.setLineChartData(data);
-            lineChart.setVisibility(View.VISIBLE);
+            //lineChart.setVisibility(View.VISIBLE);
             /**注：下面的7，10只是代表一个数字去类比而已
              * 当时是为了解决X轴固定数据个数。见（http://forum.xda-developers.com/tools/programming/library-hellocharts-charting-library-t2904456/page2）;
              */
@@ -246,29 +256,48 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                if(t!=null){
-                    JsonObjectElement data=new JsonObjectElement(t);
-                    int i=0;
-                    float a=0;
-                    for(;i<data.get("PageData").asArrayElement().size();i++){
-                        mAxisXValues.add(new AxisValue(i).setLabel(String.valueOf(i)));//获取x轴的标注
-//                        if(!DataUtil.isDataElementNull(measure_point_detail.get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
-                            mPointValues.add(new PointValue(i,
-                                    data.get("PageData").asArrayElement().get(i).asObjectElement().get("ResultValue").valueAsFloat()));
-//                        }else {
-//                            mPointValues.add(new PointValue(i,0));
+                if(t!=null) {
+                    JsonObjectElement data = new JsonObjectElement(t);
+                    if (data.get("PageData").asArrayElement().size() > 0) {
+                        int i = 0;
+                        float a = 0;
+                        ArrayList<String> datalist = new ArrayList<>();
+                        ArrayList<Integer> indexlist = new ArrayList<>();
+                        String dataString = "";
+                        String indexString = "";
+                        for (; i < data.get("PageData").asArrayElement().size(); i++) {
+//                        mAxisXValues.add(new AxisValue(i).setLabel(String.valueOf(i)));//获取x轴的标注
+////                        if(!DataUtil.isDataElementNull(measure_point_detail.get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
+//                            mPointValues.add(new PointValue(i,
+//                                    data.get("PageData").asArrayElement().get(i).asObjectElement().get("ResultValue").valueAsFloat()));
+////                        }else {
+////                            mPointValues.add(new PointValue(i,0));
+////                        }
+//                        if(!DataUtil.isFloat(DataUtil.isDataElementNull(data.get("PageData").asArrayElement().get(i).asObjectElement().get("ResultValue")))){
+//                            return;
 //                        }
-                        if(!DataUtil.isFloat(DataUtil.isDataElementNull(data.get("PageData").asArrayElement().get(i).asObjectElement().get("ResultValue")))){
-                            return;
+//                        a=data.get("PageData").asArrayElement().get(i).asObjectElement().get("ResultValue").valueAsFloat();
+//                    }
+//                    mAxisXValues.add(new AxisValue(i+1).setLabel(String.valueOf(i+1)));//获取x轴的标注
+////                        if(!DataUtil.isDataElementNull(measure_point_detail.get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
+//                    mPointValues.add(new PointValue(i+1,a-0.5f));
+//                    initLineChart();//初始化
+                            ObjectElement json = data.get(Data.PAGE_DATA).asArrayElement().get(i).asObjectElement();
+                            datalist.add(DataUtil.isDataElementNull(json.get("ResultValue")).equals("") ? "0" : DataUtil.isDataElementNull(json.get("ResultValue")));
+                            indexlist.add(i);
+                            dataString += DataUtil.isDataElementNull(json.get("ResultValue")).equals("") ? "0" : DataUtil.isDataElementNull(json.get("ResultValue")) + ",";
+                            indexString += i + ",";
                         }
-                        a=data.get("PageData").asArrayElement().get(i).asObjectElement().get("ResultValue").valueAsFloat();
+                        if (indexString.endsWith(",")) {
+                            indexString = indexString.substring(0, indexString.length() - 1);
+                        }
+                        if (dataString.endsWith(",")) {
+                            dataString = dataString.substring(0, dataString.length() - 1);
+                        }
+                        //webView.loadUrl("javascript:showContent([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],[5, 20, 36, 10, 10,5, 20, 36, 10, 10,5, 20, 36, 10, 10,5, 20, 36, 10, 10])");
+                        webView.loadUrl("javascript:showContent([" + indexString + "],[" + dataString + "])");
                     }
-                    mAxisXValues.add(new AxisValue(i+1).setLabel(String.valueOf(i+1)));//获取x轴的标注
-//                        if(!DataUtil.isDataElementNull(measure_point_detail.get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
-                    mPointValues.add(new PointValue(i+1,a-0.5f));
-                    initLineChart();//初始化
                 }
-
 //                mAxisXValues.add(new AxisValue(1).setLabel(String.valueOf(1)));//获取x轴的标注
 ////                        if(!DataUtil.isDataElementNull(measure_point_detail.get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
 //                mPointValues.add(new PointValue(1,1.0f));
@@ -280,210 +309,5 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
             }
         });
     }
-//    private void initSearchView() {
-//        searchBox = (EditText) findViewById(R.id.et_search);
-//        mDrawer_layout = (CustomDrawerLayout) findViewById(R.id.search_page);
-//        mDrawer_layout.setCloseDrawerListener(new CloseDrawerListener() {
-//            @Override
-//            public void close() {
-//                searchBox.setText("");
-//            }
-//        });
-//        mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-//        mDrawer_layout.setBackgroundColor(Color.parseColor("#00000000"));
-//        menuSearchTitle = (TextView) findViewById(R.id.left_title);
-//        clearBtn = (ImageView) findViewById(R.id.iv_search_clear);
-//        emptyView = (ViewGroup) findViewById(R.id.empty_view);
-//        mResultListView = (ListView) findViewById(R.id.listview_search_result);
-//        mResultAdapter = new ResultListAdapter(context);
-//        mResultListView.setAdapter(mResultAdapter);
-//        mResultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-//                isSearchview = true ;
-//                String itemNam = mResultAdapter.getItemName();
-//                //SelectItem=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(Equipment.EQUIPMENT_ID));
-//                final String searchResult =mResultAdapter.getItem(position).get(itemNam).valueAsString();
-//                if (!searchResult.equals("")) {
-//                    ((Activity)context).runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            switch (searchtag) {
-//                                case 1:
-//                                    MeasurePointValue.getmEditText().setText(searchResult);
-//                                    SubmitData=MeasureValueMap.get(searchResult);
-//                                    break;
-//                            }
-//                            mDrawer_layout.closeDrawer(Gravity.RIGHT);
-//                        }
-//                    });
-//                } else {
-//                    ToastUtil.showToastLong(R.string.error_occur,context);
-//                }
-//            }
-//        });
-//        initDropSearchView(null, MeasurePointValue.getmEditText(), context.getResources().
-//                        getString(R.string.work_num_dialog), DataDictionary.DATA_NAME,
-//                1, R.string.getDataFail,MeasurePointValue.getDropImage());
-//        findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mDrawer_layout.closeDrawer(Gravity.RIGHT);
-//            }
-//        });
-//        searchBox.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//                // initData(s.toString());
-//                String keyword = s.toString();
-//                clearBtn.setVisibility(View.VISIBLE);
-//                mResultListView.setVisibility(View.VISIBLE);
-//                String itemName = mResultAdapter.getItemName();
-//                ArrayList<ObjectElement> result = search(keyword, itemName);
-//                if (result == null || result.size() == 0) {
-//                    emptyView.setVisibility(View.VISIBLE);
-//                } else {
-//                    emptyView.setVisibility(View.GONE);
-//                    mResultAdapter.changeData(result, itemName);
-//                }
-//            }
-//        });
-//
-//
-//        clearBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                searchBox.setText("");
-//                clearBtn.setVisibility(View.GONE);
-//            }
-//        });
-//    }
-//    private ArrayList<ObjectElement> search(String keyword,String  tagString) {
-//        ArrayList<ObjectElement> reDatas = new ArrayList<>();
-//        for (int i = 0; i < searchDataLists.size(); i++) {
-//            if (searchDataLists.get(i).get(tagString).valueAsString().toUpperCase().contains(keyword.toUpperCase())) {
-//                reDatas.add(searchDataLists.get(i));
-//            }
-//        }
-//        return reDatas;
-//    }
-//
-//    private void initDropSearchView(
-//            final EditText condition,EditText subEditText,
-//            final String searchTitle,final String searchName,final int searTag ,final int tips,ImageView imageView){
-//        subEditText.setOnClickListener(
-//                new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        DropSearch(condition,
-//                                searchTitle,searchName,searTag ,tips);
-//                    }
-//                });
-//        imageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                DropSearch(condition,
-//                        searchTitle,searchName,searTag ,tips);
-//            }
-//        });
-//    }
-//    private void DropSearch(final EditText condition,
-//                            final String searchTitle,final String searchName,final int searTag ,final int tips){
-//        ((Activity)context).runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                searchDataLists.clear();
-//                switch (searTag) {
-//                    case 1:{
-//                searchDataLists.addAll(MeasureValueList);
-//                        break;
-//                    }}
-//                searchtag = searTag;
-//                if (condition != null) {
-//                    if (!condition.getText().toString().equals("") && searchDataLists.size() > 0) {
-//                        mDrawer_layout.openDrawer(Gravity.RIGHT);
-//                        mResultAdapter.changeData(searchDataLists, searchName);
-//                        menuSearchTitle.setText(searchTitle);
-//                        menuSearchTitle.postInvalidate();
-//                        mDrawer_layout.postInvalidate();
-//
-//                    } else {
-//                        ToastUtil.showToastLong(tips,context);
-//                    }
-//                } else {
-//                    if (searchDataLists.size() > 0) {
-//                        mDrawer_layout.openDrawer(Gravity.RIGHT);
-//                        mResultAdapter.changeData(searchDataLists, searchName);
-//                        menuSearchTitle.setText(searchTitle);
-//                        menuSearchTitle.postInvalidate();
-//                        mDrawer_layout.postInvalidate();
-//
-//                    } else {
-//                        ToastUtil.showToastLong(tips,context);
-//                    }
-//                }
-//            }
-//        });
-//    }
-//    private void SubmitDataToServer(){
-//            if(SubmitData==null||SubmitData.equals("")){
-//                String s=getResources().getString(R.string.pleaseInputMeasureData)+","
-//                        +getResources().getString(R.string.measure_point_id)
-//                        +DataUtil.isDataElementNull(measure_point_detail.get("MaintainPoint_ID"));
-//                ToastUtil.showToastLong(s,context);
-//                return;
-//            }
-//            if(!DataUtil.isDataElementNull(measure_point_detail.get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)){
-//                if(!DataUtil.isNum(SubmitData.trim())
-//                        || !DataUtil.isFloat(SubmitData.trim())){
-//                    String s=getResources().getString(R.string.pleaseInputNum)+","
-//                            +getResources().getString(R.string.measure_point_id)
-//                            +DataUtil.isDataElementNull(measure_point_detail.get("MaintainPoint_ID"));
-//                    ToastUtil.showToastLong(s,context);
-//                    return;
-//                }
-//            }
-//
-//        showCustomDialog(R.string.submitData);
-//        HttpParams params=new HttpParams();
-//        ArrayList<ObjectElement> list=new ArrayList<>();
-//            JsonObjectElement jsonObjectElement=new JsonObjectElement();
-//            jsonObjectElement.set("TaskItem_ID",DataUtil.isDataElementNull(measure_point_detail.get("TaskItem_ID")));
-//            jsonObjectElement.set("SubmitValue", SubmitData);
-//            list.add(jsonObjectElement);
-//
-//
-//        final JsonArrayElement jsonArrayElement=new JsonArrayElement(list.toString());
-//        params.putJsonParams(jsonArrayElement.toJson());
-//        HttpUtils.post(context, "TaskMaintain/JudeResultValue", params, new HttpCallback() {
-//            @Override
-//            public void onSuccess(String t) {
-//                super.onSuccess(t);
-//                if(t!=null) {
-//                    ToastUtil.showToastLong(R.string.submitSuccess,context);
-//                    finish();
-//                    setResult(1);
-//                }else {
-//                    ToastUtil.showToastLong(R.string.submitFail,context);
-//                }
-//                dismissCustomDialog();
-//            }
-//
-//            @Override
-//            public void onFailure(int errorNo, String strMsg) {
-//                super.onFailure(errorNo, strMsg);
-//                ToastUtil.showToastLong(R.string.submitFail,context);
-//                dismissCustomDialog();
-//            }
-//        });
-//    }
+
 }

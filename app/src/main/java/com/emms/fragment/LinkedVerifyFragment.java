@@ -244,7 +244,7 @@ public class LinkedVerifyFragment extends BaseFragment {
                     //  if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()==0){
                     //提示没有处理中的任务
                     //  }
-                    if(jsonObjectElement!=null&&jsonObjectElement.get("PageData")!=null
+                    if(jsonObjectElement.get("PageData")!=null
                             &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
                         RecCount = jsonObjectElement.get("RecCount").valueAsInt();
                         if (pageIndex == 1) {
@@ -366,8 +366,10 @@ public class LinkedVerifyFragment extends BaseFragment {
                     JsonObjectElement json=new JsonObjectElement(t);
                     if(json.get(Data.SUCCESS).valueAsBoolean()){
                         ToastUtil.showToastLong(R.string.SuccessVerify,mContext);
-                        datas.remove(submitData);
-                        taskAdapter.notifyDataSetChanged();
+                        //datas.remove(submitData);
+                        //taskAdapter.notifyDataSetChanged();
+                        pageIndex=1;
+                        getCommandListFromServer();
                     }else {
                         ToastUtil.showToastLong(R.string.FailVerify,mContext);
                     }
