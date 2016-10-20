@@ -144,6 +144,13 @@
                     android:textSize="17sp"
                     android:visibility="gone"
                     android:id="@+id/MeasureStandard_value"/>
+                <TextView
+                    android:id="@+id/measure_point_standard_unit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color"
+                    android:visibility="gone"
+                    android:textSize="17sp"/>
             </LinearLayout>
 
             <LinearLayout

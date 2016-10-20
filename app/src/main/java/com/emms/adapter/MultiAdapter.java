@@ -86,7 +86,7 @@ public class MultiAdapter extends BaseAdapter {
             mChecked.add(false);
         }
 
-        listItemID = new ArrayList<Integer>();
+        listItemID = new ArrayList<>();
 
     }
 

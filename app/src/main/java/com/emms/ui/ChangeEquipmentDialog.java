@@ -98,7 +98,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     }*/
    // private HashMap<String,Integer> Equipment_OperatorID_Status=new HashMap<String, Integer>();
     private boolean isMaintainTask=false;
-    public ChangeEquipmentDialog(Context context, int layout, int style,boolean tag,boolean tag2,boolean tag3,boolean tag4) {
+    public ChangeEquipmentDialog(Context context, int layout, int style,boolean tag,boolean tag2,boolean tag3,boolean tag4,String Equipment_num) {
         super(context, style);
         this.context = context;
         setContentView(layout);
@@ -109,6 +109,10 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         isMaintainTask=tag4;
         //if(Equipment_OperatorID_Status.get())
       //  Collections.addAll(status,context.getResources().getStringArray(R.array.equip_status));
+        if(Equipment_num!=null){
+            findViewById(R.id.Equipment_info_layout).setVisibility(View.VISIBLE);
+            ((TextView)findViewById(R.id.Equipment_info)).setText(context.getResources().getString(R.string.device_num)+Equipment_num);
+        }
         initMap();
         initData();
         initview();

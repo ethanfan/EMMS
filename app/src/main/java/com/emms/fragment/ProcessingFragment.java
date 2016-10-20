@@ -23,21 +23,18 @@ import com.emms.activity.TaskDetailsActivity;
 import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Data;
 import com.emms.schema.Task;
-import com.emms.ui.CancelTaskDialog;
-import com.emms.ui.TaskCancelListener;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.j256.ormlite.field.types.IntegerObjectType;
 
 import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/6/20.
+ *
  */
 public class ProcessingFragment extends BaseFragment {
 
@@ -54,7 +51,7 @@ public class ProcessingFragment extends BaseFragment {
   //  }
     //private ArrayList<TaskBean> datas;
 
-    private ArrayList<ObjectElement> datas=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> datas=new ArrayList<>();
     private Context mContext;
     private Handler handler=new Handler();
     private String TaskClass;
@@ -135,8 +132,8 @@ public class ProcessingFragment extends BaseFragment {
                 holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
                 //    holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
-                holder.tv_repair_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
-                holder.tv_start_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME))));
+                holder.tv_repair_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
+                holder.tv_start_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
                 return convertView;
             }
@@ -201,27 +198,27 @@ public class ProcessingFragment extends BaseFragment {
                       //提示没有处理中的任务
                   //  }
                     RecCount = jsonObjectElement.get("RecCount").valueAsInt();
+                    if (pageIndex == 1) {
+                        datas.clear();
+                    }
                     if(taskNumInteface!=null){
                         taskNumInteface.ChangeTaskNumListener(0,RecCount);}
-                    if(jsonObjectElement!=null&&jsonObjectElement.get("PageData")!=null
+                    if(jsonObjectElement.get("PageData")!=null
                             &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
-                        if (pageIndex == 1) {
-                            datas.clear();
-                        }
+
                         pageIndex++;
                         for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
                             datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                taskAdapter.setDatas(datas);
-                                taskAdapter.notifyDataSetChanged();
-                            }
-                        });
                         //      setData(datas);
                     }
-
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            taskAdapter.setDatas(datas);
+                            taskAdapter.notifyDataSetChanged();
+                        }
+                    });
                 }
                 dismissCustomDialog();
             }

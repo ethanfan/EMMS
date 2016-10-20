@@ -44,6 +44,7 @@
             android:textSize="11.5sp"
             android:text="0/0"
             android:visibility="gone"
+            android:background="@mipmap/tips_bg_forth"
             mv:mv_backgroundColor="#FD481F"
             mv:mv_isRadiusHalfHeight="true"
             mv:mv_strokeColor="#ffffff"

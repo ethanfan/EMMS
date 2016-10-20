@@ -2,6 +2,10 @@ package com.emms.util;
 
 import com.datastore_android_sdk.datastore.DataElement;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,4 +80,37 @@ public class DataUtil {
             return false; // Threw, So is not a number
         }
     }
+    public static String utc2Local(String utcTime) {
+        SimpleDateFormat utcFormater = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        utcFormater.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date gpsUTCDate = null;
+        try {
+            gpsUTCDate = utcFormater.parse(utcTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return utcTime;
+        }
+        SimpleDateFormat localFormater = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        //localFormater.setTimeZone(TimeZone.getDefault());
+        localFormater.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        String localTime = localFormater.format(gpsUTCDate.getTime());
+        return localTime;
+    }
+    public static String Local2utc(String Local) {
+        SimpleDateFormat LocalFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        //LocalFormater.setTimeZone(TimeZone.getDefault());
+        LocalFormater.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        Date gpsLocalDate = null;
+        try {
+            gpsLocalDate = LocalFormater.parse(Local);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return Local;
+        }
+        SimpleDateFormat utcFormater = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+        utcFormater.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String utcTime = utcFormater.format(gpsLocalDate.getTime());
+        return utcTime;
+    }
+
 }

@@ -32,11 +32,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/percent"
-        android:layout_alignParentRight="true"
+        android:layout_toLeftOf="@+id/isMain"
         android:layout_centerVertical="true"
         android:textColor="@color/black"
         android:textSize="17sp"
+        android:layout_marginLeft="10dp"
         android:text="@string/percent"
         />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@mipmap/select_normal"
+            android:id="@+id/isMain"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentRight="true"/>
     </RelativeLayout>
 </LinearLayout>

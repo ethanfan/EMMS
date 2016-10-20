@@ -285,6 +285,8 @@
     <string name="getEquipmentNumSuccess">获取机台号成功</string>
     <string name="pleaseInputNum">请输入数字</string>
     <string name="pleaseSelectValue">请选择测量值</string>
+    <string name="pleaseSelectMeaValue">请选择实际测量值</string>
+    <string name="pleaseSelectMeasureValue">请选择实际测值为无法检测</string>
     <string name="thisGroupHasNoPerson">无该组人员信息</string>
     <string name="logout">退出登录中，请稍候</string>
     <string name="logoutFail">退出登录失败</string>
@@ -410,6 +412,7 @@
     <string name="filterCondition2">已月结</string>
     <string name="filterCondition3">按结束时长查询</string>
     <string name="verity">核验</string>
+    <string name="isVerity">已核验</string>
     <string name="MonthlyStatement">已月结</string>
     <string name="OnlyMainPersonCanWriteWorkload">只有主负责人可以录入工作量</string>
     <string name="OnlyMainPersonCanChangeOrder">只有主负责人可以进行转单</string>
@@ -453,7 +456,15 @@
     <string name="FailGetDataPleaseRestartApp">"获取数据失败，请重启App"</string>
     <string name="PleaseAddTaskPeople">请添加任务参与人</string>
     <string name="EndTimeCanNotlessThanStartTime">结束时间不能在开始时间前，请重新选择</string>
+    <string name="StartTimeCanNotlessThanApplicantTime">开始时间不能在创建时间前，请重新选择\n,创建时间：</string>
     <string name="pleaseInputRightValue">请输入正确的测量值，范围:</string>
     <string name="pleaseInputMeasureValue">无可选值，请输入测量值</string>
     <string name="UpdateTime">yyyy.MM.dd HH:mm:ss</string>
+    <string name="OnlyMainPersonCanSubmit">只是任务负责人可以提交测点测量值</string>
+    <string name="CannotSubmitMeasurePointValue">设备状态已完成，不可提交测点值</string>
+    <string name="pleaseSelectJoiner">请选择参与人</string>
+    <string name="JoinerIsInTask">已被添加进参与人列表当中，不可重复添加</string>
+    <string name="pleaseScanEquipmentCard">请先扫描机台卡</string>
+    <string name="NotVerify">未核验</string>
+    <string name="pleaseSelectMainPerson">请勾选任务主负责人</string>
 </resources>

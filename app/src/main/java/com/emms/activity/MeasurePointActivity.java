@@ -137,6 +137,8 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                    holder.editText2=(EditText)convertView.findViewById(R.id.CollectionPoint);
                    holder.tv_end_time=(TextView)convertView.findViewById(R.id.ValueUnit);
                    holder.warranty_person=(TextView)convertView.findViewById(R.id.MeasureStandard_value);
+
+                   holder.tv_device_num=(TextView)convertView.findViewById(R.id.measure_point_standard_unit);
                   // holder.tv_start_time=(TextView)convertView.findViewById(R.id.MeasureValueStandard_text);
 //                    convertView.setTag(holder);
 //                }else {
@@ -199,9 +201,11 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                     holder.tv_create_time.setVisibility(View.GONE);
                     holder.tv_repair_time.setVisibility(View.GONE);
                     holder.warranty_person.setVisibility(View.VISIBLE);
+                    holder.tv_device_num.setVisibility(View.VISIBLE);
                     convertView.findViewById(R.id.CollectionPoint_layout).setVisibility(View.VISIBLE);
                     convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.VISIBLE);
                 }else {
+                    holder.tv_device_num.setVisibility(View.GONE);
                     if (pointType.equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
                         holder.tv_create_time.setVisibility(View.GONE);
                         holder.tv_repair_time.setVisibility(View.GONE);
@@ -270,6 +274,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                 holder.editText2.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("ResultValue")));
                //TODO 计数器测量值单位
                 holder.tv_end_time.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("Unit")));
+                holder.tv_device_num.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("Unit")));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("ReferenceValue")));
 
 
@@ -349,7 +354,12 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
             @Override
             public void success(DataElement element, String resource) {
                 if(element.asArrayElement().size()<=0){
-                    ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,context);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,context);
+                        }
+                    });
                 }else {
                     for (int i = 0; i < element.asArrayElement().size(); i++) {
                         ObjectElement jsonObjectElement = element.asArrayElement().get(i).asObjectElement();
@@ -375,7 +385,12 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
             }
             @Override
             public void failure(DatastoreException ex, String resource) {
-                 ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,context);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,context);
+                    }
+                });
             }
         });
         MeasurePointType.put(MeasurePoint.UPKEEP_POINT,getResources().getString(R.string.MPT01));
@@ -398,7 +413,20 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                 break;
             }
             case R.id.btn_sure_bg:{
-                SubmitDataToServer();
+                if(getIntent().getBooleanExtra("isMainPersonInTask",false)) {
+                    if(!getIntent().getBooleanExtra("EquipmentStatus",false)){
+                     SubmitDataToServer();
+                    }else {
+                        ToastUtil.showToastLong(R.string.CannotSubmitMeasurePointValue,context);
+                    }
+                }else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtil.showToastLong(R.string.OnlyMainPersonCanSubmit,context);
+                        }
+                    });
+                }
                 break;
             }
         }
@@ -608,10 +636,12 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                             for (int i = 0; i < jsonArrayElement.size(); i++) {
                                ObjectElement json=jsonArrayElement.get(i).asObjectElement();
                                 json.set("tag",false);
-//                                if(!json.get("IsResultSubmit").valueAsBoolean()
-//                                        &&DataUtil.isDataElementNull(json.get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)){
-//                                    json.set("ResultValue",DataUtil.isDataElementNull(MeasureValueList.get(0).get(DataDictionary.DATA_NAME)));
-//                                }
+                                if(DataUtil.isDataElementNull(json.get("PointType")).equals(MeasurePoint.PROCESS_MEASURE_POINT)
+                                        ||DataUtil.isDataElementNull(json.get("PointType")).equals(MeasurePoint.CHECK_POINT)){
+                                    if(MeasureValueMap.get(DataUtil.isDataElementNull(json.get("ResultValue")))!=null){
+                                        json.set("ReferenceValue",DataUtil.isDataElementNull(json.get("ResultValue")));
+                                    }
+                                }
                                 json.set("num",i+1);
                                 measure_point_list.add(json);
                             }
@@ -668,15 +698,27 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                             ToastUtil.showToastLong(s, context);
                             return;
                         }
+                    }else {
+                        if(MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")))==null){
+                            String s = getResources().getString(R.string.pleaseSelectMeaValue) + ","
+                                    + getResources().getString(R.string.id)
+                                    + DataUtil.isDataElementNull(submitData.get(i).get("num"));
+                            ToastUtil.showToastLong(s, context);
+                            return;
+                        }
                     }
                 } else {
                     if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue"))) == null) {
-                        String s = getResources().getString(R.string.pleaseSelectValue) + ","
+                        String s = getResources().getString(R.string.pleaseSelectMeasureValue) + ","
                                 + getResources().getString(R.string.id)
                                 + DataUtil.isDataElementNull(submitData.get(i).get("num"));
                         ToastUtil.showToastLong(s, context);
                         return;
                     }
+                }
+            }else {
+                if(checkResultValue(submitData.get(i),null)){
+                    return;
                 }
             }
             if(MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")))==null) {
@@ -706,7 +748,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                     && !(DataUtil.isDataElementNull(submitData.get(i).get("TaskSubClass")).equals("T0203")) ) {
                 if (!DataUtil.isDataElementNull(submitData.get(i).get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
                     if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))) != null) {
-                        //jsonObjectElement.set("ReferenceValue", MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))));
+                       //jsonObjectElement.set("ResultCode",MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))));
                     } else {
                         jsonObjectElement.set("ReferenceValue", DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")));
                     }
@@ -735,8 +777,9 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
 
                 GetMeasurePointList();
                 ToastUtil.showToastLong(R.string.submitSuccess,context);
-                JsonArrayElement data=new JsonArrayElement(t);
+                final JsonArrayElement data=new JsonArrayElement(t);
                 for(int i=0;i<data.size();i++) {
+                    final ObjectElement objectElement=data.get(i).asObjectElement();
                     if (DataUtil.isDataElementNull(data.get(i).asObjectElement().get("EventType")).equals("ET01")) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(
                                 context);
@@ -745,7 +788,8 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                         builder.setPositiveButton(R.string.CreateNewTask, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                CreateNewTask();
+                                CreateNewTask(objectElement);
+                                dialog.dismiss();
                             }
                         }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
@@ -754,7 +798,6 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                             }
                         });
                         builder.show();
-                        break;
                     }
                     if(DataUtil.isDataElementNull(data.get(i).asObjectElement().get("EventType")).equals("ET02")){
                        Toast.makeText(context,"["+DataUtil.isDataElementNull(data.get(i).asObjectElement().get("MaintainWorkItemName"))
@@ -789,11 +832,13 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
 //            }
 //        }
 //    }
-    private void CreateNewTask(){
+    private void CreateNewTask(ObjectElement objectElement){
             Intent intent=new Intent(MeasurePointActivity.this,CreateTaskActivity.class);
             intent.putExtra("TaskEquipment",getIntent().getStringExtra("TaskEquipment"));
             intent.putExtra(Task.TASK_ID,getIntent().getStringExtra(Task.TASK_ID));
             intent.putExtra("FromMeasurePointActivity","FromMeasurePointActivity");
+            intent.putExtra("TaskSubClass",TaskSubClass);
+            intent.putExtra("TaskItem",objectElement.toJson());
             startActivity(intent);
     }
     private void SetTextChangeListener(final EditText editText, final ObjectElement objectElement, final String key){
@@ -858,6 +903,8 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                 ||(DataUtil.isDataElementNull(objectElement.get("TaskSubClass")).equals("T0203")) ){
             //TODO  检查用户输入
             if(!DataUtil.isDataElementNull(objectElement.get("ReferenceValue")).equals("")
+               &&!DataUtil.isDataElementNull(objectElement.get("ResultValue")).equals("")
+                    &&DataUtil.isNum(DataUtil.isDataElementNull(objectElement.get("ResultValue")))
                     &&DataUtil.isNum(DataUtil.isDataElementNull(objectElement.get("ReferenceValue")))){
             if(!DataUtil.isDataElementNull(objectElement.get("UnitCode")).equals("")
                  && DataUtil.isDataElementNull(objectElement.get("UnitCode")).equals("MSNU02")
@@ -880,7 +927,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                 }catch (Exception e) {
                     if(objectElement.get("ResultValue").valueAsFloat()<objectElement.get("ReferenceValue").valueAsFloat()
                             ) {
-                        String s=getResources().getString(R.string.pleaseInputRightValue)+"大于"+
+                        String s=getResources().getString(R.string.pleaseInputRightValue)+"大于或等于"+
                                 DataUtil.isDataElementNull(objectElement.get("ReferenceValue"));
                         showdialog(s, editText);
                         return true;
@@ -889,7 +936,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
             }else {
                 //TODO 根据ReferenceValue进行限制
                 if(objectElement.get("ResultValue").valueAsFloat()<objectElement.get("ReferenceValue").valueAsFloat()){
-                    String s=getResources().getString(R.string.pleaseInputRightValue)+"大于"+
+                    String s=getResources().getString(R.string.pleaseInputRightValue)+"大于或等于"+
                             DataUtil.isDataElementNull(objectElement.get("ReferenceValue"));
                     showdialog(s,editText);
                     return true;
@@ -907,7 +954,9 @@ private void showdialog(String message,final EditText editText){
     builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
+            if(editText!=null){
             editText.setText("");
+            }
             dialog.dismiss();
         }
     });

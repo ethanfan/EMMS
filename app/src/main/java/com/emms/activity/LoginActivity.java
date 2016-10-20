@@ -83,7 +83,8 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         if(SharedPreferenceManager.getFactory(this)==null){
             SharedPreferenceManager.setFactory(this,def_Factory);
         }
-
+        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, new LinkedHashSet<>()));
+        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "All"));
         //init();
         initView();
         //  registerMessageReceiver();
@@ -297,6 +298,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
        // data.set("IsNewApp",1);
        // params.put("sqlLiteDBModel",data.toJson());
         params.putJsonParams(data.toJson());
+        showCustomDialog(R.string.loadingData);
         HttpUtils.postWithoutCookie(this, "SqlToSqlite", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -323,10 +325,12 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                         updateData(json.get("DataRelation"),EPassSqliteStoreOpenHelper.SCHEMA_DATA_RELATION);}
                 }
                // ConfigurationManager.getInstance().startToGetNewConfig(mContext);
+                dismissCustomDialog();
             }
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
             }
         });
     }
@@ -449,9 +453,14 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 "    (select max(LastUpdateTime) LastUpdateTime_DataRelation from DataRelation) ";
         getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
             @Override
-            public void success(DataElement element, String resource) {
+            public void success(final DataElement element, String resource) {
                 ConfigurationManager.getInstance().startToGetNewConfig(mContext);
-                getDataBaseUpdateFromServer(element.asArrayElement().get(0));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getDataBaseUpdateFromServer(element.asArrayElement().get(0));
+                    }
+                });
             }
 
             @Override

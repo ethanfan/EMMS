@@ -66,15 +66,19 @@ public class MsgView extends TextView {
 //        if (isRadiusHalfHeight()) {
 //            setCornerRadius(getHeight() / 2);
 //        } else {
-            setBgSelector();
+            if(tag){
+                setBgSelector2();
+            }else {
+                //setBgSelector();
+            }
 //        }
     }
 
 
-    public void setBackgroundColor(int backgroundColor) {
-        this.backgroundColor = backgroundColor;
-        setBgSelector();
-    }
+//    public void setBackgroundColor(int backgroundColor) {
+//        this.backgroundColor = backgroundColor;
+//        setBgSelector();
+//    }
 
     public void setCornerRadius(int cornerRadius) {
         this.cornerRadius = dp2px(cornerRadius);
@@ -153,6 +157,33 @@ public class MsgView extends TextView {
 //            //noinspection deprecation
 //            setBackgroundDrawable(bg);
 //        }
-        setBackgroundDrawable(getResources().getDrawable(R.mipmap.tips_bg));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {//16
+            setBackground(getResources().getDrawable(R.mipmap.tips_bg));
+        } else {
+            //noinspection deprecation
+            setBackgroundDrawable(getResources().getDrawable(R.mipmap.tips_bg));
+        }
+        //setBackgroundDrawable(getResources().getDrawable(R.mipmap.tips_bg));
+      //  setBackgroundColor(Color.RED);
     }
+    public void setBgSelector2() {
+//        StateListDrawable bg = new StateListDrawable();
+//
+//        setDrawable(gd_background, backgroundColor, strokeColor);
+//        bg.addState(new int[]{-android.R.attr.state_pressed}, gd_background);
+//
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {//16
+            setBackground(getResources().getDrawable(R.mipmap.tips_bg_second));
+        } else {
+            //noinspection deprecation
+            setBackgroundDrawable(getResources().getDrawable(R.mipmap.tips_bg_second));
+        }
+        //setBackgroundDrawable(getResources().getDrawable(R.mipmap.tips_bg_second));
+        //setBackgroundColor(Color.GREEN);
+        tag=true;
+        //invalidate();
+        //setBackground(getResources().getDrawable(R.mipmap.tips_bg_second));
+    }
+    boolean tag=false;
 }

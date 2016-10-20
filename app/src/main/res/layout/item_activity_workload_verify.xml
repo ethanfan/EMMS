@@ -25,6 +25,14 @@
             android:textColor="@color/text_color"
             android:layout_toRightOf="@id/id_group"
             android:textSize="17sp"/>
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/order_color"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:textSize="17sp"/>
         <!--
         <TextView
             android:layout_marginTop="5dp"

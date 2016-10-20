@@ -125,7 +125,7 @@ public class PendingOrdersFragment extends BaseFragment{
                 holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
-                holder.tv_create_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
+                holder.tv_create_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
                if(datas.get(position).get("IsExsitTaskEquipment").valueAsBoolean()){
                    holder.tv_device_name.setText(DataUtil.isDataElementNull(datas.get(position).get("EquipmentName")));
                }else {
@@ -202,13 +202,15 @@ public class PendingOrdersFragment extends BaseFragment{
                     RecCount=jsonObjectElement.get("RecCount").valueAsInt();
                     if(taskNumInteface!=null){
                         taskNumInteface.ChangeTaskNumListener(1,RecCount);}
-                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0)
-                    if(pageIndex==1){
+                    if (pageIndex == 1) {
                         datas.clear();
                     }
-                    pageIndex++;
-                    for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
-                        datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
+                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
+
+                        pageIndex++;
+                        for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
+                            datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
+                        }
                     }
                     handler.post(new Runnable() {
                         @Override

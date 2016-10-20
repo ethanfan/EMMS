@@ -81,7 +81,7 @@ public class TaskVerifyActivity extends NfcActivity {
                 holder.tv_creater.setText(DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.APPLICANT)));
                 holder.tv_group.setText(DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.ORGANISE_NAME)));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.TASK_DESCRIPTION)));
-                holder.tv_create_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.APPLICANT_TIME))));
+                holder.tv_create_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.APPLICANT_TIME))));
                 holder.tv_device_name.setText(DataUtil.isDataElementNull(VerifyTaskList.get(position).get("EquipmentName")));
                 holder.acceptTaskButton.setOnClickListener(new View.OnClickListener() {
                     @Override

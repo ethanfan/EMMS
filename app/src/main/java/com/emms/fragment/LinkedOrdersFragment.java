@@ -121,9 +121,9 @@ public class LinkedOrdersFragment extends BaseFragment{
                 holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT)));
                // holder.tv_task_state.setText(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_STATUS)));
-                holder.tv_repair_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT_TIME))));
-                holder.tv_start_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(data.get(position).get(Task.START_TIME))));
-                holder.tv_end_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(data.get(position).get(Task.FINISH_TIME))));
+                holder.tv_repair_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT_TIME))));
+                holder.tv_start_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.START_TIME))));
+                holder.tv_end_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.FINISH_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_DESCRIPTION)));
                 return convertView;
             }
@@ -169,21 +169,16 @@ public class LinkedOrdersFragment extends BaseFragment{
                 super.onSuccess(t);
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
-
-                 //  datas1.clear();
-                 //   datas2.clear();
-                 //   datas3.clear();
                     RecCount=jsonObjectElement.get("RecCount").valueAsInt();
                     if(pageIndex==1){
                         data.clear();
                     }
+                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
                     pageIndex++;
                     for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
                         data.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                     }
-                   // datas2.addAll(datas1);
-                   // datas3.addAll(datas2);
+                }
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -191,7 +186,6 @@ public class LinkedOrdersFragment extends BaseFragment{
                             taskAdapter.notifyDataSetChanged();
                         }
                     });
-                }
                 }
                 dismissCustomDialog();
             }

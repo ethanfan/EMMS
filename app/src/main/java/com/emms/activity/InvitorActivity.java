@@ -24,12 +24,14 @@ import com.emms.adapter.GroupAdapter;
 import com.emms.adapter.MultiAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
+import com.emms.schema.Operator;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
+import java.security.interfaces.RSAKey;
 import java.util.ArrayList;
 
 /**
@@ -253,6 +255,32 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                     @Override
                     public void run() {
                         if(adapter.getListItems()!=null){
+                            if(getIntent().getStringExtra("Tag")!=null){
+                                JsonArrayElement TaskParticipantsList=new JsonArrayElement(getIntent().getStringExtra("TaskParticipantsList"));
+                                for(int j=0;j<TaskParticipantsList.size();j++){
+                                    for(int k=0;k<adapter.getlistItemID().size();k++){
+                                  if(   DataUtil.isDataElementNull(adapter.getListItems().get(adapter.getListItemID().get(k)).get(Operator.OPERATOR_ID))
+                                          .equals(DataUtil.isDataElementNull(TaskParticipantsList.get(j).asObjectElement().get(Operator.OPERATOR_ID)))){
+                                      ToastUtil.showToastLong(DataUtil.isDataElementNull(TaskParticipantsList.get(j).asObjectElement().get("Name"))
+                                              +" "+getResources().getString(R.string.JoinerIsInTask),context);
+                                      return;
+                                  }
+                                    }
+                                }
+                                ArrayList<ObjectElement> data=new ArrayList<>();
+                                for(int i=0;i<adapter.getlistItemID().size();i++){
+                                    data.add(adapter.getListItems().get(adapter.getListItemID().get(i)));
+                                }
+                                if(data.size()<=0){
+                                    ToastUtil.showToastLong(R.string.pleaseSelectJoiner,context);
+                                    return;
+                                }
+                                Intent intent=new Intent();
+                                intent.putExtra("Data",data.toString());
+                                setResult(3,intent);
+                                finish();
+                                return;
+                            }
                             ArrayList<Integer> invitorList=new ArrayList<Integer>();
                         for(int i=0;i<adapter.getlistItemID().size();i++){
                             invitorList.add(Integer.valueOf(DataUtil.isDataElementNull(adapter.getListItems().get(adapter.getListItemID().get(i)).get("Operator_ID"))));
@@ -329,7 +357,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                      }
                  }else {
                      Toast.makeText(InvitorActivity.this, R.string.SuccessAddTaskPeople, Toast.LENGTH_LONG).show();
-                     setResult(3);
+                     //setResult(3);
                  }
                 finish();
             }else {

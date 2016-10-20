@@ -37,5 +37,31 @@
         android:divider="#DFDFDF"
         android:background="@color/white"
         android:layout_above="@+id/vvvvvvv"></ListView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#DFDFDF"
+        android:id="@+id/divider"
+        android:layout_above="@+id/listView"
+        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/divider"
+        android:visibility="gone"
+        android:id="@+id/Equipment_info_layout"
+        android:background="@color/white">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/Equipment_info"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textSize="18sp"
+            android:singleLine="true"
+            android:textColor="@color/esquel_red"
+            android:gravity="center"/>
+    </RelativeLayout>
+
 
 </RelativeLayout>

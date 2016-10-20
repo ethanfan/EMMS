@@ -5,6 +5,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
@@ -61,5 +62,6 @@ public abstract class WorkloadAdapter extends BaseAdapter{
         public  TextView startTime;
         public TextView endTime;
         public EditText workload;
+        public ImageView imageView;
     }
 }

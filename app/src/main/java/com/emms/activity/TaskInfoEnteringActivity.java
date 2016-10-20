@@ -38,6 +38,7 @@ import com.emms.adapter.commandAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
+import com.emms.schema.Operator;
 import com.emms.schema.Task;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
@@ -103,6 +104,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
     private void initView(){
         ((TextView)findViewById(R.id.task_description)).setText(DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_DESCRIPTION)));
         ((TextView)findViewById(R.id.Task_Equipment)).setText(DataUtil.isDataElementNull(TaskDetail.get("EquipmentAssetsIDList")));
+        ((TextView)findViewById(R.id.task_create_time)).setText(DataUtil.utc2Local(DataUtil.isDataElementNull(TaskDetail.get(Task.APPLICANT_TIME))));
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.task_info_entering);
         findViewById(R.id.btn_right_action).setOnClickListener(this);
         taskStartTime=(EditText)findViewById(R.id.task_start_time);
@@ -116,6 +118,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
                 Intent intent=new Intent(context,InvitorActivity.class);
                 intent.putExtra(Task.TASK_ID,DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
                 intent.putExtra("Tag","FromTaskInfoEnteringActivity");
+                intent.putExtra("TaskParticipantsList",TaskParticipantsList.toString());
                 startActivityForResult(intent, Constants.REQUEST_CODE_END_TASK_TO_INVITOR_ACTIVITY);
             }
         });
@@ -470,7 +473,28 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
         switch (requestCode){
             case Constants.REQUEST_CODE_END_TASK_TO_INVITOR_ACTIVITY:{
                 if(resultCode==3){
-                    getWorkLoadFromServer();
+                    //getWorkLoadFromServer();
+                    JsonArrayElement jsonArrayElement=new JsonArrayElement(data.getStringExtra("Data"));
+                    for(int i=0;i<jsonArrayElement.size();i++){
+                        jsonArrayElement.get(i).asObjectElement().set("isMain",false);
+                        TaskParticipantsList.add(jsonArrayElement.get(i).asObjectElement());
+                    }
+                    for(int i=0;i<TaskParticipantsList.size();i++){
+                        TaskParticipantsList.get(i).set("isMain",false);
+                    }
+                    if(TaskParticipantsList.size()==1){
+                        TaskParticipantsList.get(0).set("TaskWorkLoad",100);
+                        TaskParticipantsList.get(0).set("isMain",true);
+                    }
+                    workloadAdapter.setDatas(TaskParticipantsList);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ListViewUtility.setListViewHeightBasedOnChildren(TaskParticipantsListView);
+                        }
+                    });
+                   // workloadAdapter.notifyDataSetChanged();
+                    Log.e("","");
                 }
                 break;
             }
@@ -486,6 +510,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
                 holder.name=(TextView)convertView.findViewById(R.id.name);
                 holder.workload=(EditText)convertView.findViewById(R.id.workload);
                 holder.workload.setInputType(EditorInfo.TYPE_CLASS_PHONE);
+                holder.imageView=(ImageView)convertView.findViewById(R.id.isMain);
                 holder.workload.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -502,13 +527,37 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
                         TaskParticipantsList.get(position).set("TaskWorkLoad",s.toString());
                     }
                 });
-                holder.name.setText(DataUtil.isDataElementNull(TaskParticipantsList.get(position).get("OperatorName")));
+                if(TaskParticipantsList.get(position).get("isMain").valueAsBoolean()){
+                    holder.imageView.setImageResource(R.mipmap.select_pressed);
+                }else {
+                    holder.imageView.setImageResource(R.mipmap.select_normal);
+                }
+                holder.imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        for(int i=0;i<TaskParticipantsList.size();i++){
+                            if(i==position){
+                                TaskParticipantsList.get(i).set("isMain",true);
+                            }else {
+                                TaskParticipantsList.get(i).set("isMain",false);
+                            }
+                        }
+                        notifyDataSetChanged();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ListViewUtility.setListViewHeightBasedOnChildren(TaskParticipantsListView);
+                            }
+                        });
+                    }
+                });
+                holder.name.setText(DataUtil.isDataElementNull(TaskParticipantsList.get(position).get("Name")));
                 holder.workload.setText(DataUtil.isDataElementNull(TaskParticipantsList.get(position).get("TaskWorkLoad")));
                 return convertView;
             }
         };
         TaskParticipantsListView.setAdapter(workloadAdapter);
-        getWorkLoadFromServer();
+        //getWorkLoadFromServer();
     }
     private void submitDataToServer(){
         HttpParams params=new HttpParams();
@@ -523,20 +572,31 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
             ToastUtil.showToastLong(R.string.pleaseSelectEndTime,context);
             return;
         }
-        SubmitData.set(Task.START_TIME,taskStartTime.getText().toString());
-        SubmitData.set(Task.FINISH_TIME,taskEndTime.getText().toString());
+        SubmitData.set(Task.START_TIME,DataUtil.Local2utc(taskStartTime.getText().toString()));
+        SubmitData.set(Task.FINISH_TIME,DataUtil.Local2utc(taskEndTime.getText().toString()));
         try {
             SimpleDateFormat sdf = new SimpleDateFormat(getResources().getString(R.string.DateFormat));
             Date date1 = sdf.parse(taskStartTime.getText().toString());
             Date date2 = sdf.parse(taskEndTime.getText().toString());
+
             Long a=date1.getTime();
             Long b=date2.getTime();
+            if(!DataUtil.isDataElementNull(TaskDetail.get(Task.APPLICANT_TIME)).equals("")){
+            SimpleDateFormat sdf2=new SimpleDateFormat(getResources().getString(R.string.UpdateTime));
+            Date date3=sdf2.parse(DataUtil.utc2Local(DataUtil.isDataElementNull(TaskDetail.get(Task.APPLICANT_TIME))));
+                Long c=date3.getTime();
+                if(a<c){
+                    ToastUtil.showToastLong(getResources().getString(R.string.StartTimeCanNotlessThanApplicantTime)+DataUtil.utc2Local(DataUtil.isDataElementNull(TaskDetail.get(Task.APPLICANT_TIME))),context);
+                    return;
+                }
+            }
             if(b<a){
                 ToastUtil.showToastLong(R.string.EndTimeCanNotlessThanStartTime,context);
                 return;
             }
         }catch (Exception e){
             Log.e("excep",e.toString());
+            return;
         }
         //工作量
         if(TaskParticipantsList.size()<=0){
@@ -544,6 +604,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
             return;
         }
         int sum=0;
+        boolean hasMain=false;
         for(int i=0;i<TaskParticipantsList.size();i++){
             if(DataUtil.isDataElementNull(TaskParticipantsList.get(i).get("TaskWorkLoad")).equals("")){
                 ToastUtil.showToastLong(R.string.pleaseInputWorkload,this);
@@ -555,10 +616,17 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
                 ToastUtil.showToastLong(R.string.pleaseInputInteger,this);
                 return;
             }
+            if(TaskParticipantsList.get(i).get("isMain").valueAsBoolean()){
+                hasMain=true;
+            }
             sum+=Integer.valueOf(DataUtil.isDataElementNull(TaskParticipantsList.get(i).get("TaskWorkLoad")));
         }
         if(sum!=100){
             ToastUtil.showToastLong(R.string.judgeWorkloadSum,this);
+            return;
+        }
+        if(!hasMain){
+            ToastUtil.showToastLong(R.string.pleaseSelectMainPerson,this);
             return;
         }
         showCustomDialog(R.string.submitData);
@@ -566,8 +634,9 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
         for (int i=0;i<TaskParticipantsList.size();i++){
             ObjectElement obj=TaskParticipantsList.get(i);
             JsonObjectElement jsonObjectElement=new JsonObjectElement();
-            jsonObjectElement.set("TaskOperator_ID", DataUtil.isDataElementNull(obj.get("TaskOperator_ID")));
+            jsonObjectElement.set(Operator.OPERATOR_ID, DataUtil.isDataElementNull(obj.get(Operator.OPERATOR_ID)));
             jsonObjectElement.set("Coefficient",Float.valueOf(DataUtil.isDataElementNull(obj.get("TaskWorkLoad")))/100.0f);
+            jsonObjectElement.set("IsMain",obj.get("isMain").valueAsBoolean());
             submitWorkloadData.add(jsonObjectElement);
         }
         JsonArrayElement WorkloadArray=new JsonArrayElement(submitWorkloadData.toString());

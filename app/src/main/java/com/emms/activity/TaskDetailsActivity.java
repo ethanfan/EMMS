@@ -262,7 +262,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get("AssetsID")));
                 holder.tv_device_name.setText(DataUtil.isDataElementNull(datas.get(position).get(Equipment.EQUIPMENT_NAME)));
                 //String createTime = LongToDate.longPointDate(datas.get(position).get(Maintain.CREATED_DATE_FIELD_NAME).valueAsLong());
-                String createTime = DataUtil.isDataElementNull(datas.get(position).get("StartTime"));
+                String createTime = DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get("StartTime")));
                 holder.tv_create_time.setText(createTime);
                 //String endTime = LongToDate.longPointDate(datas.get(position).get(Maintain.MAINTAIN_END_TIME).valueAsLong());
 
@@ -270,7 +270,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
                 String endTime = "";
                 if (STATUS_DONE.equals(equipmentStatus)) {
-                    endTime = DataUtil.isDataElementNull(datas.get(position).get("FinishTime"));
+                    endTime = DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get("FinishTime")));
                 }
                 holder.tv_end_time.setText(endTime);
                 //  holder.tv_task_state.setText(equipmentStatus);
@@ -279,13 +279,24 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     convertView.setOnClickListener(new AdapterView.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent=new Intent(mContext,MeasurePointActivity.class);
-                            intent.putExtra(Task.TASK_ID,taskId.toString());
-                            intent.putExtra("TaskEquipment",datas.get(position).toString());
-                            if(TaskSubClass!=null&&!TaskSubClass.equals("")) {
-                                intent.putExtra(Task.TASK_SUBCLASS, TaskSubClass);
+                            if(!DataUtil.isDataElementNull(datas.get(position).get("Status")).equals("0")) {
+                                Intent intent = new Intent(mContext, MeasurePointActivity.class);
+                                intent.putExtra(Task.TASK_ID, taskId.toString());
+                                intent.putExtra("TaskEquipment", datas.get(position).toString());
+                                intent.putExtra("isMainPersonInTask", RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()), Main_person_in_charge_Operator_id));
+                                intent.putExtra("EquipmentStatus", STATUS_DONE.equals(DataUtil.isDataElementNull(datas.get(position).get("Status"))));
+                                if (TaskSubClass != null && !TaskSubClass.equals("")) {
+                                    intent.putExtra(Task.TASK_SUBCLASS, TaskSubClass);
+                                }
+                                startActivity(intent);
+                            }else{
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ToastUtil.showToastLong(R.string.pleaseScanEquipmentCard,mContext);
+                                    }
+                                });
                             }
-                            startActivity(intent);
                         }
                     });
                 }
@@ -361,7 +372,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         }
                         if (tag) {
                             ChangeEquipmentDialog dialog = new ChangeEquipmentDialog(mContext, R.layout.dialog_equipment_status, R.style.MyDialog,
-                                    RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()), Main_person_in_charge_Operator_id), true, true,TaskSubClass!=null);
+                                    RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()), Main_person_in_charge_Operator_id), true, true,TaskSubClass!=null,null);
                             dialog.setTaskOperatorID(TaskOperator_ID);
                             dialog.setOnSubmitInterface(new dialogOnSubmitInterface() {
                                 @Override
@@ -405,8 +416,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             JsonObjectElement taskDetail = new JsonObjectElement(TaskDetail);
             ((TextView) findViewById(R.id.task_group)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.ORGANISE_NAME)));
             ((TextView) findViewById(R.id.task_ID)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.TASK_ID)));
-            ((TextView) findViewById(R.id.task_start_time)).setText(DataUtil.getDate(DataUtil.isDataElementNull(taskDetail.get(Task.START_TIME))));
-            ((TextView) findViewById(R.id.task_create_time)).setText(DataUtil.getDate(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT_TIME))));
+            ((TextView) findViewById(R.id.task_start_time)).setText(DataUtil.utc2Local(DataUtil.isDataElementNull(taskDetail.get(Task.START_TIME))));
+            ((TextView) findViewById(R.id.task_create_time)).setText(DataUtil.utc2Local(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT_TIME))));
             ((TextView) findViewById(R.id.task_creater)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT)));
             ((TextView) findViewById(R.id.task_description)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.TASK_DESCRIPTION)));
             Main_person_in_charge_Operator_id = DataUtil.isDataElementNull(taskDetail.get("Operator_ID"));
@@ -831,7 +842,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         }
     }
 
-
+    private HashMap<String,ObjectElement> TaskEquipment=new HashMap<>();
     private void getTaskEquipmentFromServerByTaskId() {
 
         if (null == taskId) {
@@ -869,6 +880,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                     taskComplete=false;
                                 }
                                 datas.add(jsonArrayElement.get(i).asObjectElement());
+                                TaskEquipment.put(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("TaskEquipment_ID")),jsonArrayElement.get(i).asObjectElement());
                                // TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
                                 TaskDeviceIdList.add(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)));
                                 TaskDeviceID_Name.put(DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get(Equipment.EQUIPMENT_ID)),
@@ -1005,7 +1017,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
         }
     }
-
+    private ChangeEquipmentDialog changeEquipmentDialog=null;
     private void addTaskEquipment(String iccardID) {
         if(getEquipmentListFail){
             ToastUtil.showToastLong(R.string.ReGetEquipmentList,this);
@@ -1047,11 +1059,13 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                    if(TaskEquipment_OperatorID_Status.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))!=null){
                                        if(!TaskEquipment_OperatorID_Status.get(
                                             DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).containsKey(String.valueOf(getLoginInfo().getId()))){
-                                        postTaskOperatorEquipment(0,DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)));
+                                        postTaskOperatorEquipment(0,DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)),
+                                                Task_DeviceId_TaskEquipmentId.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))));
                                       return;
                                        }
                                     }else {
-                                       postTaskOperatorEquipment(0,DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)));
+                                       postTaskOperatorEquipment(0,DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)),
+                                               Task_DeviceId_TaskEquipmentId.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))));
                                    return;
                                    }
                                 ////
@@ -1061,32 +1075,25 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                     isOneOperator=true;
                                 }
                               //  if(changeEquipmentDialog==null) {
-                                ChangeEquipmentDialog changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.dialog_equipment_status, R.style.MyDialog,
-                                            RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id),isOneOperator,false,TaskSubClass!=null);
+                                if(changeEquipmentDialog==null||!changeEquipmentDialog.isShowing()){
+                                    changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.dialog_equipment_status, R.style.MyDialog,
+                                            RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()), Main_person_in_charge_Operator_id), isOneOperator, false, TaskSubClass != null,
+                                            DataUtil.isDataElementNull(objectElement.get(Equipment.ASSETSID)));
                                     changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
                                             Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
-                                   // changeEquipmentDialog.setMainPersonInChargeOperatorId(Main_person_in_charge_Operator_id.equals(String.valueOf(getLoginInfo().getId())));
-                                   // changeEquipmentDialog.setMainPersonInChargeOperatorId(RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id));
+                                    // changeEquipmentDialog.setMainPersonInChargeOperatorId(Main_person_in_charge_Operator_id.equals(String.valueOf(getLoginInfo().getId())));
+                                    // changeEquipmentDialog.setMainPersonInChargeOperatorId(RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id));
                                     changeEquipmentDialog.setOnSubmitInterface(new dialogOnSubmitInterface() {
                                         @Override
                                         public void onsubmit() {
                                             getTaskEquipmentFromServerByTaskId();
                                         }
                                     });
-                                    //设置当前操作员在设备中状态，默认为-1即未参与
-//                                    int status=-1;
-//                                    if(TaskEquipment_OperatorID_Status.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)))!=null){
-//                                    if(TaskEquipment_OperatorID_Status.get(
-//                                            DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).containsKey(String.valueOf(getLoginInfo().getId()))){
-//                                        status=TaskEquipment_OperatorID_Status.get(
-//                                                DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).get(String.valueOf(getLoginInfo().getId()));
-//                                    }
-//                                    }
-//                                    changeEquipmentDialog.setOperator_Status(status);
                                     int EquipmentStatus;
-                                    EquipmentStatus=Integer.valueOf(Euqipment_ID_STATUS_map.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))));
+                                    EquipmentStatus = Integer.valueOf(Euqipment_ID_STATUS_map.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))));
                                     changeEquipmentDialog.setEquipemntStatus(EquipmentStatus);
                                     changeEquipmentDialog.show();
+                                }
                               //  }
 //                                else {
 //                                    changeEquipmentDialog.setOneOperator(isOneOperator);
@@ -1319,7 +1326,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     }
 
 
-    private void postTaskOperatorEquipment(int status,String EquipmentId){
+    private void postTaskOperatorEquipment(int status,String EquipmentId,final String TaskEquipmentId){
         showCustomDialog(R.string.submitData);
         HttpParams params=new HttpParams();
         // JsonObjectElement TaskOperatorDataToSubmit=new JsonObjectElement();
@@ -1338,8 +1345,24 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                             if(jsonObjectElement.get("Success").valueAsBoolean()){
                                 getTaskEquipmentFromServerByTaskId();
                                 ToastUtil.showToastLong(R.string.SuccessToChangeStatus,mContext);
+                                if(TaskSubClass!=null&&TaskClass!=null&&TaskStatus==1&&TaskClass.equals(Task.MAINTAIN_TASK)) {
+                                    Intent intent = new Intent(mContext, MeasurePointActivity.class);
+                                    intent.putExtra(Task.TASK_ID, taskId.toString());
+                                    intent.putExtra("TaskEquipment", TaskEquipment.get(TaskEquipmentId).toString());
+                                    intent.putExtra("isMainPersonInTask", RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()), Main_person_in_charge_Operator_id));
+                                    intent.putExtra("EquipmentStatus", false);
+                                    if (TaskSubClass != null && !TaskSubClass.equals("")) {
+                                        intent.putExtra(Task.TASK_SUBCLASS, TaskSubClass);
+                                    }
+                                    startActivity(intent);
+                                }
                             }else {
-                                ToastUtil.showToastLong(R.string.CanNotChangeStatus,mContext);
+                                if(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")).equals("")){
+                                    ToastUtil.showToastLong(R.string.CanNotChangeStatus,mContext);
+                                }else {
+                                    ToastUtil.showToastLong(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),mContext);
+                                }
+                                getTaskEquipmentFromServerByTaskId();
                             }
                         }
                         dismissCustomDialog();

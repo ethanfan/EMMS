@@ -51,8 +51,15 @@ public class OverDueVerifyFragment extends BaseFragment {
     private int pageIndex=1;
     private int RecCount=0;
     private HashMap<String,String> taskClass_map=new HashMap<>();
+    private HashMap<String,String> taskStatusMap=new HashMap<>();
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
+        taskStatusMap.put("0",getResources().getString(R.string.waitingDeal));
+        taskStatusMap.put("1",getResources().getString(R.string.start));
+        taskStatusMap.put("2",getResources().getString(R.string.NotVerify));
+        taskStatusMap.put("3",getResources().getString(R.string.cancel));
+        taskStatusMap.put("4",getResources().getString(R.string.isVerity));
+        taskStatusMap.put("5",getResources().getString(R.string.MonthlyStatement));
         taskClass_map.put(Task.REPAIR_TASK,getResources().getString(R.string.repair_task));
         taskClass_map.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintain_task));
         taskClass_map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car_task));
@@ -105,6 +112,7 @@ public class OverDueVerifyFragment extends BaseFragment {
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
                     holder.tv_end_time=(TextView) convertView.findViewById(R.id.tv_end_time_process);
                     holder.tv_device_name=(TextView) convertView.findViewById(R.id.verifyWorkTime);
+                    holder.tv_create_time=(TextView)convertView.findViewById(R.id.status);
                     convertView.setTag(holder);
 //                } else {
 //                    holder = (TaskViewHolder) convertView.getTag();
@@ -114,10 +122,13 @@ public class OverDueVerifyFragment extends BaseFragment {
                 holder.warranty_person.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkTime")));
                 holder.tv_device_name.setText(DataUtil.isDataElementNull(datas.get(position).get("Workload")));
-                holder.tv_end_time.setText(DataUtil.isDataElementNull(datas.get(position).get("FinishTime")));
-                holder.tv_repair_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
-                holder.tv_start_time.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME))));
+                holder.tv_end_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get("FinishTime"))));
+                holder.tv_repair_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
+                holder.tv_start_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
+                if(taskStatusMap.get(DataUtil.isDataElementNull(datas.get(position).get("Status")))!=null) {
+                    holder.tv_create_time.setText(taskStatusMap.get(DataUtil.isDataElementNull(datas.get(position).get("Status"))));
+                }
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

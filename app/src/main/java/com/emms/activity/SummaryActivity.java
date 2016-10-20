@@ -75,6 +75,7 @@ public class SummaryActivity extends NfcActivity{
     private String TaskTrouble_ID="";
     private String TaskClass=Task.REPAIR_TASK;
     private String TroubleType;
+    private HashMap<String,String> map=new HashMap();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,7 +86,7 @@ public class SummaryActivity extends NfcActivity{
         TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);}
         initView();
         initSearchView();
-        getSummaryFromServer();
+
     }
     public void initView(){
         //initTopToolbar
@@ -349,8 +350,8 @@ public class SummaryActivity extends NfcActivity{
                 super.onSuccess(t);
                 if(t!=null){
                     setFaultData(t);
-                 dismissCustomDialog();
                 }
+                dismissCustomDialog();
             }
 
             @Override
@@ -388,6 +389,7 @@ public class SummaryActivity extends NfcActivity{
                 public void run() {
                     TaskTrouble_ID= DataUtil.isDataElementNull(faultData.get("TaskTrouble_ID"));
                     type.setText(DataUtil.isDataElementNull(faultData.get("TroubleType")));
+                    TroubleType=map.get(DataUtil.isDataElementNull(faultData.get("TroubleType")));
                     description.setText(DataUtil.isDataElementNull(faultData.get("TroubleDescribe")));
                     repair_status.setText(DataUtil.isDataElementNull(faultData.get("MaintainDescribe")));
                 }
@@ -402,7 +404,15 @@ public class SummaryActivity extends NfcActivity{
                 if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
                     for(int i=0;i<element.asArrayElement().size();i++){
                         typeList.add(element.asArrayElement().get(i).asObjectElement());
+                        map.put(DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_NAME)),
+                                DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_CODE)));
                     }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSummaryFromServer();
+                        }
+                    });
                 }
             }
 
