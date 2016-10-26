@@ -53,12 +53,12 @@ public class FliterTaskHistoryFragment extends BaseFragment {
     private int pageIndex=1;
     private int RecCount=0;
     private ArrayList<ObjectElement> submitData=new ArrayList<>();
-    private HashMap<String,String> map=new HashMap<>();
-    private HashMap<String,Integer> taskStatusMap=new HashMap<>();
+    private static HashMap<String,String> map=new HashMap<>();
+    private static HashMap<String,String> taskStatusMap=new HashMap<>();
     private String taskClassCode="",taskStatusCode="",timeCode="";
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        initMap();
+       // initMap();
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView)v.findViewById(R.id.processing_list);
@@ -117,7 +117,11 @@ public class FliterTaskHistoryFragment extends BaseFragment {
                 holder.tv_device_num.setText(DataUtil.isDataElementNull(data.get(position).get("EquipmentAssetsIDList")));
                // holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT)));
-                holder.tv_task_state.setText(DataUtil.isDataElementNull(data.get(position).get("Status")));
+                if(taskStatusMap.get(DataUtil.isDataElementNull(data.get(position).get("Status")))!=null){
+                holder.tv_task_state.setText(taskStatusMap.get(DataUtil.isDataElementNull(data.get(position).get("Status"))));
+                    }else {
+                    holder.tv_task_state.setText(DataUtil.isDataElementNull(data.get(position).get("Status")));
+                }
                 holder.tv_repair_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT_TIME))));
                 holder.tv_start_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.START_TIME))));
                 holder.tv_end_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.FINISH_TIME))));
@@ -144,7 +148,7 @@ public class FliterTaskHistoryFragment extends BaseFragment {
                 intent.putExtra("TaskDetail", data.get(position - 1).asObjectElement().toString());
                 intent.putExtra(Task.TASK_ID, DataUtil.isDataElementNull(data.get(position - 1).get(Task.TASK_ID)));
                 intent.putExtra(Task.TASK_CLASS, DataUtil.isDataElementNull(data.get(position - 1).get(Task.TASK_CLASS)));
-                intent.putExtra("TaskStatus", taskStatusMap.get(DataUtil.isDataElementNull(data.get(position - 1).get("Status"))));
+                intent.putExtra("TaskStatus",DataUtil.isDataElementNull(data.get(position - 1).get("Status")));
                 //intent.putExtra("IsEvaluated",DataUtil.isDataElementNull(data.get(position-1).get("IsEvaluated")));
                 intent.putExtra("FromFragment","2");
                 intent.putExtra("isTaskHistory", true);
@@ -157,7 +161,7 @@ public class FliterTaskHistoryFragment extends BaseFragment {
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
                 //TODO
                 if ( Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))>4
-                        || taskStatusMap.get(DataUtil.isDataElementNull(data.get(position-1).get("Status"))) >= 2) {
+                        || data.get(position-1).get("Status").valueAsInt() >= 2) {
                     return true;
                 }
                 CancelTaskDialog cancleTaskDialog = new CancelTaskDialog(mContext);
@@ -186,10 +190,12 @@ public class FliterTaskHistoryFragment extends BaseFragment {
     }
 
 
-    public static FliterTaskHistoryFragment newInstance(){
+    public static FliterTaskHistoryFragment newInstance(HashMap TaskClass,HashMap TaskStatus){
         FliterTaskHistoryFragment fragment = new FliterTaskHistoryFragment();
         Bundle bundle = new Bundle();
         //bundle.putString(Task.TASK_CLASS, TaskClass);
+        map=TaskClass;
+        taskStatusMap=TaskStatus;
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -199,19 +205,6 @@ public class FliterTaskHistoryFragment extends BaseFragment {
 
     private TaskNumInteface taskNumInteface;
 
-    private void initMap(){
-        map.put(Task.REPAIR_TASK,getResources().getString(R.string.repair));
-        map.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintenance));
-        map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car));
-        map.put(Task.OTHER_TASK,getResources().getString(R.string.other));
-
-        taskStatusMap.put(getResources().getString(R.string.waitingDeal),0);
-        taskStatusMap.put(getResources().getString(R.string.start),1);
-        taskStatusMap.put(getResources().getString(R.string.linked_order),2);
-        taskStatusMap.put(getResources().getString(R.string.cancel),3);
-        taskStatusMap.put(getResources().getString(R.string.verity),4);
-        taskStatusMap.put(getResources().getString(R.string.MonthlyStatement),5);
-    }
     public void getTaskHistory(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
@@ -246,7 +239,7 @@ public class FliterTaskHistoryFragment extends BaseFragment {
                         data.clear();
                     }
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
+                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").isArray()&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
                         RecCount = jsonObjectElement.get("RecCount").valueAsInt();
                         pageIndex++;
                         for(DataElement dataElement:jsonObjectElement.get("PageData").asArrayElement()){

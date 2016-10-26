@@ -24,8 +24,6 @@
 
     <!-- Optional for location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -112,10 +110,6 @@
             android:name=".activity.WorkloadVerifyActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan">
-        </activity>
-        <activity
-            android:name=".activity.AddSubTaskActivity"
-            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".activity.SearchRecordActivity"
@@ -296,9 +290,10 @@
         <!-- Required  . Enable it you can get statistics data with channel -->
         <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         <!--  </>值来自开发者平台取得的AppKey-->
-        <!--<meta-data android:name="JPUSH_APPKEY" android:value="5e06ea48dfe4d377295cbff3" />-->
+        <!--  </>正式版本的AppKey-->
+            <meta-data android:name="JPUSH_APPKEY" android:value="5e06ea48dfe4d377295cbff3" />
         <!--  </>DEVELOPMENT的AppKey-->
-        <meta-data android:name="JPUSH_APPKEY" android:value="8f158ccb3769786e8814d044" />
+        <!--<meta-data android:name="JPUSH_APPKEY" android:value="8f158ccb3769786e8814d044" />-->
         <!--<activity-->
             <!--android:name="com.ic_emms.push.MainActivity"-->
             <!--android:label="@string/app_name" >-->

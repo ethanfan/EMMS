@@ -50,20 +50,20 @@ public class OverDueVerifyFragment extends BaseFragment {
     private int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
-    private HashMap<String,String> taskClass_map=new HashMap<>();
-    private HashMap<String,String> taskStatusMap=new HashMap<>();
+    private static HashMap<String,String> taskClass_map=new HashMap<>();
+    private static HashMap<String,String> taskStatusMap=new HashMap<>();
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        taskStatusMap.put("0",getResources().getString(R.string.waitingDeal));
-        taskStatusMap.put("1",getResources().getString(R.string.start));
-        taskStatusMap.put("2",getResources().getString(R.string.NotVerify));
-        taskStatusMap.put("3",getResources().getString(R.string.cancel));
-        taskStatusMap.put("4",getResources().getString(R.string.isVerity));
-        taskStatusMap.put("5",getResources().getString(R.string.MonthlyStatement));
-        taskClass_map.put(Task.REPAIR_TASK,getResources().getString(R.string.repair_task));
-        taskClass_map.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintain_task));
-        taskClass_map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car_task));
-        taskClass_map.put(Task.OTHER_TASK,getResources().getString(R.string.other_task));
+//        taskStatusMap.put("0",getResources().getString(R.string.waitingDeal));
+//        taskStatusMap.put("1",getResources().getString(R.string.start));
+//        taskStatusMap.put("2",getResources().getString(R.string.NotVerify));
+//        taskStatusMap.put("3",getResources().getString(R.string.cancel));
+//        taskStatusMap.put("4",getResources().getString(R.string.isVerity));
+//        taskStatusMap.put("5",getResources().getString(R.string.MonthlyStatement));
+//        taskClass_map.put(Task.REPAIR_TASK,getResources().getString(R.string.repair_task));
+//        taskClass_map.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintain_task));
+//        taskClass_map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car_task));
+//        taskClass_map.put(Task.OTHER_TASK,getResources().getString(R.string.other_task));
         TaskClass=this.getArguments().getString(Task.TASK_CLASS);
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
@@ -213,10 +213,12 @@ public class OverDueVerifyFragment extends BaseFragment {
             }
         });
     }
-    public static OverDueVerifyFragment newInstance(){
+    public static OverDueVerifyFragment newInstance(HashMap TaskClass,HashMap TaskStatus){
         OverDueVerifyFragment fragment = new OverDueVerifyFragment();
         Bundle bundle = new Bundle();
         //bundle.putString(Task.TASK_CLASS, TaskClass);
+        taskClass_map=TaskClass;
+        taskStatusMap=TaskStatus;
         fragment.setArguments(bundle);
         return fragment;
     }

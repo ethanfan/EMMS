@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -40,6 +41,7 @@ import com.emms.schema.Task;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
+import com.emms.util.BaseData;
 import com.emms.util.Bimp;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
@@ -79,24 +81,39 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
     private ArrayList<ObjectElement> taskStatusList=new ArrayList<>();
     private ArrayList<ObjectElement> timeList=new ArrayList<>();
     private DropEditText task_class,task_status,time;
-    private HashMap<String,String> map=new HashMap<>();
-    private HashMap<String,Integer> taskStatusMap=new HashMap<>();
     private String taskClassCode="",taskStatusCode="",timeCode="";
     private ViewPager vp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_history_check);
+        if(!BaseData.setBaseData(mContext)){
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            init();
+                        }
+                    });
+                }
+            },1000);
+        }else {
+            init();
+        }
+    }
+    private void init(){
         mTitles =getResources().getStringArray(R.array.select_tab_task_history);
         for (int i =0;i< mTitles.length;i++) {
             if (i==0) {
-                PendingCommandFragment pendingCommandFragment=PendingCommandFragment.newInstance();
+                PendingCommandFragment pendingCommandFragment=PendingCommandFragment.newInstance(BaseData.getTaskClass(),BaseData.getTaskStatus());
                 mFragments.add(pendingCommandFragment);
             }else if (i ==1){
-                AllTaskHistoryFragment allTaskHistoryFragment=AllTaskHistoryFragment.newInstance();
+                AllTaskHistoryFragment allTaskHistoryFragment=AllTaskHistoryFragment.newInstance(BaseData.getTaskClass(),BaseData.getTaskStatus());
                 mFragments.add(allTaskHistoryFragment);
             }else if (i ==2){
-                mFragments.add(FliterTaskHistoryFragment.newInstance());
+                mFragments.add(FliterTaskHistoryFragment.newInstance(BaseData.getTaskClass(),BaseData.getTaskStatus()));
             }
         }
         View decorView = getWindow().getDecorView();
@@ -346,49 +363,60 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
         intiTimeData();
     }
     private void initTaskClassData(){
-
-        String rawQuery = "select * from DataDictionary " +
-                "where DataType = 'TaskClass' and PData_ID = 0";
-        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
-                EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
-        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
-            @Override
-            public void onSuccess(DataElement element) {
-                if (element != null && element.isArray()
-                        && element.asArrayElement().size() > 0) {
-                    taskClassList.clear();
-                    for (int i = 0; i < element.asArrayElement().size(); i++) {
-                        taskClassList.add(element.asArrayElement().get(i).asObjectElement());
-                    }
-                } else {
-                    Toast.makeText(mContext, R.string.noData, Toast.LENGTH_SHORT).show();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                System.out.println(throwable.getMessage());
-            }
-        });
+          for(String key:BaseData.getTaskClass().keySet()){
+              JsonObjectElement jsonObjectElement=new JsonObjectElement();
+              jsonObjectElement.set(DataDictionary.DATA_CODE,key);
+              jsonObjectElement.set(DataDictionary.DATA_NAME,BaseData.getTaskClass().get(key));
+              taskClassList.add(jsonObjectElement);
+          }
+//        String rawQuery = "select * from DataDictionary " +
+//                "where DataType = 'TaskClass' and PData_ID = 0";
+//        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+//                EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
+//        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+//            @Override
+//            public void onSuccess(DataElement element) {
+//                if (element != null && element.isArray()
+//                        && element.asArrayElement().size() > 0) {
+//                    taskClassList.clear();
+//                    for (int i = 0; i < element.asArrayElement().size(); i++) {
+//                        taskClassList.add(element.asArrayElement().get(i).asObjectElement());
+//                    }
+//                } else {
+//                    Toast.makeText(mContext, R.string.noData, Toast.LENGTH_SHORT).show();
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable throwable) {
+//                System.out.println(throwable.getMessage());
+//            }
+//        });
     }
     private void initTaskStatusData(){
-        JsonObjectElement jsonObjectElement0=new JsonObjectElement();
-        jsonObjectElement0.set(DataDictionary.DATA_NAME,getResources().getString(R.string.pending_orders));
-        jsonObjectElement0.set("Status",0);
-        JsonObjectElement jsonObjectElement1=new JsonObjectElement();
-        jsonObjectElement1.set(DataDictionary.DATA_NAME,getResources().getString(R.string.start));
-        jsonObjectElement1.set("Status",1);
-        JsonObjectElement jsonObjectElement2=new JsonObjectElement();
-        jsonObjectElement2.set(DataDictionary.DATA_NAME,getResources().getString(R.string.task_state_details_finish));
-        jsonObjectElement2.set("Status",2);
-        JsonObjectElement jsonObjectElement3=new JsonObjectElement();
-        jsonObjectElement3.set(DataDictionary.DATA_NAME,getResources().getString(R.string.cancel));
-        jsonObjectElement3.set("Status",3);
-        taskStatusList.add(jsonObjectElement0);
-        taskStatusList.add(jsonObjectElement1);
-        taskStatusList.add(jsonObjectElement2);
-        taskStatusList.add(jsonObjectElement3);
+//        JsonObjectElement jsonObjectElement0=new JsonObjectElement();
+//        jsonObjectElement0.set(DataDictionary.DATA_NAME,getResources().getString(R.string.pending_orders));
+//        jsonObjectElement0.set("Status",0);
+//        JsonObjectElement jsonObjectElement1=new JsonObjectElement();
+//        jsonObjectElement1.set(DataDictionary.DATA_NAME,getResources().getString(R.string.start));
+//        jsonObjectElement1.set("Status",1);
+//        JsonObjectElement jsonObjectElement2=new JsonObjectElement();
+//        jsonObjectElement2.set(DataDictionary.DATA_NAME,getResources().getString(R.string.task_state_details_finish));
+//        jsonObjectElement2.set("Status",2);
+//        JsonObjectElement jsonObjectElement3=new JsonObjectElement();
+//        jsonObjectElement3.set(DataDictionary.DATA_NAME,getResources().getString(R.string.cancel));
+//        jsonObjectElement3.set("Status",3);
+//        taskStatusList.add(jsonObjectElement0);
+//        taskStatusList.add(jsonObjectElement1);
+//        taskStatusList.add(jsonObjectElement2);
+//        taskStatusList.add(jsonObjectElement3);
+        for(String key:BaseData.getTaskStatus().keySet()){
+            JsonObjectElement jsonObjectElement=new JsonObjectElement();
+            jsonObjectElement.set(DataDictionary.DATA_CODE,key);
+            jsonObjectElement.set(DataDictionary.DATA_NAME,BaseData.getTaskStatus().get(key));
+            taskClassList.add(jsonObjectElement);
+        }
     }
     private void intiTimeData(){
         JsonObjectElement jsonObjectElement=new JsonObjectElement();

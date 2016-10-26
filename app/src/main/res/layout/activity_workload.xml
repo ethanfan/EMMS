@@ -19,6 +19,7 @@
         android:layout_marginBottom="10dp"
         android:textSize="18sp"
         android:textColor="@color/black"
+        android:layout_alignRight="@+id/total_worktime_tag"
         android:layout_below="@+id/total_worktime_tag"
         android:text="@string/group"/>
     <TextView
@@ -52,7 +53,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/total_worktime_tag"
         android:textColor="@color/black"
-        android:layout_alignRight="@+id/group_tag"
         android:layout_marginLeft="15dp"
         android:layout_marginTop="10dp"
         android:textSize="18sp"

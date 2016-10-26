@@ -483,9 +483,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
         });
     }
     private void getTaskDecriptionFromDataBaseByEquipmentName(String EquipmentClass){
-        String sql = "select * from DataDictionary where DataType='EquipmentClassTrouble' and 1=1 and DataValue1='" + EquipmentClass+"'";
-
-        getSqliteStore().performRawQuery(sql, "DataDictionary", new StoreCallback() {
+        DataUtil.getDataFromDataBase(context, "EquipmentClassTrouble", EquipmentClass, new StoreCallback() {
             @Override
             public void success(DataElement element, String resource) {
                 task_description_list.clear();
@@ -512,10 +510,11 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                 });
             }
         });
+
     }
     private void getFaultTypeFromDataBaseByEquipmentName(String EquipmentClass){
-        String sql="select * from DataDictionary where DataType='EquipmentTroubleSort' and 1=1";
-        getSqliteStore().performRawQuery(sql, "DataDictionary", new StoreCallback() {
+
+        DataUtil.getDataFromDataBase(context, "EquipmentTroubleSort", new StoreCallback() {
             @Override
             public void success(DataElement element, String resource) {
                 fault_type_list.clear();
@@ -525,6 +524,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                     }
                 }
             }
+
             @Override
             public void failure(DatastoreException ex, String resource) {
                 runOnUiThread(new Runnable() {
@@ -535,6 +535,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                 });
             }
         });
+
     }
 //    private void createTextData(){
 //        for(int i=0;i<20;i++){

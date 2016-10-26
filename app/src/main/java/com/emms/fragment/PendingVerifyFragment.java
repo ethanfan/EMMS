@@ -56,7 +56,7 @@ public class PendingVerifyFragment extends BaseFragment {
     private int pageIndex=1;
     private int RecCount=0;
     private ArrayList<ObjectElement> submitData=new ArrayList<>();
-    private HashMap<String,String> taskStatusMap=new HashMap<>();
+    private static HashMap<String,String> taskStatusMap=new HashMap<>();
 //   private HashMap<String,String> taskClass_map=new HashMap<>();
 //    private HashMap<Integer,String> mapVerifyWorkTime=new HashMap<>();
 //    private HashMap<Integer,String> mapVerifyStates=new HashMap<>();
@@ -66,12 +66,12 @@ public class PendingVerifyFragment extends BaseFragment {
 //        taskClass_map.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintain_task));
 //        taskClass_map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car_task));
 //        taskClass_map.put(Task.OTHER_TASK,getResources().getString(R.string.other_task));
-        taskStatusMap.put("0",getResources().getString(R.string.waitingDeal));
-        taskStatusMap.put("1",getResources().getString(R.string.start));
-        taskStatusMap.put("2",getResources().getString(R.string.NotVerify));
-        taskStatusMap.put("3",getResources().getString(R.string.cancel));
-        taskStatusMap.put("4",getResources().getString(R.string.isVerity));
-        taskStatusMap.put("5",getResources().getString(R.string.MonthlyStatement));
+//        taskStatusMap.put("0",getResources().getString(R.string.waitingDeal));
+//        taskStatusMap.put("1",getResources().getString(R.string.start));
+//        taskStatusMap.put("2",getResources().getString(R.string.NotVerify));
+//        taskStatusMap.put("3",getResources().getString(R.string.cancel));
+//        taskStatusMap.put("4",getResources().getString(R.string.isVerity));
+//        taskStatusMap.put("5",getResources().getString(R.string.MonthlyStatement));
         mContext =getActivity();
         View v = inflater.inflate(R.layout.fr_processing, null);
         listView = (PullToRefreshListView)v.findViewById(R.id.processing_list);
@@ -306,10 +306,11 @@ public class PendingVerifyFragment extends BaseFragment {
             }
         });
     }
-    public static PendingVerifyFragment newInstance(){
+    public static PendingVerifyFragment newInstance(HashMap TaskClass,HashMap TaskStatus){
         PendingVerifyFragment fragment = new PendingVerifyFragment();
         Bundle bundle = new Bundle();
         //bundle.putString(Task.TASK_CLASS, TaskClass);
+        taskStatusMap=TaskStatus;
         fragment.setArguments(bundle);
         return fragment;
     }

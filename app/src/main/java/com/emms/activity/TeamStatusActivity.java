@@ -82,26 +82,34 @@ public class TeamStatusActivity extends NfcActivity implements View.OnClickListe
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null){
-                    JsonObjectElement json=new JsonObjectElement(t);
-                    if(json.get("Success").valueAsBoolean()){
-                        RecCount=json.get("RecCount").valueAsInt();
-                        if(json.get("PageData")!=null&&json.get("PageData").asArrayElement().size()>0){
-                            if(pageIndex==1){
+                    try{
+                        JsonObjectElement json=new JsonObjectElement(t);
+                        if(json.get("Success").valueAsBoolean()){
+                            RecCount=json.get("RecCount").valueAsInt();
+                            if(json.get("PageData")!=null&&json.get("PageData").isArray()&&json.get("PageData").asArrayElement().size()>0){
+                                if(pageIndex==1){
+                                    listItems.clear();
+                                }
+                                pageIndex++;
+                                for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
+                                    listItems.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
+                                }
+                            }else{
                                 listItems.clear();
+                                ToastUtil.showToastLong(R.string.thisGroupHasNoPerson,context);
                             }
-                            pageIndex++;
-                            for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
-                                listItems.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
-                            }
-                        }else{
-                            listItems.clear();
-                            ToastUtil.showToastLong(R.string.thisGroupHasNoPerson,context);
+                            adapter.setListItems(listItems);
                         }
-                        adapter.setListItems(listItems);
+                        else{
+                            ToastUtil.showToastLong(R.string.getDataFail,context);
+                        }
+                    }catch (Exception e){
+                        if(e.getCause()!=null){
+                        ToastUtil.showToastLong(e.getCause().toString(),context);}
+                    }finally {
+                        dismissCustomDialog();
                     }
-                    else{
-                    ToastUtil.showToastLong(R.string.getDataFail,context);
-                    }
+
                 }
                 dismissCustomDialog();
             }
@@ -168,19 +176,26 @@ public class TeamStatusActivity extends NfcActivity implements View.OnClickListe
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null){
-                    JsonObjectElement json=new JsonObjectElement(t);
-                    if(json.get("PageData")!=null&&json.get("PageData").asArrayElement().size()>0){
-                        listGroup.clear();
-                        for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
-                            listGroup.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
+                    try{
+                        JsonObjectElement json=new JsonObjectElement(t);
+                        if(json.get("PageData")!=null&&json.get("PageData").isArray()&&json.get("PageData").asArrayElement().size()>0){
+                            listGroup.clear();
+                            for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
+                                listGroup.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
+                            }
+                            groupData=listGroup.get(0);
+                            getListItems();
+                            groupAdapter.setDatas(listGroup);
+                            groupAdapter.notifyDataSetChanged();
+                            groupAdapter.setSelection(listGroup.get(0));
                         }
-                        groupData=listGroup.get(0);
-                        getListItems();
-                        groupAdapter.setDatas(listGroup);
-                        groupAdapter.notifyDataSetChanged();
-                        groupAdapter.setSelection(listGroup.get(0));
+                    }catch (Exception e){
+                        if(e.getCause()!=null) {
+                            ToastUtil.showToastLong(e.getCause().toString(), context);
+                        }
+                        dismissCustomDialog();
                     }
-                    // if(json!=null)
+
                 }
             }
 

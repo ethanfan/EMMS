@@ -153,12 +153,15 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="2dp"
+            android:id="@+id/sweetTips"
             android:text="@string/sweetTips"
             />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:id="@+id/tips"
             android:text="@string/pleaseInputPasswordOrScanICcard"
             android:layout_marginBottom="10dp"/>
 

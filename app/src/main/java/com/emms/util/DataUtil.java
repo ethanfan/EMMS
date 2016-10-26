@@ -1,6 +1,12 @@
 package com.emms.util;
 
+import android.app.Activity;
+import android.content.Context;
+
+import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
+import com.emms.activity.AppApplication;
+import com.emms.activity.BaseActivity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -112,5 +118,17 @@ public class DataUtil {
         String utcTime = utcFormater.format(gpsLocalDate.getTime());
         return utcTime;
     }
+    public static void getDataFromDataBase(Context context,String DataType, StoreCallback storeCallback){
+        String sql= "select * from DataDictionary where DataType='"+DataType+"'";
+        ((AppApplication) (((Activity)context).getApplication())).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
+    }
+    public static void getDataFromDataBase(Context context,String DataType,int Pdata_ID, StoreCallback storeCallback){
+        String sql= "select * from DataDictionary where DataType='"+DataType+"' and PData_ID ='" +Pdata_ID+"'";
+        ((AppApplication) (((Activity)context).getApplication())).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
+    }
+   public static void getDataFromDataBase(Context context,String DataType, String DataValue1, StoreCallback storeCallback){
+       String sql= "select * from DataDictionary where DataType='"+DataType+"' and 1=1 and DataValue1='" + DataValue1+"'";
+       ((AppApplication) (((Activity)context).getApplication())).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
+   }
 
 }

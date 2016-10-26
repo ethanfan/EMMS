@@ -15,54 +15,26 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:id="@+id/task_number_tag"
             android:textColor="@color/black"
             android:text="@string/task_number"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:id="@+id/task_number"
             android:textColor="@color/black"
             android:paddingLeft="5dp"
             android:layout_toRightOf="@+id/task_number_tag"/>
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/task_state_tag"-->
-            <!--android:textColor="@color/black"-->
-            <!--android:textSize="18sp"-->
-            <!--android:layout_alignTop="@+id/task_number_tag"-->
-            <!--android:layout_toLeftOf="@+id/task_state"-->
-            <!--android:text="@string/task_state"/>-->
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:id="@+id/task_state"-->
-            <!--android:textColor="@color/black"-->
-            <!--android:textSize="18sp"-->
-            <!--android:paddingLeft="5dp"-->
-            <!--android:layout_alignTop="@+id/task_state_tag"-->
-            <!--android:layout_alignParentRight="true"/>-->
-    </RelativeLayout>
-<RelativeLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:paddingTop="5dp"
-    android:layout_below="@+id/two"
-    android:id="@+id/abc">
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginBottom="10dp"
-        android:id="@+id/one">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/group_type_tag"
-            android:textSize="18sp"
+            android:textSize="17sp"
+            android:layout_below="@+id/task_number_tag"
+            android:layout_marginTop="5dp"
+            android:layout_alignRight="@+id/task_number_tag"
             android:textColor="@color/black"
             android:text="@string/group_type"/>
         <TextView
@@ -70,18 +42,17 @@
             android:layout_height="wrap_content"
             android:id="@+id/group_type"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="17sp"
             android:singleLine="true"
             android:paddingLeft="5dp"
-            android:layout_toRightOf="@id/group_type_tag"/>
-
-    </RelativeLayout>
+            android:layout_toRightOf="@id/group_type_tag"
+            android:layout_alignTop="@+id/group_type_tag"/>
 
 </RelativeLayout>
     <View
         android:layout_width="wrap_content"
         android:layout_height="5dp"
-        android:layout_below="@id/abc"
+        android:layout_below="@id/two"
         android:background="#DFDFDF"
         android:id="@+id/vvvvvv"></View>
     <LinearLayout

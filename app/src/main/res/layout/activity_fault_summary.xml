@@ -10,9 +10,9 @@
         android:layout_height="wrap_content"
         android:textColor="@color/text_color"
         android:layout_below="@+id/toolbar"
-        android:layout_marginLeft="15dp"
         android:layout_marginTop="26dp"
         android:text="@string/task_id"
+        android:layout_alignRight="@+id/fault_description_tag"
         android:layout_toRightOf="@+id/sequence_number"
         android:textSize="18sp"/>
     <TextView
@@ -30,7 +30,7 @@
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/task_id_tag"
+        android:layout_alignRight="@+id/fault_description_tag"
         android:textColor="@color/text_color"
         android:text="@string/summary_person"
         android:layout_marginBottom="6dp"
@@ -50,7 +50,7 @@
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/task_id_tag"
+        android:layout_alignRight="@+id/fault_description_tag"
         android:textColor="@color/text_color"
         android:text="@string/equipment_name"
         android:layout_marginBottom="6dp"
@@ -70,7 +70,7 @@
         android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/task_id_tag"
+        android:layout_alignRight="@+id/fault_description_tag"
         android:textColor="@color/text_color"
         android:text="@string/fault_type"
         android:textSize="18sp"/>
@@ -88,9 +88,9 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:layout_marginTop="10dp"
-        android:layout_alignLeft="@+id/fault_type_tag"
         android:layout_below="@+id/fault_type"
         android:id="@+id/fault_description_tag"
+        android:layout_marginLeft="15dp"
         android:textColor="@color/text_color"
         android:text="@string/fault_description"/>
     <TextView
@@ -107,7 +107,7 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:layout_marginTop="10dp"
-        android:layout_alignLeft="@+id/task_id_tag"
+        android:layout_alignRight="@+id/fault_description_tag"
         android:layout_below="@+id/fault_description"
         android:id="@+id/repair_status_tag"
         android:textColor="@color/text_color"

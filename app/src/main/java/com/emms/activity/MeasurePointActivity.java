@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.IntegerRes;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -927,7 +928,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                 }catch (Exception e) {
                     if(objectElement.get("ResultValue").valueAsFloat()<objectElement.get("ReferenceValue").valueAsFloat()
                             ) {
-                        String s=getResources().getString(R.string.pleaseInputRightValue)+"大于或等于"+
+                        String s=getResources().getString(R.string.pleaseInputRightValue)+getResources().getString(R.string.equelToOrLargeThan)+
                                 DataUtil.isDataElementNull(objectElement.get("ReferenceValue"));
                         showdialog(s, editText);
                         return true;
@@ -936,7 +937,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
             }else {
                 //TODO 根据ReferenceValue进行限制
                 if(objectElement.get("ResultValue").valueAsFloat()<objectElement.get("ReferenceValue").valueAsFloat()){
-                    String s=getResources().getString(R.string.pleaseInputRightValue)+"大于或等于"+
+                    String s=getResources().getString(R.string.pleaseInputRightValue)+ getResources().getString(R.string.equelToOrLargeThan)+
                             DataUtil.isDataElementNull(objectElement.get("ReferenceValue"));
                     showdialog(s,editText);
                     return true;

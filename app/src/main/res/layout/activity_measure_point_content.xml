@@ -114,67 +114,7 @@
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@id/measure_point_range_tag"
         android:textSize="18sp"/>
-    <!--<RelativeLayout-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignLeft="@+id/measure_point_range_tag"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:id="@+id/lala"-->
-        <!--android:visibility="invisible"-->
-        <!--android:layout_below="@+id/measure_point_range">-->
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textSize="18sp"-->
-        <!--android:id="@+id/measure_point_result_tag"-->
-        <!--android:layout_centerVertical="true"-->
-        <!--android:textColor="@color/text_color"-->
-        <!--android:text="@string/measure_point_result"/>-->
-        <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textSize="18sp"-->
-            <!--android:id="@+id/measure_point_result_text"-->
-            <!--android:layout_centerVertical="true"-->
-            <!--android:textColor="@color/text_color"-->
-            <!--android:layout_toRightOf="@+id/measure_point_result_tag"-->
-            <!--android:layout_marginLeft="10dp"-->
-            <!--android:visibility="gone"/>-->
-        <!--<com.emms.ui.DropEditText-->
-            <!--android:id="@+id/measure_point_result"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginRight="40dp"-->
-            <!--android:layout_toRightOf="@+id/measure_point_result_tag"-->
-            <!--drop:drawableRight="@mipmap/drop_down"-->
-            <!--drop:dropMode="flow_parent"-->
-            <!--drop:hint="@string/pleaseInput"-->
-            <!--android:visibility="gone"-->
-            <!--drop:hintColor="@color/hint_color" />-->
-        <!--<EditText-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginRight="40dp"-->
-            <!--android:background="@drawable/bg_edit_normal"-->
-            <!--android:paddingTop="10dp"-->
-            <!--android:paddingBottom="10dp"-->
-            <!--android:id="@+id/measureValue"-->
-            <!--android:paddingLeft="5dp"-->
-            <!--android:layout_marginLeft="5dp"-->
-            <!--android:hint="@string/pleaseInput"-->
-            <!--android:layout_toRightOf="@+id/measure_point_result_tag"/>-->
-    <!--</RelativeLayout>-->
-    <lecho.lib.hellocharts.view.LineChartView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_below="@+id/measure_point_range"
-        android:background="@color/white"
-        android:visibility="gone"
-        android:id="@+id/lineChart">
-    </lecho.lib.hellocharts.view.LineChartView>
+
     <WebView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

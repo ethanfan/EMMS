@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="select_tab_status">
+        <item>In treatment</item>
+        <item>Pending orders</item>
+        <item>Linked list</item>
+    </string-array>
+    <string-array name="select_tab_task_history">
+        <item>To be evaluated</item>
+        <item>All tasks</item>
+        <item>Task selection</item>
+    </string-array>
+    <string-array name="select_tab_verify_status">
+        <item>No verification</item>
+        <item>Have check</item>
+        <item>Condition query</item>
+    </string-array>
+    <string-array name="select_tab_time">
+        <item>Within 1 months</item>
+        <item>Within 2 months</item>
+        <item>Within 3 months</item>
+    </string-array>
+    <string-array name="menu_list">
+        <item>Create new task</item>
+        <item>Failure summary</item>
+        <item>Workload input</item>
+        <item>Sub task</item>
+        <item>Invitation to help</item>
+        <item>Transfer order</item>
+        <item>Complete task</item>
+    </string-array>
+    <string-array name="menu_login">
+        <item>Set up</item>
+        <item>Binding equipment</item>
+    </string-array>
+    <string-array name="Equipment_Status">
+        <item>In treatment</item>
+        <item>suspend</item>
+        <item>complete</item>
+    </string-array>
+    <string-array name="Equipment_Operator_Status">
+        <item>In treatment</item>
+        <item>suspend</item>
+        <item>complete</item>
+    </string-array>
+</resources>

@@ -112,7 +112,7 @@ public class PendingOrdersFragment extends BaseFragment{
                     }
                     holder.tv_group = (TextView) convertView.findViewById(R.id.group_type);
                     holder.tv_task_describe = (TextView) convertView.findViewById(R.id.Task_description);
-                    holder.tv_task_state = (TextView) convertView.findViewById(R.id.Task_status);
+                    //holder.tv_task_state = (TextView) convertView.findViewById(R.id.Task_status);
                     holder.tv_create_time = (TextView) convertView.findViewById(R.id.tv_create_time_order);
                     holder.tv_device_name = (TextView) convertView.findViewById(R.id.Task_Equipment);
                     holder.tv_device_num= (TextView) convertView.findViewById(R.id.Task_Equipment_Num);
@@ -124,7 +124,7 @@ public class PendingOrdersFragment extends BaseFragment{
                 holder.tv_creater.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
                 holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
-                holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
+               // holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_STATUS)));
                 holder.tv_create_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
                if(datas.get(position).get("IsExsitTaskEquipment").valueAsBoolean()){
                    holder.tv_device_name.setText(DataUtil.isDataElementNull(datas.get(position).get("EquipmentName")));

@@ -33,9 +33,11 @@ import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
+import com.emms.util.ListViewUtility;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.nostra13.universalimageloader.utils.L;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,24 +58,47 @@ public class LinkedVerifyFragment extends BaseFragment {
     private int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
-    private HashMap<String,String> taskClass_map=new HashMap<>();
-    private HashMap<String,String> taskStatusMap=new HashMap<>();
+    private static HashMap<String,String> taskClass_map=new HashMap<>();
+    private static HashMap<String,String> taskStatusMap=new HashMap<>();
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        taskStatusMap.put("0",getResources().getString(R.string.waitingDeal));
-        taskStatusMap.put("1",getResources().getString(R.string.start));
-        taskStatusMap.put("2",getResources().getString(R.string.NotVerify));
-        taskStatusMap.put("3",getResources().getString(R.string.cancel));
-        taskStatusMap.put("4",getResources().getString(R.string.isVerity));
-        taskStatusMap.put("5",getResources().getString(R.string.MonthlyStatement));
-        taskClass_map.put(Task.REPAIR_TASK,getResources().getString(R.string.repair_task));
-        taskClass_map.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintain_task));
-        taskClass_map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car_task));
-        taskClass_map.put(Task.OTHER_TASK,getResources().getString(R.string.other_task));
+//        taskStatusMap.put("0",getResources().getString(R.string.waitingDeal));
+//        taskStatusMap.put("1",getResources().getString(R.string.start));
+//        taskStatusMap.put("2",getResources().getString(R.string.NotVerify));
+//        taskStatusMap.put("3",getResources().getString(R.string.cancel));
+//        taskStatusMap.put("4",getResources().getString(R.string.isVerity));
+//        taskStatusMap.put("5",getResources().getString(R.string.MonthlyStatement));
+//        taskClass_map.put(Task.REPAIR_TASK,getResources().getString(R.string.repair_task));
+//        taskClass_map.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintain_task));
+//        taskClass_map.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car_task));
+//        taskClass_map.put(Task.OTHER_TASK,getResources().getString(R.string.other_task));
         TaskClass=this.getArguments().getString(Task.TASK_CLASS);
         mContext =getActivity();
+
         View v = inflater.inflate(R.layout.fr_processing, null);
-        listView = (PullToRefreshListView)v.findViewById(R.id.processing_list);
+        initView(v);
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Intent intent=new Intent(mContext,TaskDetailsActivity.class);
+//                intent.putExtra(Task.TASK_ID,datas.get(position-1).get(Task.TASK_ID).valueAsString());
+//                intent.putExtra("TaskDetail",datas.get(position-1).toString());
+//                intent.putExtra(Task.TASK_CLASS,TaskClass);
+//                intent.putExtra("TaskStatus",1);
+//                startActivity(intent);
+//            }
+//        });
+        getCommandListFromServer();
+        return v;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+    }
+    private void initView(View v){
+        listView=(PullToRefreshListView)v.findViewById(R.id.processing_list);
         listView.setMode(PullToRefreshBase.Mode.BOTH);
         listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
@@ -107,22 +132,22 @@ public class LinkedVerifyFragment extends BaseFragment {
             public View getCustomView(View convertView, final int position, ViewGroup parent) {
                 final TaskViewHolder holder;
 //                if (convertView == null) {
-                    convertView = LayoutInflater.from(mContext).inflate(R.layout.item_activity_workload_verify, parent, false);
-                    holder = new TaskViewHolder();
-                    //显示6个内容，组别，报修人，状态，保修时间,开始时间，任务描述
-                    holder.tv_group = (TextView) convertView.findViewById(R.id.group);
-                    holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);
-                    holder.tv_task_state = (TextView) convertView.findViewById(R.id.standard_workload);
-                    holder.tv_repair_time=(TextView)convertView.findViewById(R.id.tv_Warranty_time_process);
-                    holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
-                    holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
-                    holder.tv_end_time=(TextView) convertView.findViewById(R.id.tv_end_time_process);
-                    holder.editText=(EditText)convertView.findViewById(R.id.verify_workTime) ;
-                    holder.editText2=(EditText)convertView.findViewById(R.id.verify_workTime_remark) ;
-                    holder.editText.setInputType(EditorInfo.TYPE_CLASS_PHONE);
-                    holder.image=(ImageView)convertView.findViewById(R.id.image) ;
-                    holder.tv_create_time=(TextView)convertView.findViewById(R.id.status);
-                    convertView.setTag(holder);
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_activity_workload_verify, parent, false);
+                holder = new TaskViewHolder();
+                //显示6个内容，组别，报修人，状态，保修时间,开始时间，任务描述
+                holder.tv_group = (TextView) convertView.findViewById(R.id.group);
+                holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);
+                holder.tv_task_state = (TextView) convertView.findViewById(R.id.standard_workload);
+                holder.tv_repair_time=(TextView)convertView.findViewById(R.id.tv_Warranty_time_process);
+                holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
+                holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
+                holder.tv_end_time=(TextView) convertView.findViewById(R.id.tv_end_time_process);
+                holder.editText=(EditText)convertView.findViewById(R.id.verify_workTime) ;
+                holder.editText2=(EditText)convertView.findViewById(R.id.verify_workTime_remark) ;
+                holder.editText.setInputType(EditorInfo.TYPE_CLASS_PHONE);
+                holder.image=(ImageView)convertView.findViewById(R.id.image) ;
+                holder.tv_create_time=(TextView)convertView.findViewById(R.id.status);
+                convertView.setTag(holder);
 //                } else {
 //                    holder = (TaskViewHolder) convertView.getTag();
 //                }
@@ -193,12 +218,12 @@ public class LinkedVerifyFragment extends BaseFragment {
                     @Override
                     public void onClick(View v) {
                         if(datas.get(position).get("tag").valueAsBoolean()){
-                       // holder.image.setImageResource(R.mipmap.select_pressed);
-                        datas.get(position).set("tag",false);
-                    }else {
-                        //holder.image.setImageResource(R.mipmap.select_normal);
-                        datas.get(position).set("tag",true);
-                    }
+                            // holder.image.setImageResource(R.mipmap.select_pressed);
+                            datas.get(position).set("tag",false);
+                        }else {
+                            //holder.image.setImageResource(R.mipmap.select_normal);
+                            datas.get(position).set("tag",true);
+                        }
                         notifyDataSetChanged();
                         //submitWorkload(datas.get(position),holder.editText.getText().toString());
                         if(submitData.contains(datas.get(position))){
@@ -212,27 +237,7 @@ public class LinkedVerifyFragment extends BaseFragment {
             }
         };
         listView.setAdapter(taskAdapter);
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent=new Intent(mContext,TaskDetailsActivity.class);
-//                intent.putExtra(Task.TASK_ID,datas.get(position-1).get(Task.TASK_ID).valueAsString());
-//                intent.putExtra("TaskDetail",datas.get(position-1).toString());
-//                intent.putExtra(Task.TASK_CLASS,TaskClass);
-//                intent.putExtra("TaskStatus",1);
-//                startActivity(intent);
-//            }
-//        });
-        getCommandListFromServer();
-        return v;
     }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-    }
-
     private void getCommandListFromServer(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
@@ -289,10 +294,12 @@ public class LinkedVerifyFragment extends BaseFragment {
             }
         });
     }
-    public static LinkedVerifyFragment newInstance(){
+    public static LinkedVerifyFragment newInstance(HashMap TaskClass,HashMap TaskStatus){
         LinkedVerifyFragment fragment = new LinkedVerifyFragment();
         Bundle bundle = new Bundle();
         //bundle.putString(Task.TASK_CLASS, TaskClass);
+        taskClass_map=TaskClass;
+        taskStatusMap=TaskStatus;
         fragment.setArguments(bundle);
         return fragment;
     }

@@ -1,12 +1,13 @@
 package com.emms.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.os.Handler;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,28 +15,24 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
-import com.datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
-import com.emms.httputils.HttpUtils;
-import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
-import com.emms.schema.Equipment;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
 import com.emms.util.DataUtil;
+import com.emms.util.LocaleUtils;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
@@ -60,12 +57,13 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
     private CustomDrawerLayout mDrawer_layout;
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
     private Context context=this;
-    private ArrayList<ObjectElement> FactoryList=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> FactoryList=new ArrayList<>();
     private ArrayList<ObjectElement> NetWorkList=new ArrayList<>();
-    private DropEditText Factory,NetWork;
-    private String SelectItem="";
+    private ArrayList<ObjectElement> LanguageList=new ArrayList<>();
+    private DropEditText Factory,NetWork,Language;
     private final int FACTORY_SETTING=1;
     private final int NETWORK_SETTING=2;
+    private final int LANGUAGE_SETTING=3;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,8 +76,26 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.setting);
         findViewById(R.id.btn_right_action).setOnClickListener(this);
         findViewById(R.id.comfirm).setOnClickListener(this);
+        ((TextView)findViewById(R.id.factory_tag)).setText(R.string.factory);
+        ((TextView)findViewById(R.id.NetWork_tag)).setText(R.string.network);
+        ((TextView)findViewById(R.id.Language_tag)).setText(R.string.LanguageSetting);
+        ((Button)findViewById(R.id.comfirm)).setText(R.string.sure);
         Factory=(DropEditText)findViewById(R.id.factory);
         NetWork=(DropEditText)findViewById(R.id.NetWork);
+        Language=(DropEditText)findViewById(R.id.Language);
+        Factory.getmEditText().setHint(R.string.select);
+        NetWork.getmEditText().setHint(R.string.select);
+        Language.getmEditText().setHint(R.string.select);
+        String currentLanguage = "";
+        LocaleUtils.SupportedLanguage language = LocaleUtils.getLanguage(this);
+        if (language == LocaleUtils.SupportedLanguage.ENGLISH) {
+            currentLanguage = getString(R.string.english);
+        } else if (language == LocaleUtils.SupportedLanguage.VIETNAMESE) {
+            //currentLanguage = getString(R.string.vietnamese);
+        } else {
+            currentLanguage = getString(R.string.chinese);
+        }
+        Language.getmEditText().setText(currentLanguage);
     }
 
 
@@ -114,6 +130,15 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
     private void initData(){
         initFactory();
         initNewWork();
+        LanguageList.clear();
+        JsonObjectElement language1=new JsonObjectElement();
+        language1.set(DataDictionary.DATA_CODE,"zh");
+        language1.set(DataDictionary.DATA_NAME,getResources().getString(R.string.chinese));
+        JsonObjectElement language2=new JsonObjectElement();
+        language2.set(DataDictionary.DATA_CODE,"en");
+        language2.set(DataDictionary.DATA_NAME,getResources().getString(R.string.english));
+        LanguageList.add(language1);
+        LanguageList.add(language2);
     }
     private void initFactory(){
         String rawQuery="select * from BaseOrganise where  OrganiseType = 1";
@@ -138,6 +163,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
         });
     }
     private void initNewWork(){
+        NetWorkList.clear();
         JsonObjectElement json1=new JsonObjectElement();
         json1.set(DataDictionary.DATA_NAME,getResources().getString(R.string.innerNetWork));
         JsonObjectElement json2=new JsonObjectElement();
@@ -167,7 +193,6 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 isSearchview = true ;
                 String itemNam = mResultAdapter.getItemName();
-                SelectItem= DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(Equipment.EQUIPMENT_ID));
                 final String searchResult =mResultAdapter.getItem(position).get(itemNam).valueAsString();
                 if (!searchResult.equals("")) {
                     ((Activity)context).runOnUiThread(new Runnable() {
@@ -179,6 +204,34 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                                     break;
                                 case NETWORK_SETTING:
                                     NetWork.getmEditText().setText(searchResult);
+                                    break;
+                                case LANGUAGE_SETTING:
+                                    Language.getmEditText().setText(searchResult);
+                                    SharedPreferenceManager.setLanguageChange(context,true);
+                                    LocaleUtils.SupportedLanguage language;
+                                    if(DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(DataDictionary.DATA_CODE)).equals("en")){
+                                        language= LocaleUtils.SupportedLanguage.ENGLISH;
+
+                                    }else {
+                                        language= LocaleUtils.SupportedLanguage.CHINESE_SIMPLFIED;
+                                    }
+                                    //SharedPreferenceManager.setLanguage(context,language.toString());
+                                    LocaleUtils.setLanguage(SettingActivity.this, language);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            showCustomDialog(R.string.ChangeLanguagePleaseWait);
+                                            new Handler().postDelayed(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    initView();
+                                                    initData();
+                                                    initSearchView();
+                                                    dismissCustomDialog();
+                                                }
+                                            },2000);
+                                        }
+                                    });
                                     break;
                             }
                             mDrawer_layout.closeDrawer(Gravity.RIGHT);
@@ -194,6 +247,8 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                 FACTORY_SETTING, R.string.getDataFail,Factory.getDropImage());
         initDropSearchView(null,NetWork.getmEditText(),context.getResources().getString(R.string.networkTitle),DataDictionary.DATA_NAME,
                 NETWORK_SETTING,R.string.getDataFail,NetWork.getDropImage());
+        initDropSearchView(null,Language.getmEditText(),context.getResources().getString(R.string.LanguageTitle),DataDictionary.DATA_NAME,
+                LANGUAGE_SETTING,R.string.getDataFail,Language.getDropImage());
         findViewById(R.id.left_btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -284,6 +339,10 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                         searchDataLists.addAll(NetWorkList);
                         break;
                     }
+                    case LANGUAGE_SETTING:{
+                        searchDataLists.addAll(LanguageList);
+                        break;
+                    }
                 }
                 searchtag = searTag;
                 if (condition != null) {
@@ -311,5 +370,70 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                 }
             }
         });
+    }
+//    private void initLanguageSelect() {
+//        View languageSelectView = new View(this);
+//        TextView languageView = new TextView(this);
+//        languageSelectView.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                int selectedNumber = 0;
+//                LocaleUtils.SupportedLanguage language = LocaleUtils.getLanguage(SettingActivity.this);
+//                if (language == LocaleUtils.SupportedLanguage.ENGLISH) {
+//                    selectedNumber = 1;
+//                } else if (language == LocaleUtils.SupportedLanguage.VIETNAMESE) {
+//                    selectedNumber = 2;
+//                } else {
+//                    selectedNumber = 0;
+//                }
+//                openLanguageDialog(selectedNumber);
+//            }
+//
+//        });
+//        String currentLanguage = "";
+//        LocaleUtils.SupportedLanguage language = LocaleUtils.getLanguage(this);
+//        if (language == LocaleUtils.SupportedLanguage.ENGLISH) {
+//            currentLanguage = getString(R.string.english);
+//        } else if (language == LocaleUtils.SupportedLanguage.VIETNAMESE) {
+//            //currentLanguage = getString(R.string.vietnamese);
+//        } else {
+//            currentLanguage = getString(R.string.chinese);
+//        }
+//        languageView.setText(currentLanguage);
+//    }
+    private void openLanguageDialog(int selectedNumber) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        CharSequence[] array = {getString(R.string.chinese), getString(R.string.english)};
+        builder.setTitle(getResources().getString(R.string.langugage));
+        builder.setSingleChoiceItems(array, selectedNumber, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                LocaleUtils.SupportedLanguage language = null;
+                switch (which) {
+                    case 0:
+                        language = LocaleUtils.SupportedLanguage.CHINESE_SIMPLFIED;
+                        break;
+                    case 1:
+                        language = LocaleUtils.SupportedLanguage.ENGLISH;
+                        break;
+                    case 2:
+                        language = LocaleUtils.SupportedLanguage.VIETNAMESE;
+                        break;
+                    default:
+                        language = LocaleUtils.SupportedLanguage.CHINESE_SIMPLFIED;
+                        break;
+                }
+//                if (!LocaleUtils.getLanguage(SettingActivity.this).equals(language)) {
+//                    SharedPreferenceManager.setIsChanged(SettingActivity.this, true);
+//                }
+                LocaleUtils.setLanguage(SettingActivity.this, language);
+                dialog.dismiss();
+                initView();
+//                resultCode = Activity.RESULT_OK;
+            }
+        });
+        builder.show();
     }
 }

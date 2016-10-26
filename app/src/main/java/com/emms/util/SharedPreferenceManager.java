@@ -31,6 +31,10 @@ public final class SharedPreferenceManager {
 	public static final String USER_ROLE_ID="UserRole_ID";
 
 	public static final String USER_MODULE_LIST="Module_ID_List";
+
+	public static final String LANGUAGE="language";
+
+	public static final String LANGUAGE_CHANGE="language_change";
 	private SharedPreferenceManager() {
 
 	}
@@ -148,6 +152,30 @@ public final class SharedPreferenceManager {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		pref.edit().putString(FACTORY, Data).commit();
+	}
+
+	public static String getLanguage(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getString(LANGUAGE, null);
+	}
+
+	public static void setLanguage(Context context, String Data) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putString(LANGUAGE, Data).commit();
+	}
+
+	public static boolean getLanguageChange(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getBoolean(LANGUAGE_CHANGE, false);
+	}
+
+	public static void setLanguageChange(Context context, boolean Data) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putBoolean(LANGUAGE_CHANGE, Data).commit();
 	}
 }
  

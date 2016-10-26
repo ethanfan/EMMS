@@ -45,6 +45,7 @@ import com.emms.schema.TaskOrganiseRelation;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.PopMenuLoginActivity;
 import com.emms.ui.UserRoleDialog;
+import com.emms.util.BuildConfig;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.DownloadCallback;
@@ -85,14 +86,24 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         }
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, new LinkedHashSet<>()));
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "All"));
+        setStyleCustom();
         //init();
         initView();
         //  registerMessageReceiver();
        if(!getIntent().getBooleanExtra("FromCusActivity",false)) {
            getNewDataFromServer();
        }
-        if (!mAdapter.isEnabled()) {
+        if (mAdapter!=null&&!mAdapter.isEnabled()) {
             showWirelessSettingsDialog();
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if(SharedPreferenceManager.getLanguageChange(this)){
+            initView();
+            SharedPreferenceManager.setLanguageChange(this,false);
         }
     }
 
@@ -100,6 +111,12 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         TextView login = (TextView) findViewById(R.id.login);
         inputPassWord = (EditText) findViewById(R.id.inputPassWord);
         inputname = (EditText) findViewById(R.id.inputUserName);
+        inputPassWord.setHint(R.string.login_password_hint);
+        inputname.setHint(R.string.login_password_hint);
+        login.setText(R.string.login);
+        ((TextView) findViewById(R.id.setting)).setText(R.string.systemSetting);
+        ((TextView) findViewById(R.id.sweetTips)).setText(R.string.sweetTips);
+        ((TextView) findViewById(R.id.tips)).setText(R.string.pleaseInputPasswordOrScanICcard);
       inputname.setText(SharedPreferenceManager.getUserName(this));
       inputPassWord.setText(SharedPreferenceManager.getPassWord(this));
         login.setOnClickListener(this);
@@ -225,21 +242,45 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
        // final File db = new File(getExternalFilesDir(null), "/EMMS"+SharedPreferenceManager.getFactory(this)+".db");
         //检测数据库文件是否已经存在，若已存在，则调用增量接口
         final File db = new File(getExternalFilesDir(null), "/EMMS.db");
+        //final File db = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".db");
         if(db.exists()){
             //getDataBaseUpdateFromServer();
            // getDBFromServer();
             getDBDataLastUpdateTime();
             return;
         }
-       final File dbFile = new File(getExternalFilesDir(null), "/EMMS.zip");
-           if(dbFile.exists()){
-               try{
-                   //解压db文件
-                   HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);}catch (Exception e){
-               }
-             return;
-          }
-        getDBFromServer(dbFile);
+       //final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".zip");
+        //TODO 待修改
+        if(BuildConfig.endPoint==BuildConfig.ServerEndPoint.DEVELOPMENT){
+            final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".zip");
+            if(dbFile.exists()){
+                try{
+                    //解压db文件
+                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);}catch (Exception e){
+                }
+                return;
+            }
+            getDBFromServer(dbFile);
+        }else {
+            final File dbFile = new File(getExternalFilesDir(null), "/EMMS.zip");
+            if(dbFile.exists()){
+                try{
+                    //解压db文件
+                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);}catch (Exception e){
+                }
+                return;
+            }
+            getDBFromServer(dbFile);
+        }
+//        final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".zip");
+//           if(dbFile.exists()){
+//               try{
+//                   //解压db文件
+//                   HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);}catch (Exception e){
+//               }
+//             return;
+//          }
+//        getDBFromServer(dbFile);
 
        // String savepath = dbFile.getParentFile().getAbsolutePath();
       /*  new Thread(new Runnable() {
@@ -303,26 +344,46 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                if(t!=null){
+                if(t!=null) {
                 /*    JsonParser jsonParser=new JsonParser();
                     JsonObject j=jsonParser.parse(t).getAsJsonObject();
                     JsonArray jsonArray=j.getAsJsonArray("DataType");
                     if(jsonArray!=null){
                         Log.e("dd","bb");
                     }*/
-                JsonObjectElement json=new JsonObjectElement(t);
-                    if(json.get("DataType")!=null&&json.get("DataType").isArray()&&json.get("DataType").asArrayElement().size()>0){
-                    updateData(json.get("DataType"), EPassSqliteStoreOpenHelper.SCHEMA_DATATYPE);}
-                    if(json.get("BaseOrganise")!=null&&json.get("BaseOrganise").isArray()&&json.get("BaseOrganise").asArrayElement().size()>0){
-                        updateData(json.get("BaseOrganise"),EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE);}
-                    if(json.get("DataDictionary")!=null&&json.get("DataDictionary").isArray()&&json.get("DataDictionary").asArrayElement().size()>0){
-                         updateData(json.get("DataDictionary"),EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY);}
-                    if(json.get("Equipment")!=null&&json.get("Equipment").isArray()&&json.get("Equipment").asArrayElement().size()>0){
-                        updateData(json.get("Equipment"),EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT);}
-                    if(json.get("TaskOrganiseRelation")!=null&&json.get("TaskOrganiseRelation").isArray()&&json.get("TaskOrganiseRelation").asArrayElement().size()>0){
-                        updateData(json.get("TaskOrganiseRelation"),EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION);}
-                    if(json.get("DataRelation")!=null&&json.get("DataRelation").isArray()&&json.get("DataRelation").asArrayElement().size()>0){
-                        updateData(json.get("DataRelation"),EPassSqliteStoreOpenHelper.SCHEMA_DATA_RELATION);}
+
+                    try {
+                        JsonObjectElement json = new JsonObjectElement(t);
+                        if (json.get("DataType") != null && json.get("DataType").isArray() && json.get("DataType").asArrayElement().size() > 0) {
+                            updateData(json.get("DataType"), EPassSqliteStoreOpenHelper.SCHEMA_DATATYPE);
+                           Log.e("DataType",String.valueOf(json.get("DataType").asArrayElement().size()));
+                        }
+                        if (json.get("BaseOrganise") != null && json.get("BaseOrganise").isArray() && json.get("BaseOrganise").asArrayElement().size() > 0) {
+                            updateData(json.get("BaseOrganise"), EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE);
+                            Log.e("BaseOrganise",String.valueOf(json.get("BaseOrganise").asArrayElement().size()));
+                        }
+                        if (json.get("DataDictionary") != null && json.get("DataDictionary").isArray() && json.get("DataDictionary").asArrayElement().size() > 0) {
+                            updateData(json.get("DataDictionary"), EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY);
+                            Log.e("DataDictionary",String.valueOf(json.get("DataDictionary").asArrayElement().size()));
+                        }
+                        if (json.get("Equipment") != null && json.get("Equipment").isArray() && json.get("Equipment").asArrayElement().size() > 0) {
+                            updateData(json.get("Equipment"), EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT);
+                            Log.e("Equipment",String.valueOf(json.get("Equipment").asArrayElement().size()));
+                        }
+                        if (json.get("TaskOrganiseRelation") != null && json.get("TaskOrganiseRelation").isArray() && json.get("TaskOrganiseRelation").asArrayElement().size() > 0) {
+                            updateData(json.get("TaskOrganiseRelation"), EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION);
+                            Log.e("TaskOrganiseRelation",String.valueOf(json.get("TaskOrganiseRelation").asArrayElement().size()));
+                        }
+                        if (json.get("DataRelation") != null && json.get("DataRelation").isArray() && json.get("DataRelation").asArrayElement().size() > 0) {
+                            updateData(json.get("DataRelation"), EPassSqliteStoreOpenHelper.SCHEMA_DATA_RELATION);
+                            Log.e("DataRelation",String.valueOf(json.get("DataRelation").asArrayElement().size()));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    finally {
+                        dismissCustomDialog();
+                    }
                 }
                // ConfigurationManager.getInstance().startToGetNewConfig(mContext);
                 dismissCustomDialog();
@@ -338,12 +399,12 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         getSqliteStore().createElement(data, resource, new StoreCallback() {
             @Override
             public void success(DataElement element, String resource) {
-               Log.e("Success","successSave");
+              // Log.e("Success","successSave");
             }
 
             @Override
             public void failure(DatastoreException ex, String resource) {
-                Log.e("Fail","FailSave");
+              //  Log.e("Fail","FailSave");
             }
         });
         if(data!=null&&data.isArray()){
@@ -404,12 +465,12 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                        data.asArrayElement().get(i), resource, new StoreCallback() {
                            @Override
                            public void success(DataElement element, String resource) {
-                               Log.e("SuccessUpdate", "SuccessUpdate");
+                         //      Log.e("SuccessUpdate", "SuccessUpdate");
                            }
 
                            @Override
                            public void failure(DatastoreException ex, String resource) {
-                               Log.e("FailUpdate", "FailUpdate");
+                          //     Log.e("FailUpdate", "FailUpdate");
                            }
                        });
            //}
@@ -718,7 +779,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     JPushInterface.init(mContext);
     JPushInterface.resumePush(mContext);
     //setStyleBasic();
-    setStyleCustom();
+    //setStyleCustom();
     pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, tagSet));
     pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, new JSONObject(data).get(Operator.OPERATOR_ID).toString()));
           }catch (Exception e){

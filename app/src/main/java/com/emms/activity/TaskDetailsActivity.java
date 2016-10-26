@@ -1,5 +1,6 @@
 package com.emms.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -34,6 +35,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.DatastoreException.DatastoreException;
+import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
@@ -47,6 +50,7 @@ import com.emms.adapter.commandAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
+import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
 import com.emms.schema.Operator;
 import com.emms.schema.Task;
@@ -102,7 +106,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private GridAdapter adapter;
     private TaskAdapter taskAdapter;
     private ArrayList<ObjectElement> datas=new ArrayList<>();
-    private Context mContext;
+    private Context mContext=this;
     private PopMenuTaskDetail popMenuTaskDetail;
     private String TaskSubClass;
    // private ChangeEquipmentDialog changeEquipmentDialog;
@@ -135,13 +139,13 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
-        {
-            taskEquipmentStatus.put("0", getResources().getString(R.string.waitingDeal));
-            taskEquipmentStatus.put("1", getResources().getString(R.string.start));
-            taskEquipmentStatus.put("3", getResources().getString(R.string.pause));
-            taskEquipmentStatus.put(STATUS_DONE, getResources().getString(R.string.complete));
-        }
-        mContext = this;
+
+//        {
+//            taskEquipmentStatus.put("0", getResources().getString(R.string.waitingDeal));
+//            taskEquipmentStatus.put("1", getResources().getString(R.string.start));
+//            taskEquipmentStatus.put("3", getResources().getString(R.string.pause));
+//            taskEquipmentStatus.put(STATUS_DONE, getResources().getString(R.string.complete));
+//        }
         //获取任务详细信息
 
         TaskDetail = getIntent().getStringExtra("TaskDetail");
@@ -170,9 +174,51 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         imageLoader.init(ImageLoaderConfiguration
                 .createDefault(TaskDetailsActivity.this));
 
-        initView();
-        initDatas();
-        initEvent();
+        DataUtil.getDataFromDataBase(this, "TaskEquipmentStatus", new StoreCallback() {
+            @Override
+            public void success(DataElement element, String resource) {
+                for(int i=0;i<element.asArrayElement().size();i++){
+                    taskEquipmentStatus.put(DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_CODE)),
+                            DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_NAME)));
+                }
+                DataUtil.getDataFromDataBase(mContext, "TaskOperatorStatus", new StoreCallback() {
+                    @Override
+                    public void success(DataElement element, String resource) {
+                        for(int i=0;i<element.asArrayElement().size();i++){
+                            Equipment_Operator_Status_Name_ID_map.put(DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_CODE)),
+                                    DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_NAME)));
+                        }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initView();
+                                initDatas();
+                                initEvent();
+                            }
+                        });
+                    }
+                    @Override
+                    public void failure(DatastoreException ex, String resource) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,mContext);
+                            }
+                        });
+                    }
+                });
+            }
+
+            @Override
+            public void failure(DatastoreException ex, String resource) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,mContext);
+                    }
+                });
+            }
+        });
     }
 
 
@@ -279,7 +325,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     convertView.setOnClickListener(new AdapterView.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if(!DataUtil.isDataElementNull(datas.get(position).get("Status")).equals("0")) {
+          //                  if(!DataUtil.isDataElementNull(datas.get(position).get("Status")).equals("0")) {
                                 Intent intent = new Intent(mContext, MeasurePointActivity.class);
                                 intent.putExtra(Task.TASK_ID, taskId.toString());
                                 intent.putExtra("TaskEquipment", datas.get(position).toString());
@@ -289,14 +335,14 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                     intent.putExtra(Task.TASK_SUBCLASS, TaskSubClass);
                                 }
                                 startActivity(intent);
-                            }else{
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        ToastUtil.showToastLong(R.string.pleaseScanEquipmentCard,mContext);
-                                    }
-                                });
-                            }
+//                            }else{
+//                                runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        ToastUtil.showToastLong(R.string.pleaseScanEquipmentCard,mContext);
+//                                    }
+//                                });
+//                            }
                         }
                     });
                 }
@@ -319,11 +365,11 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private boolean isGetTaskOperatorListSuccess=false;
     private TaskAdapter TaskOperatorAdapter;
     private void initDatas() {
-        {
-            Equipment_Operator_Status_Name_ID_map.put("0",getResources().getString(R.string.start));
-            Equipment_Operator_Status_Name_ID_map.put("2",getResources().getString(R.string.pause));
-            Equipment_Operator_Status_Name_ID_map.put("1",getResources().getString(R.string.complete));
-        }
+//        {
+//            Equipment_Operator_Status_Name_ID_map.put("0",getResources().getString(R.string.start));
+//            Equipment_Operator_Status_Name_ID_map.put("2",getResources().getString(R.string.pause));
+//            Equipment_Operator_Status_Name_ID_map.put("1",getResources().getString(R.string.complete));
+//        }
         if(HasTaskEquipment) {
             getTaskEquipmentFromServerByTaskId();
         }else {

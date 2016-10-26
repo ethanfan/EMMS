@@ -20,9 +20,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/name_tag"
         android:layout_marginTop="5dp"
-        android:layout_alignRight="@+id/start_time_tag"
         android:textColor="@color/black"
         android:textSize="18sp"
+        android:layout_alignRight="@+id/start_time_tag"
         android:text="@string/UserName"/>
     <TextView
         android:layout_width="wrap_content"

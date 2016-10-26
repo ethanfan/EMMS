@@ -28,7 +28,6 @@ import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.Task;
-import com.emms.ui.WheelView.widget.WheelView;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 
@@ -60,20 +59,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     private ObjectElement TaskEquipmentData;
     private boolean is_Main_person_in_charge_operator_id=false;
     private boolean isNoEuqipment=false;
-    public void setOperator_Status(int operator_Status) {
-        Operator_Status = operator_Status;
 
-        if(Operator_Status==-1){
-            showList.clear();
-            if(Equipment_Operator_Status_List.size()==0){
-                initMap();
-            }
-            showList.add(Equipment_Operator_Status_List.get(0));
-        if(Status!=null&&Status.getAdapter()!=null){
-            Status.setWheelData(showList);
-        }
-        }
-    }
     private int Operator_Status=-1;
 
 //    public void setEquipment_Status(int equipment_Status) {
@@ -81,7 +67,6 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 //    }
 //
 //    private int Equipment_Status=-1;
-    private WheelView Status;
 //    private ArrayWheelAdapter<String> adapter;
     private ArrayList<ObjectElement> Equipment_Status_List=new ArrayList<>();
     private ArrayList<ObjectElement> Equipment_Operator_Status_List=new ArrayList<>();
@@ -334,7 +319,6 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
               //  change_equipment_operator_status.setBackgroundColor(Color.RED);
                change_equipment_status.setTextColor(Color.parseColor("#D2D2D2"));
                 change_equipment_operator_status.setTextColor(Color.parseColor("#C4647C"));
-                TagView(ViewTag);
             }
         });
         change_equipment_status=(Button)findViewById(R.id.change_equipment_status);
@@ -347,36 +331,10 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
               //  change_equipment_status.setBackgroundColor(Color.RED);
                    change_equipment_operator_status.setTextColor(Color.parseColor("#D2D2D2"));
                    change_equipment_status.setTextColor(Color.parseColor("#C4647C"));
-                TagView(ViewTag);
                    }
                 else {
                    ToastUtil.showToastLong(R.string.onlyTaskChargerCanChangeEquipmentStatus,context);
                }
-            }
-        });
-    }
-    private void TagView(final int tag){
-        ((Activity)context).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                showList.clear();
-                if(tag==1){
-//                    if(Operator_Status==-1){
-//                        showList.add(Equipment_Operator_Status_List.get(0));
-//                    }else{
-                        showList.addAll(Equipment_Operator_Status_List);
-                    //}
-                }else if(tag==2){
-                    if(EquipemntStatus==-1){
-                        showList.add(Equipment_Status_List.get(0));
-                    }else {
-                        showList.addAll(Equipment_Status_List);
-                    }
-                }
-                Status.setWheelData(showList);
-                if(showList.size()>0){
-                Status.smoothScrollToPosition(0);
-                }
             }
         });
     }

@@ -74,7 +74,7 @@
             android:layout_height="wrap_content"
             android:text="@string/warranty_person"
             android:textColor="@color/text_color"
-            android:layout_alignRight="@+id/id_Warranty_time_description"
+            android:layout_alignRight="@+id/Task_Equipment_Num_tag"
             android:textSize="17sp"/>
 
         <TextView
@@ -84,6 +84,8 @@
             android:textColor="@color/text_color"
             android:textSize="17sp"
             android:layout_alignTop="@+id/Warranty_person_tag"
+            android:layout_toLeftOf="@+id/command"
+            android:singleLine="true"
             android:layout_toRightOf="@+id/Warranty_person_tag" />
         <TextView
             android:layout_width="wrap_content"
@@ -125,7 +127,7 @@
             android:text="@string/repair_time"
             android:textColor="@color/text_color"
             android:layout_below="@+id/Warranty_person_tag"
-            android:layout_alignParentLeft="true"
+            android:layout_alignRight="@+id/Task_Equipment_Num_tag"
             android:textSize="17sp"/>
 
         <TextView
@@ -144,7 +146,7 @@
             android:text="@string/task_t"
             android:textColor="@color/text_color"
             android:layout_below="@+id/id_Warranty_time_description"
-            android:layout_alignParentLeft="true"
+            android:layout_alignRight="@+id/Task_Equipment_Num_tag"
             android:textSize="17sp"/>
 
         <TextView
@@ -163,7 +165,7 @@
             android:text="@string/task_state"
             android:textColor="@color/text_color"
             android:layout_below="@+id/tv_task_class"
-            android:layout_alignParentLeft="true"
+            android:layout_alignRight="@+id/Task_Equipment_Num_tag"
             android:textSize="17sp"/>
 
         <TextView
@@ -182,7 +184,7 @@
             android:text="@string/start_time"
             android:textColor="@color/text_color"
             android:layout_below="@+id/tv_task_state_tag"
-            android:layout_alignParentLeft="true"
+            android:layout_alignRight="@+id/Task_Equipment_Num_tag"
             android:textSize="17sp"/>
 
         <TextView
@@ -201,7 +203,7 @@
             android:text="@string/end_time"
             android:textColor="@color/text_color"
             android:layout_below="@+id/id_start_time_description"
-            android:layout_alignParentLeft="true"
+            android:layout_alignRight="@+id/Task_Equipment_Num_tag"
             android:textSize="17sp"/>
 
         <TextView
@@ -217,8 +219,8 @@
             android:id="@+id/Task_Equipment_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_below="@+id/tv_end_time_process"
+            android:layout_alignRight="@+id/Task_Equipment_Num_tag"
             android:layout_marginTop="3dp"
             android:text="@string/device_name"
             android:textColor="@color/text_color"
@@ -238,7 +240,6 @@
             android:id="@+id/Task_Equipment_Num_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_below="@+id/Task_Equipment"
             android:layout_marginTop="3dp"
             android:text="@string/device_num"
@@ -262,7 +263,7 @@
             android:text="@string/task_descripbe"
             android:textColor="@color/text_color"
             android:layout_below="@+id/Task_Equipment_Num"
-            android:layout_alignParentLeft="true"
+            android:layout_alignRight="@+id/Task_Equipment_Num_tag"
             android:textSize="17sp"/>
 
         <TextView

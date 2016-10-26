@@ -42,8 +42,8 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
     private ListView mGroupListView;
     private MultiAdapter adapter=null;
     private GroupAdapter groupAdapter;
-    private ArrayList<ObjectElement> listItems=new ArrayList<ObjectElement>();
-    private ArrayList<ObjectElement> listGroup=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> listItems=new ArrayList<>();
+    private ArrayList<ObjectElement> listGroup=new ArrayList<>();
     // private HashMap<ObjectElement,ArrayList<ObjectElement>> List_Group_Items=new HashMap<ObjectElement,ArrayList<ObjectElement>>();
     private ImageView bcakImageView;
     private Button sureButton;

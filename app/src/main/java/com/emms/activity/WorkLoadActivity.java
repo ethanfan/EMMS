@@ -2,9 +2,7 @@ package com.emms.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -14,48 +12,36 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
-import com.emms.adapter.TaskAdapter;
 import com.emms.adapter.WorkloadAdapter;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
-import com.google.common.primitives.Floats;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
-import org.json.JSONArray;
 
 import java.util.ArrayList;
-import java.util.DuplicateFormatFlagsException;
 import java.util.HashMap;
 
 /**
  * Created by Administrator on 2016/7/29.
+ *
  */
 public class WorkLoadActivity extends NfcActivity{
     private TextView group,task_id,total_worktime;
-    private ListView list;
-    private Button comfirm;
     private ObjectElement TaskDetail;
     private Context context=this;
     private WorkloadAdapter workloadAdapter;
     private ArrayList<ObjectElement> datas=new ArrayList<>();
     private HashMap<Integer,EditText> workloadMap=new HashMap<>();
     private boolean TaskComplete=false;
-    private ArrayList<Integer> workloadKeylist=new ArrayList<Integer>();
+    private ArrayList<Integer> workloadKeylist=new ArrayList<>();
  //   private HashMap<Integer,String> workloadEditTextNum=new HashMap<Integer, String>();
     private String TaskClass;
     @Override
@@ -158,10 +144,10 @@ public class WorkLoadActivity extends NfcActivity{
         group=(TextView)findViewById(R.id.group);
         task_id=(TextView)findViewById(R.id.task_ID);
         total_worktime=(TextView)findViewById(R.id.total_worktime);
-        list=(ListView)findViewById(R.id.listView);
+        ListView list = (ListView) findViewById(R.id.listView);
         list.setAdapter(workloadAdapter);
 
-        comfirm=(Button)findViewById(R.id.comfirm);
+        Button comfirm = (Button) findViewById(R.id.comfirm);
         comfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -211,8 +197,9 @@ public class WorkLoadActivity extends NfcActivity{
     private void SetViewData(ObjectElement ViewData){
         group.setText(DataUtil.isDataElementNull(ViewData.get("TaskApplicantOrgName")));
         task_id.setText(DataUtil.isDataElementNull(ViewData.get(Task.TASK_ID)));
-        total_worktime.setText(DataUtil.isDataElementNull(ViewData.get("Workload"))+getResources().getString(R.string.hours));
-        if(ViewData.get("TaskOperator")!=null&&ViewData.get("TaskOperator").asArrayElement().size()>0) {
+        String s=DataUtil.isDataElementNull(ViewData.get("Workload"))+getResources().getString(R.string.hours);
+        total_worktime.setText(s);
+        if(ViewData.get("TaskOperator")!=null&&ViewData.get("TaskOperator").isArray()&&ViewData.get("TaskOperator").asArrayElement().size()>0) {
                 for (int i = 0; i < ViewData.get("TaskOperator").asArrayElement().size(); i++) {
                     datas.add(ViewData.get("TaskOperator").asArrayElement().get(i).asObjectElement());
                 }
@@ -254,7 +241,7 @@ public class WorkLoadActivity extends NfcActivity{
         showCustomDialog(R.string.submitData);
         //if(workloadAdapter.)
       HttpParams httpParams=new HttpParams();
-      ArrayList<ObjectElement> submitWorkloadData=new ArrayList<ObjectElement>();
+      ArrayList<ObjectElement> submitWorkloadData=new ArrayList<>();
       for (int i=0;i<workloadAdapter.getDatas().size();i++){
           ObjectElement obj=workloadAdapter.getDatas().get(i);
           JsonObjectElement jsonObjectElement=new JsonObjectElement();

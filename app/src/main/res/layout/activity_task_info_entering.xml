@@ -28,7 +28,7 @@
                 android:orientation="horizontal">
                 <TextView
             android:layout_width="0dp"
-            android:layout_weight="1.6"
+            android:layout_weight="1.7"
             android:layout_height="wrap_content"
             android:text="@string/task_descr"
             android:textSize="17sp"
@@ -50,9 +50,10 @@
                 android:orientation="horizontal">
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="1.6"
+                android:layout_weight="1.7"
                 android:layout_height="wrap_content"
-                android:text="@string/task_equipment_num"
+                android:text="@string/e_num"
+                android:singleLine="true"
                 android:textSize="17sp"
                 android:gravity="end"
                 android:textColor="@color/text_color"/>
@@ -73,7 +74,7 @@
                 android:orientation="horizontal">
                 <TextView
                     android:layout_width="0dp"
-                    android:layout_weight="1.6"
+                    android:layout_weight="1.7"
                     android:layout_height="wrap_content"
                     android:text="@string/create_time"
                     android:textSize="17sp"
@@ -99,7 +100,7 @@
                     android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="0dp"
-                    android:layout_weight="1.6"
+                    android:layout_weight="1.7"
                     android:layout_height="wrap_content"
                     android:gravity="end"
                     android:textSize="17sp"
@@ -136,7 +137,7 @@
     <TextView
         android:id="@+id/task_start_time_tag"
         android:layout_width="0dp"
-        android:layout_weight="1.6"
+        android:layout_weight="1.7"
         android:layout_height="wrap_content"
         android:gravity="end"
         android:layout_gravity="center_vertical"
@@ -190,7 +191,7 @@
         <TextView
             android:id="@+id/task_end_time_tag"
             android:layout_width="0dp"
-            android:layout_weight="1.6"
+            android:layout_weight="1.7"
             android:layout_height="wrap_content"
             android:gravity="end"
             android:layout_gravity="center_vertical"
@@ -244,7 +245,7 @@
             android:id="@+id/ccccc">
             <TextView
                 android:layout_width="0dp"
-                android:layout_weight="1.6"
+                android:layout_weight="1.7"
                 android:layout_height="wrap_content"
                 android:id="@+id/type_tag"
                 android:text="@string/fault_t"
@@ -272,7 +273,7 @@
                 android:layout_marginTop="15dp">
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="1.6"
+            android:layout_weight="1.7"
             android:layout_height="wrap_content"
             android:text="@string/fault_d"
             android:layout_below="@+id/ccccc"
@@ -310,7 +311,7 @@
             android:layout_marginTop="15dp">
         <TextView
             android:layout_width="0dp"
-            android:layout_weight="1.6"
+            android:layout_weight="1.7"
             android:gravity="end"
             android:layout_height="wrap_content"
             android:text="@string/repair_s"
@@ -350,7 +351,7 @@
                     android:layout_height="wrap_content">
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1.6"
+                        android:layout_weight="1.7"
                         android:layout_height="wrap_content"
                         android:text="@string/response_speed"
                         android:gravity="end"
@@ -370,7 +371,7 @@
                     android:layout_height="wrap_content">
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1.6"
+                        android:layout_weight="1.7"
                         android:layout_height="wrap_content"
                         android:text="@string/service_attitude"
                         android:textColor="@color/text_color"
@@ -391,7 +392,7 @@
                     android:orientation="horizontal">
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="1.6"
+                        android:layout_weight="1.7"
                         android:gravity="end"
                         android:layout_height="wrap_content"
                         android:text="@string/repair_speed"

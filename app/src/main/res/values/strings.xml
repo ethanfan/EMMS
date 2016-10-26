@@ -38,6 +38,7 @@
     <string name="applicanter">创建人员：</string>
     <string name="equipment_num"> 机台编号: </string>
     <string name="task_equipment_num"> 机台编号： </string>
+    <string name="e_num"> 机台编号： </string>
     <string name="group">所属组别：</string>
     <string name="belongGroup">所属组别:</string>
     <string name="equipment_name"> 设备名称: </string>
@@ -192,7 +193,7 @@
     <string name="repair_status">维修情况:</string>
     <string name="repair_s">维修情况：</string>
     <string name="faultType">故障类型</string>
-    <string name="total_worktime">总工时：</string>
+    <string name="total_worktime">工时总和：</string>
     <string name="total_workload">核定工时：</string>
     <string name="workload">工作总量：</string>
     <string name="workL">工作总量:</string>
@@ -467,4 +468,11 @@
     <string name="pleaseScanEquipmentCard">请先扫描机台卡</string>
     <string name="NotVerify">未核验</string>
     <string name="pleaseSelectMainPerson">请勾选任务主负责人</string>
+    <string name="chinese">简体中文</string>
+    <string name="english">English</string>
+    <string name="langugage">语言</string>
+    <string name="LanguageSetting">语言:</string>
+    <string name="LanguageTitle">语言设置</string>
+    <string name="equelToOrLargeThan">大于或等于</string>
+    <string name="ChangeLanguagePleaseWait">正在修改语言，请稍后</string>
 </resources>

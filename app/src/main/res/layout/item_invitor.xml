@@ -56,8 +56,7 @@
                 android:textColor="@color/text_color"
                 android:text="@string/tech"
                 android:layout_below="@+id/textView22"
-                android:layout_alignLeft="@+id/textView22"
-                android:layout_alignStart="@+id/textView22"
+                android:layout_alignRight="@+id/textView22"
                 android:id="@+id/textView23"
                 android:paddingBottom="13dp"/>
             <TextView

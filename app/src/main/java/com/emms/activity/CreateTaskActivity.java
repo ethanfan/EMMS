@@ -85,7 +85,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private ImageView create_task_action, device_num_action;
     private KProgressHUD hud;
     private String TaskClass;
-    private HashMap<String,String> Task_Class_Name=new HashMap<String, String>();
+    private HashMap<String,String> Task_Class_Name=new HashMap<>();
     private AlertDialog mDialog;
     private static final DateFormat TIME_FORMAT = SimpleDateFormat.getDateTimeInstance();
 
@@ -710,6 +710,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         }
                         task_type_class.put(element.asArrayElement().get(i).asObjectElement().get("DataName").valueAsString(),
                                 element.asArrayElement().get(i).asObjectElement().get("DataCode").valueAsString());
+//                        Task_Class_Name.put(element.asArrayElement().get(i).asObjectElement().get("DataCode").valueAsString(),
+//                                element.asArrayElement().get(i).asObjectElement().get("DataName").valueAsString());
                     }
                     runOnUiThread(new Runnable() {
                         @Override
@@ -1566,18 +1568,6 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         //task_type.setText(getResources().getString(R.string.repair));
 
         getOrganiseNameAndEquipmentNameByEquipmentID(equipmentID);
-//        String sql="select * from Equipment where Equipment_ID="+equipmentID;
-//        getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, new StoreCallback() {
-//            @Override
-//            public void success(DataElement element, String resource) {
-
-//
-//            }
-//            @Override
-//            public void failure(DatastoreException ex, String resource) {
-//                Log.e("","");
-//            }
-//        });
     }
 }
 

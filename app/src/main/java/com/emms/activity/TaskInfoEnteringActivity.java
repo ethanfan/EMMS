@@ -300,8 +300,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
         });
     }
     private void initData(){
-        String sql="select * from DataDictionary where DataType='EquipmentTroubleSort'";
-        getSqliteStore().performRawQuery(sql, "DataDictionary", new StoreCallback() {
+        DataUtil.getDataFromDataBase(context, "EquipmentTroubleSort", new StoreCallback() {
             @Override
             public void success(DataElement element, String resource) {
                 if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
@@ -313,7 +312,12 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
 
             @Override
             public void failure(DatastoreException ex, String resource) {
-
+                  runOnUiThread(new Runnable() {
+                      @Override
+                   public void run() {
+                ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,context);
+                   }
+                   });
             }
         });
     }

@@ -18,20 +18,21 @@
         android:layout_height="wrap_content"
         android:id="@+id/content"
         android:layout_below="@+id/toolbar">
-        <RelativeLayout
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="22dp"
             android:id="@+id/ccccc">
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1.5"
         android:layout_height="wrap_content"
         android:id="@+id/type_tag"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_centerVertical="true"
+        android:gravity="end"
+        android:paddingRight="5dp"
+        android:layout_gravity="center_vertical"
         android:text="@string/fault_type"
-        android:textSize="20sp"/>
+        android:textSize="17sp"/>
   <!--
     <TextView
         android:layout_width="wrap_content"
@@ -43,11 +44,9 @@
         android:textSize="20sp"/>
         -->
     <com.emms.ui.DropEditText
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/type_tag"
-        android:layout_alignParentRight="true"
-        android:layout_marginLeft="20dp"
+        android:layout_weight="3"
         android:layout_marginRight="20dp"
         android:layout_centerVertical="true"
         android:id="@+id/type"
@@ -55,18 +54,25 @@
         drop:dropMode="flow_parent"
         drop:hint="@string/select"
         drop:hintColor="@color/hint_color"/>
-        </RelativeLayout>
-    <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/fault_description"
-    android:layout_below="@+id/ccccc"
-    android:layout_marginTop="15dp"
-        android:layout_marginLeft="20dp"
-    android:id="@+id/description_tag"
-    android:textSize="20sp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_below="@+id/ccccc"
+            android:id="@+id/bbbbbbb"
+            android:layout_marginTop="22dp"
+            android:layout_height="wrap_content">
+        <TextView
+        android:layout_width="0dp"
+        android:layout_weight="1.5"
+        android:layout_height="wrap_content"
+        android:text="@string/fault_description"
+        android:gravity="end"
+            android:paddingRight="5dp"
+        android:id="@+id/description_tag"
+        android:textSize="17sp"/>
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="3"
             android:layout_height="120dp"
             android:layout_toRightOf="@+id/description_tag"
             android:layout_alignTop="@+id/description_tag"
@@ -74,7 +80,6 @@
             android:layout_marginRight="20dp"
             android:background="@color/white"
             android:id="@+id/layout"
-            android:layout_marginLeft="20dp"
             >
     <EditText
         android:id="@+id/description"
@@ -89,17 +94,25 @@
         android:paddingLeft="5dp"
         android:textSize="18sp" />
         </RelativeLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_below="@+id/bbbbbbb"
+            android:layout_marginTop="22dp"
+            android:layout_height="wrap_content">
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1.5"
             android:layout_height="wrap_content"
             android:text="@string/repair_status"
-            android:layout_below="@+id/layout"
-            android:layout_marginTop="15dp"
             android:id="@+id/status_tag"
-            android:textSize="20sp"
+            android:gravity="end"
+            android:paddingRight="5dp"
+            android:textSize="17sp"
             android:layout_alignLeft="@+id/description_tag"/>
         <RelativeLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="3"
             android:layout_height="120dp"
             android:layout_toRightOf="@+id/description_tag"
             android:layout_alignTop="@+id/status_tag"
@@ -121,7 +134,7 @@
                 android:textColorHint="@color/hint_color"
                 android:textSize="18sp" />
         </RelativeLayout>
-
+        </LinearLayout>
     <!--<EditText-->
         <!--android:id="@+id/repair_status"-->
         <!--android:layout_width="wrap_content"-->

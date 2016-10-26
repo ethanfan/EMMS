@@ -11,7 +11,7 @@ public class BuildConfig {
 		GARMENT
 	}
 	
-	public static final ServerEndPoint endPoint = ServerEndPoint.DEVELOPMENT;
+	public static final ServerEndPoint endPoint = ServerEndPoint.UAT;
 
 	//Production
 	private static final String productionAPIEndPoint = "http://devazure.esquel.cn:80/EMMS/api/";

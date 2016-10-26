@@ -22,6 +22,7 @@ import com.emms.R;
 import com.emms.adapter.MainActivityAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
+import com.emms.util.BaseData;
 import com.emms.util.DataUtil;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
@@ -339,6 +340,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                             if(json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1")!=null&&
                                     json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0")!=null) {
                                 ObjectElement jsonObjectElement=json.get("PageData").asArrayElement().get(i).asObjectElement();
+                                optimizationData(jsonObjectElement,"S0","S1");
                                 String taskNumToShow;
                                 if(DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")).equals("C1")
                                         ||DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")).equals("C2")
@@ -356,12 +358,16 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                         adapter.notifyDataSetChanged();
                     }
                 }
+                BaseData.setTaskClass(context);
+                BaseData.setTaskStatus(context);
                 dismissCustomDialog();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                BaseData.setTaskClass(context);
+                BaseData.setTaskStatus(context);
                 if(errorNo==401){
                     ToastUtil.showToastLong(R.string.unauthorization,context);
                     dismissCustomDialog();
@@ -423,5 +429,17 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         startActivity(intent);
+    }
+    private void optimizationData(ObjectElement data,String key1,String key2){
+        if(data.get(key1)!=null
+                &&DataUtil.isNum(DataUtil.isDataElementNull(data.get(key1)))
+                &&data.get(key1).valueAsInt()>=100){
+            data.set(key1,"99+");
+        }
+        if(data.get(key2)!=null
+                &&DataUtil.isNum(DataUtil.isDataElementNull(data.get(key2)))
+                &&data.get(key2).valueAsInt()>=100){
+            data.set(key2,"99+");
+        }
     }
 }

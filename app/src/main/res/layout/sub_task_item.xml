@@ -2,17 +2,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-  <RelativeLayout
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginLeft="20dp"
-      android:layout_marginTop="3dp"
-      android:id="@+id/one">
       <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:textColor="@color/black"
           android:id="@+id/work_num_tag"
+          android:textSize="17sp"
+          android:layout_alignRight="@+id/equipment_num_tag"
           android:text="@string/work_num"/>
       <TextView
           android:layout_width="wrap_content"
@@ -20,15 +16,16 @@
           android:textColor="@color/black"
           android:id="@+id/work_num"
           android:paddingLeft="10dp"
+          android:textSize="17sp"
           android:layout_toRightOf="@id/work_num_tag"/>
       <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:textColor="@color/black"
           android:layout_marginTop="5dp"
-          android:layout_alignRight="@+id/work_num_tag"
           android:id="@+id/equipment_num_tag"
           android:text="@string/sub_task_equipment_num"
+          android:textSize="17sp"
           android:layout_below="@+id/work_num_tag"/>
       <TextView
           android:layout_width="wrap_content"
@@ -36,67 +33,37 @@
           android:id="@+id/equipment_num"
           android:textColor="@color/black"
           android:paddingLeft="10dp"
+          android:textSize="17sp"
           android:layout_alignTop="@+id/equipment_num_tag"
           android:layout_toRightOf="@+id/equipment_num_tag"/>
-
-  </RelativeLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
+            android:textColor="@color/order_color"
             android:id="@+id/approve_work_hours_tag"
             android:layout_alignTop="@+id/one"
+            android:textSize="17sp"
             android:layout_toLeftOf="@+id/approve_work_hours"
             android:text="@string/standardWorkload"/>
         <TextView
             android:layout_width="60dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
+            android:textColor="@color/order_color"
             android:id="@+id/approve_work_hours"
+            android:textSize="17sp"
             android:layout_alignTop="@+id/approve_work_hours_tag"
             android:layout_alignParentRight="true"/>
 
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/status_tag"-->
-        <!--android:layout_marginTop="5dp"-->
-        <!--android:layout_below="@+id/approve_work_hours_tag"-->
-        <!--android:layout_alignLeft="@+id/approve_work_hours_tag"-->
-        <!--android:layout_toLeftOf="@+id/status"-->
-        <!--android:textColor="@color/black"-->
-        <!--android:text="@string/auditing_status"/>-->
-    <!--<TextView-->
-        <!--android:layout_width="60dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/status"-->
-        <!--android:textColor="@color/black"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_alignTop="@+id/status_tag"/>-->
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/six"
-        android:layout_below="@+id/one"
-        android:layout_marginTop="5dp"
-        android:layout_alignLeft="@id/one">
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/three"
-        android:layout_below="@+id/six"
-
-        android:layout_alignLeft="@id/one">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/work_name_tag"
             android:textColor="@color/black"
+            android:layout_below="@+id/equipment_num_tag"
+            android:layout_marginTop="5dp"
+            android:textSize="17sp"
+            android:layout_alignRight="@+id/equipment_num_tag"
             android:text="@string/work_name"/>
         <TextView
             android:layout_width="wrap_content"
@@ -104,22 +71,18 @@
             android:id="@+id/work_name"
             android:textColor="@color/black"
             android:paddingLeft="10dp"
+            android:textSize="17sp"
+            android:layout_alignTop="@+id/work_name_tag"
             android:layout_toRightOf="@id/work_name_tag"/>
-    </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/five"
-        android:layout_below="@+id/three"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="3dp"
-        android:layout_alignLeft="@id/three">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
             android:id="@+id/work_description_tag"
+            android:layout_marginTop="5dp"
+            android:textSize="17sp"
+            android:layout_below="@+id/work_name_tag"
             android:text="@string/work_description"/>
         <TextView
             android:layout_width="wrap_content"
@@ -127,7 +90,8 @@
             android:id="@+id/work_description"
             android:textColor="@color/black"
             android:paddingLeft="10dp"
+            android:textSize="17sp"
+            android:layout_alignTop="@+id/work_description_tag"
             android:layout_toRightOf="@id/work_description_tag"/>
-    </RelativeLayout>
 
 </RelativeLayout>

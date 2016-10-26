@@ -49,6 +49,15 @@ public class SystemSettingActivity extends NfcActivity implements View.OnClickLi
         initView();
         initData();
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if(SharedPreferenceManager.getLanguageChange(this)){
+            initView();
+        }
+    }
+
     private void initView(){
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.systemSetting);
         findViewById(R.id.btn_right_action).setOnClickListener(this);

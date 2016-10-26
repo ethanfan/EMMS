@@ -7,11 +7,13 @@ import com.emms.push.PushService;
 import com.emms.util.LocaleUtils;
 import com.datastore_android_sdk.datastore.Datastore;
 import com.datastore_android_sdk.sqlite.SqliteStore;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.Locale;
 
 /**
  * Created by jaffer.deng on 2016/6/3.
+ *
  */
 public class AppApplication extends Application {
 
@@ -26,9 +28,10 @@ public class AppApplication extends Application {
         System.setProperty("ssl.TrustManagerFactory.algorithm",
                 javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm());
         LocaleUtils.SupportedLanguage language = LocaleUtils.getLanguage(this);
-        LocaleUtils.setLanguage(this, language != null ? language : LocaleUtils.SupportedLanguage.getSupportedLanguage(Locale.CHINESE.toString()));
-
+        //LocaleUtils.setLanguage(this, language != null ? language : LocaleUtils.SupportedLanguage.getSupportedLanguage(Locale.CHINESE.toString()));
+        LocaleUtils.setLanguage(this, language != null ? language :  LocaleUtils.SupportedLanguage.getSupportedLanguage(getResources().getConfiguration().locale.getLanguage()));
         PushService.registerMessageReceiver(this);
+        CrashReport.initCrashReport(getApplicationContext(), "900057191", true);
 
     }
 

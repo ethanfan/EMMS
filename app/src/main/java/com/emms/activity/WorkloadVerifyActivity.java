@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -26,6 +27,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.datastore_android_sdk.DatastoreException.DatastoreException;
+import com.datastore_android_sdk.callback.StoreCallback;
+import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
@@ -33,11 +37,13 @@ import com.emms.adapter.ResultListAdapter;
 import com.emms.fragment.LinkedVerifyFragment;
 import com.emms.fragment.OverDueVerifyFragment;
 import com.emms.fragment.PendingVerifyFragment;
+import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
+import com.emms.util.BaseData;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.emms.util.ViewFindUtils;
@@ -73,15 +79,35 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
     private DropEditText filterCondition;
     private EditText filterTime;
     private HashMap<String,Integer> filter_condition_map=new HashMap<>();
+
+    //private HashMap<String,String> TaskClass=new HashMap<>();
+    //private HashMap<String,String> TaskStatus=new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workload_verify);
+        if(!BaseData.setBaseData(mContext)){
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            init();
+                        }
+                    });
+                }
+            },1000);
+        }else {
+            init();
+        }
+       // getCommandListFromServer();
+    }
+    private void init(){
         initView();
         initFragment();
         initData();
         initSearchView();
-       // getCommandListFromServer();
     }
     private void initView() {
         ((TextView) findViewById(R.id.tv_title)).setText(R.string.workloadVerify);
@@ -158,7 +184,7 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
         mTitles =getResources().getStringArray(R.array.select_tab_verify_status);
         for (int i =0;i< mTitles.length;i++) {
             if (i==0) {
-                PendingVerifyFragment pendingVerifyFragment= PendingVerifyFragment.newInstance();
+                PendingVerifyFragment pendingVerifyFragment= PendingVerifyFragment.newInstance(BaseData.getTaskClass(),BaseData.getTaskStatus());
                 pendingVerifyFragment.setTaskNumInteface(new TaskNumInteface() {
                     @Override
                     public void ChangeTaskNumListener(int tag, int num) {
@@ -170,7 +196,7 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
                 });
                 mFragments.add(pendingVerifyFragment);
             }else if (i ==1){
-                LinkedVerifyFragment linkedVerifyFragment= LinkedVerifyFragment.newInstance();
+                LinkedVerifyFragment linkedVerifyFragment= LinkedVerifyFragment.newInstance(BaseData.getTaskClass(),BaseData.getTaskStatus());
                 linkedVerifyFragment.setTaskNumInteface(new TaskNumInteface() {
                     @Override
                     public void ChangeTaskNumListener(int tag, int num) {
@@ -182,7 +208,7 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
                 });
                 mFragments.add(linkedVerifyFragment);
             }else {
-                OverDueVerifyFragment overDueVerifyFragment= OverDueVerifyFragment.newInstance();
+                OverDueVerifyFragment overDueVerifyFragment= OverDueVerifyFragment.newInstance(BaseData.getTaskClass(),BaseData.getTaskStatus());
                 mFragments.add(overDueVerifyFragment);
             }
         }
