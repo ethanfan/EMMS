@@ -1,6 +1,6 @@
 package com.emms.activity;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -325,7 +325,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     convertView.setOnClickListener(new AdapterView.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-          //                  if(!DataUtil.isDataElementNull(datas.get(position).get("Status")).equals("0")) {
+                            if(!DataUtil.isDataElementNull(datas.get(position).get("Status")).equals("0")) {
                                 Intent intent = new Intent(mContext, MeasurePointActivity.class);
                                 intent.putExtra(Task.TASK_ID, taskId.toString());
                                 intent.putExtra("TaskEquipment", datas.get(position).toString());
@@ -335,14 +335,14 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                     intent.putExtra(Task.TASK_SUBCLASS, TaskSubClass);
                                 }
                                 startActivity(intent);
-//                            }else{
-//                                runOnUiThread(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//                                        ToastUtil.showToastLong(R.string.pleaseScanEquipmentCard,mContext);
-//                                    }
-//                                });
-//                            }
+                            }else{
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ToastUtil.showToastLong(R.string.pleaseScanEquipmentCard,mContext);
+                                    }
+                                });
+                            }
                         }
                     });
                 }
@@ -1249,6 +1249,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     }
 
     //主线程中的handler
+    @SuppressLint("HandlerLeak")
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {

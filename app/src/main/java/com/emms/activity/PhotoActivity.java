@@ -20,6 +20,7 @@ import java.util.List;
 
 /**
  * Created by jaffer.deng on 2016/6/27.
+ *
  */
 public class PhotoActivity extends NfcActivity{
     private ArrayList<View> listViews = null;
@@ -27,9 +28,9 @@ public class PhotoActivity extends NfcActivity{
     private MyPageAdapter adapter;
     private int count;
 
-    public List<Bitmap> bmp = new ArrayList<Bitmap>();
-    public List<String> drr = new ArrayList<String>();
-    public List<String> del = new ArrayList<String>();
+    public List<Bitmap> bmp = new ArrayList<>();
+    public List<String> drr = new ArrayList<>();
+    public List<String> del = new ArrayList<>();
     public int max;
 
     RelativeLayout photo_relativeLayout;
@@ -128,8 +129,8 @@ public class PhotoActivity extends NfcActivity{
         ImageView img = new ImageView(this);// 构造textView对象
         img.setBackgroundColor(0xff000000);
         img.setImageBitmap(bm);
-        img.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-                ViewGroup.LayoutParams.FILL_PARENT));
+        img.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
         listViews.add(img);// 添加view
     }
 

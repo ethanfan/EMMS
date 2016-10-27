@@ -19,7 +19,6 @@ import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
-import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
@@ -28,7 +27,6 @@ import com.emms.ui.CancelTaskDialog;
 import com.emms.ui.TaskCancelListener;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
-import com.emms.util.RootUtil;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -52,7 +50,6 @@ public class AllTaskHistoryFragment extends BaseFragment {
     private  int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
-    private ArrayList<ObjectElement> submitData=new ArrayList<>();
     private static HashMap<String,String> map=new HashMap<>();
     private static HashMap<String,String> taskStatusMap=new HashMap<>();
     @Override
@@ -147,7 +144,7 @@ public class AllTaskHistoryFragment extends BaseFragment {
                 intent.putExtra("TaskDetail",data.get(position-1).asObjectElement().toString());
                 intent.putExtra(Task.TASK_ID,DataUtil.isDataElementNull(data.get(position-1).get(Task.TASK_ID)));
                 intent.putExtra(Task.TASK_CLASS,DataUtil.isDataElementNull(data.get(position-1).get(Task.TASK_CLASS)));
-                intent.putExtra("TaskStatus",DataUtil.isDataElementNull(data.get(position-1).get("Status")));
+                intent.putExtra("TaskStatus",data.get(position-1).get("Status").valueAsInt());
                 intent.putExtra("isTaskHistory",true);
                 intent.putExtra("FromFragment","1");
                // intent.putExtra("IsEvaluated",DataUtil.isDataElementNull(data.get(position-1).get("IsEvaluated")));
@@ -194,7 +191,7 @@ public class AllTaskHistoryFragment extends BaseFragment {
     }
 
 
-    public static AllTaskHistoryFragment newInstance(HashMap TaskClass,HashMap TaskStatus){
+    public static AllTaskHistoryFragment newInstance(HashMap<String,String> TaskClass,HashMap<String,String> TaskStatus){
         AllTaskHistoryFragment fragment = new AllTaskHistoryFragment();
         Bundle bundle = new Bundle();
         //bundle.putString(Task.TASK_CLASS, TaskClass);
@@ -203,12 +200,6 @@ public class AllTaskHistoryFragment extends BaseFragment {
         fragment.setArguments(bundle);
         return fragment;
     }
-    public void setTaskNumInteface(TaskNumInteface taskNumInteface) {
-        this.taskNumInteface = taskNumInteface;
-    }
-
-    private TaskNumInteface taskNumInteface;
-
 
     private void getTaskHistory(){
         if(RecCount!=0){

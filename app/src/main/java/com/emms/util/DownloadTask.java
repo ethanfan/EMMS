@@ -1,5 +1,12 @@
 package com.emms.util;
 
+import android.content.Context;
+
+import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -7,14 +14,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
-import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
-
-import android.content.Context;
-import android.os.Environment;
 
 
 /**
@@ -83,11 +82,10 @@ public class DownloadTask {
 	}
 
 	/**
-	 * 
-	 * @param
-	 * @param in
-	 * @param desPath
-	 * @return
+	 *
+	 * @param in inputStream
+	 * @param desPath String
+	 * @return boolean
 	 * @throws IOException
 	 */
 	private boolean saveFile(InputStream in, String desPath) throws IOException {

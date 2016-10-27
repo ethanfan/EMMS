@@ -2,7 +2,6 @@ package com.emms.activity;
 
 import android.app.AlertDialog;
 import android.app.Notification;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -33,7 +32,6 @@ import com.emms.ConfigurationManager;
 import com.emms.R;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
-import com.emms.push.ExampleUtil;
 import com.emms.push.PushService;
 import com.emms.schema.BaseOrganise;
 import com.emms.schema.DataDictionary;
@@ -43,7 +41,6 @@ import com.emms.schema.Equipment;
 import com.emms.schema.Operator;
 import com.emms.schema.TaskOrganiseRelation;
 import com.emms.ui.KProgressHUD;
-import com.emms.ui.PopMenuLoginActivity;
 import com.emms.ui.UserRoleDialog;
 import com.emms.util.BuildConfig;
 import com.emms.util.Constants;
@@ -51,22 +48,22 @@ import com.emms.util.DataUtil;
 import com.emms.util.DownloadCallback;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import cn.jpush.android.api.BasicPushNotificationBuilder;
 import cn.jpush.android.api.CustomPushNotificationBuilder;
 import cn.jpush.android.api.JPushInterface;
 
 public class LoginActivity extends NfcActivity implements View.OnClickListener {
-    private static final String TAG = "LoginActivity";
     private Context mContext;
     //private TextView machine;
     private EditText inputPassWord;
@@ -75,7 +72,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     private String def_Factory="GEW";
     //private ImageButton setting;
     private Handler pushHandler = PushService.mHandler;
-    private Handler handle=new Handler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +80,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         if(SharedPreferenceManager.getFactory(this)==null){
             SharedPreferenceManager.setFactory(this,def_Factory);
         }
+        JPushInterface.init(mContext);
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, new LinkedHashSet<>()));
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "All"));
         setStyleCustom();
@@ -202,13 +199,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     }
 
 
-    private void showDialog(String title, String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(title);
-        builder.setMessage(message);
-        builder.setNeutralButton(R.string.warning_message_confirm, null);
-        builder.show();
-    }
 
     private boolean hasNetworkConnection() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -256,7 +246,9 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             if(dbFile.exists()){
                 try{
                     //解压db文件
-                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);}catch (Exception e){
+                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
+                }catch (Throwable e){
+                    CrashReport.postCatchedException(e);
                 }
                 return;
             }
@@ -266,7 +258,9 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             if(dbFile.exists()){
                 try{
                     //解压db文件
-                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);}catch (Exception e){
+                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
+                }catch (Throwable e){
+                    CrashReport.postCatchedException(e);
                 }
                 return;
             }
@@ -492,19 +486,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         }*/
 
     }
-    private void ShowPopWindow(View v){
-        PopMenuLoginActivity popMenuLoginActivity = new PopMenuLoginActivity(this) {
 
-            @Override
-            public void onEventDismiss() {
-
-            }
-        };
-        String[] mTitles = getResources().getStringArray(R.array.menu_login);
-
-        popMenuLoginActivity.addItems(mTitles);
-        popMenuLoginActivity.showAsDropDown(v);
-    }
     private void getDBDataLastUpdateTime(){
         String sql="    select * from ( select max(LastUpdateTime) LastUpdateTime_BaseOrganise from BaseOrganise)," +
                 "    (select max(LastUpdateTime) LastUpdateTime_DataDictionary from DataDictionary)," +
@@ -530,16 +512,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             }
         });
     }
-
-
-    //for receive customer msg from jpush server
-    private MessageReceiver mMessageReceiver;
-    public static final String MESSAGE_RECEIVED_ACTION = "com.example.jpushdemo.MESSAGE_RECEIVED_ACTION";
-    public static final String KEY_TITLE = "title";
-    public static final String KEY_MESSAGE = "message";
-    public static final String KEY_EXTRAS = "extras";
-
-
     @Override
     public void resolveNfcMessage(Intent intent) {
         String action = intent.getAction();
@@ -559,44 +531,17 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         }
     }
 
-    public class MessageReceiver extends BroadcastReceiver {
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (MESSAGE_RECEIVED_ACTION.equals(intent.getAction())) {
-                String messge = intent.getStringExtra(KEY_MESSAGE);
-                String extras = intent.getStringExtra(KEY_EXTRAS);
-                StringBuilder showMsg = new StringBuilder();
-                showMsg.append(KEY_MESSAGE + " : " + messge + "\n");
-                if (!ExampleUtil.isEmpty(extras)) {
-                    showMsg.append(KEY_EXTRAS + " : " + extras + "\n");
-                }
-                setCostomMsg(showMsg.toString());
-            }
-        }
-    }
 
-    private EditText msgText;
-    private void setCostomMsg(String msg){
-        if (null != msgText) {
-            msgText.setText(msg);
-            msgText.setVisibility(View.VISIBLE);
-        }
-    }
-    // 初始化 JPush。如果已经初始化，但没有登录成功，则执行重新登录。
-    private void init(){
-        Log.e("aaaaaaaa",mContext.toString());
-        JPushInterface.init(mContext);
-    }
-    private void setStyleBasic(){
-        BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(this);
-        builder.statusBarDrawable = R.drawable.ic_emms;
-        builder.notificationFlags = Notification.FLAG_AUTO_CANCEL;  //设置为点击后自动消失
-        builder.notificationDefaults = Notification.DEFAULT_ALL;
-        //设置为铃声（ Notification.DEFAULT_SOUND）或者震动（ Notification.DEFAULT_VIBRATE）
-        JPushInterface.setDefaultPushNotificationBuilder(builder);
-        JPushInterface.setPushNotificationBuilder(4, builder);
-    }
+//    private void setStyleBasic(){
+//        BasicPushNotificationBuilder builder = new BasicPushNotificationBuilder(this);
+//        builder.statusBarDrawable = R.drawable.ic_emms;
+//        builder.notificationFlags = Notification.FLAG_AUTO_CANCEL;  //设置为点击后自动消失
+//        builder.notificationDefaults = Notification.DEFAULT_ALL;
+//        //设置为铃声（ Notification.DEFAULT_SOUND）或者震动（ Notification.DEFAULT_VIBRATE）
+//        JPushInterface.setDefaultPushNotificationBuilder(builder);
+//        JPushInterface.setPushNotificationBuilder(4, builder);
+//    }
 
     private void setStyleCustom(){
         CustomPushNotificationBuilder builder = new CustomPushNotificationBuilder(this,R.layout.customer_notitfication_layout,R.id.icon, R.id.title, R.id.text);
@@ -617,9 +562,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     @Override
     protected void onStop() {
         super.onStop();
-        if(PushService.mMessageReceiver!=null&&PushService.isBroadcastRegister()){
-     // PushService.unregisterMessageReceiver(mContext);
-            }
+
     }
     private void getDBFromServer(final File dbFile){
         // 下载Db文件
@@ -751,8 +694,8 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     if(isAccountPasswordLogin){
                     hud.dismiss();
                     Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();}
-                }catch (Exception e){
-                    throw e;
+                }catch (Throwable e){
+                    CrashReport.postCatchedException(e);
                 }
             }else{
                 if(isAccountPasswordLogin){
@@ -772,17 +715,16 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     //tagSet.add(userid);
     tagSet.add("1002");
     String[] or = Organise_ID.split(",");
-    for (int k = 0; k < or.length; k++) {
-        tagSet.add(or[k]);
-    }
+    Collections.addAll(tagSet, or);
     //tagSet.add(new JSONObject(data).get(Operator.OPERATOR_ID).toString());
-    JPushInterface.init(mContext);
+
     JPushInterface.resumePush(mContext);
     //setStyleBasic();
-    //setStyleCustom();
+    setStyleCustom();
     pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, tagSet));
     pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, new JSONObject(data).get(Operator.OPERATOR_ID).toString()));
-          }catch (Exception e){
+          }catch (Throwable e){
+          CrashReport.postCatchedException(e);
           }
     }
     private void SetRole(ObjectElement objectElement,String data){

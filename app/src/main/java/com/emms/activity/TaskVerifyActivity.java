@@ -27,6 +27,7 @@ import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 
@@ -157,13 +158,19 @@ public class TaskVerifyActivity extends NfcActivity {
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null){
-                    JsonObjectElement json=new JsonObjectElement(t);
-                    if(json.get(Data.SUCCESS).valueAsBoolean()){
-                        VerifyTaskList.remove(position);
-                        adapter.notifyDataSetChanged();
-                       ToastUtil.showToastLong(R.string.SuccessToVerify,mContext);
-                    }else {
-                        ToastUtil.showToastLong(R.string.FailToVerify,mContext);
+                    try{
+                        JsonObjectElement json=new JsonObjectElement(t);
+                        if(json.get(Data.SUCCESS).valueAsBoolean()){
+                            VerifyTaskList.remove(position);
+                            adapter.notifyDataSetChanged();
+                            ToastUtil.showToastLong(R.string.SuccessToVerify,mContext);
+                        }else {
+                            ToastUtil.showToastLong(R.string.FailToVerify,mContext);
+                        }
+                    }catch (Throwable throwable){
+                        CrashReport.postCatchedException(throwable);
+                    }finally {
+                        dismissCustomDialog();
                     }
                 }
                 dismissCustomDialog();
@@ -201,26 +208,32 @@ public class TaskVerifyActivity extends NfcActivity {
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null) {
-                    JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                    RecCount = jsonObjectElement.get("RecCount").valueAsInt();
-                    if (pageIndex == 1) {
-                        VerifyTaskList.clear();
-                    }
-                    if (jsonObjectElement.get("PageData") != null && jsonObjectElement.get("PageData").asArrayElement().size() > 0) {
-                        pageIndex++;
-                        for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
-                            VerifyTaskList.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
+                    try{
+                        JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                        RecCount = jsonObjectElement.get("RecCount").valueAsInt();
+                        if (pageIndex == 1) {
+                            VerifyTaskList.clear();
                         }
-                    }else {
-                        ToastUtil.showToastLong(R.string.noData,mContext);
-                    }
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.setDatas(VerifyTaskList);
-                            adapter.notifyDataSetChanged();
+                        if (jsonObjectElement.get("PageData") != null && jsonObjectElement.get("PageData").isArray() && jsonObjectElement.get("PageData").asArrayElement().size() > 0) {
+                            pageIndex++;
+                            for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
+                                VerifyTaskList.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
+                            }
+                        }else {
+                            ToastUtil.showToastLong(R.string.noData,mContext);
                         }
-                    });
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.setDatas(VerifyTaskList);
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+                    }catch (Throwable throwable){
+                        CrashReport.postCatchedException(throwable);
+                    }finally {
+                        dismissCustomDialog();
+                    }
                 }
                 dismissCustomDialog();
             }

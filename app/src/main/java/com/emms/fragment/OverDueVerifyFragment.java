@@ -4,28 +4,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
-import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
@@ -37,12 +29,13 @@ import java.util.HashMap;
 
 /**
  * Created by jaffer.deng on 2016/6/20.
+ *
  */
 public class OverDueVerifyFragment extends BaseFragment {
 
     private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
-    private ArrayList<ObjectElement> datas=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> datas=new ArrayList<>();
     private ArrayList<ObjectElement> submitData=new ArrayList<>();
     private Context mContext;
     private Handler handler=new Handler();
@@ -213,7 +206,7 @@ public class OverDueVerifyFragment extends BaseFragment {
             }
         });
     }
-    public static OverDueVerifyFragment newInstance(HashMap TaskClass,HashMap TaskStatus){
+    public static OverDueVerifyFragment newInstance(HashMap<String,String> TaskClass,HashMap<String,String> TaskStatus){
         OverDueVerifyFragment fragment = new OverDueVerifyFragment();
         Bundle bundle = new Bundle();
         //bundle.putString(Task.TASK_CLASS, TaskClass);

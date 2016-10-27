@@ -1,13 +1,11 @@
 package com.emms.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.emms.R;
 
@@ -15,6 +13,7 @@ import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/6/15.
+ *
  */
 public class commandAdapter extends BaseAdapter {
 
@@ -70,7 +69,7 @@ public class commandAdapter extends BaseAdapter {
         return mShowDataList;
     }
 
-    public void setDatas(ArrayList list){
+    public void setDatas(ArrayList<Integer> list){
         this.mShowDataList = list;
     }
 }

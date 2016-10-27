@@ -19,7 +19,6 @@ import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
-import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
@@ -28,11 +27,11 @@ import com.emms.ui.CancelTaskDialog;
 import com.emms.ui.TaskCancelListener;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
-import com.emms.util.RootUtil;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +51,6 @@ public class FliterTaskHistoryFragment extends BaseFragment {
     private  int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
-    private ArrayList<ObjectElement> submitData=new ArrayList<>();
     private static HashMap<String,String> map=new HashMap<>();
     private static HashMap<String,String> taskStatusMap=new HashMap<>();
     private String taskClassCode="",taskStatusCode="",timeCode="";
@@ -148,7 +146,7 @@ public class FliterTaskHistoryFragment extends BaseFragment {
                 intent.putExtra("TaskDetail", data.get(position - 1).asObjectElement().toString());
                 intent.putExtra(Task.TASK_ID, DataUtil.isDataElementNull(data.get(position - 1).get(Task.TASK_ID)));
                 intent.putExtra(Task.TASK_CLASS, DataUtil.isDataElementNull(data.get(position - 1).get(Task.TASK_CLASS)));
-                intent.putExtra("TaskStatus",DataUtil.isDataElementNull(data.get(position - 1).get("Status")));
+                intent.putExtra("TaskStatus",data.get(position-1).get("Status").valueAsInt());
                 //intent.putExtra("IsEvaluated",DataUtil.isDataElementNull(data.get(position-1).get("IsEvaluated")));
                 intent.putExtra("FromFragment","2");
                 intent.putExtra("isTaskHistory", true);
@@ -190,7 +188,7 @@ public class FliterTaskHistoryFragment extends BaseFragment {
     }
 
 
-    public static FliterTaskHistoryFragment newInstance(HashMap TaskClass,HashMap TaskStatus){
+    public static FliterTaskHistoryFragment newInstance(HashMap<String,String> TaskClass,HashMap<String,String>  TaskStatus){
         FliterTaskHistoryFragment fragment = new FliterTaskHistoryFragment();
         Bundle bundle = new Bundle();
         //bundle.putString(Task.TASK_CLASS, TaskClass);
@@ -199,11 +197,6 @@ public class FliterTaskHistoryFragment extends BaseFragment {
         fragment.setArguments(bundle);
         return fragment;
     }
-    public void setTaskNumInteface(TaskNumInteface taskNumInteface) {
-        this.taskNumInteface = taskNumInteface;
-    }
-
-    private TaskNumInteface taskNumInteface;
 
     public void getTaskHistory(){
         if(RecCount!=0){
@@ -235,20 +228,24 @@ public class FliterTaskHistoryFragment extends BaseFragment {
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null){
-                    if (pageIndex == 1) {
-                        data.clear();
-                    }
-                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").isArray()&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
-                        RecCount = jsonObjectElement.get("RecCount").valueAsInt();
-                        pageIndex++;
-                        for(DataElement dataElement:jsonObjectElement.get("PageData").asArrayElement()){
-                            data.add(dataElement.asObjectElement());
+                    try {
+                        if (pageIndex == 1) {
+                            data.clear();
                         }
-                    }else{
-                       // ToastUtil.showToastLong(R.string.noData,mContext);
+                        JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                        if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").isArray()&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
+                            RecCount = jsonObjectElement.get("RecCount").valueAsInt();
+                            pageIndex++;
+                            for(DataElement dataElement:jsonObjectElement.get("PageData").asArrayElement()){
+                                data.add(dataElement.asObjectElement());
+                            }
+                        }
+                        taskAdapter.notifyDataSetChanged();
+                    }catch (Throwable throwable){
+                        CrashReport.postCatchedException(throwable);
+                    }finally {
+                        dismissCustomDialog();
                     }
-                    taskAdapter.notifyDataSetChanged();
                 }
                 dismissCustomDialog();
             }

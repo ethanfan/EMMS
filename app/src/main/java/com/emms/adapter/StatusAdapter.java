@@ -3,10 +3,7 @@ package com.emms.adapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
-
-import com.datastore_android_sdk.datastore.ObjectElement;
 
 import java.util.ArrayList;
 
@@ -24,8 +21,6 @@ public abstract class StatusAdapter extends BaseAdapter{
 
     public StatusAdapter(ArrayList<String> datas) {
         this.datas = datas;
-    }
-    public StatusAdapter() {
     }
     public void setDatas(ArrayList<String> mDatas){
         if (mDatas.size()>0) {

@@ -475,4 +475,5 @@
     <string name="LanguageTitle">语言设置</string>
     <string name="equelToOrLargeThan">大于或等于</string>
     <string name="ChangeLanguagePleaseWait">正在修改语言，请稍后</string>
+    <string name="AppError">程序异常</string>
 </resources>

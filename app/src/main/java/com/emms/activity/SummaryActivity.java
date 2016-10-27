@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Message;
 import android.os.PersistableBundle;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
@@ -21,7 +20,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
@@ -37,27 +35,24 @@ import com.emms.adapter.ResultListAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
-import com.emms.schema.Equipment;
 import com.emms.schema.Task;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
-import com.google.common.util.concurrent.ListenableFuture;
-
-import net.minidev.json.JSONUtil;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Created by Administrator on 2016/7/25.
+ *
  */
 public class SummaryActivity extends NfcActivity{
     private DropEditText type;
     private EditText description,repair_status;
-    private Button comfirm;
     private Context context=this;
     private ResultListAdapter mResultAdapter;
     private ListView mResultListView;
@@ -69,13 +64,13 @@ public class SummaryActivity extends NfcActivity{
     private int  searchtag =0;
     private CustomDrawerLayout mDrawer_layout;
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
-    private ArrayList<ObjectElement> typeList=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> typeList=new ArrayList<>();
     private ObjectElement TaskDetail;
     private boolean TaskComplete=false;
     private String TaskTrouble_ID="";
     private String TaskClass=Task.REPAIR_TASK;
     private String TroubleType;
-    private HashMap<String,String> map=new HashMap();
+    private HashMap<String,String> map=new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +104,7 @@ public class SummaryActivity extends NfcActivity{
         type=(DropEditText)findViewById(R.id.type);
         description=(EditText)findViewById(R.id.description);
         repair_status=(EditText)findViewById(R.id.repair_status);
-        comfirm=(Button)findViewById(R.id.comfirm);
+        Button comfirm = (Button) findViewById(R.id.comfirm);
         comfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -196,7 +191,6 @@ public class SummaryActivity extends NfcActivity{
                 }
             }
         });
-        getFaultType();
         initDropSearchView(null, type.getmEditText(), context.getResources().
                         getString(R.string.faultType), DataDictionary.DATA_NAME,
                 1, R.string.getDataFail,type.getDropImage());
@@ -312,21 +306,26 @@ public class SummaryActivity extends NfcActivity{
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null) {
-                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement.get(Data.SUCCESS)!=null&&jsonObjectElement.get(Data.SUCCESS).valueAsBoolean()) {
-                        dismissCustomDialog();
-                        ToastUtil.showToastLong(R.string.submitSuccess,context);
-                        if (TaskComplete) {
+                    try{
+                        JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                        if(jsonObjectElement.get(Data.SUCCESS)!=null&&jsonObjectElement.get(Data.SUCCESS).valueAsBoolean()) {
+                            dismissCustomDialog();
+                            ToastUtil.showToastLong(R.string.submitSuccess,context);
+                            if (TaskComplete) {
 //                            Intent intent = new Intent(context, CommandActivity.class);
 //                            intent.putExtra("TaskComplete", true);
 //                            intent.putExtra("TaskDetail", TaskDetail.toString());
 //                            startActivity(intent);
-                            TaskComplete();
-                        }else{
-                            finish();
+                                TaskComplete();
+                            }else{
+                                finish();
+                            }
+                        }else {
+                            ToastUtil.showToastLong(R.string.submit_Fail,context);
                         }
-                    }else {
-                        ToastUtil.showToastLong(R.string.submit_Fail,context);
+                    }catch (Throwable throwable){
+                        ToastUtil.showToastLong(R.string.AppError,context);
+                        CrashReport.postCatchedException(throwable);
                     }
                 }
             }
@@ -349,7 +348,26 @@ public class SummaryActivity extends NfcActivity{
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null){
-                    setFaultData(t);
+                    try{
+                        JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                        if(jsonObjectElement.get("PageData").isArray() && jsonObjectElement.get("PageData").asArrayElement().size()>0){
+                            final ObjectElement faultData=jsonObjectElement.get("PageData").asArrayElement().get(0).asObjectElement();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    TaskTrouble_ID= DataUtil.isDataElementNull(faultData.get("TaskTrouble_ID"));
+                                    type.setText(DataUtil.isDataElementNull(faultData.get("TroubleType")));
+                                    TroubleType=map.get(DataUtil.isDataElementNull(faultData.get("TroubleType")));
+                                    description.setText(DataUtil.isDataElementNull(faultData.get("TroubleDescribe")));
+                                    repair_status.setText(DataUtil.isDataElementNull(faultData.get("MaintainDescribe")));
+                                }
+                            });
+                        }
+                    }catch (Throwable throwable){
+                        CrashReport.postCatchedException(throwable);
+                    }finally {
+                        dismissCustomDialog();
+                    }
                 }
                 dismissCustomDialog();
             }
@@ -368,7 +386,7 @@ public class SummaryActivity extends NfcActivity{
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             JsonObjectElement FaultSummary=new JsonObjectElement();
             FaultSummary.set("TaskTrouble_ID",TaskTrouble_ID);
-            FaultSummary.set("TroubleType",type.getText().toString());
+            FaultSummary.set("TroubleType",type.getText());
             FaultSummary.set("TroubleDescribe",description.getText().toString());
             FaultSummary.set("MaintainDescribe",repair_status.getText().toString());
             outPersistentState.putString("submitData",FaultSummary.toJson());
@@ -376,29 +394,9 @@ public class SummaryActivity extends NfcActivity{
         }
         super.onSaveInstanceState(outState, outPersistentState);
     }
-    private void getFaultType(){
 
-       // typeList
-    }
-    private void setFaultData(String data){
-        JsonObjectElement jsonObjectElement=new JsonObjectElement(data);
-        if(jsonObjectElement.get("PageData").asArrayElement().size()>0){
-           final ObjectElement faultData=jsonObjectElement.get("PageData").asArrayElement().get(0).asObjectElement();
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    TaskTrouble_ID= DataUtil.isDataElementNull(faultData.get("TaskTrouble_ID"));
-                    type.setText(DataUtil.isDataElementNull(faultData.get("TroubleType")));
-                    TroubleType=map.get(DataUtil.isDataElementNull(faultData.get("TroubleType")));
-                    description.setText(DataUtil.isDataElementNull(faultData.get("TroubleDescribe")));
-                    repair_status.setText(DataUtil.isDataElementNull(faultData.get("MaintainDescribe")));
-                }
-            });
-        }
-    }
     private void initData(){
-        String sql="select * from DataDictionary where DataType='EquipmentTroubleSort'";
-        getSqliteStore().performRawQuery(sql, "DataDictionary", new StoreCallback() {
+        DataUtil.getDataFromDataBase(context, "EquipmentTroubleSort", new StoreCallback() {
             @Override
             public void success(DataElement element, String resource) {
                 if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
@@ -418,7 +416,12 @@ public class SummaryActivity extends NfcActivity{
 
             @Override
             public void failure(DatastoreException ex, String resource) {
-
+                   runOnUiThread(new Runnable() {
+                       @Override
+                       public void run() {
+                           ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,context);
+                       }
+                   });
             }
         });
     }

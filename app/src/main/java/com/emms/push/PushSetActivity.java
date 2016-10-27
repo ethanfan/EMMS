@@ -93,7 +93,7 @@ public class PushSetActivity extends InstrumentedActivity implements OnClickList
 		
 		// ","隔开的多个 转换成 Set
 		String[] sArray = tag.split(",");
-		Set<String> tagSet = new LinkedHashSet<String>();
+		Set<String> tagSet = new LinkedHashSet<>();
 		for (String sTagItme : sArray) {
 			if (!ExampleUtil.isValidTagAndAlias(sTagItme)) {
 				Toast.makeText(PushSetActivity.this,R.string.error_tag_gs_empty, Toast.LENGTH_SHORT).show();

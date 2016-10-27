@@ -13,7 +13,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +26,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.datastore_android_sdk.DatastoreException.DatastoreException;
-import com.datastore_android_sdk.callback.StoreCallback;
-import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
@@ -37,9 +33,7 @@ import com.emms.adapter.ResultListAdapter;
 import com.emms.fragment.LinkedVerifyFragment;
 import com.emms.fragment.OverDueVerifyFragment;
 import com.emms.fragment.PendingVerifyFragment;
-import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
-import com.emms.schema.Equipment;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
@@ -197,15 +191,6 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
                 mFragments.add(pendingVerifyFragment);
             }else if (i ==1){
                 LinkedVerifyFragment linkedVerifyFragment= LinkedVerifyFragment.newInstance(BaseData.getTaskClass(),BaseData.getTaskStatus());
-                linkedVerifyFragment.setTaskNumInteface(new TaskNumInteface() {
-                    @Override
-                    public void ChangeTaskNumListener(int tag, int num) {
-                    }
-
-                    @Override
-                    public void refreshProcessingFragment() {
-                    }
-                });
                 mFragments.add(linkedVerifyFragment);
             }else {
                 OverDueVerifyFragment overDueVerifyFragment= OverDueVerifyFragment.newInstance(BaseData.getTaskClass(),BaseData.getTaskStatus());
@@ -235,7 +220,6 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
         });
 
     }
-    private boolean tag= false;
     @Override
     public void onTabSelect(int position) {
     }

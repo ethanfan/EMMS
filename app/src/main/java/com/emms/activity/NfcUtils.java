@@ -1,11 +1,11 @@
 package com.emms.activity;
 
-import android.content.Intent;
 import android.nfc.Tag;
 import android.os.Parcelable;
 
 /**
  * Created by lenovo on 2016/7/16.
+ *
  */
 public class NfcUtils {
 

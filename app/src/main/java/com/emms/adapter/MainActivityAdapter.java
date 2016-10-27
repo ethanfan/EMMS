@@ -3,9 +3,7 @@ package com.emms.adapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
@@ -15,6 +13,7 @@ import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/6/21.
+ *
  */
 public abstract class MainActivityAdapter extends BaseAdapter{
 
@@ -26,8 +25,6 @@ public abstract class MainActivityAdapter extends BaseAdapter{
 
     public MainActivityAdapter(ArrayList<ObjectElement> datas) {
         this.datas = datas;
-    }
-    public MainActivityAdapter() {
     }
     public void setDatas(ArrayList<ObjectElement> mDatas){
         if (mDatas.size()>0) {
@@ -58,7 +55,6 @@ public abstract class MainActivityAdapter extends BaseAdapter{
     }
     public abstract View getCustomView(View convertView,int position ,ViewGroup parent );
     public static   class TaskViewHolder {
-        public  TextView taskNum;
         public  TextView moduleName;
         public ImageView image;
         public MsgView msgView;

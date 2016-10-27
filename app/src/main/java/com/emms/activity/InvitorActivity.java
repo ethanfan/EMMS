@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Layout;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,27 +30,22 @@ import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-import java.security.interfaces.RSAKey;
 import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/7/15.
+ *
  */
 public class InvitorActivity extends NfcActivity implements View.OnClickListener{
     private PullToRefreshListView mListView;
-    private ListView mGroupListView;
     private MultiAdapter adapter=null;
     private GroupAdapter groupAdapter;
     private ArrayList<ObjectElement> listItems=new ArrayList<>();
     private ArrayList<ObjectElement> listGroup=new ArrayList<>();
-    // private HashMap<ObjectElement,ArrayList<ObjectElement>> List_Group_Items=new HashMap<ObjectElement,ArrayList<ObjectElement>>();
-    private ImageView bcakImageView;
-    private Button sureButton;
     private boolean isExChangeOrder=false;
     private boolean isInviteHelp=false;
     private Context context=this;
     private String taskId;
-    private static int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
     private Handler handler=new Handler();
@@ -77,7 +71,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
         }
         mListView = (PullToRefreshListView) findViewById(R.id.id_wait_list);
         mListView.setAdapter(adapter);
-        mGroupListView = (ListView) findViewById(R.id.group_list);
+        ListView mGroupListView = (ListView) findViewById(R.id.group_list);
         mGroupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -102,14 +96,14 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                 getListItems();
             }
         });
-        bcakImageView = (ImageView) findViewById(R.id.btn_bar_left_action);
+        ImageView bcakImageView = (ImageView) findViewById(R.id.btn_bar_left_action);
      /*   bcakImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });*/
-        sureButton = (Button) findViewById(R.id.btn_sure_bg);
+        Button sureButton = (Button) findViewById(R.id.btn_sure_bg);
 
         groupAdapter=new GroupAdapter(InvitorActivity.this,listGroup);
         mGroupListView.setAdapter(groupAdapter);
@@ -153,8 +147,9 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
      * 初始化信息
      */
     private void getListItems() {
+        int PAGE_SIZE = 10;
         if(RecCount!=0){
-        if((pageIndex-1)*PAGE_SIZE>=RecCount){
+        if((pageIndex-1)* PAGE_SIZE >=RecCount){
             Toast toast=Toast.makeText(this,R.string.noMoreData,Toast.LENGTH_LONG);
             toast.setGravity(Gravity.CENTER,0,0);
             toast.show();
@@ -163,7 +158,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
         params.put("team_id", DataUtil.isDataElementNull(groupData.get("Organise_ID")));
-        params.put("pageSize",PAGE_SIZE);
+        params.put("pageSize", PAGE_SIZE);
         params.put("pageIndex",pageIndex);
         HttpUtils.get(this, "OperatorStatus", params, new HttpCallback() {
             @Override
@@ -173,7 +168,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                     JsonObjectElement json=new JsonObjectElement(t);
                     if(json.get("Success").valueAsBoolean()){
                         RecCount=json.get("RecCount").valueAsInt();
-                    if(json.get("PageData")!=null&&json.get("PageData").asArrayElement().size()>0){
+                    if(json.get("PageData")!=null&&json.get("PageData").isArray()&&json.get("PageData").asArrayElement().size()>0){
                         if(pageIndex==1){
                             listItems.clear();
                         }
@@ -217,7 +212,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                 super.onSuccess(t);
                 if(t!=null){
                     JsonObjectElement json=new JsonObjectElement(t);
-                   if(json.get("PageData")!=null&&json.get("PageData").asArrayElement().size()>0){
+                   if(json.get("PageData")!=null&&json.get("PageData").isArray()&&json.get("PageData").asArrayElement().size()>0){
                        listGroup.clear();
                         for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
                             listGroup.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
@@ -281,7 +276,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                                 finish();
                                 return;
                             }
-                            ArrayList<Integer> invitorList=new ArrayList<Integer>();
+                            ArrayList<Integer> invitorList=new ArrayList<>();
                         for(int i=0;i<adapter.getlistItemID().size();i++){
                             invitorList.add(Integer.valueOf(DataUtil.isDataElementNull(adapter.getListItems().get(adapter.getListItemID().get(i)).get("Operator_ID"))));
                         }
@@ -393,7 +388,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                if(t!=null){
                    JsonObjectElement json=new JsonObjectElement(t);
                    if(json.get(Data.SUCCESS)!=null&&json.get(Data.SUCCESS).valueAsBoolean()){
-                   if(json!=null&&json.get(Data.PAGE_DATA)!=null&&json.get(Data.PAGE_DATA).asArrayElement().size()>0){
+                   if(json.get(Data.PAGE_DATA)!=null&&json.get(Data.PAGE_DATA).asArrayElement().size()>0){
                  for(int i=0;i<json.get(Data.PAGE_DATA).asArrayElement().size();i++){
                        TaskOperator.add(DataUtil.isDataElementNull(json.get(Data.PAGE_DATA).asArrayElement()
                                .get(i).asObjectElement().get("Operator_ID")));

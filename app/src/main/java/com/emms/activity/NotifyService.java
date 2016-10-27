@@ -28,11 +28,12 @@ import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2016/8/5.
+ *
  */
 public class NotifyService extends Service {
     private ConnectivityManager connectivityManager;
     private NetworkInfo networkInfo;
-    private ArrayList<String> msgQueen = new ArrayList<String>();
+    private ArrayList<String> msgQueen = new ArrayList<>();
     private boolean isSaveInService = true;
     private boolean iscon = true;//用于在broadcast中判断是否需要重新连接
     private NotificationManager notificationManager;

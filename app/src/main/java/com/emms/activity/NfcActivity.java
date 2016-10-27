@@ -9,18 +9,15 @@ import android.nfc.NdefRecord;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.v7.app.AppCompatActivity;
 
-import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.emms.R;
 
 import java.nio.charset.Charset;
 import java.util.Locale;
 
-import cn.jpush.android.api.JPushInterface;
-
 /**
  * Created by jaffer.deng on 2016/6/17.
+ *
  */
 public abstract class NfcActivity extends BaseActivity implements NfcInterface{
 
@@ -96,7 +93,6 @@ public abstract class NfcActivity extends BaseActivity implements NfcInterface{
             }
         });
         builder.create().show();
-        return;
     }
 
     @Override

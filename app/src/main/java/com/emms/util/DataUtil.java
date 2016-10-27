@@ -6,7 +6,6 @@ import android.content.Context;
 import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.emms.activity.AppApplication;
-import com.emms.activity.BaseActivity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,7 +16,9 @@ import java.util.regex.Pattern;
 
 /**
  * Created by Administrator on 2016/7/17.
+ *
  */
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class DataUtil {
     /**
      *  check whether the DataElement is null
@@ -78,10 +79,7 @@ public class DataUtil {
             //Float.parseFloat(checkStr);
             Pattern pattern = Pattern.compile("[0-9.]*");
             Matcher isNum = pattern.matcher(checkStr);
-            if( !isNum.matches() ){
-                return false;
-            }
-            return true; // Did not throw, must be a number
+            return isNum.matches();
         } catch (NumberFormatException err) {
             return false; // Threw, So is not a number
         }
@@ -99,8 +97,7 @@ public class DataUtil {
         SimpleDateFormat localFormater = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         //localFormater.setTimeZone(TimeZone.getDefault());
         localFormater.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-        String localTime = localFormater.format(gpsUTCDate.getTime());
-        return localTime;
+        return localFormater.format(gpsUTCDate.getTime());
     }
     public static String Local2utc(String Local) {
         SimpleDateFormat LocalFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -115,8 +112,7 @@ public class DataUtil {
         }
         SimpleDateFormat utcFormater = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         utcFormater.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String utcTime = utcFormater.format(gpsLocalDate.getTime());
-        return utcTime;
+        return utcFormater.format(gpsLocalDate.getTime());
     }
     public static void getDataFromDataBase(Context context,String DataType, StoreCallback storeCallback){
         String sql= "select * from DataDictionary where DataType='"+DataType+"'";

@@ -1,9 +1,8 @@
 package com.emms.util;
 
-import com.emms.schema.Task;
-
 /**
  * Created by Administrator on 2016/8/7.
+ *
  */
 public class RootUtil {
     public static int ROOT_SYSTEM=1;
@@ -16,22 +15,12 @@ public class RootUtil {
     //权限机制
     public static boolean rootStatus(int ThisStatus,int CompareStatus){
         //1表示处理中任务
-        if(ThisStatus==CompareStatus){
-            return    true;}
-        else return false;
+        return ThisStatus == CompareStatus;
     }
     public static  boolean rootTaskClass(String ThisTaskClass,String CompareTaskClass){
-        if(ThisTaskClass.equals(CompareTaskClass)){
-            return true;
-        }else{
-            return false;
-        }
+        return ThisTaskClass.equals(CompareTaskClass);
     }
     public static boolean rootMainPersonInTask(String OperatorID,String MainPersonID){
-        if(OperatorID.equals(MainPersonID)){
-            return true;
-        }else{
-            return false;
-        }
+        return OperatorID.equals(MainPersonID);
     }
 }

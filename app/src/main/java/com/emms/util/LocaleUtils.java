@@ -39,7 +39,7 @@ public class LocaleUtils {
 		}
 	}
 	
-	public static final void setLanguage(Context context, SupportedLanguage language) {
+	public static  void setLanguage(Context context, SupportedLanguage language) {
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 		pref.edit().putString(KEY_LANGUAGE, language.code).commit();
 		
@@ -53,7 +53,7 @@ public class LocaleUtils {
 
 	}
 	
-	public static final SupportedLanguage getLanguage(Context context) {
+	public static  SupportedLanguage getLanguage(Context context) {
 		SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 		String language = pref.getString(KEY_LANGUAGE, null);	
 		return SupportedLanguage.getSupportedLanguage(language);

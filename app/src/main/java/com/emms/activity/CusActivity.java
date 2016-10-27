@@ -2,9 +2,7 @@ package com.emms.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +25,7 @@ import com.emms.util.DataUtil;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.flyco.tablayout.widget.MsgView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,29 +34,29 @@ import cn.jpush.android.api.JPushInterface;
 
 /**
  * Created by Administrator on 2016/8/23.
+ *
  */
 public class CusActivity extends NfcActivity implements View.OnClickListener{
-    private Button btn_exit;
-    private GridView module_list;
     private Context context=this;
     private ArrayList<ObjectElement> moduleList=new ArrayList<>();
-    private static HashMap<String,Integer> TaskClass_moduleID_map=new HashMap<>();{
-        TaskClass_moduleID_map.put(Task.REPAIR_TASK,3);
-        TaskClass_moduleID_map.put(Task.MAINTAIN_TASK,2);
-        TaskClass_moduleID_map.put(Task.MOVE_CAR_TASK,4);
-        TaskClass_moduleID_map.put(Task.OTHER_TASK,5);
-        TaskClass_moduleID_map.put(Task.ROUTING_INSPECTION,11);
-        TaskClass_moduleID_map.put(Task.UPKEEP,12);
-        TaskClass_moduleID_map.put("C2",8);
-        TaskClass_moduleID_map.put("C1",10);
-        TaskClass_moduleID_map.put("C3",7);
-    }
+    private static HashMap<String,Integer> TaskClass_moduleID_map=new HashMap<>();
     private HashMap<Integer,ObjectElement> ID_module_map=new HashMap<>();
     private MainActivityAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cus);
+        {
+            TaskClass_moduleID_map.put(Task.REPAIR_TASK,3);
+            TaskClass_moduleID_map.put(Task.MAINTAIN_TASK,2);
+            TaskClass_moduleID_map.put(Task.MOVE_CAR_TASK,4);
+            TaskClass_moduleID_map.put(Task.OTHER_TASK,5);
+            TaskClass_moduleID_map.put(Task.ROUTING_INSPECTION,11);
+            TaskClass_moduleID_map.put(Task.UPKEEP,12);
+            TaskClass_moduleID_map.put("C2",8);
+            TaskClass_moduleID_map.put("C1",10);
+            TaskClass_moduleID_map.put("C3",7);
+        }
         initView();
         initData();
         getTaskCountFromServer();
@@ -68,11 +67,11 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
 
     }
     private void initView(){
-        btn_exit = (Button) findViewById(R.id.btn_exit);
+        Button btn_exit = (Button) findViewById(R.id.btn_exit);
         btn_exit.setOnClickListener(this);
         ((TextView)findViewById(R.id.UserName)).setText(getLoginInfo().getName());
         ((TextView)findViewById(R.id.WorkNum_tag)).setText(getLoginInfo().getOperator_no());
-        module_list=(GridView)findViewById(R.id.module_list);
+        GridView module_list = (GridView) findViewById(R.id.module_list);
         adapter=new MainActivityAdapter(moduleList) {
             @Override
             public View getCustomView(View convertView, int position, ViewGroup parent) {
@@ -135,8 +134,8 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                             intent.putExtra(Task.TASK_SUBCLASS,DataUtil.isDataElementNull(moduleList.get(position).get(Task.TASK_SUBCLASS)));
                         }
                         startActivity(intent);
-                    }catch (Exception e){
-                        Log.e("e",e.toString());
+                    }catch (Throwable e){
+                        CrashReport.postCatchedException(e);
                     }
                 }
             }
@@ -157,15 +156,14 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         }
     }
     private void initData(){
-        JsonObjectElement data=new JsonObjectElement(SharedPreferenceManager.getLoginData(this));
         if(getIntent().getStringExtra("Module_ID_List")!=null&&!getIntent().getStringExtra("Module_ID_List").equals("")) {
             String module = getIntent().getStringExtra("Module_ID_List");
             String[] modules = module.split(",");
-            for (int i = 0; i < modules.length; i++) {
+            for (String module1 : modules) {
                 JsonObjectElement jsonObjectElement = new JsonObjectElement();
-                jsonObjectElement.set("module_ID", Integer.valueOf(modules[i]));
+                jsonObjectElement.set("module_ID", Integer.valueOf(module1));
                 jsonObjectElement = moduleMatchingRule(jsonObjectElement);
-                ID_module_map.put(Integer.valueOf(modules[i]), jsonObjectElement);
+                ID_module_map.put(Integer.valueOf(module1), jsonObjectElement);
                 moduleList.add(jsonObjectElement);
             }
 //            JsonObjectElement json=new JsonObjectElement();
@@ -182,11 +180,11 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             if(!SharedPreferenceManager.getUserModuleList(this).equals("")){
                 String module = SharedPreferenceManager.getUserModuleList(this);
                 String[] modules = module.split(",");
-                for (int i = 0; i < modules.length; i++) {
+                for (String module1 : modules) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement();
-                    jsonObjectElement.set("module_ID", Integer.valueOf(modules[i]));
+                    jsonObjectElement.set("module_ID", Integer.valueOf(module1));
                     jsonObjectElement = moduleMatchingRule(jsonObjectElement);
-                    ID_module_map.put(Integer.valueOf(modules[i]), jsonObjectElement);
+                    ID_module_map.put(Integer.valueOf(module1), jsonObjectElement);
                     moduleList.add(jsonObjectElement);
                 }
             }else {
@@ -333,7 +331,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                 if (t != null) {
                     JsonObjectElement json = new JsonObjectElement(t);
                     //获取任务数目，Data_ID对应，1对应维修，2对应维护，3对应搬车，4对应其它
-                    if (json.get("PageData") != null && json.get("PageData").asArrayElement() != null&&json.get("PageData").asArrayElement().size()>0) {
+                    if (json.get("PageData") != null&& json.get("PageData").isArray() && json.get("PageData").asArrayElement() != null&&json.get("PageData").asArrayElement().size()>0) {
                         for (int i = 0; i < json.get("PageData").asArrayElement().size(); i++) {
                             //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
                             //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());

@@ -15,23 +15,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Data;
 import com.emms.schema.Task;
-import com.emms.ui.CancelTaskDialog;
-import com.emms.ui.TaskCancelListener;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.datastore_android_sdk.rxvolley.client.HttpParams;
 
 import java.util.ArrayList;
 
@@ -349,37 +346,5 @@ public class PendingOrdersFragment extends BaseFragment{
         pageIndex=1;
         getPendingOrderTaskDataFromServer();
     }
-    private void CancelTask(ObjectElement task, final String reason){
-        showCustomDialog(R.string.loadingData);
-        HttpParams params=new HttpParams();
-        JsonObjectElement submitData=new JsonObjectElement();
-        submitData.set(Task.TASK_ID,DataUtil.isDataElementNull(task.get(Task.TASK_ID)));
-        submitData.set("QuitReason",reason);
-        params.putJsonParams(submitData.toJson());
-        HttpUtils.post(mContext, "TaskRecieve/TaskQuit", params, new HttpCallback() {
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.FailCancelTask,mContext);
-                dismissCustomDialog();
-            }
 
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-                if(t!=null){
-                    JsonObjectElement returnData=new JsonObjectElement(t);
-                    if(returnData.get(Data.SUCCESS).valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.SuccessCancelTask,mContext);
-                        removeNum=0;
-                        pageIndex=1;
-                        getPendingOrderTaskDataFromServer();
-                    }else {
-                        ToastUtil.showToastLong(R.string.FailCancelTask,mContext);
-                    }
-                }
-                dismissCustomDialog();
-            }
-        });
-    }
 }

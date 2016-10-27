@@ -6,17 +6,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -24,14 +21,9 @@ import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Data;
-import com.emms.schema.Maintain;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
-import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
-import com.flyco.tablayout.SegmentTabLayout;
-import com.flyco.tablayout.listener.OnTabSelectListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
@@ -45,7 +37,6 @@ public class LinkedOrdersFragment extends BaseFragment{
     private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
     private Context mContext;
-    private String[] mTitles ;
     private ArrayList<ObjectElement> data=new ArrayList<>();
     private Handler handler=new Handler();
     private String TaskClass;
@@ -95,7 +86,6 @@ public class LinkedOrdersFragment extends BaseFragment{
         super.onViewCreated(view, savedInstanceState);
        TaskClass=this.getArguments().getString(Task.TASK_CLASS);
         TaskSubClass=this.getArguments().getString(Task.TASK_SUBCLASS);
-        mTitles = getResources().getStringArray(R.array.select_tab_time);
         taskAdapter =new TaskAdapter(data) {
             @Override
             public View getCustomView(View convertView, int position, ViewGroup parent) {

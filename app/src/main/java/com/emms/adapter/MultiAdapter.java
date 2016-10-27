@@ -3,41 +3,30 @@ package com.emms.adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.emms.R;
-import com.emms.bean.AwaitRepair;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by jaffer.deng on 2016/7/16.
+ *
  */
 public class MultiAdapter extends BaseAdapter {
     public List<Integer> getListItemID() {
         return listItemID;
     }
-
-    public void setListItemID(List<Integer> listItemID) {
-        this.listItemID = listItemID;
-    }
-
     public List<ObjectElement> getListItems() {
         return listItems;
     }
@@ -61,22 +50,15 @@ public class MultiAdapter extends BaseAdapter {
 
     private Context ctx;
 
-    public List<Boolean> getmChecked() {
-        return mChecked;
-    }
-
-    public void setmChecked(List<Boolean> mChecked) {
-        this.mChecked = mChecked;
-    }
 
     /** 标记CheckBox是否被选中 **/
-    List<Boolean> mChecked= new ArrayList<Boolean>();;
+    ArrayList<Boolean> mChecked= new ArrayList<>();;
 
     List<Integer> listItemID;
     //HashSet<Integer> OperatorSet=new HashSet<Integer>();
     private boolean tag=false;
     @SuppressLint("UseSparseArrays")
-    private Map<Integer, View> viewMap = new HashMap<Integer, View>();
+    //private Map<Integer, View> viewMap = new HashMap<>();
     public MultiAdapter(Context context, List<ObjectElement> listItems,boolean tag) {
         // TODO Auto-generated constructor stub
         this.ctx = context;
@@ -92,7 +74,7 @@ public class MultiAdapter extends BaseAdapter {
 
 
 
-    public void ClickResult(Context ctx)
+    public void ClickResult()
     {
         listItemID.clear();// 清空listItemID
 
@@ -196,7 +178,7 @@ public class MultiAdapter extends BaseAdapter {
                             holder.select.setImageResource(R.mipmap.select_pressed);
                             mChecked.set(position, true);
                         }
-                        ClickResult(ctx);
+                        ClickResult();
                     } else {
                         ToastUtil.showToastLong(R.string.thisWorkerIsBusy, ctx);
                     }
@@ -205,7 +187,7 @@ public class MultiAdapter extends BaseAdapter {
         if(!tag) {
             holder.multi_item.setEnabled(false);
         }
-            viewMap.put(position, convertView);
+           // viewMap.put(position, convertView);
 
 
 

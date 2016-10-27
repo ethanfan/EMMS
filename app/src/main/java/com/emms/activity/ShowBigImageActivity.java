@@ -1,17 +1,13 @@
 package com.emms.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.LinearLayout.LayoutParams;
 
 import com.emms.R;
-import com.handmark.pulltorefresh.library.internal.Utils;
 import com.polites.android.GestureImageView;
 
 

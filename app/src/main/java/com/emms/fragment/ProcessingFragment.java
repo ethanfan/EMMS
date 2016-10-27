@@ -40,7 +40,6 @@ public class ProcessingFragment extends BaseFragment {
 
     private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
-    private ProcessingFragment processingFragment=this;
     public ArrayList<ObjectElement> getDatas() {
         return datas;
     }

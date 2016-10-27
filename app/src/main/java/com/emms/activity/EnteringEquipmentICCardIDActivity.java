@@ -18,7 +18,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
@@ -35,11 +34,11 @@ import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
 import com.emms.util.DataUtil;
-import com.emms.util.FileUtils;
 import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+
 import java.util.ArrayList;
 
 /**
@@ -49,17 +48,15 @@ import java.util.ArrayList;
 public class EnteringEquipmentICCardIDActivity extends NfcActivity implements View.OnClickListener {
     private ResultListAdapter mResultAdapter;
     private ListView mResultListView;
-    private String TaskId;
     private TextView menuSearchTitle;
     private EditText searchBox,iccard_id;
     private ImageView clearBtn;
     private ViewGroup emptyView;
-    private boolean isSearchview ;
     private int  searchtag =0;
     private CustomDrawerLayout mDrawer_layout;
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
     private Context context=this;
-    private ArrayList<ObjectElement> EquipmentList=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> EquipmentList=new ArrayList<>();
     private DropEditText equipment_id;
     private String SelectItem="";
     @Override
@@ -201,7 +198,6 @@ private void initView(){
         mResultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                isSearchview = true ;
                 String itemNam = mResultAdapter.getItemName();
                 SelectItem=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(Equipment.EQUIPMENT_ID));
                 final String searchResult =mResultAdapter.getItem(position).get(itemNam).valueAsString();

@@ -51,6 +51,7 @@ import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -626,34 +627,40 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
             public void onSuccess(String t) {
                     super.onSuccess(t);
                     if(t!=null) {
-                        submitData.clear();
-                        measure_point_list.clear();
-                        JsonArrayElement jsonArrayElement = new JsonArrayElement(t);
-                        //RecCount = jsonObjectElement.get("RecCount").valueAsInt();
-                        if(jsonArrayElement.size()>0) {
-                            //if (pageIndex == 1) {
+                        try {
+                            submitData.clear();
+                            measure_point_list.clear();
+                            JsonArrayElement jsonArrayElement = new JsonArrayElement(t);
+                            //RecCount = jsonObjectElement.get("RecCount").valueAsInt();
+                            if(jsonArrayElement.size()>0) {
+                                //if (pageIndex == 1) {
 //                            }
 //                            pageIndex++;
-                            for (int i = 0; i < jsonArrayElement.size(); i++) {
-                               ObjectElement json=jsonArrayElement.get(i).asObjectElement();
-                                json.set("tag",false);
-                                if(DataUtil.isDataElementNull(json.get("PointType")).equals(MeasurePoint.PROCESS_MEASURE_POINT)
-                                        ||DataUtil.isDataElementNull(json.get("PointType")).equals(MeasurePoint.CHECK_POINT)){
-                                    if(MeasureValueMap.get(DataUtil.isDataElementNull(json.get("ResultValue")))!=null){
-                                        json.set("ReferenceValue",DataUtil.isDataElementNull(json.get("ResultValue")));
+                                for (int i = 0; i < jsonArrayElement.size(); i++) {
+                                    ObjectElement json=jsonArrayElement.get(i).asObjectElement();
+                                    json.set("tag",false);
+                                    if(DataUtil.isDataElementNull(json.get("PointType")).equals(MeasurePoint.PROCESS_MEASURE_POINT)
+                                            ||DataUtil.isDataElementNull(json.get("PointType")).equals(MeasurePoint.CHECK_POINT)){
+                                        if(MeasureValueMap.get(DataUtil.isDataElementNull(json.get("ResultValue")))!=null){
+                                            json.set("ReferenceValue",DataUtil.isDataElementNull(json.get("ResultValue")));
+                                        }
                                     }
+                                    json.set("num",i+1);
+                                    measure_point_list.add(json);
                                 }
-                                json.set("num",i+1);
-                                measure_point_list.add(json);
                             }
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    adapter.setDatas(measure_point_list);
+                                    adapter.notifyDataSetChanged();
+                                }
+                            });
+                        }catch (Throwable throwable){
+                            CrashReport.postCatchedException(throwable);
+                        }finally {
+                            dismissCustomDialog();
                         }
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                adapter.setDatas(measure_point_list);
-                                adapter.notifyDataSetChanged();
-                            }
-                        });
                 }
                 dismissCustomDialog();
             }

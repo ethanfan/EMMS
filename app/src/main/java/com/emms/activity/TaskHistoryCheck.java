@@ -3,7 +3,6 @@ package com.emms.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,38 +24,27 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
-import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.fragment.AllTaskHistoryFragment;
 import com.emms.fragment.FliterTaskHistoryFragment;
 import com.emms.fragment.PendingCommandFragment;
 import com.emms.schema.DataDictionary;
-import com.emms.schema.Task;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
 import com.emms.util.BaseData;
-import com.emms.util.Bimp;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
-import com.emms.util.FileUtils;
 import com.emms.util.ToastUtil;
 import com.emms.util.ViewFindUtils;
 import com.flyco.tablayout.SlidingTabLayout;
 import com.flyco.tablayout.listener.OnTabSelectListener;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by Administrator on 2016/9/2.
@@ -102,6 +90,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
         }else {
             init();
         }
+        //taskStatusList=BaseData.getTaskStatus();
     }
     private void init(){
         mTitles =getResources().getStringArray(R.array.select_tab_task_history);
@@ -415,7 +404,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
             JsonObjectElement jsonObjectElement=new JsonObjectElement();
             jsonObjectElement.set(DataDictionary.DATA_CODE,key);
             jsonObjectElement.set(DataDictionary.DATA_NAME,BaseData.getTaskStatus().get(key));
-            taskClassList.add(jsonObjectElement);
+            taskStatusList.add(jsonObjectElement);
         }
     }
     private void intiTimeData(){

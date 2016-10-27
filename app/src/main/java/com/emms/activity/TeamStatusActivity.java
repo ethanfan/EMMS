@@ -2,20 +2,16 @@ package com.emms.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -23,37 +19,26 @@ import com.emms.R;
 import com.emms.adapter.GroupAdapter;
 import com.emms.adapter.MultiAdapter;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 
 public class TeamStatusActivity extends NfcActivity implements View.OnClickListener{
 
     private PullToRefreshListView mListView;
-    private ListView mGroupListView;
     private MultiAdapter adapter=null;
     private GroupAdapter groupAdapter;
-    private ArrayList<ObjectElement> listItems=new ArrayList<ObjectElement>();
-    private ArrayList<ObjectElement> listGroup=new ArrayList<ObjectElement>();
-    // private HashMap<ObjectElement,ArrayList<ObjectElement>> List_Group_Items=new HashMap<ObjectElement,ArrayList<ObjectElement>>();
-    private ImageView bcakImageView;
-    private Button sureButton;
-    private boolean isExChangeOrder=false;
-    private boolean isInviteHelp=false;
+    private ArrayList<ObjectElement> listItems=new ArrayList<>();
+    private ArrayList<ObjectElement> listGroup=new ArrayList<>();
     private Context context=this;
-    private String taskId;
-    private  int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
     private Handler handler=new Handler();
     private ObjectElement groupData=null;
-    private ArrayList<String> TaskOperator=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,8 +50,9 @@ public class TeamStatusActivity extends NfcActivity implements View.OnClickListe
      * 初始化信息
      */
     private void getListItems() {
+        int PAGE_SIZE = 10;
         if(RecCount!=0){
-            if((pageIndex-1)*PAGE_SIZE>=RecCount){
+            if((pageIndex-1)* PAGE_SIZE >=RecCount){
                 Toast toast=Toast.makeText(this,R.string.noMoreData,Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.CENTER,0,0);
                 toast.show();
@@ -75,7 +61,7 @@ public class TeamStatusActivity extends NfcActivity implements View.OnClickListe
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
         params.put("team_id", DataUtil.isDataElementNull(groupData.get("Organise_ID")));
-        params.put("pageSize",PAGE_SIZE);
+        params.put("pageSize", PAGE_SIZE);
         params.put("pageIndex",pageIndex);
         HttpUtils.get(this, "OperatorStatus", params, new HttpCallback() {
             @Override
@@ -126,7 +112,7 @@ public class TeamStatusActivity extends NfcActivity implements View.OnClickListe
         adapter=new MultiAdapter(this,listItems,false);
         mListView = (PullToRefreshListView) findViewById(R.id.id_wait_list);
         mListView.setAdapter(adapter);
-        mGroupListView = (ListView) findViewById(R.id.group_list);
+        ListView mGroupListView = (ListView) findViewById(R.id.group_list);
         mGroupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

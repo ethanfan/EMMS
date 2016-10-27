@@ -15,6 +15,7 @@ import cn.jpush.android.api.JPushInterface;
 
 /**
  * Created by jaffer.deng on 2016/6/17.
+ *
  */
 public abstract class BaseActivity extends AppCompatActivity {
     private KProgressHUD hud;

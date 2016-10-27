@@ -1,23 +1,19 @@
 package com.emms.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
@@ -26,18 +22,14 @@ import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.activity.TaskDetailsActivity;
-import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.Task;
-import com.emms.util.Constants;
 import com.emms.util.DataUtil;
-import com.emms.util.ListViewUtility;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.nostra13.universalimageloader.utils.L;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +42,7 @@ public class LinkedVerifyFragment extends BaseFragment {
 
     private PullToRefreshListView listView;
     private TaskAdapter taskAdapter;
-    private ArrayList<ObjectElement> datas=new ArrayList<ObjectElement>();
+    private ArrayList<ObjectElement> datas=new ArrayList<>();
     private ArrayList<ObjectElement> submitData=new ArrayList<>();
     private Context mContext;
     private Handler handler=new Handler();
@@ -294,7 +286,7 @@ public class LinkedVerifyFragment extends BaseFragment {
             }
         });
     }
-    public static LinkedVerifyFragment newInstance(HashMap TaskClass,HashMap TaskStatus){
+    public static LinkedVerifyFragment newInstance(HashMap<String,String> TaskClass,HashMap<String,String> TaskStatus){
         LinkedVerifyFragment fragment = new LinkedVerifyFragment();
         Bundle bundle = new Bundle();
         //bundle.putString(Task.TASK_CLASS, TaskClass);
@@ -309,11 +301,7 @@ public class LinkedVerifyFragment extends BaseFragment {
         getCommandListFromServer();
     }
 
-    public void setTaskNumInteface(TaskNumInteface taskNumInteface) {
-        this.taskNumInteface = taskNumInteface;
-    }
 
-    private TaskNumInteface taskNumInteface;
     private void submitWorkload(ObjectElement data,String workload){
         if(!DataUtil.isNum(workload)||workload.equals("")){
             ToastUtil.showToastLong(R.string.pleaseInputNum,mContext);

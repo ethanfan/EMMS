@@ -193,7 +193,7 @@ public  class HttpUtils {
             Toast.makeText(context,R.string.pleaseRelogin,Toast.LENGTH_SHORT).show();
         }
     }
-   private static boolean tag=true;
+
     public static void downloadData(File fileName, String m_url, final Context context) {
         String result="";
         OutputStream outputStream=null;

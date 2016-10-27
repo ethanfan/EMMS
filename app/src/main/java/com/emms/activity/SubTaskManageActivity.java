@@ -25,17 +25,15 @@ import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.SubTaskAdapter;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Equipment;
 import com.emms.schema.Task;
 import com.emms.ui.CustomDialog;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.zip.Inflater;
 
 /**
  * Created by jaffer.deng on 2016/6/6.
@@ -48,7 +46,6 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
     private String taskId;
     private ObjectElement TaskDetail;
     private Handler handler=new Handler();
-    private HashMap<String,String> Status_Colors=new HashMap<>();
     private ArrayList<ObjectElement> EquipmentList=new ArrayList<>();
     private boolean TaskComplete=false;
     private Context context=this;
@@ -223,19 +220,27 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null){
-                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement.get("PageData")!=null
-                            &&jsonObjectElement.get("PageData").asArrayElement().size()>0){
-                        RecCount = jsonObjectElement.get("RecCount").valueAsInt();
-                        if (pageIndex == 1) {
-                            datas.clear();
+                    try{
+                        JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                        if(jsonObjectElement.get("PageData")!=null
+                                &&jsonObjectElement.get("PageData").isArray()
+                                &&jsonObjectElement.get("PageData").asArrayElement().size()>0){
+                            RecCount = jsonObjectElement.get("RecCount").valueAsInt();
+                            if (pageIndex == 1) {
+                                datas.clear();
+                            }
+                            pageIndex++;
+                            for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
+                                datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
+                            }
+                            adapter.setDatas(datas);
+                            adapter.notifyDataSetChanged();
                         }
-                        pageIndex++;
-                        for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
-                            datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
-                        }
-                        adapter.setDatas(datas);
-                        adapter.notifyDataSetChanged();
+                    }catch (Throwable throwable){
+                        CrashReport.postCatchedException(throwable);
+                    }
+                    finally {
+                        dismissCustomDialog();
                     }
                 }
                 dismissCustomDialog();
@@ -272,7 +277,6 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
                         ArrayElement jsonArrayElement=new JsonArrayElement(t);
                             if ( jsonArrayElement.size() > 0) {
 
-                                int dealDeviceCount = 0;
                                 for (int i = 0; i < jsonArrayElement.size(); i++) {
                                     EquipmentList.add(jsonArrayElement.get(i).asObjectElement());
                                 }

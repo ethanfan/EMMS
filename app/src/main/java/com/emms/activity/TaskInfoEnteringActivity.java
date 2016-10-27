@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
@@ -17,7 +16,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -48,19 +46,16 @@ import com.emms.ui.HorizontalListView;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.ListViewUtility;
-import com.emms.util.RootUtil;
-import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.logging.SimpleFormatter;
 
 /**
  * Created by Administrator on 2016/10/4.
+ *
  */
 public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClickListener{
     private EditText taskStartTime,taskEndTime;
@@ -76,15 +71,11 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
     private EditText searchBox;
     private ImageView clearBtn;
     private ViewGroup emptyView;
-    private boolean isSearchview ;
     private int  searchtag =0;
     private CustomDrawerLayout mDrawer_layout;
     private ArrayList<ObjectElement> searchDataLists = new ArrayList<>();
     private ArrayList<ObjectElement> typeList=new ArrayList<>();
     private ObjectElement TaskDetail;
-    private boolean TaskComplete=false;
-    private String TaskTrouble_ID="";
-    private String TaskClass= Task.REPAIR_TASK;
 
     private ListView TaskParticipantsListView;
     private WorkloadAdapter workloadAdapter;
@@ -203,7 +194,6 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
         mResultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                isSearchview = true ;
                 final int inPosition = position;
                 String itemNam = mResultAdapter.getItemName();
                 final String searchResult =mResultAdapter.getItem(position).get(itemNam).valueAsString();
@@ -366,7 +356,6 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
     private commandAdapter response_speed_adapter,service_attitude_adapter,repair_speed_adapter;
     private HorizontalListView response_speed,service_attitude,repair_speed;
     private HashMap<String,Integer> command=new HashMap<>();
-    private int TaskEvaluation_ID=0;
     private void initTaskCommand(){
         response_speed=(HorizontalListView)findViewById(R.id.response_speed);
         service_attitude=(HorizontalListView)findViewById(R.id.service_attitude);

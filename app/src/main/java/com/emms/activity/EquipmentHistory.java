@@ -57,7 +57,6 @@ import java.util.ArrayList;
 public class EquipmentHistory extends NfcActivity implements View.OnClickListener{
     private PullToRefreshListView listView;
     private TaskAdapter adapter;
-    private String Equipment_ID="";
     private String Task_Description="";
     private String EquipmentName="";
     private String FaultType="";
@@ -85,12 +84,12 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_equipment_history);
-        Equipment_ID=getIntent().getStringExtra(Equipment.EQUIPMENT_ID);
+        String equipment_ID = getIntent().getStringExtra(Equipment.EQUIPMENT_ID);
         Task_Description=getIntent().getStringExtra(Task.TASK_DESCRIPTION);
         EquipmentName=getIntent().getStringExtra(Equipment.EQUIPMENT_NAME);
         //createTextData();
         initView();
-        if(Equipment_ID!=null || EquipmentName!=null || Task_Description!=null){
+        if(equipment_ID !=null || EquipmentName!=null || Task_Description!=null){
             findViewById(R.id.search_filter).setVisibility(View.INVISIBLE);
             pageIndex=1;
             getEquipmentHistoryFromServer();

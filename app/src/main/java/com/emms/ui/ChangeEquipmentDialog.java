@@ -1,6 +1,5 @@
 package com.emms.ui;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -16,7 +15,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
@@ -41,7 +39,6 @@ import java.util.HashMap;
  * Created by laomingfeng on 2016/5/24.
  */
 public class ChangeEquipmentDialog extends Dialog implements View.OnClickListener{
-    private ChangeEquipmentDialog dialog = this;
     private Context context;
     private String TaskId;
     private String EquipmentId;
@@ -109,8 +106,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     }
 
     private dialogOnSubmitInterface onSubmitInterface=null;
-    private ListView listView;
-    private TaskAdapter adapter;
+
     public void initview() {
         ((TextView)findViewById(R.id.cancle)).setText(R.string.cancel);
         findViewById(R.id.cancle).setOnClickListener(new View.OnClickListener() {
@@ -141,30 +137,28 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     //   findViewById(R.id.dialog).setTranslationY((-1)*getNavigationBarHeight(context));
 
       //  initEquipmentTagView();
-        listView=(ListView)findViewById(R.id.listView);
-        adapter=new TaskAdapter(showList) {
+        ListView listView = (ListView) findViewById(R.id.listView);
+        TaskAdapter adapter = new TaskAdapter(showList) {
             @Override
             public View getCustomView(View convertView, int position, ViewGroup parent) {
                 TaskViewHolder holder;
                 if (convertView == null) {
                     convertView = LayoutInflater.from(context).inflate(R.layout.dialog_item, parent, false);
                     holder = new TaskViewHolder();
-                    holder.image=(ImageView)convertView.findViewById(R.id.image);
-                    holder.tv_task_state=(TextView)convertView.findViewById(R.id.status);
+                    holder.image = (ImageView) convertView.findViewById(R.id.image);
+                    holder.tv_task_state = (TextView) convertView.findViewById(R.id.status);
                     convertView.setTag(holder);
-                }else {
+                } else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
-               // if(!showList.get(position).get("Type").valueAsString().equals("delete")){
-                  if(showList.get(position).get("Type").valueAsString().equals("EquipmentStatus"))
-                  {
+                // if(!showList.get(position).get("Type").valueAsString().equals("delete")){
+                if (showList.get(position).get("Type").valueAsString().equals("EquipmentStatus")) {
                     holder.image.setImageResource(R.mipmap.equipment_status);
-                  }else if(showList.get(position).get("Type").valueAsString().equals("EquipmentOperatorStatus"))
-                  {
+                } else if (showList.get(position).get("Type").valueAsString().equals("EquipmentOperatorStatus")) {
                     holder.image.setImageResource(R.mipmap.equipment_operator_status_mipmap);
-                  }else {
-                   holder.image.setImageResource(R.mipmap.delete_equipment);
-                  }
+                } else {
+                    holder.image.setImageResource(R.mipmap.delete_equipment);
+                }
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(showList.get(position).get("Status")));
                 return convertView;
             }

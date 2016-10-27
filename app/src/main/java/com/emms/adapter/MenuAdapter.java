@@ -8,12 +8,12 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.emms.R;
-import com.emms.activity.CreateTaskActivity;
 
 import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/6/15.
+ *
  */
 public class MenuAdapter extends BaseAdapter {
 
@@ -67,7 +67,7 @@ public class MenuAdapter extends BaseAdapter {
         return mDataList;
     }
 
-    public void setDatas(ArrayList list){
+    public void setDatas(ArrayList<String> list){
         this.mShowDataList = list;
     }
 }

@@ -22,6 +22,7 @@ import cn.jpush.android.api.TagAliasCallback;
 
 /**
  * Created by lenovo on 2016/7/15.
+ *
  */
 public class PushService {
 

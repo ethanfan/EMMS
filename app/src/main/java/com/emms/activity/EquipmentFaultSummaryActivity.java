@@ -7,7 +7,6 @@ import android.widget.TextView;
 
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
-import com.emms.schema.Equipment;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 

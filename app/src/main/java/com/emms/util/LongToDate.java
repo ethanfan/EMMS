@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.sql.Date;
 /**
  * Created by jaffer.deng on 2016/6/21.
+ *
  */
 public class LongToDate {
     /**

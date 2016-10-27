@@ -2,14 +2,12 @@ package com.emms.activity;
 
 import android.app.Application;
 
+import com.datastore_android_sdk.datastore.Datastore;
+import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.push.PushService;
 import com.emms.util.LocaleUtils;
-import com.datastore_android_sdk.datastore.Datastore;
-import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.tencent.bugly.crashreport.CrashReport;
-
-import java.util.Locale;
 
 /**
  * Created by jaffer.deng on 2016/6/3.

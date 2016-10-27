@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/6/16.
+ *
  */
 public class ResultListAdapter extends BaseAdapter {
     private Context mContext;
@@ -27,7 +28,7 @@ public class ResultListAdapter extends BaseAdapter {
     public void changeData(ArrayList<ObjectElement> list,String itemName){
         this.itemName =itemName ;
         if (results == null){
-            results.addAll(list);
+            results=list;
         }else{
             results.clear();
             results.addAll(list);

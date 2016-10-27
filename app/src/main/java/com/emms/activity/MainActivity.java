@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 /**
  * Created by jaffer.deng on 2016/6/6.
+ *
  */
 public class MainActivity extends NfcActivity implements View.OnClickListener{
 

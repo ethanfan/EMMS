@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/6/21.
+ *
  */
 public abstract class SubTaskAdapter extends BaseAdapter{
 
@@ -21,7 +22,6 @@ public abstract class SubTaskAdapter extends BaseAdapter{
     public SubTaskAdapter(ArrayList<ObjectElement> datas) {
         this.datas = datas;
     }
-    public SubTaskAdapter(){}
     public void setDatas(ArrayList<ObjectElement> mDatas){
         if (mDatas.size()>0) {
             this.datas = mDatas;

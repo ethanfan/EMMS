@@ -148,7 +148,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
             @Override
             public void onSuccess(DataElement element) {
                 if(element!=null) {
-                    if(element.asArrayElement().size()>0){
+                    if(element.isArray()&&element.asArrayElement().size()>0){
                         FactoryList.clear();
                         for (int i=0;i<element.asArrayElement().size();i++){
                             FactoryList.add(element.asArrayElement().get(i).asObjectElement());}

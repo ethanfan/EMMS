@@ -11,17 +11,16 @@ import android.widget.TextView;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.emms.R;
 import com.emms.util.DataUtil;
-import com.google.common.escape.Escaper;
 
 import java.util.ArrayList;
 
 /**
  * Created by jaffer.deng on 2016/7/16.
+ *
  */
 public class GroupAdapter extends BaseAdapter {
 
     private Context context;
-    private boolean tag=true;
     public ArrayList<ObjectElement> getDatas() {
         return datas;
     }

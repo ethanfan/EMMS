@@ -30,6 +30,7 @@ import java.util.List;
 
 /**
  * Created by jaffer.deng on 2016/6/14.
+ *
  */
 public class searchActivity extends NfcActivity implements View.OnClickListener {
 

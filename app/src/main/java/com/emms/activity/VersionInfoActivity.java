@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.emms.BuildConfig;
 import com.emms.R;
+import com.tencent.bugly.crashreport.CrashReport;
 
 /**
  * Created by Administrator on 2016/9/18.
@@ -31,8 +31,11 @@ public class VersionInfoActivity extends NfcActivity implements View.OnClickList
         try {
             String versionName="v"+getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             ((TextView) findViewById(R.id.version_num)).setText(versionName);
-        }catch (Exception e){}
-        ((TextView)findViewById(R.id.connect_email)).setText("PengA@esquel.com(Andy)");
+        }catch (Throwable e){
+            CrashReport.postCatchedException(e);
+        }
+        String email="PengA@esquel.com(Andy)";
+        ((TextView)findViewById(R.id.connect_email)).setText(email);
         if(com.emms.util.BuildConfig.endPoint== com.emms.util.BuildConfig.ServerEndPoint.DEVELOPMENT){
             ((ImageView)findViewById(R.id.downloadImage)).setImageResource(R.mipmap.download_image_test);
         }

@@ -11,44 +11,36 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
-import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.fragment.LinkedOrdersFragment;
 import com.emms.fragment.PendingOrdersFragment;
 import com.emms.fragment.ProcessingFragment;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.Constants;
-import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.emms.util.ViewFindUtils;
 import com.flyco.tablayout.SlidingTabLayout;
 import com.flyco.tablayout.listener.OnTabSelectListener;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.datastore_android_sdk.datastore.DataElement;
-import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.tencent.bugly.crashreport.CrashReport;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by jaffer.deng on 2016/6/20.
+ *
  */
 public class TaskListActivity extends NfcActivity implements OnTabSelectListener,View.OnClickListener{
     private Context mContext ;
     private ArrayList<Fragment> mFragments = new ArrayList<>();
     private  String[] mTitles ;
-    private MyPagerAdapter mAdapter;
-    private ArrayList<ObjectElement> RepairTask=new ArrayList<ObjectElement>();
-    private Handler handler;
     private String TaskClass;
     private String TaskSubClass;
     private SlidingTabLayout tabLayout_2;
@@ -97,24 +89,28 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
         View decorView = getWindow().getDecorView();
         ViewPager vp = ViewFindUtils.find(decorView, R.id.vp);
         vp.setOffscreenPageLimit(2);
-        mAdapter = new MyPagerAdapter(getSupportFragmentManager());
+        MyPagerAdapter mAdapter = new MyPagerAdapter(getSupportFragmentManager());
         vp.setAdapter(mAdapter);
-        String[] taskNum=getIntent().getStringExtra("TaskNum").split("/");
+       try{
+           String[] taskNum=getIntent().getStringExtra("TaskNum").split("/");
 
-        tabLayout_2 = ViewFindUtils.find(decorView, R.id.tl_2);
-        tabLayout_2.setViewPager(vp);
-        tabLayout_2.setOnTabSelectListener(this);
+           tabLayout_2 = ViewFindUtils.find(decorView, R.id.tl_2);
+           tabLayout_2.setViewPager(vp);
+           tabLayout_2.setOnTabSelectListener(this);
 
 
-     //   tabLayout_2.showMsg(2, 9);         //消息数量和位置
-     //   tabLayout_2.setMsgMargin(2, 12, 10);
+           //   tabLayout_2.showMsg(2, 9);         //消息数量和位置
+           //   tabLayout_2.setMsgMargin(2, 12, 10);
 
-        tabLayout_2.showMsg(1, Integer.valueOf(taskNum[1]));
-        tabLayout_2.setMsgMargin(1, 12, 10);
+           tabLayout_2.showMsg(1, Integer.valueOf(taskNum[1]));
+           tabLayout_2.setMsgMargin(1, 12, 10);
 
-        tabLayout_2.showMsg(0, Integer.valueOf(taskNum[0]));
-        tabLayout_2.setMsgMargin(0, 12, 10);
-        //getSupportFragmentManager().
+           tabLayout_2.showMsg(0, Integer.valueOf(taskNum[0]));
+           tabLayout_2.setMsgMargin(0, 12, 10);
+           //getSupportFragmentManager().
+       }catch (Throwable throwable){
+           CrashReport.postCatchedException(throwable);
+       }
     }
 
     private void initView() {
@@ -167,13 +163,13 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
 
     @Override
     public void resolveNfcMessage(Intent intent) {
-        String action = intent.getAction();
-        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
-                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
-                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-            Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-            String iccardID = NfcUtils.dumpTagData(tag);
-        }
+//        String action = intent.getAction();
+//        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+//                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+//                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+//            Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+//            String iccardID = NfcUtils.dumpTagData(tag);
+//        }
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
@@ -197,9 +193,7 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
         }
     }
 
-    private void getRepairTaskNumber(){
 
-    }
     /*
     private void getRepairTaskFromServer(){
         HttpParams params=new HttpParams();

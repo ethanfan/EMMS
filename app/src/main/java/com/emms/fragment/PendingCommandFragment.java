@@ -5,31 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
-import com.emms.activity.CommandActivity;
 import com.emms.activity.TaskDetailsActivity;
-import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
@@ -55,7 +46,6 @@ public class PendingCommandFragment extends BaseFragment {
     private  int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
-    private ArrayList<ObjectElement> submitData=new ArrayList<>();
     private static HashMap<String,String> map=new HashMap<>();
     private static HashMap<String,String> taskStatusMap=new HashMap<>();
     @Override
@@ -150,7 +140,7 @@ public class PendingCommandFragment extends BaseFragment {
                     intent.putExtra("TaskDetail",data.get(position-1).asObjectElement().toString());
                     intent.putExtra(Task.TASK_ID,DataUtil.isDataElementNull(data.get(position-1).get(Task.TASK_ID)));
                     intent.putExtra(Task.TASK_CLASS,DataUtil.isDataElementNull(data.get(position-1).get(Task.TASK_CLASS)));
-                    intent.putExtra("TaskStatus",DataUtil.isDataElementNull(data.get(position-1).get("Status")));
+                    intent.putExtra("TaskStatus",data.get(position-1).get("Status").valueAsInt());
                     intent.putExtra("IsEvaluated",DataUtil.isDataElementNull(data.get(position-1).get("IsEvaluated")));
                     intent.putExtra("FromFragment","0");
                     intent.putExtra("isTaskHistory",true);
@@ -178,7 +168,7 @@ public class PendingCommandFragment extends BaseFragment {
     }
 
 
-    public static PendingCommandFragment newInstance(HashMap TaskClass,HashMap TaskStatus){
+    public static PendingCommandFragment newInstance(HashMap<String,String> TaskClass,HashMap<String,String> TaskStatus){
         PendingCommandFragment fragment = new PendingCommandFragment();
         Bundle bundle = new Bundle();
         //bundle.putString(Task.TASK_CLASS, TaskClass);
@@ -187,11 +177,6 @@ public class PendingCommandFragment extends BaseFragment {
         fragment.setArguments(bundle);
         return fragment;
     }
-    public void setTaskNumInteface(TaskNumInteface taskNumInteface) {
-        this.taskNumInteface = taskNumInteface;
-    }
-
-    private TaskNumInteface taskNumInteface;
 
     private void initMap(){
 //        map.put(Task.REPAIR_TASK,getResources().getString(R.string.repair));

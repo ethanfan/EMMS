@@ -1,6 +1,5 @@
 package com.emms.adapter;
 
-import android.media.Image;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -15,7 +14,6 @@ import com.datastore_android_sdk.datastore.ObjectElement;
 import com.emms.ui.DropEditText;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by jaffer.deng on 2016/6/21.

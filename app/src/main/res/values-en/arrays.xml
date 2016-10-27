@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="select_tab_status">
-        <item>In treatment</item>
-        <item>Pending orders</item>
+        <item>Processing</item>
+        <item>Orders</item>
         <item>Linked list</item>
     </string-array>
     <string-array name="select_tab_task_history">
@@ -35,12 +35,12 @@
     </string-array>
     <string-array name="Equipment_Status">
         <item>In treatment</item>
-        <item>suspend</item>
-        <item>complete</item>
+        <item>Suspend</item>
+        <item>Complete</item>
     </string-array>
     <string-array name="Equipment_Operator_Status">
         <item>In treatment</item>
-        <item>suspend</item>
-        <item>complete</item>
+        <item>Suspend</item>
+        <item>Complete</item>
     </string-array>
 </resources>
