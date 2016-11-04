@@ -4,42 +4,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import android.os.Message;
 import android.os.Parcelable;
-import android.support.v4.app.ServiceCompat;
-import android.text.format.DateUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.commandAdapter;
 import com.emms.httputils.HttpUtils;
-import com.emms.schema.Data;
-import com.emms.schema.Equipment;
 import com.emms.schema.Task;
 import com.emms.ui.HorizontalListView;
 import com.emms.ui.NFCDialog;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 
-import org.apache.http.conn.routing.RouteInfo;
-
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by Administrator on 2016/7/25.
@@ -217,18 +205,18 @@ public class CommandActivity extends NfcActivity  {
                 super.onSuccess(t);
                 dismissCustomDialog();
                 if(t!=null){
-                ToastUtil.showToastLong(R.string.commandSuccess,context);
+                ToastUtil.showToastShort(R.string.commandSuccess,context);
                // TaskComplete(iccardID);
                     finish();
                 }else {
-                    ToastUtil.showToastLong(R.string.submitFail,context);
+                    ToastUtil.showToastShort(R.string.submitFail,context);
                 }
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.submitFail,context);
+                ToastUtil.showToastShort(R.string.submitFail,context);
                 dismissCustomDialog();
             }
         });
@@ -296,21 +284,21 @@ public class CommandActivity extends NfcActivity  {
 //                JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
 //                if(jsonObjectElement!=null&&jsonObjectElement.get("Success")!=null&&
 //                        jsonObjectElement.get("Success").valueAsBoolean()){
-//                ToastUtil.showToastLong(R.string.taskComplete,context);
+//                ToastUtil.showToastShort(R.string.taskComplete,context);
 //                    if(nfcDialog!=null&&nfcDialog.isShowing()){
 //                        nfcDialog.dismiss();
 //                    }
 //                    finish();
 //                   // startActivity(new Intent(context,CusActivity.class));
 //                }else {
-//                    ToastUtil.showToastLong("无法提交任务完成，请检查任务信息",context);
+//                    ToastUtil.showToastShort("无法提交任务完成，请检查任务信息",context);
 //                }
 //            }}
 //
 //            @Override
 //            public void onFailure(int errorNo, String strMsg) {
 //                super.onFailure(errorNo, strMsg);
-//                ToastUtil.showToastLong(R.string.submitFail,context);
+//                ToastUtil.showToastShort(R.string.submitFail,context);
 //            }
 //        });
 //    }
@@ -327,9 +315,9 @@ public class CommandActivity extends NfcActivity  {
 //                if(t!=null){
 //                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
 //                    if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
-//                        ToastUtil.showToastLong(R.string.scanICCardSuccess,context);}
+//                        ToastUtil.showToastShort(R.string.scanICCardSuccess,context);}
 //                    else{
-//                        ToastUtil.showToastLong("刷卡登录失败",context);
+//                        ToastUtil.showToastShort("刷卡登录失败",context);
 //                    }
 //                }
 //                dismissCustomDialog();
@@ -338,7 +326,7 @@ public class CommandActivity extends NfcActivity  {
 //            @Override
 //            public void onFailure(int errorNo, String strMsg) {
 //                super.onFailure(errorNo, strMsg);
-//                ToastUtil.showToastLong(R.string.scanICCardFail,context);
+//                ToastUtil.showToastShort(R.string.scanICCardFail,context);
 //                dismissCustomDialog();
 //            }
 //        });

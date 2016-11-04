@@ -91,7 +91,7 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
                         }
                     });
                 }
-            },1000);
+            },500);
         }else {
             init();
         }
@@ -148,19 +148,19 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
             }
             case R.id.search_button:{
                 if(filterCondition.getText().equals("")){
-                    ToastUtil.showToastLong(R.string.pleaseSelectCondition,mContext);
+                    ToastUtil.showToastShort(R.string.pleaseSelectCondition,mContext);
                     return;
                 }
                 int filterTimeLong=30;
                 if(filter_condition_map.get(filterCondition.getText())==4){
                     if(filterTime.getText().toString().equals("")){
-                        ToastUtil.showToastLong(R.string.pleaseInputFilterTime,mContext);
+                        ToastUtil.showToastShort(R.string.pleaseInputFilterTime,mContext);
                         return;
                     }
                     if( !DataUtil.isNum(filterTime.getText().toString())
                         || !DataUtil.isInt(filterTime.getText().toString())
                         || Integer.parseInt(filterTime.getText().toString())<=0   ){
-                        ToastUtil.showToastLong(R.string.pleaseInputIntegerLargeThanZero,mContext);
+                        ToastUtil.showToastShort(R.string.pleaseInputIntegerLargeThanZero,mContext);
                         return;
                     }
                     filterTimeLong=Integer.parseInt(filterTime.getText().toString());
@@ -234,7 +234,7 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
         }else if(vp.getCurrentItem()==1){
             ((LinkedVerifyFragment)mFragments.get(1)).submitVerifyData();
         }else {
-            ToastUtil.showToastLong(R.string.NoDataToSubmit,mContext);
+            ToastUtil.showToastShort(R.string.NoDataToSubmit,mContext);
         }
     }
     private void initSearchView() {
@@ -278,7 +278,7 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
                         }
                     });
                 } else {
-                    ToastUtil.showToastLong(R.string.error_occur,mContext);
+                    ToastUtil.showToastShort(R.string.error_occur,mContext);
                 }
             }
         });
@@ -376,7 +376,7 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,mContext);
+                        ToastUtil.showToastShort(tips,mContext);
                     }
                 } else {
                     if (searchDataLists.size() > 0) {
@@ -387,7 +387,7 @@ public class WorkloadVerifyActivity extends NfcActivity  implements OnTabSelectL
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,mContext);
+                        ToastUtil.showToastShort(tips,mContext);
                     }
                 }
             }

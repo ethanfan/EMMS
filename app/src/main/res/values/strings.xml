@@ -345,6 +345,7 @@
     <string name="FailToScanEquipment">该设备不属于所选组别,不允许添加</string>
     <string name="FailGetTaskOperatorListCauseByTimeOut">获取任务参与人状态列表失败，请检查网络</string>
     <string name="FailGetMeasurePointListCauseByTimeOut">获取测点列表失败，请检查网络</string>
+    <string name="FailGetTaskListCauseByTimeOut">获取任务列表失败，请检查网络</string>
     <string name="SuccessCancelTask">取消任务成功</string>
     <string name="SuccessSubmitPicture">上传图片成功</string>
     <string name="SuccessCreateTask">任务创建成功</string>
@@ -457,11 +458,11 @@
     <string name="FailGetDataPleaseRestartApp">"获取数据失败，请重启App"</string>
     <string name="PleaseAddTaskPeople">请添加任务参与人</string>
     <string name="EndTimeCanNotlessThanStartTime">结束时间不能在开始时间前，请重新选择</string>
-    <string name="StartTimeCanNotlessThanApplicantTime">开始时间不能在创建时间前，请重新选择\n,创建时间：</string>
+    <string name="StartTimeCanNotlessThanApplicantTime">开始时间不能在创建时间前，请重新选择\n创建时间：</string>
     <string name="pleaseInputRightValue">请输入正确的测量值，范围:</string>
     <string name="pleaseInputMeasureValue">无可选值，请输入测量值</string>
     <string name="UpdateTime">yyyy.MM.dd HH:mm:ss</string>
-    <string name="OnlyMainPersonCanSubmit">只是任务负责人可以提交测点测量值</string>
+    <string name="OnlyMainPersonCanSubmit">只有任务负责人可以提交测点测量值</string>
     <string name="CannotSubmitMeasurePointValue">设备状态已完成，不可提交测点值</string>
     <string name="pleaseSelectJoiner">请选择参与人</string>
     <string name="JoinerIsInTask">已被添加进参与人列表当中，不可重复添加</string>
@@ -476,4 +477,8 @@
     <string name="equelToOrLargeThan">大于或等于</string>
     <string name="ChangeLanguagePleaseWait">正在修改语言，请稍后</string>
     <string name="AppError">程序异常</string>
+    <string name="free">闲</string>
+    <string name="busy">忙</string>
+    <string name="process">处理中</string>
+    <string name="Update">立即更新</string>
 </resources>

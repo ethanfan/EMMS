@@ -15,14 +15,17 @@
           android:layout_height="wrap_content"
           android:textColor="@color/black"
           android:id="@+id/work_num"
-          android:paddingLeft="10dp"
+          android:paddingLeft="5dp"
           android:textSize="17sp"
+          android:singleLine="true"
+          android:layout_toLeftOf="@+id/approve_work_hours_tag"
           android:layout_toRightOf="@id/work_num_tag"/>
       <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:textColor="@color/black"
           android:layout_marginTop="5dp"
+          android:layout_marginLeft="15dp"
           android:id="@+id/equipment_num_tag"
           android:text="@string/sub_task_equipment_num"
           android:textSize="17sp"
@@ -32,7 +35,7 @@
           android:layout_height="wrap_content"
           android:id="@+id/equipment_num"
           android:textColor="@color/black"
-          android:paddingLeft="10dp"
+          android:paddingLeft="5dp"
           android:textSize="17sp"
           android:layout_alignTop="@+id/equipment_num_tag"
           android:layout_toRightOf="@+id/equipment_num_tag"/>
@@ -47,7 +50,7 @@
             android:layout_toLeftOf="@+id/approve_work_hours"
             android:text="@string/standardWorkload"/>
         <TextView
-            android:layout_width="60dp"
+            android:layout_width="45dp"
             android:layout_height="wrap_content"
             android:textColor="@color/order_color"
             android:id="@+id/approve_work_hours"
@@ -60,7 +63,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/work_name_tag"
             android:textColor="@color/black"
-            android:layout_below="@+id/equipment_num_tag"
+            android:layout_below="@+id/equipment_num"
             android:layout_marginTop="5dp"
             android:textSize="17sp"
             android:layout_alignRight="@+id/equipment_num_tag"
@@ -70,7 +73,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/work_name"
             android:textColor="@color/black"
-            android:paddingLeft="10dp"
+            android:paddingLeft="5dp"
             android:textSize="17sp"
             android:layout_alignTop="@+id/work_name_tag"
             android:layout_toRightOf="@id/work_name_tag"/>
@@ -82,14 +85,15 @@
             android:id="@+id/work_description_tag"
             android:layout_marginTop="5dp"
             android:textSize="17sp"
-            android:layout_below="@+id/work_name_tag"
+            android:layout_below="@+id/work_name"
+            android:layout_alignRight="@+id/equipment_num_tag"
             android:text="@string/work_description"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/work_description"
             android:textColor="@color/black"
-            android:paddingLeft="10dp"
+            android:paddingLeft="5dp"
             android:textSize="17sp"
             android:layout_alignTop="@+id/work_description_tag"
             android:layout_toRightOf="@id/work_description_tag"/>

@@ -2,10 +2,7 @@ package com.emms.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.nfc.NfcAdapter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,7 +11,6 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.TextView;
 
-import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -305,7 +301,7 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.loadingFail,mContext);
+                ToastUtil.showToastShort(R.string.loadingFail,mContext);
                 dismissCustomDialog();
             }
         });

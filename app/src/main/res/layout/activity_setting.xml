@@ -121,28 +121,28 @@
                         drop:hint="@string/select"
                         drop:hintColor="@color/hint_color"/>
                 </LinearLayout>
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/dddd"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="20dp">
-                    <Button
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:background="#FCC900"
-                        android:gravity="center"
-                        android:id="@+id/comfirm"
-                        android:text="@string/sure"
-                        android:textSize="23sp"
-                        android:textColor="@color/white"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:layout_marginBottom="20dp"
-                        android:layout_marginTop="20dp"
-                      android:layout_alignParentBottom="true"
-                        />
-                </RelativeLayout>
+                <!--<RelativeLayout-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_below="@+id/dddd"-->
+                    <!--android:layout_alignParentBottom="true"-->
+                    <!--android:layout_marginBottom="20dp">-->
+                    <!--<Button-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="50dp"-->
+                        <!--android:background="#FCC900"-->
+                        <!--android:gravity="center"-->
+                        <!--android:id="@+id/comfirm"-->
+                        <!--android:text="@string/sure"-->
+                        <!--android:textSize="23sp"-->
+                        <!--android:textColor="@color/white"-->
+                        <!--android:layout_marginLeft="20dp"-->
+                        <!--android:layout_marginRight="20dp"-->
+                        <!--android:layout_marginBottom="20dp"-->
+                        <!--android:layout_marginTop="20dp"-->
+                      <!--android:layout_alignParentBottom="true"-->
+                        <!--/>-->
+                <!--</RelativeLayout>-->
                 </RelativeLayout>
 
         </LinearLayout>

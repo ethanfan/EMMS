@@ -117,11 +117,11 @@ private void initView(){
         HttpParams params=new HttpParams();
         JsonObjectElement submitData=new JsonObjectElement();
         if(equipment_id.getText().equals("")){
-            ToastUtil.showToastLong(R.string.pleaseInputEquipmentNum,this);
+            ToastUtil.showToastShort(R.string.pleaseInputEquipmentNum,this);
             return;
         }
         if(iccard_id.getText().toString().equals("")){
-            ToastUtil.showToastLong(R.string.pleaseScanICcardNum,this);
+            ToastUtil.showToastShort(R.string.pleaseScanICcardNum,this);
             return;
         }
         showCustomDialog(R.string.submitData);
@@ -136,9 +136,9 @@ private void initView(){
                 if(t!=null){
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                     if(jsonObjectElement.get(Data.SUCCESS).valueAsBoolean()){
-                ToastUtil.showToastLong(R.string.submitSuccess,context);
+                ToastUtil.showToastShort(R.string.submitSuccess,context);
                     }else {
-                        ToastUtil.showToastLong(R.string.submit_Fail,context);
+                        ToastUtil.showToastShort(R.string.submit_Fail,context);
                     }
                 }
                 dismissCustomDialog();
@@ -148,7 +148,7 @@ private void initView(){
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 dismissCustomDialog();
-                ToastUtil.showToastLong(R.string.submitFail,context);
+                ToastUtil.showToastShort(R.string.submitFail,context);
             }
         });
     }
@@ -214,7 +214,7 @@ private void initView(){
                         }
                     });
                 } else {
-                    ToastUtil.showToastLong(R.string.error_occur,context);
+                    ToastUtil.showToastShort(R.string.error_occur,context);
                 }
             }
         });
@@ -313,7 +313,7 @@ private void initView(){
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,context);
+                        ToastUtil.showToastShort(tips,context);
                     }
                 } else {
                     if (searchDataLists.size() > 0) {
@@ -324,7 +324,7 @@ private void initView(){
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,context);
+                        ToastUtil.showToastShort(tips,context);
                     }
                 }
             }

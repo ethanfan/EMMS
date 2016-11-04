@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +12,8 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
-import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -207,7 +202,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
     private void getSubTaskDataFromServer(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
-                ToastUtil.showToastLong(R.string.noMoreData,context);
+                ToastUtil.showToastShort(R.string.noMoreData,context);
                 return;
             }}
         showCustomDialog(R.string.loadingData);
@@ -255,46 +250,46 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
     }
 
 
-    public void getTaskEquipmentFromServer(){
-            if (null == taskId) {
-                return;
-            }
-
-            HttpParams params = new HttpParams();
-            params.put("task_id", taskId);
-        params.put("pageSize",1000);
-        params.put("pageIndex",1);
-            //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
-            HttpUtils.get(this, "TaskDetailList", params, new HttpCallback() {
-                @Override
-                public void onSuccess(String t) {
-                    super.onSuccess(t);
-                    Log.e("returnString", t);
-                    if (t != null) {
-                  //      JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
-                   //     if (!jsonObjectElement.get("PageData").isNull()) {
-                 //           ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
-                        ArrayElement jsonArrayElement=new JsonArrayElement(t);
-                            if ( jsonArrayElement.size() > 0) {
-
-                                for (int i = 0; i < jsonArrayElement.size(); i++) {
-                                    EquipmentList.add(jsonArrayElement.get(i).asObjectElement());
-                                }
-                            }
-                        }
-
-                }
-                @Override
-                public void onFailure(int errorNo, String strMsg) {
-
-                    super.onFailure(errorNo, strMsg);
-                   Toast toast=Toast.makeText(SubTaskManageActivity.this,"获取设备信息失败,请检查网络",Toast.LENGTH_LONG);
-                    toast.setGravity(Gravity.CENTER,0,0);
-                    toast.show();
-                }
-            });
-
-    }
+//    public void getTaskEquipmentFromServer(){
+//            if (null == taskId) {
+//                return;
+//            }
+//
+//            HttpParams params = new HttpParams();
+//            params.put("task_id", taskId);
+//        params.put("pageSize",1000);
+//        params.put("pageIndex",1);
+//            //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
+//            HttpUtils.get(this, "TaskDetailList", params, new HttpCallback() {
+//                @Override
+//                public void onSuccess(String t) {
+//                    super.onSuccess(t);
+//                    Log.e("returnString", t);
+//                    if (t != null) {
+//                  //      JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+//                   //     if (!jsonObjectElement.get("PageData").isNull()) {
+//                 //           ArrayElement jsonArrayElement = jsonObjectElement.get("PageData").asArrayElement();
+//                        ArrayElement jsonArrayElement=new JsonArrayElement(t);
+//                            if ( jsonArrayElement.size() > 0) {
+//
+//                                for (int i = 0; i < jsonArrayElement.size(); i++) {
+//                                    EquipmentList.add(jsonArrayElement.get(i).asObjectElement());
+//                                }
+//                            }
+//                        }
+//
+//                }
+//                @Override
+//                public void onFailure(int errorNo, String strMsg) {
+//
+//                    super.onFailure(errorNo, strMsg);
+//                   Toast toast=Toast.makeText(SubTaskManageActivity.this,"获取设备信息失败,请检查网络",Toast.LENGTH_LONG);
+//                    toast.setGravity(Gravity.CENTER,0,0);
+//                    toast.show();
+//                }
+//            });
+//
+//    }
 
     @Override
     public void resolveNfcMessage(Intent intent) {

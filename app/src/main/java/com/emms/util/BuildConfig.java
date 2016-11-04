@@ -1,5 +1,7 @@
 package com.emms.util;
 
+import android.content.Context;
+
 public class BuildConfig {
 	
 	public enum ServerEndPoint {
@@ -8,11 +10,12 @@ public class BuildConfig {
 		DEVELOPMENT,
 		UAT,
 		AZURE_UAT,
-		GARMENT
+		GARMENT,
+		GARMENTTEST
 	}
 	
-	public static final ServerEndPoint endPoint = ServerEndPoint.UAT;
-
+	public static  ServerEndPoint endPoint = ServerEndPoint.UAT;
+    public static boolean isDebug=true;
 	//Production
 	private static final String productionAPIEndPoint = "http://devazure.esquel.cn:80/EMMS/api/";
 	private static final String productionConfigurationEndPoint = "http://devazure.esquel.cn:80/EMMS/api/Token";
@@ -36,6 +39,12 @@ public class BuildConfig {
 	private static final String garmentConfigurationEndPoint = "http://10.20.252.20/emmswebapi/api/Token";
 	private static final String garmentContentServerEndPoint = "http://10.20.252.20/emmswebapi/api/DataBase";
 	private static final String garmentContentServerDownload = "http://10.20.252.20/emmswebapi/api/DataBase";
+
+	//GarmentTest
+	private static final String garmentTestAPIEndPoint = "http://devazure.gfg1.esquel.com/EMMS/api/";
+	private static final String garmentTestConfigurationEndPoint = "http://devazure.gfg1.esquel.com/EMMS/api/Token";
+	private static final String garmentTestContentServerEndPoint = "http://devazure.gfg1.esquel.com/EMMS/api/DataBase";
+	private static final String garmentTestContentServerDownload = "http://devazure.gfg1.esquel.com/EMMS/api/DataBase";
 //DB下载地址
 //	https://edpazure.esquel.cn/apps/hrcampus/prod/EMMS.zip
 
@@ -52,6 +61,9 @@ public class BuildConfig {
 		  }
 		  case GARMENT:{
 			  return garmentConfigurationEndPoint;
+		  }
+		  case GARMENTTEST:{
+			  return garmentTestConfigurationEndPoint;
 		  }
 		  default:
 			  return productionConfigurationEndPoint;
@@ -78,6 +90,9 @@ public class BuildConfig {
 			case GARMENT:{
 				return garmentAPIEndPoint;
 			}
+			case GARMENTTEST:{
+				return garmentTestAPIEndPoint;
+			}
 			default:
 				return productionAPIEndPoint;
 		}
@@ -89,4 +104,27 @@ public class BuildConfig {
 		return productionConfigurationEndPoint;
 
 	}
+	public static void NetWorkSetting(Context context){
+        if(BuildConfig.isDebug){
+            if(SharedPreferenceManager.getNetwork(context)!=null){
+                if(SharedPreferenceManager.getNetwork(context).equals("InnerNetwork")){
+                    BuildConfig.endPoint= BuildConfig.ServerEndPoint.GARMENTTEST;
+                }else {
+                    BuildConfig.endPoint= BuildConfig.ServerEndPoint.DEVELOPMENT;
+                }
+            }else {
+                BuildConfig.endPoint=BuildConfig.ServerEndPoint.DEVELOPMENT;
+            }
+        }else {
+            if(SharedPreferenceManager.getNetwork(context)!=null){
+                if(SharedPreferenceManager.getNetwork(context).equals("InnerNetwork")){
+                    BuildConfig.endPoint= BuildConfig.ServerEndPoint.GARMENT;
+                }else {
+                    BuildConfig.endPoint= BuildConfig.ServerEndPoint.UAT;
+                }
+            }else {
+                BuildConfig.endPoint=BuildConfig.ServerEndPoint.UAT;
+            }
+        }
+    }
 }

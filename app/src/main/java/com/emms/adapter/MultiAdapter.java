@@ -134,7 +134,7 @@ public class MultiAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.item_invitor, null);
             holder.workname = (TextView) convertView.findViewById(R.id.id_worknum);
             holder.tech = (TextView) convertView.findViewById(R.id.id_tech);
-            holder.status = (ImageView) convertView.findViewById(R.id.workstatus);
+            holder.statusText = (TextView) convertView.findViewById(R.id.workstatus);
             holder.select = (ImageView) convertView.findViewById(R.id.select);
             holder.selectNormal = (ImageView) convertView.findViewById(R.id.select_normal);
             holder.multi_item = (LinearLayout) convertView.findViewById(R.id.multi_item);
@@ -148,9 +148,12 @@ public class MultiAdapter extends BaseAdapter {
         holder.workname.setText(DataUtil.isDataElementNull(Operator.get("Name")));
         holder.tech.setText(DataUtil.isDataElementNull(Operator.get("Skill")));
             if (DataUtil.isDataElementNull(Operator.get("Status")).equals("1")) {
-                holder.status.setImageResource(R.mipmap.busy);
+                holder.statusText.setBackgroundDrawable(ctx.getResources().getDrawable(R.drawable.bg_busy));
+                holder.statusText.setText(R.string.busy);
             } else {
-                holder.status.setImageResource(R.mipmap.idle);
+               // holder.statusText.setImageResource(R.mipmap.idle);
+                holder.statusText.setText(R.string.free);
+                holder.statusText.setBackgroundDrawable(ctx.getResources().getDrawable(R.drawable.bg_free));
             }
            if(mChecked.get(position)){
                holder.select.setVisibility(View.VISIBLE);
@@ -180,7 +183,7 @@ public class MultiAdapter extends BaseAdapter {
                         }
                         ClickResult();
                     } else {
-                        ToastUtil.showToastLong(R.string.thisWorkerIsBusy, ctx);
+                        ToastUtil.showToastShort(R.string.thisWorkerIsBusy, ctx);
                     }
                 }
             });
@@ -203,6 +206,7 @@ public class MultiAdapter extends BaseAdapter {
     public static   class ViewHolder {
         TextView workname ;
         TextView tech;
+        TextView statusText;
         ImageView status;
         ImageView select;
         ImageView selectNormal;

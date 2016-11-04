@@ -102,7 +102,7 @@ public  class HttpUtils {
                     .httpMethod(RxVolley.Method.POST) //default GET or POST/PUT/DELETE/HEAD/OPTIONS/TRACE/PATCH
                     .contentType(RxVolley.ContentType.JSON)//default FORM or JSON
                     .params(params)
-                    .retryPolicy(new DefaultRetryPolicy(120000,0,1f))
+                    .retryPolicy(new DefaultRetryPolicy(25000,0,1f))
                     .callback(callback)
                     .encoding("UTF-8") //default
                     .doTask();
@@ -149,7 +149,7 @@ public  class HttpUtils {
                     // .cacheTime(6)
                     //内容参数传递形式，如果不加，默认为 FORM 表单提交，可选项 JSON 内容
                     .contentType(RxVolley.ContentType.JSON)
-                    .retryPolicy(new DefaultRetryPolicy(30000,0,1f))
+                    .retryPolicy(new DefaultRetryPolicy(20000,0,1f))
                     .params(params) //上文创建的HttpParams请求参数集
                     //是否缓存，默认是 get 请求 5 缓存分钟, post 请求不缓存
                     //.shouldCache(true)
@@ -327,7 +327,7 @@ public  class HttpUtils {
                     .httpMethod(RxVolley.Method.POST) //default GET or POST/PUT/DELETE/HEAD/OPTIONS/TRACE/PATCH
                     .contentType(RxVolley.ContentType.JSON)//default FORM or JSON
                     .params(params)
-                    .retryPolicy(new DefaultRetryPolicy(120000,0,1f))
+                    .retryPolicy(new DefaultRetryPolicy(25000,0,1f))
                     .callback(callback)
                     .encoding("UTF-8") //default
                     .doTask();

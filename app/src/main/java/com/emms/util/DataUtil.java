@@ -115,16 +115,97 @@ public class DataUtil {
         return utcFormater.format(gpsLocalDate.getTime());
     }
     public static void getDataFromDataBase(Context context,String DataType, StoreCallback storeCallback){
-        String sql= "select * from DataDictionary where DataType='"+DataType+"'";
-        ((AppApplication) (((Activity)context).getApplication())).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
+        String sql;
+        if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH){
+//            sql="select distinct d.[DataCode],(case LT.[Translation_Display]"
+//                    +" when '' then d.[DataName]"
+//                    +" when null then d.[DataName]"
+//                    +" else LT.[Translation_Display] end) DataName,LT.[Translation_Code]"
+//                    +" from DataDictionary d,Language_Translation LT"
+//                    +" where d.[DataName]=LT.[Translation_Code]"
+//                    +" and d.DataType='"+DataType+"'";
+            sql= "select distinct DataCode,DataName Translation_Code,"
+                    +" (case when Translation_Display is null then DataName"
+                    +" when Translation_Display ='' then DataName"
+                    +" else Translation_Display end) DataName"
+                    +" FROM (select  d.[DataCode],(select"
+                    +" LT.[Translation_Display]"
+                    +" from Language_Translation  LT"
+                    +" where d.[DataName]=LT.[Translation_Code]"
+                    +" and LT.[Translation_Display] is not null"
+                    +" AND LT.[Translation_Display] <>''"
+                    +" order by LT.Translation_ID asc limit 1"
+                    +" ) Translation_Display,d.[DataName]"
+                    +" from DataDictionary d"
+                    +" where d.DataType='"+DataType+"') a";
+        }else {
+        sql= "select * from DataDictionary where DataType='"+DataType+"'";
+        }
+        ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
     }
     public static void getDataFromDataBase(Context context,String DataType,int Pdata_ID, StoreCallback storeCallback){
-        String sql= "select * from DataDictionary where DataType='"+DataType+"' and PData_ID ='" +Pdata_ID+"'";
-        ((AppApplication) (((Activity)context).getApplication())).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
+        String sql;
+        if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH){
+//            sql="select d.[DataCode],ifnull(LT.[Translation_Display],d.[DataName]) DataName "
+//                    + " from DataDictionary d,Language_Translation LT"
+//                    + " where d.[DataName]=LT.[Translation_Code]"
+//                    + " and d.DataType='"+DataType+"'"
+//                    +" and d.PData_ID ='" +Pdata_ID+"'";
+
+           sql= "select distinct DataCode,DataName Translation_Code,"
+                +" (case when Translation_Display is null then DataName"
+                +" when Translation_Display ='' then DataName"
+                +" else Translation_Display end) DataName"
+                +" FROM (select  d.[DataCode],(select"
+                +" LT.[Translation_Display]"
+                +" from Language_Translation  LT"
+                +" where d.[DataName]=LT.[Translation_Code]"
+                +" and LT.[Translation_Display] is not null"
+                +" AND LT.[Translation_Display] <>''"
+                +" order by LT.Translation_ID asc limit 1"
+                +" ) Translation_Display,d.[DataName]"
+                +" from DataDictionary d"
+                +" where d.DataType='"+DataType+"'"
+                +" and d.PData_ID ='" +Pdata_ID+"') a";
+        }else {
+            sql=  "select * from DataDictionary where DataType='"+DataType+"' and PData_ID ='" +Pdata_ID+"'";
+        }
+        ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
     }
    public static void getDataFromDataBase(Context context,String DataType, String DataValue1, StoreCallback storeCallback){
-       String sql= "select * from DataDictionary where DataType='"+DataType+"' and 1=1 and DataValue1='" + DataValue1+"'";
-       ((AppApplication) (((Activity)context).getApplication())).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
+       String sql;
+       if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH){
+//           sql="select distinct d.[DataCode],(case LT.[Translation_Display]"
+//                   +" when '' then d.[DataName]"
+//                   +" when null then d.[DataName]"
+//                   +" else LT.[Translation_Display] end) DataName"
+//                   +" from DataDictionary d,Language_Translation LT"
+//                   +" where d.[DataName]=LT.[Translation_Code]"
+//                   +" and d.DataType='"+DataType+"'"
+//                   +" and d.DataValue1 ='" +DataValue1+"'";
+           sql= "select distinct DataCode,"
+                   +" (case when Translation_Display is null then DataName"
+                   +" when Translation_Display ='' then DataName"
+                   +" else Translation_Display end) DataName"
+                   +" FROM (select  d.[DataCode],(select"
+                   +" LT.[Translation_Display]"
+                   +" from Language_Translation  LT"
+                   +" where d.[DataName]=LT.[Translation_Code]"
+                   +" and LT.[Translation_Display] is not null"
+                   +" AND LT.[Translation_Display] <>''"
+                   +" order by LT.Translation_ID asc limit 1"
+                   +" ) Translation_Display,d.[DataName]"
+                   +" from DataDictionary d"
+                   +" where d.DataType='"+DataType+"'"
+                   +" and d.DataValue1 ='" +DataValue1+"') a";
+       }else {
+           sql=  "select * from DataDictionary where DataType='"+DataType+"' and 1=1 and DataValue1='" + DataValue1+"'";
+       }
+       ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
    }
+    public static void getDataFromLanguageTranslation(Context context,String Translation_Code,StoreCallback storeCallback){
+        String sql="select distinct ifnull(LT.[Translation_Display],LT.[Translation_Code]) Translation_Display from Language_Translation LT where LT.[Translation_Code]='"+Translation_Code+"'";
+        ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "Language_Translation",storeCallback);
+    }
 
 }

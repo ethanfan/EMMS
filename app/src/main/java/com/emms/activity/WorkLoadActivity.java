@@ -181,7 +181,7 @@ public class WorkLoadActivity extends NfcActivity{
                        }
                    });
                 }else {
-                    ToastUtil.showToastLong(R.string.loading_Fail,context);
+                    ToastUtil.showToastShort(R.string.loading_Fail,context);
                 }
                 dismissCustomDialog();
             }
@@ -189,7 +189,7 @@ public class WorkLoadActivity extends NfcActivity{
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.loadingFail,context);
+                ToastUtil.showToastShort(R.string.loadingFail,context);
                 dismissCustomDialog();
             }
         });
@@ -223,19 +223,19 @@ public class WorkLoadActivity extends NfcActivity{
         int sum=0;
         for(int i=0;i<workloadKeylist.size();i++){
             if(workloadMap.get(workloadKeylist.get(i)).getText().toString().equals("")){
-                ToastUtil.showToastLong(R.string.pleaseInputWorkload,this);
+                ToastUtil.showToastShort(R.string.pleaseInputWorkload,this);
                 return;
             }
             if(    !DataUtil.isNum(workloadMap.get(workloadKeylist.get(i)).getText().toString())
                    || !DataUtil.isInt(workloadMap.get(workloadKeylist.get(i)).getText().toString())
                    ||  Integer.parseInt(workloadMap.get(workloadKeylist.get(i)).getText().toString())<0 ){
-                ToastUtil.showToastLong(R.string.pleaseInputInteger,this);
+                ToastUtil.showToastShort(R.string.pleaseInputInteger,this);
                 return;
             }
             sum+=Integer.valueOf(workloadMap.get(workloadKeylist.get(i)).getText().toString());
         }
         if(sum!=100){
-            ToastUtil.showToastLong(R.string.judgeWorkloadSum,this);
+            ToastUtil.showToastShort(R.string.judgeWorkloadSum,this);
             return;
         }
         showCustomDialog(R.string.submitData);
@@ -258,7 +258,7 @@ public class WorkLoadActivity extends NfcActivity{
                 if(t!=null){
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                     if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.submitSuccess,context);
+                        ToastUtil.showToastShort(R.string.submitSuccess,context);
                         dismissCustomDialog();
                         if(TaskComplete){
                             if(  TaskClass.equals(Task.REPAIR_TASK)  ||  TaskClass.equals(Task.OTHER_TASK)  ){
@@ -278,7 +278,7 @@ public class WorkLoadActivity extends NfcActivity{
                             finish();
                         }
                     }else{
-                        ToastUtil.showToastLong(R.string.workloadSubmitFail,context);
+                        ToastUtil.showToastShort(R.string.workloadSubmitFail,context);
                     }
                 }
 
@@ -288,7 +288,7 @@ public class WorkLoadActivity extends NfcActivity{
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 dismissCustomDialog();
-                ToastUtil.showToastLong(R.string.submitFail,context);
+                ToastUtil.showToastShort(R.string.submitFail,context);
             }
         });
 
@@ -311,10 +311,10 @@ public class WorkLoadActivity extends NfcActivity{
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                     if(jsonObjectElement.get("Success")!=null&&
                             jsonObjectElement.get("Success").valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.taskComplete,context);
+                        ToastUtil.showToastShort(R.string.taskComplete,context);
                         startActivity(new Intent(context,CusActivity.class));
                     }else {
-                        ToastUtil.showToastLong(R.string.canNotSubmitTaskComplete,context);
+                        ToastUtil.showToastShort(R.string.canNotSubmitTaskComplete,context);
                     }
                 }
             dismissCustomDialog();
@@ -324,7 +324,7 @@ public class WorkLoadActivity extends NfcActivity{
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 dismissCustomDialog();
-                ToastUtil.showToastLong(R.string.canNotSubmitTaskCompleteCauseByTimeOut,context);
+                ToastUtil.showToastShort(R.string.canNotSubmitTaskCompleteCauseByTimeOut,context);
             }
         });
     }

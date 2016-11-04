@@ -33,13 +33,13 @@ import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2016/8/29.
+ *
  */
 public class TaskVerifyActivity extends NfcActivity {
     private PullToRefreshListView VerifyTaskListView;
     private TaskAdapter adapter;
     private Context mContext=this;
     private ArrayList<ObjectElement> VerifyTaskList=new ArrayList<>();
-    private  int PAGE_SIZE=10;
     private int pageIndex=1;
     private int RecCount=0;
     private Handler handler=new Handler();
@@ -163,9 +163,9 @@ public class TaskVerifyActivity extends NfcActivity {
                         if(json.get(Data.SUCCESS).valueAsBoolean()){
                             VerifyTaskList.remove(position);
                             adapter.notifyDataSetChanged();
-                            ToastUtil.showToastLong(R.string.SuccessToVerify,mContext);
+                            ToastUtil.showToastShort(R.string.SuccessToVerify,mContext);
                         }else {
-                            ToastUtil.showToastLong(R.string.FailToVerify,mContext);
+                            ToastUtil.showToastShort(R.string.FailToVerify,mContext);
                         }
                     }catch (Throwable throwable){
                         CrashReport.postCatchedException(throwable);
@@ -179,7 +179,7 @@ public class TaskVerifyActivity extends NfcActivity {
             @Override
             public void onFailure(VolleyError error) {
                 super.onFailure(error);
-                ToastUtil.showToastLong(R.string.FailToVerifyCauseByTimeOut,mContext);
+                ToastUtil.showToastShort(R.string.FailToVerifyCauseByTimeOut,mContext);
                 dismissCustomDialog();
             }
         });
@@ -189,9 +189,10 @@ public class TaskVerifyActivity extends NfcActivity {
 
     }
     private void getVerfyTaskListFromServer(){
+        int PAGE_SIZE = 10;
         if(RecCount!=0){
-            if((pageIndex-1)*PAGE_SIZE>=RecCount){
-                ToastUtil.showToastLong(R.string.noMoreData,mContext);
+            if((pageIndex-1)* PAGE_SIZE >=RecCount){
+                ToastUtil.showToastShort(R.string.noMoreData,mContext);
                 return;
             }}
         showCustomDialog(R.string.loadingData);        HttpParams params=new HttpParams();
@@ -203,7 +204,7 @@ public class TaskVerifyActivity extends NfcActivity {
 //        params.put("taskClass","T01");
 //        params.put("pageSize",PAGE_SIZE);
 //        params.put("pageIndex",pageIndex);
-        HttpUtils.post(mContext, "TaskList?pageSize="+PAGE_SIZE+"&pageIndex="+pageIndex, params, new HttpCallback() {
+        HttpUtils.post(mContext, "TaskList?pageSize="+ PAGE_SIZE +"&pageIndex="+pageIndex, params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -220,7 +221,7 @@ public class TaskVerifyActivity extends NfcActivity {
                                 VerifyTaskList.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                             }
                         }else {
-                            ToastUtil.showToastLong(R.string.noData,mContext);
+                            ToastUtil.showToastShort(R.string.noData,mContext);
                         }
                         handler.post(new Runnable() {
                             @Override

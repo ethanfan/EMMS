@@ -11,9 +11,11 @@ import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -38,6 +40,8 @@ import com.emms.schema.DataDictionary;
 import com.emms.schema.DataRelation;
 import com.emms.schema.DataType;
 import com.emms.schema.Equipment;
+import com.emms.schema.Language_Translation;
+import com.emms.schema.Languages;
 import com.emms.schema.Operator;
 import com.emms.schema.TaskOrganiseRelation;
 import com.emms.ui.KProgressHUD;
@@ -64,7 +68,7 @@ import cn.jpush.android.api.CustomPushNotificationBuilder;
 import cn.jpush.android.api.JPushInterface;
 
 public class LoginActivity extends NfcActivity implements View.OnClickListener {
-    private Context mContext;
+    private Context mContext=this;
     //private TextView machine;
     private EditText inputPassWord;
     private EditText inputname;
@@ -76,13 +80,12 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mContext = this;
         if(SharedPreferenceManager.getFactory(this)==null){
             SharedPreferenceManager.setFactory(this,def_Factory);
         }
-        JPushInterface.init(mContext);
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, new LinkedHashSet<>()));
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "All"));
+        JPushInterface.init(mContext);
         setStyleCustom();
         //init();
         initView();
@@ -102,21 +105,24 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             initView();
             SharedPreferenceManager.setLanguageChange(this,false);
         }
+        //TODO 判断DB是否存在
+        getNewDataFromServer();
     }
 
     private void initView() {
-        TextView login = (TextView) findViewById(R.id.login);
         inputPassWord = (EditText) findViewById(R.id.inputPassWord);
         inputname = (EditText) findViewById(R.id.inputUserName);
         inputPassWord.setHint(R.string.login_password_hint);
-        inputname.setHint(R.string.login_password_hint);
-        login.setText(R.string.login);
+        inputname.setHint(R.string.login_id_hint);
+        ((TextView) findViewById(R.id.login)).setText(R.string.login);
         ((TextView) findViewById(R.id.setting)).setText(R.string.systemSetting);
         ((TextView) findViewById(R.id.sweetTips)).setText(R.string.sweetTips);
         ((TextView) findViewById(R.id.tips)).setText(R.string.pleaseInputPasswordOrScanICcard);
-      inputname.setText(SharedPreferenceManager.getUserName(this));
-      inputPassWord.setText(SharedPreferenceManager.getPassWord(this));
-        login.setOnClickListener(this);
+        inputname.setText(SharedPreferenceManager.getUserName(this));
+        inputPassWord.setText(SharedPreferenceManager.getPassWord(this));
+        inputPassWord.setInputType(EditorInfo.TYPE_CLASS_PHONE);
+        inputPassWord.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        findViewById(R.id.login).setOnClickListener(this);
 //        machine.setOnClickListener(this);
         hud = KProgressHUD.create(this)
                 .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
@@ -146,20 +152,20 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 if (!hasNetworkConnection()) {
 //                    showDialog(getString(R.string.warning_title),
 //                            getString(R.string.network_error));
-                    ToastUtil.showToastLong(R.string.network_error,mContext);
+                    ToastUtil.showToastShort(R.string.network_error,mContext);
                     return;
                 }
 
                 if (userid.length() == 0) {
 //                    showDialog(getString(R.string.warning_title),
 //                            getString(R.string.warning_message_no_user));
-                    ToastUtil.showToastLong(R.string.warning_message_no_user,mContext);
+                    ToastUtil.showToastShort(R.string.warning_message_no_user,mContext);
                     return;
                 }
                 if (password.length() == 0) {
 //                    showDialog(getString(R.string.warning_title),
 //                            getString(R.string.warning_message_no_password));
-                    ToastUtil.showToastLong(R.string.warning_message_no_password,mContext);
+                    ToastUtil.showToastShort(R.string.warning_message_no_password,mContext);
                     return;
                 }
                 hud.show();
@@ -315,203 +321,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         });
     }*/
     }
-    private void getDataBaseUpdateFromServer(DataElement dataElement){
 
-        HttpParams params=new HttpParams();
-        JsonObjectElement data=new JsonObjectElement();
-        data.set("LastUpdateTime_BaseOrganise", DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_BaseOrganise")));
-        data.set("LastUpdateTime_DataDictionary",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataDictionary")));
-        data.set("LastUpdateTime_DataType",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataType")));
-        data.set("LastUpdateTime_Equipment",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_Equipment")));
-        data.set("LastUpdateTime_TaskOrganiseRelation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_TaskOrganiseRelation")));
-        data.set("LastUpdateTime_DataRelation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataRelation")));
-        if(SharedPreferenceManager.getFactory(this)==null){
-        data.set("Factory_ID",def_Factory);}
-        else {
-            data.set("Factory_ID",SharedPreferenceManager.getFactory(this));
-        }
-       // data.set("IsNewApp",1);
-       // params.put("sqlLiteDBModel",data.toJson());
-        params.putJsonParams(data.toJson());
-        showCustomDialog(R.string.loadingData);
-        HttpUtils.postWithoutCookie(this, "SqlToSqlite", params, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-                if(t!=null) {
-                /*    JsonParser jsonParser=new JsonParser();
-                    JsonObject j=jsonParser.parse(t).getAsJsonObject();
-                    JsonArray jsonArray=j.getAsJsonArray("DataType");
-                    if(jsonArray!=null){
-                        Log.e("dd","bb");
-                    }*/
-
-                    try {
-                        JsonObjectElement json = new JsonObjectElement(t);
-                        if (json.get("DataType") != null && json.get("DataType").isArray() && json.get("DataType").asArrayElement().size() > 0) {
-                            updateData(json.get("DataType"), EPassSqliteStoreOpenHelper.SCHEMA_DATATYPE);
-                           Log.e("DataType",String.valueOf(json.get("DataType").asArrayElement().size()));
-                        }
-                        if (json.get("BaseOrganise") != null && json.get("BaseOrganise").isArray() && json.get("BaseOrganise").asArrayElement().size() > 0) {
-                            updateData(json.get("BaseOrganise"), EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE);
-                            Log.e("BaseOrganise",String.valueOf(json.get("BaseOrganise").asArrayElement().size()));
-                        }
-                        if (json.get("DataDictionary") != null && json.get("DataDictionary").isArray() && json.get("DataDictionary").asArrayElement().size() > 0) {
-                            updateData(json.get("DataDictionary"), EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY);
-                            Log.e("DataDictionary",String.valueOf(json.get("DataDictionary").asArrayElement().size()));
-                        }
-                        if (json.get("Equipment") != null && json.get("Equipment").isArray() && json.get("Equipment").asArrayElement().size() > 0) {
-                            updateData(json.get("Equipment"), EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT);
-                            Log.e("Equipment",String.valueOf(json.get("Equipment").asArrayElement().size()));
-                        }
-                        if (json.get("TaskOrganiseRelation") != null && json.get("TaskOrganiseRelation").isArray() && json.get("TaskOrganiseRelation").asArrayElement().size() > 0) {
-                            updateData(json.get("TaskOrganiseRelation"), EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION);
-                            Log.e("TaskOrganiseRelation",String.valueOf(json.get("TaskOrganiseRelation").asArrayElement().size()));
-                        }
-                        if (json.get("DataRelation") != null && json.get("DataRelation").isArray() && json.get("DataRelation").asArrayElement().size() > 0) {
-                            updateData(json.get("DataRelation"), EPassSqliteStoreOpenHelper.SCHEMA_DATA_RELATION);
-                            Log.e("DataRelation",String.valueOf(json.get("DataRelation").asArrayElement().size()));
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    finally {
-                        dismissCustomDialog();
-                    }
-                }
-               // ConfigurationManager.getInstance().startToGetNewConfig(mContext);
-                dismissCustomDialog();
-            }
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-                dismissCustomDialog();
-            }
-        });
-    }
-    private void updateData(DataElement data,String resource){
-        getSqliteStore().createElement(data, resource, new StoreCallback() {
-            @Override
-            public void success(DataElement element, String resource) {
-              // Log.e("Success","successSave");
-            }
-
-            @Override
-            public void failure(DatastoreException ex, String resource) {
-              //  Log.e("Fail","FailSave");
-            }
-        });
-        if(data!=null&&data.isArray()){
-            String s="";
-            switch (resource){
-                case "DataDictionary":{
-                    s= DataDictionary.DATA_ID;
-                    break;
-                }
-                case "Equipment":{
-                    s=Equipment.EQUIPMENT_ID;
-                    break;
-                }
-                case "BaseOrganise":{
-                    s= BaseOrganise.ORGANISE_ID;
-                    break;
-                }
-                case "DataType":{
-                    s= DataType.DATATYPE_ID;
-                    break;
-                }
-                case "TaskOrganiseRelation":{
-                    s= TaskOrganiseRelation.TEAM_SERVICE_ID;
-                    break;
-                }
-                case "DataRelation":{
-                    s= DataRelation.DATARELATION_ID;
-                    break;
-                }
-            }
-       for(int i=0;i<data.asArrayElement().size();i++){
-//           if(s==DataDictionary.DATA_ID){
-//               ObjectElement objectElement=data.asArrayElement().get(i).asObjectElement();
-//               String sql="UPDATE DATADICTIONARY SET "
-//                       + DataDictionary.FACTORY_ID+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.FACTORY_ID))
-//                       +"',"+DataDictionary.PDATA_ID+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.PDATA_ID))
-//                       +"',"+DataDictionary.DATA_TYPE+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_TYPE))
-//                       +"',"+DataDictionary.DATA_NAME+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_NAME))
-//                       +"',"+DataDictionary.DATA_DESCR+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_DESCR))
-//                       +"',"+DataDictionary.DATA_VALUE1+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_VALUE1))
-//                       +"',"+DataDictionary.DATA_VALUE2+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_VALUE2))
-//                       +"',"+DataDictionary.DATA_VALUE3+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_VALUE3))
-//                       +"',"+DataDictionary.LASTUPDATETIME+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.LASTUPDATETIME))
-//                       +"' WHERE "+DataDictionary.DATA_ID+"="+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_ID));
-//               getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
-//                   @Override
-//                   public void success(DataElement element, String resource) {
-//                       Log.e("","");
-//                   }
-//
-//                   @Override
-//                   public void failure(DatastoreException ex, String resource) {
-//                     Log.e("","");
-//                   }
-//               });
-//           }else {
-               getSqliteStore().updateElement(DataUtil.isDataElementNull(data.asArrayElement().get(i).asObjectElement().get(s)),
-                       data.asArrayElement().get(i), resource, new StoreCallback() {
-                           @Override
-                           public void success(DataElement element, String resource) {
-                         //      Log.e("SuccessUpdate", "SuccessUpdate");
-                           }
-
-                           @Override
-                           public void failure(DatastoreException ex, String resource) {
-                          //     Log.e("FailUpdate", "FailUpdate");
-                           }
-                       });
-           //}
-       }
-    }
-
-      /*  for(int i=0;i<data.asArrayElement().size();i++) {
-            getSqliteStore().updateElements(new Query(), data.asArrayElement().get(i),resource, new StoreCallback() {
-                @Override
-                public void success(DataElement element, String resource) {
-                    Log.e("Success","Success");
-                }
-
-                @Override
-                public void failure(DatastoreException ex, String resource) {
-                    Log.e(ex.toString(),resource.toString());
-                }
-            });
-        }*/
-
-    }
-
-    private void getDBDataLastUpdateTime(){
-        String sql="    select * from ( select max(LastUpdateTime) LastUpdateTime_BaseOrganise from BaseOrganise)," +
-                "    (select max(LastUpdateTime) LastUpdateTime_DataDictionary from DataDictionary)," +
-                "    (select max(LastUpdateTime) LastUpdateTime_DataType from DataType)," +
-                "    (select max(LastUpdateTime) LastUpdateTime_Equipment from Equipment)," +
-                "    (select max(LastUpdateTime) LastUpdateTime_TaskOrganiseRelation from TaskOrganiseRelation),"+
-                "    (select max(LastUpdateTime) LastUpdateTime_DataRelation from DataRelation) ";
-        getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
-            @Override
-            public void success(final DataElement element, String resource) {
-                ConfigurationManager.getInstance().startToGetNewConfig(mContext);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        getDataBaseUpdateFromServer(element.asArrayElement().get(0));
-                    }
-                });
-            }
-
-            @Override
-            public void failure(DatastoreException ex, String resource) {
-                ConfigurationManager.getInstance().startToGetNewConfig(mContext);
-            }
-        });
-    }
     @Override
     public void resolveNfcMessage(Intent intent) {
         String action = intent.getAction();
@@ -575,14 +385,11 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
               if(t!=null){
                   JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                   downloadDB(dbFile,DataUtil.isDataElementNull(jsonObjectElement.get("DownloadUrl")));
-
               }
             }
-
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-
             }
         });
     }
@@ -607,14 +414,14 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     Log.e("","");
                 }
                 dismissCustomDialog();
-                ToastUtil.showToastLong(R.string.SuccessDownloadDB,mContext);
+                ToastUtil.showToastShort(R.string.SuccessDownloadDB,mContext);
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 showErrorDownloadDatabaseDialog();
-                //ToastUtil.showToastLong(R.string.loadingFail,mContext);
+                //ToastUtil.showToastShort(R.string.loadingFail,mContext);
                 dismissCustomDialog();
             }
         });
@@ -665,7 +472,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                         JsonObjectElement json=new JsonObjectElement(Msg);
                         final ArrayElement arrayElement=json.get("UserRoles").asArrayElement();
                         if(arrayElement.size()==0){
-                            ToastUtil.showToastLong(R.string.NoRoleInfo,mContext);
+                            ToastUtil.showToastShort(R.string.NoRoleInfo,mContext);
                         }else if(arrayElement.size()==1){
                             SetRole(arrayElement.get(0).asObjectElement(),data);
                         }else {
@@ -699,9 +506,9 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 }
             }else{
                 if(isAccountPasswordLogin){
-                ToastUtil.showToastLong(R.string.AccountOrPasswordFail,mContext);
+                ToastUtil.showToastShort(R.string.AccountOrPasswordFail,mContext);
                 }else {
-                    ToastUtil.showToastLong(R.string.NoCardDetail,mContext);
+                    ToastUtil.showToastShort(R.string.NoCardDetail,mContext);
                 }
             }
         }

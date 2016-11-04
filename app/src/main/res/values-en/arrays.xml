@@ -3,17 +3,17 @@
     <string-array name="select_tab_status">
         <item>Processing</item>
         <item>Orders</item>
-        <item>Linked list</item>
+        <item>Closed Task</item>
     </string-array>
     <string-array name="select_tab_task_history">
-        <item>To be evaluated</item>
-        <item>All tasks</item>
-        <item>Task selection</item>
+        <item>Evaluated</item>
+        <item>All Tasks</item>
+        <item>Screening</item>
     </string-array>
     <string-array name="select_tab_verify_status">
-        <item>No verification</item>
-        <item>Have check</item>
-        <item>Condition query</item>
+        <item>None Check</item>
+        <item>Checked</item>
+        <item>Condition Query</item>
     </string-array>
     <string-array name="select_tab_time">
         <item>Within 1 months</item>
@@ -21,25 +21,25 @@
         <item>Within 3 months</item>
     </string-array>
     <string-array name="menu_list">
-        <item>Create new task</item>
-        <item>Failure summary</item>
-        <item>Workload input</item>
-        <item>Sub task</item>
-        <item>Invitation to help</item>
-        <item>Transfer order</item>
-        <item>Complete task</item>
+        <item>Create New Task</item>
+        <item>Failure Summary</item>
+        <item>Workload Input</item>
+        <item>Sub Task</item>
+        <item>Invite Assistance</item>
+        <item>Transfer Order</item>
+        <item>Complete Task</item>
     </string-array>
     <string-array name="menu_login">
         <item>Set up</item>
-        <item>Binding equipment</item>
+        <item>Binding Equipment</item>
     </string-array>
     <string-array name="Equipment_Status">
-        <item>In treatment</item>
+        <item>Processing</item>
         <item>Suspend</item>
         <item>Complete</item>
     </string-array>
     <string-array name="Equipment_Operator_Status">
-        <item>In treatment</item>
+        <item>Begin</item>
         <item>Suspend</item>
         <item>Complete</item>
     </string-array>

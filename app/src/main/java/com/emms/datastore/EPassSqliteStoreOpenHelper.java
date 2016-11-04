@@ -11,6 +11,8 @@ import com.emms.schema.DataType;
 import com.emms.schema.Department;
 import com.emms.schema.Equipment;
 import com.emms.schema.Factory;
+import com.emms.schema.Language_Translation;
+import com.emms.schema.Languages;
 import com.emms.schema.Maintain;
 import com.emms.schema.Operator;
 import com.emms.schema.TaskOrganiseRelation;
@@ -21,6 +23,8 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.datastore_android_sdk.schema.Model;
 import com.datastore_android_sdk.schema.Schema;
 import com.datastore_android_sdk.sqlite.SqliteStoreHelper;
+
+import org.restlet.data.Language;
 
 import java.io.File;
 import java.util.Map;
@@ -61,6 +65,10 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 			TaskOrganiseRelation.class).getTableName();
 	public static final String SCHEMA_DATA_RELATION=Schema.getAttributes(
 			DataRelation.class).getTableName();
+	public static final String SCHEMA_LANGUAGES=Schema.getAttributes(
+			Languages.class).getTableName();
+	public static final String SCHEMA_LANGUAGE_TRANSLATION=Schema.getAttributes(
+			Language_Translation.class).getTableName();
 
 
 	/**
@@ -144,6 +152,8 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 		schema.put(SCHEMA_BASE_ORGANISE,BaseOrganise.class);
 		schema.put(SCHEMA_TASK_ORGANISE_RELATION,TaskOrganiseRelation.class);
 		schema.put(SCHEMA_DATA_RELATION,DataRelation.class);
+		schema.put(SCHEMA_LANGUAGES,Languages.class);
+		schema.put(SCHEMA_LANGUAGE_TRANSLATION,Language_Translation.class);
 	}
 
 }

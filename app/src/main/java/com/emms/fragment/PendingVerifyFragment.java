@@ -241,7 +241,7 @@ public class PendingVerifyFragment extends BaseFragment {
     private void getVerifyListFromServer(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
-                ToastUtil.showToastLong(R.string.noMoreData,mContext);
+                ToastUtil.showToastShort(R.string.noMoreData,mContext);
                 return;
             }}
         showCustomDialog(R.string.loadingData);
@@ -296,7 +296,7 @@ public class PendingVerifyFragment extends BaseFragment {
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
-               ToastUtil.showToastLong(R.string.FailGetList,mContext);
+               ToastUtil.showToastShort(R.string.FailGetList,mContext);
                 dismissCustomDialog();
             }
         });
@@ -322,7 +322,7 @@ public class PendingVerifyFragment extends BaseFragment {
     private void submitWorkload(final ObjectElement data, String workload,String UpdateRemark){
         if(!DataUtil.isNum(workload)
                 ||workload.equals("")){
-            ToastUtil.showToastLong(R.string.pleaseInputNum,mContext);
+            ToastUtil.showToastShort(R.string.pleaseInputNum,mContext);
             return;
         }
         showCustomDialog(R.string.submitData);
@@ -343,11 +343,11 @@ public class PendingVerifyFragment extends BaseFragment {
                 if(t!=null){
                     JsonObjectElement json=new JsonObjectElement(t);
                     if(json.get(Data.SUCCESS).valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.SuccessVerify,mContext);
+                        ToastUtil.showToastShort(R.string.SuccessVerify,mContext);
                         datas.remove(data);
                         taskAdapter.notifyDataSetChanged();
                     }else {
-                        ToastUtil.showToastLong(R.string.FailVerify,mContext);
+                        ToastUtil.showToastShort(R.string.FailVerify,mContext);
                     }
                 }
                 dismissCustomDialog();
@@ -356,21 +356,21 @@ public class PendingVerifyFragment extends BaseFragment {
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.FailVerifyCauseByTimeOut,mContext);
+                ToastUtil.showToastShort(R.string.FailVerifyCauseByTimeOut,mContext);
                 dismissCustomDialog();
             }
         });
     }
     public void submitVerifyData(){
         if(submitData.size()<=0){
-            ToastUtil.showToastLong(R.string.pleaseSelectSubmitData,mContext);
+            ToastUtil.showToastShort(R.string.pleaseSelectSubmitData,mContext);
             return;
         }
         for(int i=0;i<submitData.size();i++) {
             if ( !DataUtil.isNum(DataUtil.isDataElementNull(submitData.get(i).get("Workload")).trim())
                     || DataUtil.isDataElementNull(submitData.get(i).get("Workload")).equals("")
                     || !DataUtil.isFloat(DataUtil.isDataElementNull(submitData.get(i).get("Workload")).trim())) {
-                ToastUtil.showToastLong(R.string.pleaseInputNum, mContext);
+                ToastUtil.showToastShort(R.string.pleaseInputNum, mContext);
                 return;
             }
         }
@@ -393,13 +393,13 @@ public class PendingVerifyFragment extends BaseFragment {
                 if(t!=null){
                     JsonObjectElement json=new JsonObjectElement(t);
                     if(json.get(Data.SUCCESS).valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.SuccessVerify,mContext);
+                        ToastUtil.showToastShort(R.string.SuccessVerify,mContext);
                         datas.removeAll(submitData);
                         submitData.clear();
                         taskAdapter.notifyDataSetChanged();
                         taskNumInteface.refreshProcessingFragment();
                     }else {
-                        ToastUtil.showToastLong(R.string.FailVerify,mContext);
+                        ToastUtil.showToastShort(R.string.FailVerify,mContext);
                     }
                 }
                 dismissCustomDialog();
@@ -408,7 +408,7 @@ public class PendingVerifyFragment extends BaseFragment {
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.FailVerifyCauseByTimeOut,mContext);
+                ToastUtil.showToastShort(R.string.FailVerifyCauseByTimeOut,mContext);
                 dismissCustomDialog();
             }
         });

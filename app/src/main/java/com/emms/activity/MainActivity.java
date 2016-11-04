@@ -111,7 +111,7 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
             //后续删除此入口
             Intent intent=new Intent(MainActivity.this,CreateTaskActivity.class);
             startActivity(intent);
-//            ToastUtil.showToastLong("目前只有公共机能创建任务",this);
+//            ToastUtil.showToastShort("目前只有公共机能创建任务",this);
         }else if (id == R.id.repair_tag){
             Intent intent=new Intent(MainActivity.this,TaskListActivity.class);
             if(taskNum.get(0)!=null){
@@ -194,11 +194,11 @@ public class MainActivity extends NfcActivity implements View.OnClickListener{
            public void onFailure(int errorNo, String strMsg) {
                super.onFailure(errorNo, strMsg);
                if(errorNo==401){
-                   ToastUtil.showToastLong(R.string.unauthorization,context);
+                   ToastUtil.showToastShort(R.string.unauthorization,context);
                    dismissCustomDialog();
                    return;
                }
-               ToastUtil.showToastLong(R.string.loadingFail,context);
+               ToastUtil.showToastShort(R.string.loadingFail,context);
                dismissCustomDialog();
            }
         });

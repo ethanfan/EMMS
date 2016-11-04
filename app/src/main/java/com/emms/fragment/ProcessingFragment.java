@@ -166,7 +166,7 @@ public class ProcessingFragment extends BaseFragment {
     private void getProcessingDataFromServer(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
-                ToastUtil.showToastLong(R.string.noMoreData,mContext);
+                ToastUtil.showToastShort(R.string.noMoreData,mContext);
                 return;
             }}
         showCustomDialog(R.string.loadingData);
@@ -225,9 +225,7 @@ public class ProcessingFragment extends BaseFragment {
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
-             Toast toast=Toast.makeText(mContext,"获取任务列表失败，请检查网络",Toast.LENGTH_LONG);
-              toast.setGravity(Gravity.CENTER,0,0);
-                toast.show();
+                ToastUtil.showToastShort(R.string.FailGetTaskListCauseByTimeOut,mContext);
                 dismissCustomDialog();
             }
         });

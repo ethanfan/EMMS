@@ -204,7 +204,7 @@ public class AllTaskHistoryFragment extends BaseFragment {
     private void getTaskHistory(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
-                ToastUtil.showToastLong(R.string.noMoreData,mContext);
+                ToastUtil.showToastShort(R.string.noMoreData,mContext);
                 return;
             }}
         showCustomDialog(R.string.loadingData);
@@ -229,7 +229,7 @@ public class AllTaskHistoryFragment extends BaseFragment {
                             data.add(dataElement.asObjectElement());
                         }
                     }else{
-                        ToastUtil.showToastLong(R.string.noData,mContext);
+                        ToastUtil.showToastShort(R.string.noData,mContext);
                     }
                     taskAdapter.notifyDataSetChanged();
                 }
@@ -253,7 +253,7 @@ public class AllTaskHistoryFragment extends BaseFragment {
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.FailCancelTask,mContext);
+                ToastUtil.showToastShort(R.string.FailCancelTask,mContext);
                 dismissCustomDialog();
             }
 
@@ -263,11 +263,11 @@ public class AllTaskHistoryFragment extends BaseFragment {
                 if(t!=null){
                     JsonObjectElement returnData=new JsonObjectElement(t);
                     if(returnData.get(Data.SUCCESS).valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.SuccessCancelTask,mContext);
+                        ToastUtil.showToastShort(R.string.SuccessCancelTask,mContext);
                         pageIndex=1;
                         getTaskHistory();
                     }else {
-                        ToastUtil.showToastLong(R.string.FailCancelTask,mContext);
+                        ToastUtil.showToastShort(R.string.FailCancelTask,mContext);
                     }
                 }
                 dismissCustomDialog();

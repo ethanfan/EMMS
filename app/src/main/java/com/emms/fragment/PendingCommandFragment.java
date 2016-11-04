@@ -194,7 +194,7 @@ public class PendingCommandFragment extends BaseFragment {
     private void getTaskHistory(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
-                ToastUtil.showToastLong(R.string.noMoreData,mContext);
+                ToastUtil.showToastShort(R.string.noMoreData,mContext);
                 return;
             }}
         showCustomDialog(R.string.loadingData);
@@ -221,7 +221,7 @@ public class PendingCommandFragment extends BaseFragment {
                             data.add(dataElement.asObjectElement());
                         }
                     }else{
-                        ToastUtil.showToastLong(R.string.noCommandData,mContext);
+                        ToastUtil.showToastShort(R.string.noCommandData,mContext);
                     }
                     taskAdapter.notifyDataSetChanged();
                 }

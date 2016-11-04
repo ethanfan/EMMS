@@ -1,5 +1,6 @@
 package com.emms.ui;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -27,6 +28,7 @@ import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
+import com.emms.util.TipsUtil;
 import com.emms.util.ToastUtil;
 
 import java.lang.reflect.Method;
@@ -220,13 +222,13 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                 if(t!=null) {
                     JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
                         if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.SuccessChangeStatus,context);
+                        ToastUtil.showToastShort(R.string.SuccessChangeStatus,context);
                         dismiss();
                             onSubmitInterface.onsubmit();}else{
                             if(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")).equals("")){
-                                ToastUtil.showToastLong(R.string.FailChangeEquipmentStatusCauseByOperator,context);
+                                ToastUtil.showToastShort(R.string.FailChangeEquipmentStatusCauseByOperator,context);
                             }else {
-                                ToastUtil.showToastLong(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),context);
+                                TipsUtil.ShowTips(context,DataUtil.isDataElementNull(jsonObjectElement.get("Msg")));
                             }
                         }
                 }
@@ -236,7 +238,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                   ToastUtil.showToastLong(R.string.FailChangeEquipmentStatusCauseByTimeOut,context);
+                   ToastUtil.showToastShort(R.string.FailChangeEquipmentStatusCauseByTimeOut,context);
                 dismissCustomDialog();
             }
         });
@@ -327,7 +329,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                    change_equipment_status.setTextColor(Color.parseColor("#C4647C"));
                    }
                 else {
-                   ToastUtil.showToastLong(R.string.onlyTaskChargerCanChangeEquipmentStatus,context);
+                   ToastUtil.showToastShort(R.string.onlyTaskChargerCanChangeEquipmentStatus,context);
                }
             }
         });
@@ -353,9 +355,9 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                         dismiss();
                     }else {
                         if(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")).equals("")){
-                            ToastUtil.showToastLong(R.string.CanNotChangeStatus,context);
+                            ToastUtil.showToastShort(R.string.CanNotChangeStatus,context);
                         }else {
-                            ToastUtil.showToastLong(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),context);
+                            TipsUtil.ShowTips(context,DataUtil.isDataElementNull(jsonObjectElement.get("Msg")));
                         }
                     }
                 }
@@ -365,7 +367,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.failToChangeStatus,context);
+                ToastUtil.showToastShort(R.string.failToChangeStatus,context);
                 dismissCustomDialog();
             }
         });
@@ -424,7 +426,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             Equipment_Operator_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 1);
 
 
-            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.start), 1);
+            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.process), 1);
             Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.pause), 3);
 //            Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.wait_material), 3);
             Equipment_Status_Name_ID_map.put(context.getResources().getString(R.string.complete), 2);
@@ -492,7 +494,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.submitFail,context);
+                ToastUtil.showToastShort(R.string.submitFail,context);
                 dismissCustomDialog();
             }
 
@@ -502,11 +504,11 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                 if(t!=null){
                     JsonObjectElement json=new JsonObjectElement(t);
                     if(json.get(Data.SUCCESS).valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.deleteEquipmentSuccess,context);
+                        ToastUtil.showToastShort(R.string.deleteEquipmentSuccess,context);
                         onSubmitInterface.onsubmit();
                         dismiss();
                     }else {
-                        ToastUtil.showToastLong(R.string.deleteEquipmentFail,context);
+                        ToastUtil.showToastShort(R.string.deleteEquipmentFail,context);
                     }
                 }
                 dismissCustomDialog();
@@ -543,9 +545,9 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                        dismiss();
                    }else {
                        if(DataUtil.isDataElementNull(data.get("Msg")).equals("")){
-                       ToastUtil.showToastLong(R.string.CanNotChangeStatus,context);
+                       ToastUtil.showToastShort(R.string.CanNotChangeStatus,context);
                        }else {
-                           ToastUtil.showToastLong(DataUtil.isDataElementNull(data.get("Msg")),context);
+                           TipsUtil.ShowTips(context,DataUtil.isDataElementNull(data.get("Msg")));
                        }
                    }
                }
@@ -555,7 +557,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
            @Override
            public void onFailure(int errorNo, String strMsg) {
                super.onFailure(errorNo, strMsg);
-               ToastUtil.showToastLong(R.string.failToChangeStatus,context);
+               ToastUtil.showToastShort(R.string.failToChangeStatus,context);
                dismissCustomDialog();
            }
        });

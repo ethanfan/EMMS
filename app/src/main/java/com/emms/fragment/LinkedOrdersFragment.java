@@ -137,7 +137,7 @@ public class LinkedOrdersFragment extends BaseFragment{
     private void getCompleteTaskDataFromServer(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
-                ToastUtil.showToastLong(R.string.noMoreData,mContext);
+                ToastUtil.showToastShort(R.string.noMoreData,mContext);
                 return;
             }}
         showCustomDialog(R.string.loadingData);

@@ -31,6 +31,7 @@ import com.emms.schema.DataDictionary;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
+import com.emms.util.BuildConfig;
 import com.emms.util.DataUtil;
 import com.emms.util.LocaleUtils;
 import com.emms.util.SharedPreferenceManager;
@@ -75,11 +76,11 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
     private void initView(){
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.setting);
         findViewById(R.id.btn_right_action).setOnClickListener(this);
-        findViewById(R.id.comfirm).setOnClickListener(this);
+      //  findViewById(R.id.comfirm).setOnClickListener(this);
         ((TextView)findViewById(R.id.factory_tag)).setText(R.string.factory);
         ((TextView)findViewById(R.id.NetWork_tag)).setText(R.string.network);
         ((TextView)findViewById(R.id.Language_tag)).setText(R.string.LanguageSetting);
-        ((Button)findViewById(R.id.comfirm)).setText(R.string.sure);
+       // ((Button)findViewById(R.id.comfirm)).setText(R.string.sure);
         Factory=(DropEditText)findViewById(R.id.factory);
         NetWork=(DropEditText)findViewById(R.id.NetWork);
         Language=(DropEditText)findViewById(R.id.Language);
@@ -96,6 +97,15 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
             currentLanguage = getString(R.string.chinese);
         }
         Language.getmEditText().setText(currentLanguage);
+        if(SharedPreferenceManager.getNetwork(context)!=null  &&
+                 SharedPreferenceManager.getNetwork(context).equals("InnerNetwork")){
+            NetWork.getmEditText().setText(R.string.innerNetWork);
+        }else {
+            NetWork.getmEditText().setText(R.string.outerNetWork);
+        }
+        if(SharedPreferenceManager.getFactory(context)!=null){
+            Factory.getmEditText().setText(SharedPreferenceManager.getFactory(context));
+        }
     }
 
 
@@ -107,10 +117,10 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                 finish();
                 break;
             }
-            case R.id.comfirm:{
-                submitEquipmentData();
-                break;
-            }
+//            case R.id.comfirm:{
+//                submitEquipmentData();
+//                break;
+//            }
 //            case R.id.equipment_id_scan:{
 //                break;
 //            }
@@ -119,13 +129,12 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
     }
     private void submitEquipmentData(){
         if(Factory.getText().equals("")){
-            ToastUtil.showToastLong(R.string.pleaseSelectFactory,this);
+            ToastUtil.showToastShort(R.string.pleaseSelectFactory,this);
             return;
         }
         SharedPreferenceManager.setFactory(this,Factory.getText());
-        ToastUtil.showToastLong(R.string.setting_su,this);
+        ToastUtil.showToastShort(R.string.setting_su,this);
         finish();
-
     }
     private void initData(){
         initFactory();
@@ -166,8 +175,10 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
         NetWorkList.clear();
         JsonObjectElement json1=new JsonObjectElement();
         json1.set(DataDictionary.DATA_NAME,getResources().getString(R.string.innerNetWork));
+        json1.set(DataDictionary.DATA_CODE,"InnerNetwork");
         JsonObjectElement json2=new JsonObjectElement();
         json2.set(DataDictionary.DATA_NAME,getResources().getString(R.string.outerNetWork));
+        json2.set(DataDictionary.DATA_CODE,"OuterNetwork");
         NetWorkList.add(json1);
         NetWorkList.add(json2);
     }
@@ -201,9 +212,13 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                             switch (searchtag) {
                                 case FACTORY_SETTING:
                                     Factory.getmEditText().setText(searchResult);
+                                    SharedPreferenceManager.setFactory(context,searchResult);
                                     break;
                                 case NETWORK_SETTING:
                                     NetWork.getmEditText().setText(searchResult);
+                                    SharedPreferenceManager.setNetwork(context,
+                                            DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(DataDictionary.DATA_CODE)));
+                                    BuildConfig.NetWorkSetting(context);
                                     break;
                                 case LANGUAGE_SETTING:
                                     Language.getmEditText().setText(searchResult);
@@ -217,6 +232,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                                     }
                                     //SharedPreferenceManager.setLanguage(context,language.toString());
                                     LocaleUtils.setLanguage(SettingActivity.this, language);
+                                    SharedPreferenceManager.setLanguageChange(SettingActivity.this,true);
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -238,7 +254,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                         }
                     });
                 } else {
-                    ToastUtil.showToastLong(R.string.error_occur,context);
+                    ToastUtil.showToastShort(R.string.error_occur,context);
                 }
             }
         });
@@ -354,7 +370,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,context);
+                        ToastUtil.showToastShort(tips,context);
                     }
                 } else {
                     if (searchDataLists.size() > 0) {
@@ -365,7 +381,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,context);
+                        ToastUtil.showToastShort(tips,context);
                     }
                 }
             }
@@ -402,38 +418,5 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
 //        }
 //        languageView.setText(currentLanguage);
 //    }
-    private void openLanguageDialog(int selectedNumber) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        CharSequence[] array = {getString(R.string.chinese), getString(R.string.english)};
-        builder.setTitle(getResources().getString(R.string.langugage));
-        builder.setSingleChoiceItems(array, selectedNumber, new DialogInterface.OnClickListener() {
 
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                LocaleUtils.SupportedLanguage language = null;
-                switch (which) {
-                    case 0:
-                        language = LocaleUtils.SupportedLanguage.CHINESE_SIMPLFIED;
-                        break;
-                    case 1:
-                        language = LocaleUtils.SupportedLanguage.ENGLISH;
-                        break;
-                    case 2:
-                        language = LocaleUtils.SupportedLanguage.VIETNAMESE;
-                        break;
-                    default:
-                        language = LocaleUtils.SupportedLanguage.CHINESE_SIMPLFIED;
-                        break;
-                }
-//                if (!LocaleUtils.getLanguage(SettingActivity.this).equals(language)) {
-//                    SharedPreferenceManager.setIsChanged(SettingActivity.this, true);
-//                }
-                LocaleUtils.setLanguage(SettingActivity.this, language);
-                dialog.dismiss();
-                initView();
-//                resultCode = Activity.RESULT_OK;
-            }
-        });
-        builder.show();
-    }
 }

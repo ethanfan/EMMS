@@ -150,7 +150,7 @@
                             <ImageView
                                 android:id="@+id/create_task_action"
                                 android:layout_width="43dp"
-                                android:layout_height="43dp"
+                                android:layout_height="40dp"
                                 android:layout_alignParentRight="true"
                                 android:background="@color/transparent"
                                 android:contentDescription="@null" />
@@ -307,7 +307,7 @@
                             <ImageView
                                 android:id="@+id/device_num_action"
                                 android:layout_width="43dp"
-                                android:layout_height="43dp"
+                                android:layout_height="40dp"
                                 android:layout_alignParentRight="true"
                                 android:background="@color/transparent"
                                 android:contentDescription="@null" />

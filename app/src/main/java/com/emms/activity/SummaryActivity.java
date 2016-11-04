@@ -187,7 +187,7 @@ public class SummaryActivity extends NfcActivity{
                         }
                     });
                 } else {
-                    ToastUtil.showToastLong(R.string.error_occur,context);
+                    ToastUtil.showToastShort(R.string.error_occur,context);
                 }
             }
         });
@@ -268,20 +268,20 @@ public class SummaryActivity extends NfcActivity{
     private void submitFaultSummaryToServer(){
         if(TaskClass.equals(Task.REPAIR_TASK)) {
             if (type.getText().trim().equals("")) {
-                ToastUtil.showToastLong(R.string.NoFaultSummaryType,context);
+                ToastUtil.showToastShort(R.string.NoFaultSummaryType,context);
                 return;
             }
             if(description.getText().toString().trim().equals("")){
-                ToastUtil.showToastLong(R.string.NoFaultSummary,context);
+                ToastUtil.showToastShort(R.string.NoFaultSummary,context);
                 return;
             }
             if (repair_status.getText().toString().trim().equals("")) {
-                ToastUtil.showToastLong(R.string.NoRepairStatus,context);
+                ToastUtil.showToastShort(R.string.NoRepairStatus,context);
                 return;
             }
         }else {
             if (description.getText().toString().trim().equals("")) {
-                ToastUtil.showToastLong(R.string.NoTaskSummary, context);
+                ToastUtil.showToastShort(R.string.NoTaskSummary, context);
                 return;
             }
         }
@@ -310,7 +310,7 @@ public class SummaryActivity extends NfcActivity{
                         JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                         if(jsonObjectElement.get(Data.SUCCESS)!=null&&jsonObjectElement.get(Data.SUCCESS).valueAsBoolean()) {
                             dismissCustomDialog();
-                            ToastUtil.showToastLong(R.string.submitSuccess,context);
+                            ToastUtil.showToastShort(R.string.submitSuccess,context);
                             if (TaskComplete) {
 //                            Intent intent = new Intent(context, CommandActivity.class);
 //                            intent.putExtra("TaskComplete", true);
@@ -321,10 +321,10 @@ public class SummaryActivity extends NfcActivity{
                                 finish();
                             }
                         }else {
-                            ToastUtil.showToastLong(R.string.submit_Fail,context);
+                            ToastUtil.showToastShort(R.string.submit_Fail,context);
                         }
                     }catch (Throwable throwable){
-                        ToastUtil.showToastLong(R.string.AppError,context);
+                        ToastUtil.showToastShort(R.string.AppError,context);
                         CrashReport.postCatchedException(throwable);
                     }
                 }
@@ -334,7 +334,7 @@ public class SummaryActivity extends NfcActivity{
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 dismissCustomDialog();
-                ToastUtil.showToastLong(R.string.submitFail,context);
+                ToastUtil.showToastShort(R.string.submitFail,context);
             }
         });
     }
@@ -375,7 +375,7 @@ public class SummaryActivity extends NfcActivity{
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.loadingFail,context);
+                ToastUtil.showToastShort(R.string.loadingFail,context);
                 dismissCustomDialog();
             }
         });
@@ -419,7 +419,7 @@ public class SummaryActivity extends NfcActivity{
                    runOnUiThread(new Runnable() {
                        @Override
                        public void run() {
-                           ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,context);
+                           ToastUtil.showToastShort(R.string.FailGetDataPleaseRestartApp,context);
                        }
                    });
             }
@@ -443,13 +443,13 @@ public class SummaryActivity extends NfcActivity{
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                     if(jsonObjectElement.get("Success")!=null&&
                             jsonObjectElement.get("Success").valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.taskComplete,context);
+                        ToastUtil.showToastShort(R.string.taskComplete,context);
                         startActivity(new Intent(context,CusActivity.class));
                     }else {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ToastUtil.showToastLong(R.string.canNotSubmitTaskComplete,context);
+                                ToastUtil.showToastShort(R.string.canNotSubmitTaskComplete,context);
                             }
                         });
                     }
@@ -464,7 +464,7 @@ public class SummaryActivity extends NfcActivity{
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ToastUtil.showToastLong(R.string.submitFail,context);
+                        ToastUtil.showToastShort(R.string.submitFail,context);
                     }
                 });
             }
@@ -491,7 +491,7 @@ public class SummaryActivity extends NfcActivity{
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,context);
+                        ToastUtil.showToastShort(tips,context);
                     }
                 } else {
                     if (searchDataLists.size() > 0) {
@@ -502,7 +502,7 @@ public class SummaryActivity extends NfcActivity{
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,context);
+                        ToastUtil.showToastShort(tips,context);
                     }
                 }
 
@@ -537,7 +537,7 @@ public class SummaryActivity extends NfcActivity{
                 super.onFailure(errorNo, strMsg);
                 initData();
                 dismissCustomDialog();
-               // ToastUtil.showToastLong(R.string.FailGetEquipmentList,context);
+               // ToastUtil.showToastShort(R.string.FailGetEquipmentList,context);
             }
         });
     }

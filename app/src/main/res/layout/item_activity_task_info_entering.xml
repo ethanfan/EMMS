@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
     <TextView
         android:layout_width="0dp"
-        android:layout_weight="1.6"
+        android:layout_weight="1.7"
         android:textColor="@color/text_color"
         android:textSize="17sp"
         android:gravity="end"

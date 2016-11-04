@@ -42,7 +42,7 @@ public class CancelTaskDialog extends Dialog{
             @Override
             public void onClick(View v) {
                 if(cancelReason.getText().toString().equals("")){
-                    ToastUtil.showToastLong(R.string.NoCancelReason,context);
+                    ToastUtil.showToastShort(R.string.NoCancelReason,context);
                     return;
                 }
                 taskCancelListener.submitCancel(cancelReason.getText().toString());

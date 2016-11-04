@@ -1,5 +1,6 @@
 package com.emms.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -32,13 +33,13 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
     private WebView webView;
 
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_measure_point_content);
         initData();
         initView();
-        getMeasurePointHistory();
         webView = (WebView)findViewById(R.id.chart);
         webView.getSettings().setJavaScriptEnabled(true);//支持js
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -54,6 +55,7 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
                // view.loadUrl("javascript:showContent([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],[5, 20, 36, 10, 10,5, 20, 36, 10, 10,5, 20, 36, 10, 10,5, 20, 36, 10, 10])");
             }
         });
+        getMeasurePointHistory();
     //initSearchView();
     }
 
@@ -113,7 +115,6 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
                             String dataString = "";
                             String indexString = "";
                             for (int i=0; i < data.get("PageData").asArrayElement().size(); i++) {
-
                                 ObjectElement json = data.get(Data.PAGE_DATA).asArrayElement().get(i).asObjectElement();
                                 dataString += DataUtil.isDataElementNull(json.get("ResultValue")).equals("") ? "0" : DataUtil.isDataElementNull(json.get("ResultValue")) + ",";
                                 indexString += i + ",";
@@ -124,8 +125,7 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
                             if (dataString.endsWith(",")) {
                                 dataString = dataString.substring(0, dataString.length() - 1);
                             }
-                            //webView.loadUrl("javascript:showContent([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],[5, 20, 36, 10, 10,5, 20, 36, 10, 10,5, 20, 36, 10, 10,5, 20, 36, 10, 10])");
-                            webView.loadUrl("javascript:showContent([" + indexString + "],[" + dataString + "])");
+                      webView.loadUrl("javascript:showContent([" + indexString + "],[" + dataString + "])");
                         }
                     }catch (Throwable throwable){
                         CrashReport.postCatchedException(throwable);

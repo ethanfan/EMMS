@@ -121,7 +121,7 @@ public class SearchRecordActivity extends NfcActivity implements View.OnClickLis
                 toast.show();
                 getTaskHistory(TaskClass);}
                     else{
-                        ToastUtil.showToastLong("刷卡登录失败",mContext);
+                        ToastUtil.showToastShort("刷卡登录失败",mContext);
                     }
                 }
                 dismissCustomDialog();

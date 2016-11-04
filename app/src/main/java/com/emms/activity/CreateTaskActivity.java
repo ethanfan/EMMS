@@ -10,7 +10,6 @@ import android.os.Parcelable;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,6 @@ import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
-import com.datastore_android_sdk.sqlite.DatabaseOpenHelper;
 import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
@@ -49,7 +47,6 @@ import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.RootUtil;
 import com.emms.util.SharedPreferenceManager;
-import com.emms.util.SoftInputUtil;
 import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -133,6 +130,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private String FromTask_ID;
     private ArrayList<String> Group_ID_List=new ArrayList<>();
     private HashMap<String,Integer> HasEquipment_map=new HashMap<>();
+    private String IntentTaskSubClass;
+    private String IntentTaskItem;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,7 +140,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         FromTask_ID=getIntent().getStringExtra("FromTask_ID");
         //getEquipmentClassTaskDescription();
-
+        IntentTaskSubClass=getIntent().getStringExtra("TaskSubClass");
+        IntentTaskItem=getIntent().getStringExtra("TaskItem");
         initData();
         initView();
         initSearchView();
@@ -259,7 +259,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         }
                     });
                 } else {
-                    ToastUtil.showToastLong(R.string.error_occur,mContext);
+                    ToastUtil.showToastShort(R.string.error_occur,mContext);
                 }
             }
         });
@@ -526,7 +526,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ToastUtil.showToastLong(R.string.NoEquipmentNum,mContext);
+                                ToastUtil.showToastShort(R.string.NoEquipmentNum,mContext);
                             }
                         });
                     }
@@ -542,7 +542,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    ToastUtil.showToastLong(R.string.NoEquipmentNum,mContext);
+                    ToastUtil.showToastShort(R.string.NoEquipmentNum,mContext);
                 }
             });
         }
@@ -575,7 +575,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                     .asObjectElement());
                         }
                     } else {
-                       ToastUtil.showToastLong(R.string.NoGroupEquipment,mContext);
+                       ToastUtil.showToastShort(R.string.NoGroupEquipment,mContext);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -653,7 +653,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ToastUtil.showToastLong(R.string.NoOperatorGroup,mContext);
+                                ToastUtil.showToastShort(R.string.NoOperatorGroup,mContext);
                             }
                         });
 
@@ -688,50 +688,41 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
 
     private void getTaskType() {
-
-        String rawQuery = "select * from DataDictionary " +
-                "where DataType = 'TaskClass' and PData_ID = 0";
-        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
-                EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
-        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
-
-            @Override
-            public void onSuccess(DataElement element) {
-                System.out.println(element);
-                if (element != null && element.isArray()
-                        && element.asArrayElement().size() > 0) {
-                    searchDataLists.clear();
-                    for (int i = 0; i < element.asArrayElement().size(); i++) {
-                        String s=DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_CODE));
-                        if((s.equals(Task.REPAIR_TASK))
-                           ||(s.equals(Task.OTHER_TASK)) )
-                        {//TODO
-                            mTaskType.add(element.asArrayElement().get(i).asObjectElement());
-                        }
-                        task_type_class.put(element.asArrayElement().get(i).asObjectElement().get("DataName").valueAsString(),
-                                element.asArrayElement().get(i).asObjectElement().get("DataCode").valueAsString());
+       DataUtil.getDataFromDataBase(mContext, "TaskClass", 0, new StoreCallback() {
+                   @Override
+                   public void success(DataElement element, String resource) {
+                       System.out.println(element);
+                       if (element != null && element.isArray()
+                               && element.asArrayElement().size() > 0) {
+                           searchDataLists.clear();
+                           for (int i = 0; i < element.asArrayElement().size(); i++) {
+                               String s=DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_CODE));
+                               if((s.equals(Task.REPAIR_TASK))
+                                       ||(s.equals(Task.OTHER_TASK)) )
+                               {//TODO
+                                   mTaskType.add(element.asArrayElement().get(i).asObjectElement());
+                               }
+                               task_type_class.put(element.asArrayElement().get(i).asObjectElement().get("DataName").valueAsString(),
+                                       element.asArrayElement().get(i).asObjectElement().get("DataCode").valueAsString());
 //                        Task_Class_Name.put(element.asArrayElement().get(i).asObjectElement().get("DataCode").valueAsString(),
 //                                element.asArrayElement().get(i).asObjectElement().get("DataName").valueAsString());
-                    }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            task_type.setDatas(mContext, mTaskType,DataDictionary.DATA_NAME);
-                            //getSubTaskType(TaskClass);
-                        }
-                    });
-                } else {
-                    ToastUtil.showToastLong(R.string.ErrorCauseByNoDataBase,mContext);
-                }
+                           }
+                           runOnUiThread(new Runnable() {
+                               @Override
+                               public void run() {
+                                   task_type.setDatas(mContext, mTaskType,DataDictionary.DATA_NAME);
+                                   //getSubTaskType(TaskClass);
+                               }
+                           });
+                       } else {
+                           ToastUtil.showToastShort(R.string.ErrorCauseByNoDataBase,mContext);
+                       }
+                   }
 
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                System.out.println(throwable.getMessage());
-            }
-        });
-
+                   @Override
+                   public void failure(DatastoreException ex, String resource) {
+                   }
+               });
 
     }
 
@@ -967,7 +958,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 //                    return;}
            //     else
                 if(simpledescription==null||simpledescription.equals("")){
-                    ToastUtil.showToastLong(R.string.tips_task_desc_post,mContext);
+                    ToastUtil.showToastShort(R.string.tips_task_desc_post,mContext);
                     return;
                 }
                 if(simpledescription.equals(getResources().getString(R.string.other))){
@@ -977,7 +968,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                     //TODO
 //                    if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))!=7) {
 //                        if (standard_workload.getmEditText().getText().toString().equals("")){
-//                            ToastUtil.showToastLong(R.string.NoWorkload,mContext);
+//                            ToastUtil.showToastShort(R.string.NoWorkload,mContext);
 //                            return;
 //                        }
 //                    }
@@ -1032,6 +1023,10 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             } else if (iccardID.equals("")) {
                 return;
             }
+//            if(IntentTaskSubClass!=null){
+//                ToastUtil.showToastShort("不可修改设备",mContext);
+//                return;
+//            }
             if(nfcDialog!=null&&nfcDialog.isShowing()){
                 nfcDialog.dismiss();
             }
@@ -1043,13 +1038,13 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 //                nfctag = 0;
 
             if(HasEquipment_map.get(hasEquipment.getText())==0){
-                ToastUtil.showToastLong(R.string.pleaseSelectHasEquipment,mContext);
+                ToastUtil.showToastShort(R.string.pleaseSelectHasEquipment,mContext);
                 return;
             }
               if(!teamId.equals("")) {
                   getEquipmentNumByICcardId(iccardID);
               }else {
-                  ToastUtil.showToastLong(R.string.pleaseSelectGroupFirst,mContext);
+                  ToastUtil.showToastShort(R.string.pleaseSelectGroupFirst,mContext);
               }
 
             }
@@ -1068,6 +1063,10 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                 runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+//                                        if(IntentTaskSubClass!=null&&searTag!=SIMPLE_DESCRIPTION){
+//                                            ToastUtil.showToastShort("不可修改",mContext);
+//                                            return;
+//                                        }
                                         searchDataLists.clear();
                                         switch (searTag){
                                             case TASK_TYPE:
@@ -1103,7 +1102,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                                 menuSearchTitle.setText(searchTitle);
                                                 mDrawer_layout.openDrawer(Gravity.RIGHT);
                                             } else {
-                                                ToastUtil.showToastLong(tips,mContext);
+                                                ToastUtil.showToastShort(tips,mContext);
                                             }
                                         }else {
                                             if ( searchDataLists.size() > 0) {
@@ -1111,7 +1110,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                                 menuSearchTitle.setText(searchTitle);
                                                 mDrawer_layout.openDrawer(Gravity.RIGHT);
                                             } else {
-                                                ToastUtil.showToastLong(tips,mContext);
+                                                ToastUtil.showToastShort(tips,mContext);
                                             }
                                         }
 
@@ -1129,6 +1128,10 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+//                        if(IntentTaskSubClass!=null&&searTag!=SIMPLE_DESCRIPTION){
+//                            ToastUtil.showToastShort("不可修改",mContext);
+//                            return;
+//                        }
                         searchDataLists.clear();
                         switch (searTag){
                             case TASK_TYPE:
@@ -1164,7 +1167,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                 menuSearchTitle.setText(searchTitle);
                                 mDrawer_layout.openDrawer(Gravity.RIGHT);
                             } else {
-                                ToastUtil.showToastLong(tips,mContext);
+                                ToastUtil.showToastShort(tips,mContext);
                             }
                         }else {
                             if ( searchDataLists.size() > 0) {
@@ -1172,7 +1175,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                 menuSearchTitle.setText(searchTitle);
                                 mDrawer_layout.openDrawer(Gravity.RIGHT);
                             } else {
-                                ToastUtil.showToastLong(tips,mContext);
+                                ToastUtil.showToastShort(tips,mContext);
                             }
                         }
 
@@ -1201,14 +1204,14 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         taskDetail.set("Factory",SharedPreferenceManager.getFactory(this));
         taskDetail.set("IsExsitTaskEquipment",HasEquipment_map.get(hasEquipment.getText()));
         //TODO 先注释掉，待确认
-        if(getIntent().getStringExtra("TaskSubClass")!=null){
-            taskDetail.set("FromTask_ID",getIntent().getStringExtra(Task.TASK_ID));
+        if(IntentTaskSubClass!=null){
+            taskDetail.set("FromTask_ID",FromTask_ID);
             if(task_type.getText().equals(getResources().getString(R.string.maintenance))){
-            taskDetail.set("TaskSubClass",getIntent().getStringExtra("TaskSubClass"));
-                if(getIntent().getStringExtra("TaskItem")!=null) {
+            taskDetail.set("TaskSubClass",IntentTaskSubClass);
+                if(IntentTaskItem!=null) {
                     ArrayList<ObjectElement> TaskItemList=new ArrayList<>();
                     JsonObjectElement TaskItem=new JsonObjectElement();
-                    JsonObjectElement jsonObjectElement = new JsonObjectElement(getIntent().getStringExtra("TaskItem"));
+                    JsonObjectElement jsonObjectElement = new JsonObjectElement(IntentTaskItem);
                     TaskItem.set("MaintainWorkItem_ID",jsonObjectElement.get("MaintainWorkItem_ID").valueAsInt());
                     TaskItem.set("WorkTimeCode",DataUtil.isDataElementNull(jsonObjectElement.get("WorkTimeCode")));
                     TaskItemList.add(TaskItem);
@@ -1260,20 +1263,20 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ToastUtil.showToastLong(R.string.SuccessCreateTask,mContext);
+                                ToastUtil.showToastShort(R.string.SuccessCreateTask,mContext);
                                 finish();
                             }
                         });
                     } else {
 //                        if(!DataUtil.isDataElementNull(data.get("Msg")).equals("")){
-//                            ToastUtil.showToastLong(DataUtil.isDataElementNull(data.get("Msg")),mContext);
+//                            ToastUtil.showToastShort(DataUtil.isDataElementNull(data.get("Msg")),mContext);
 //                        }else {
-//                            ToastUtil.showToastLong(R.string.FailCreateTask,mContext);
+//                            ToastUtil.showToastShort(R.string.FailCreateTask,mContext);
 //                        }
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ToastUtil.showToastLong(mContext.getResources().getString(R.string.FailCreateTask)
+                                ToastUtil.showToastShort(mContext.getResources().getString(R.string.FailCreateTask)
                                         +","+DataUtil.isDataElementNull(data.get("Msg")),mContext);
                             }
                         });
@@ -1288,7 +1291,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ToastUtil.showToastLong(R.string.FailCreateTaskCauseByTimeout,mContext);
+                        ToastUtil.showToastShort(R.string.FailCreateTaskCauseByTimeout,mContext);
                     }
                 });
             }
@@ -1296,36 +1299,26 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     }
 
     private void getSimpleDescription(String EquipmentClass){
-        String sql="";
-        if(EquipmentClass.equals("all")){
-            sql = "select * from DataDictionary where DataType='EquipmentClassTrouble' and 1=1 ";
-        }
-        else {
-           sql = "select * from DataDictionary where DataType='EquipmentClassTrouble' and 1=1 and DataValue1='" + EquipmentClass+"'";
-        }
-            getSqliteStore().performRawQuery(sql, "DataDictionary", new StoreCallback() {
+        DataUtil.getDataFromDataBase(mContext, "EquipmentClassTrouble", EquipmentClass, new StoreCallback() {
             @Override
             public void success(DataElement element, String resource) {
                 mSimpleDescriptionList.clear();
                 if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
                     for (int i=0;i<element.asArrayElement().size();i++){
-                    mSimpleDescriptionList.add(element.asArrayElement().get(i).asObjectElement());
+                        mSimpleDescriptionList.add(element.asArrayElement().get(i).asObjectElement());
                     }
                 }
-               initSimpleDescription();
-//                JsonObjectElement jsonObjectElement=new JsonObjectElement();
-//                jsonObjectElement.set("DataName",getResources().getString(R.string.other));
-//                mSimpleDescriptionList.add(0,jsonObjectElement);
+                initSimpleDescription();
             }
 
             @Override
             public void failure(DatastoreException ex, String resource) {
-                  runOnUiThread(new Runnable() {
-                      @Override
-                      public void run() {
-                          ToastUtil.showToastLong(R.string.noSimpleDescriptionData,mContext);
-                      }
-                  });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtil.showToastShort(R.string.noSimpleDescriptionData,mContext);
+                    }
+                });
             }
         });
     }
@@ -1396,14 +1389,14 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ToastUtil.showToastLong(R.string.getEquipmentNumSuccess, mContext);
+                                ToastUtil.showToastShort(R.string.getEquipmentNumSuccess, mContext);
                             }
                         });
                     }else {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ToastUtil.showToastLong(R.string.FailToScanEquipment, mContext);
+                                ToastUtil.showToastShort(R.string.FailToScanEquipment, mContext);
                             }
                         });
                     }
@@ -1411,7 +1404,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ToastUtil.showToastLong(R.string.NoCardDetail, mContext);
+                                ToastUtil.showToastShort(R.string.NoCardDetail, mContext);
                             }
                         });
                     }
@@ -1420,7 +1413,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
             @Override
             public void onFailure(Throwable throwable) {
-                ToastUtil.showToastLong(R.string.NoCardDetail,mContext);
+                ToastUtil.showToastShort(R.string.NoCardDetail,mContext);
             }
         });
 
@@ -1504,14 +1497,14 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
 
                     } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
-                        ToastUtil.showToastLong(R.string.warning_message_frozen,mContext);
+                        ToastUtil.showToastShort(R.string.warning_message_frozen,mContext);
                     }
                     else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
-                        ToastUtil.showToastLong("无该卡信息",mContext);
+                        ToastUtil.showToastShort("无该卡信息",mContext);
                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    ToastUtil.showToastLong(R.string.warning_message_error,mContext);
+                    ToastUtil.showToastShort(R.string.warning_message_error,mContext);
                 }
                 dismissCustomDialog();
             }
@@ -1520,7 +1513,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 dismissCustomDialog();
-                ToastUtil.showToastLong(R.string.loadingFail,mContext);
+                ToastUtil.showToastShort(R.string.loadingFail,mContext);
             }
         });
     }

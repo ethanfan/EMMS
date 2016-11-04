@@ -86,7 +86,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
                         }
                     });
                 }
-            },1000);
+            },500);
         }else {
             init();
         }
@@ -218,7 +218,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
                         }
                     });
                 } else {
-                    ToastUtil.showToastLong(R.string.error_occur,mContext);
+                    ToastUtil.showToastShort(R.string.error_occur,mContext);
                 }
             }
         });
@@ -329,7 +329,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,mContext);
+                        ToastUtil.showToastShort(tips,mContext);
                     }
                 } else {
                     if (searchDataLists.size() > 0) {
@@ -340,7 +340,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,mContext);
+                        ToastUtil.showToastShort(tips,mContext);
                     }
                 }
             }

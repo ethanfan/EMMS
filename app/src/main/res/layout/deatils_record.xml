@@ -16,7 +16,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="何邵勃"
         android:id="@+id/task_creater"
         android:textColor="@color/text_color"
         android:textSize="17sp"
@@ -40,7 +39,6 @@
         android:layout_height="wrap_content"
         android:textColor="@color/text_color"
         android:textSize="17sp"
-        android:text="D"
         android:layout_toRightOf="@+id/textView8"
         android:layout_alignTop="@+id/textView8"
         android:id="@+id/task_group" />
@@ -58,7 +56,6 @@
         android:layout_height="wrap_content"
         android:textColor="@color/text_color"
         android:textSize="17sp"
-        android:text="0115"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:id="@+id/task_ID" />
@@ -76,7 +73,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2016.05.05 10:22"
         android:textColor="@color/text_color"
         android:id="@+id/task_create_time"
         android:textSize="17sp"
@@ -95,7 +91,6 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2016.05.05 12:22"
         android:textColor="@color/text_color"
         android:id="@+id/task_start_time"
         android:textSize="17sp"
@@ -117,7 +112,6 @@
         android:textSize="17sp"
         android:id="@+id/task_description"
         android:layout_alignTop="@+id/textView16"
-        android:layout_toRightOf="@+id/textView16"
-        android:text="我是描述我是描述我是描述我是描述我是描述我是描述我是描述"/>
+        android:layout_toRightOf="@+id/textView16"/>
 
 </RelativeLayout>

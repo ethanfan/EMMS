@@ -210,7 +210,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
                         }
                     });
                 } else {
-                    ToastUtil.showToastLong(R.string.error_occur,context);
+                    ToastUtil.showToastShort(R.string.error_occur,context);
                 }
             }
         });
@@ -305,7 +305,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
                   runOnUiThread(new Runnable() {
                       @Override
                    public void run() {
-                ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,context);
+                ToastUtil.showToastShort(R.string.FailGetDataPleaseRestartApp,context);
                    }
                    });
             }
@@ -332,7 +332,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,context);
+                        ToastUtil.showToastShort(tips,context);
                     }
                 } else {
                     if (searchDataLists.size() > 0) {
@@ -343,7 +343,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,context);
+                        ToastUtil.showToastShort(tips,context);
                     }
                 }
 
@@ -558,11 +558,11 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
         SubmitData.set(Task.TASK_ID,DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
        //开始时间，完成时间
         if(taskStartTime.getText().toString().equals("")){
-            ToastUtil.showToastLong(R.string.pleaseSelectStartTime,context);
+            ToastUtil.showToastShort(R.string.pleaseSelectStartTime,context);
             return;
         }
         if(taskEndTime.getText().toString().equals("")){
-            ToastUtil.showToastLong(R.string.pleaseSelectEndTime,context);
+            ToastUtil.showToastShort(R.string.pleaseSelectEndTime,context);
             return;
         }
         SubmitData.set(Task.START_TIME,DataUtil.Local2utc(taskStartTime.getText().toString()));
@@ -579,12 +579,12 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
             Date date3=sdf2.parse(DataUtil.utc2Local(DataUtil.isDataElementNull(TaskDetail.get(Task.APPLICANT_TIME))));
                 Long c=date3.getTime();
                 if(a<c){
-                    ToastUtil.showToastLong(getResources().getString(R.string.StartTimeCanNotlessThanApplicantTime)+DataUtil.utc2Local(DataUtil.isDataElementNull(TaskDetail.get(Task.APPLICANT_TIME))),context);
+                    ToastUtil.showToastShort(getResources().getString(R.string.StartTimeCanNotlessThanApplicantTime)+DataUtil.utc2Local(DataUtil.isDataElementNull(TaskDetail.get(Task.APPLICANT_TIME))),context);
                     return;
                 }
             }
             if(b<a){
-                ToastUtil.showToastLong(R.string.EndTimeCanNotlessThanStartTime,context);
+                ToastUtil.showToastShort(R.string.EndTimeCanNotlessThanStartTime,context);
                 return;
             }
         }catch (Exception e){
@@ -593,20 +593,20 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
         }
         //工作量
         if(TaskParticipantsList.size()<=0){
-            ToastUtil.showToastLong(R.string.PleaseAddTaskPeople,this);
+            ToastUtil.showToastShort(R.string.PleaseAddTaskPeople,this);
             return;
         }
         int sum=0;
         boolean hasMain=false;
         for(int i=0;i<TaskParticipantsList.size();i++){
             if(DataUtil.isDataElementNull(TaskParticipantsList.get(i).get("TaskWorkLoad")).equals("")){
-                ToastUtil.showToastLong(R.string.pleaseInputWorkload,this);
+                ToastUtil.showToastShort(R.string.pleaseInputWorkload,this);
                 return;
             }
             if(    !DataUtil.isNum(DataUtil.isDataElementNull(TaskParticipantsList.get(i).get("TaskWorkLoad")))
                     || !DataUtil.isInt(DataUtil.isDataElementNull(TaskParticipantsList.get(i).get("TaskWorkLoad")))
                     ||  (Integer.parseInt(DataUtil.isDataElementNull(TaskParticipantsList.get(i).get("TaskWorkLoad")))<0) ){
-                ToastUtil.showToastLong(R.string.pleaseInputInteger,this);
+                ToastUtil.showToastShort(R.string.pleaseInputInteger,this);
                 return;
             }
             if(TaskParticipantsList.get(i).get("isMain").valueAsBoolean()){
@@ -615,11 +615,11 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
             sum+=Integer.valueOf(DataUtil.isDataElementNull(TaskParticipantsList.get(i).get("TaskWorkLoad")));
         }
         if(sum!=100){
-            ToastUtil.showToastLong(R.string.judgeWorkloadSum,this);
+            ToastUtil.showToastShort(R.string.judgeWorkloadSum,this);
             return;
         }
         if(!hasMain){
-            ToastUtil.showToastLong(R.string.pleaseSelectMainPerson,this);
+            ToastUtil.showToastShort(R.string.pleaseSelectMainPerson,this);
             return;
         }
         showCustomDialog(R.string.submitData);
@@ -648,11 +648,11 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
                 if(t!=null){
                     JsonObjectElement data=new JsonObjectElement(t);
                     if(data.get(Data.SUCCESS).valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.submitSuccess,context);
+                        ToastUtil.showToastShort(R.string.submitSuccess,context);
                         setResult(1);
                         finish();
                     }else {
-                        ToastUtil.showToastLong(R.string.submit_Fail,context);
+                        ToastUtil.showToastShort(R.string.submit_Fail,context);
                     }
                 }
                 dismissCustomDialog();
@@ -661,7 +661,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.submitFail,context);
+                ToastUtil.showToastShort(R.string.submitFail,context);
                 dismissCustomDialog();
             }
         });

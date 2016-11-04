@@ -151,7 +151,7 @@ public class OverDueVerifyFragment extends BaseFragment {
     private void getCommandListFromServer(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
-                ToastUtil.showToastLong(R.string.noMoreData,mContext);
+                ToastUtil.showToastShort(R.string.noMoreData,mContext);
                 return;
             }}
         showCustomDialog(R.string.loadingData);
@@ -185,7 +185,7 @@ public class OverDueVerifyFragment extends BaseFragment {
                             datas.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
                         }
                     }else {
-                        ToastUtil.showToastLong(R.string.noData,mContext);
+                        ToastUtil.showToastShort(R.string.noData,mContext);
                     }
                     handler.post(new Runnable() {
                         @Override
@@ -201,7 +201,7 @@ public class OverDueVerifyFragment extends BaseFragment {
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
-               ToastUtil.showToastLong(R.string.FailGetList,mContext);
+               ToastUtil.showToastShort(R.string.FailGetList,mContext);
                 dismissCustomDialog();
             }
         });

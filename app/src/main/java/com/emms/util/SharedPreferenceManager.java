@@ -35,6 +35,10 @@ public final class SharedPreferenceManager {
 	public static final String LANGUAGE="language";
 
 	public static final String LANGUAGE_CHANGE="language_change";
+
+	public static final String NETWORK="network";
+
+	public static final String DATA_UPDATE_TIME="data_update_time";
 	private SharedPreferenceManager() {
 
 	}
@@ -176,6 +180,30 @@ public final class SharedPreferenceManager {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		pref.edit().putBoolean(LANGUAGE_CHANGE, Data).commit();
+	}
+
+	public static String getNetwork(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getString(NETWORK, null);
+	}
+
+	public static void setNetwork(Context context, String Data) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putString(NETWORK, Data).commit();
+	}
+
+	public static long getDataUpdateTime(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getLong(DATA_UPDATE_TIME,0);
+	}
+
+	public static void setDataUpdateTime(Context context, long Data) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putLong(DATA_UPDATE_TIME, Data).commit();
 	}
 }
  

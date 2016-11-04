@@ -204,7 +204,7 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                     return true;
                 }
                 if(DataUtil.isDataElementNull(data.get(position-1).get("Status")).equals(getResources().getString(R.string.linked_order))){
-                    ToastUtil.showToastLong(R.string.FailCancelTaskCauseByTaskCompleted,context);
+                    ToastUtil.showToastShort(R.string.FailCancelTaskCauseByTaskCompleted,context);
                     return true;
                 }
                 CancelTaskDialog cancleTaskDialog=new CancelTaskDialog(context);
@@ -225,7 +225,7 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
     private void getTaskHistory(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
-                ToastUtil.showToastLong(R.string.noMoreData,context);
+                ToastUtil.showToastShort(R.string.noMoreData,context);
                 return;
             }}
         showCustomDialog(R.string.loadingData);
@@ -256,7 +256,7 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                          data.add(dataElement.asObjectElement());
                         }
                     }else{
-                        ToastUtil.showToastLong(R.string.noData,context);
+                        ToastUtil.showToastShort(R.string.noData,context);
                     }
                     adapter.notifyDataSetChanged();
                 }
@@ -316,7 +316,7 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                         }
                     });
                 } else {
-                   ToastUtil.showToastLong(R.string.error_occur,context);
+                   ToastUtil.showToastShort(R.string.error_occur,context);
                 }
             }
         });
@@ -427,7 +427,7 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,context);
+                        ToastUtil.showToastShort(tips,context);
                     }
                 } else {
                     if (searchDataLists.size() > 0) {
@@ -438,7 +438,7 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,context);
+                        ToastUtil.showToastShort(tips,context);
                     }
                 }
             }
@@ -633,7 +633,7 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.FailCancelTask,context);
+                ToastUtil.showToastShort(R.string.FailCancelTask,context);
                 dismissCustomDialog();
             }
 
@@ -643,11 +643,11 @@ public class TaskHistory extends NfcActivity implements View.OnClickListener{
                 if(t!=null){
                     JsonObjectElement returnData=new JsonObjectElement(t);
                     if(returnData.get(Data.SUCCESS).valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.SuccessCancelTask,context);
+                        ToastUtil.showToastShort(R.string.SuccessCancelTask,context);
                         pageIndex=1;
                         getTaskHistory();
                     }else {
-                        ToastUtil.showToastLong(R.string.FailCancelTask,context);
+                        ToastUtil.showToastShort(R.string.FailCancelTask,context);
                     }
                 }
                 dismissCustomDialog();

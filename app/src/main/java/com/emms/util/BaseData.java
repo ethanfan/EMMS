@@ -7,7 +7,6 @@ import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.emms.R;
-import com.emms.activity.AppApplication;
 import com.emms.schema.DataDictionary;
 
 
@@ -42,7 +41,7 @@ public class BaseData {
                 ((Activity)context).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,context);
+                        ToastUtil.showToastShort(R.string.FailGetDataPleaseRestartApp,context);
                     }
                 });
             }
@@ -67,19 +66,25 @@ public class BaseData {
                 ((Activity)context).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,context);
+                        ToastUtil.showToastShort(R.string.FailGetDataPleaseRestartApp,context);
                     }
                 });
             }
         });
     }
    public static boolean setBaseData(Context context){
+       if(SharedPreferenceManager.getLanguageChange(context)){
+           BaseData.setTaskClass(context);
+           BaseData.setTaskStatus(context);
+           SharedPreferenceManager.setLanguageChange(context,false);
+           return false;
+       }
        if(BaseData.getTaskClass().size()<=0||BaseData.getTaskStatus().size()<=0) {
            if (BaseData.getTaskClass().size() <= 0) {
                BaseData.setTaskClass(context);
            }
            if (BaseData.getTaskStatus().size() <= 0) {
-               BaseData.setTaskClass(context);
+               BaseData.setTaskStatus(context);
            }
            return false;
        }

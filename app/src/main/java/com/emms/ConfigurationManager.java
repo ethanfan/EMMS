@@ -14,6 +14,8 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.widget.ProgressBar;
 
+import com.datastore_android_sdk.DatastoreException.DatastoreException;
+import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
@@ -24,6 +26,8 @@ import com.emms.schema.Data;
 import com.emms.util.DataUtil;
 import com.emms.util.DownloadCallback;
 import com.emms.util.DownloadTask;
+import com.emms.util.LocaleUtils;
+import com.emms.util.ToastUtil;
 
 import org.restlet.data.Reference;
 
@@ -73,7 +77,7 @@ public final class ConfigurationManager {
         task.execute((Void) null);
     }
 
-    private void showDialog(final Context context, final ObjectElement element) {
+    private void showDialog(final Context context, final ObjectElement element, final String message) {
         Handler mainHandler = new Handler(context.getMainLooper());
         mainHandler.post(new Runnable() {
 
@@ -92,10 +96,8 @@ public final class ConfigurationManager {
                 }
 
                 e = element.get("Content");
-                if (e != null && e.isPrimitive()) {
-                    dialog.setMessage(e.asPrimitiveElement()
-                            .valueAsString());
-                }
+                dialog.setMessage(message);
+
 
                 e = element.get("ConfirmButtonText");
                 if (e != null&&e.isPrimitive()) {
@@ -111,8 +113,7 @@ public final class ConfigurationManager {
 //                    if (downloadTask == null) {
 //                        downloadTask = new DownloadTask(context, url, destination);
 //                    }
-                    dialog.setButton(e.asPrimitiveElement()
-                            .valueAsString(), new OnClickListener() {
+                    dialog.setButton(context.getResources().getString(R.string.Update), new OnClickListener() {
 
                         @Override
                         public void onClick(DialogInterface dialog,
@@ -205,16 +206,41 @@ public final class ConfigurationManager {
      *
      * @param element must passing in the ObjectElement of "message"
      */
-    private void handleVersionUpdate(Context context, String element) {
+    private void handleVersionUpdate(final Context context, String element) {
         JsonObjectElement json=new JsonObjectElement(element);
-        ObjectElement data=json.get(Data.PAGE_DATA).asArrayElement().get(0).asObjectElement();
+        final ObjectElement data=json.get(Data.PAGE_DATA).asArrayElement().get(0).asObjectElement();
         int version=data.get("Version").valueAsInt();
         try {
             PackageInfo packageInfo=context.getPackageManager().getPackageInfo(
                     context.getPackageName(), 0);
             int CurrentVersion=packageInfo.versionCode;
             if(CurrentVersion<version){
-                showDialog(context,data);
+                if (data.get("Content") != null && data.get("Content").isPrimitive()) {
+                    if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH) {
+                        DataUtil.getDataFromLanguageTranslation(context.getApplicationContext(),DataUtil.isDataElementNull(data.get("Content")), new StoreCallback() {
+                            @Override
+                            public void success(DataElement e, String resource) {
+                                if(e.isArray()&&e.asArrayElement().size()>0) {
+                                    showDialog(context,data,DataUtil.isDataElementNull(e.asArrayElement().get(0).asObjectElement().get("Translation_Display"))
+                                            + "1.0." + DataUtil.isDataElementNull(data.get("Version")));
+                                }else {
+                                    showDialog(context,data,DataUtil.isDataElementNull(data.get("Content"))
+                                            +"1.0."+DataUtil.isDataElementNull(data.get("Version")));
+                                }
+                            }
+
+                            @Override
+                            public void failure(DatastoreException ex, String resource) {
+                                showDialog(context,data,DataUtil.isDataElementNull(data.get("Content"))
+                                        +"1.0."+DataUtil.isDataElementNull(data.get("Version")));
+                            }
+                        });
+                    }else {
+                        showDialog(context,data,DataUtil.isDataElementNull(data.get("Content"))
+                                +"1.0."+DataUtil.isDataElementNull(data.get("Version")));
+                    }
+                }
+
             }
         } catch (NameNotFoundException e) {
             // TODO Auto-generated catch block

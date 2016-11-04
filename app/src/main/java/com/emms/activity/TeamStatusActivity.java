@@ -82,16 +82,16 @@ public class TeamStatusActivity extends NfcActivity implements View.OnClickListe
                                 }
                             }else{
                                 listItems.clear();
-                                ToastUtil.showToastLong(R.string.thisGroupHasNoPerson,context);
+                                ToastUtil.showToastShort(R.string.thisGroupHasNoPerson,context);
                             }
                             adapter.setListItems(listItems);
                         }
                         else{
-                            ToastUtil.showToastLong(R.string.getDataFail,context);
+                            ToastUtil.showToastShort(R.string.getDataFail,context);
                         }
                     }catch (Exception e){
                         if(e.getCause()!=null){
-                        ToastUtil.showToastLong(e.getCause().toString(),context);}
+                        ToastUtil.showToastShort(e.getCause().toString(),context);}
                     }finally {
                         dismissCustomDialog();
                     }
@@ -177,7 +177,7 @@ public class TeamStatusActivity extends NfcActivity implements View.OnClickListe
                         }
                     }catch (Exception e){
                         if(e.getCause()!=null) {
-                            ToastUtil.showToastLong(e.getCause().toString(), context);
+                            ToastUtil.showToastShort(e.getCause().toString(), context);
                         }
                         dismissCustomDialog();
                     }

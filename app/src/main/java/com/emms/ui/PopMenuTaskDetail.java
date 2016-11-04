@@ -252,7 +252,7 @@ public abstract class PopMenuTaskDetail {
 	private void WorkloadInput(){
 
 		if(!is_Main_person_in_charge_Operator_id){
-			ToastUtil.showToastLong(R.string.OnlyMainPersonCanWriteWorkload,context);
+			ToastUtil.showToastShort(R.string.OnlyMainPersonCanWriteWorkload,context);
 			return;
 		}
 		Intent intent=new Intent(context, WorkLoadActivity.class);
@@ -266,11 +266,11 @@ public abstract class PopMenuTaskDetail {
 //	}
 	private void ExChangeOrder(){
 		if(!is_Main_person_in_charge_Operator_id){
-			ToastUtil.showToastLong(R.string.OnlyMainPersonCanChangeOrder,context);
+			ToastUtil.showToastShort(R.string.OnlyMainPersonCanChangeOrder,context);
 			return;
 		}
 		if(taskComplete){
-			ToastUtil.showToastLong(R.string.TaskEquipmentIsCompleteCanNotChangeOrder,context);
+			ToastUtil.showToastShort(R.string.TaskEquipmentIsCompleteCanNotChangeOrder,context);
 			return;
 		}
 		Intent intent=new Intent(context, InvitorActivity.class);
@@ -280,11 +280,11 @@ public abstract class PopMenuTaskDetail {
 	}
 	private void InviteHelp(){
 		if(!is_Main_person_in_charge_Operator_id){
-			ToastUtil.showToastLong(R.string.OnlyMainPersonCanInvitePeople,context);
+			ToastUtil.showToastShort(R.string.OnlyMainPersonCanInvitePeople,context);
 			return;
 		}
 		if(taskComplete){
-			ToastUtil.showToastLong(R.string.TaskEquipmentIsCompleteCanNotInvite,context);
+			ToastUtil.showToastShort(R.string.TaskEquipmentIsCompleteCanNotInvite,context);
 			return;
 		}
 		Intent intent=new Intent(context, InvitorActivity.class);
@@ -307,7 +307,7 @@ public abstract class PopMenuTaskDetail {
 //	}
 	private void FaultSummary(){
 		if(!is_Main_person_in_charge_Operator_id){
-			ToastUtil.showToastLong(R.string.OnlyMainPersonCanWriteFaultSummary,context);
+			ToastUtil.showToastShort(R.string.OnlyMainPersonCanWriteFaultSummary,context);
 			return;
 		}
 		if(RootUtil.rootTaskClass(TaskClass,Task.REPAIR_TASK)){
@@ -315,23 +315,23 @@ public abstract class PopMenuTaskDetail {
 		//intent.putExtra(Task.TASK_ID,TaskId);
 		intent.putExtra("TaskDetail",TaskDetail.toString());
 		context.startActivity(intent);}else {
-			ToastUtil.showToastLong(R.string.judgeTaskClass,context);
+			ToastUtil.showToastShort(R.string.judgeTaskClass,context);
 		}
 	}
 	private void TaskComplete(){
 		if(!is_Main_person_in_charge_Operator_id){
-			ToastUtil.showToastLong(R.string.OnlyMainPersonCanSubmitTaskComplete,context);
+			ToastUtil.showToastShort(R.string.OnlyMainPersonCanSubmitTaskComplete,context);
 			return;
 		}
 		if(hasEquipment&&EquipmentNum<=0){
-			ToastUtil.showToastLong(R.string.TaskHasNoEquipment,context);
+			ToastUtil.showToastShort(R.string.TaskHasNoEquipment,context);
 			return;
 		}
 		if(!taskComplete){
 			if(hasEquipment) {
-				ToastUtil.showToastLong(R.string.TaskEquipmentNotComplete, context);
+				ToastUtil.showToastShort(R.string.TaskEquipmentNotComplete, context);
 			}else {
-				ToastUtil.showToastLong(R.string.CanNotCompleteTask,context);
+				ToastUtil.showToastShort(R.string.CanNotCompleteTask,context);
 			}
 			return;
 		}

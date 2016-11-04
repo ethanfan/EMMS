@@ -96,7 +96,6 @@
             android:layout_toRightOf="@+id/icon_input_password"
             android:background="@null"
             android:hint="@string/login_password_hint"
-            android:inputType="textPassword"
             android:paddingLeft="20dp"
             android:paddingRight="0dp"
             android:singleLine="true"

@@ -356,22 +356,20 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                         adapter.notifyDataSetChanged();
                     }
                 }
-                BaseData.setTaskClass(context);
-                BaseData.setTaskStatus(context);
+                BaseData.setBaseData(context);
                 dismissCustomDialog();
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                BaseData.setTaskClass(context);
-                BaseData.setTaskStatus(context);
+                BaseData.setBaseData(context);
                 if(errorNo==401){
-                    ToastUtil.showToastLong(R.string.unauthorization,context);
+                    ToastUtil.showToastShort(R.string.unauthorization,context);
                     dismissCustomDialog();
                     return;
                 }
-                ToastUtil.showToastLong(R.string.loadingFail,context);
+                ToastUtil.showToastShort(R.string.loadingFail,context);
                 dismissCustomDialog();
             }
         });

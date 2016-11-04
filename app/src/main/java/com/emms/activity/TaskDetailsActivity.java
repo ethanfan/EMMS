@@ -135,6 +135,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private boolean isTaskHistory=false;
     private boolean HasTaskEquipment=true;
     private ArrayList<String> OrganiseList=new ArrayList<>();
+    private String FromFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,6 +155,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         TaskStatus=getIntent().getIntExtra("TaskStatus",-1);
         isTaskHistory=getIntent().getBooleanExtra("isTaskHistory",false);
         TaskSubClass=getIntent().getStringExtra(Task.TASK_SUBCLASS);
+        FromFragment=getIntent().getStringExtra("FromFragment");
         if(TaskDetail!=null) {
             JsonObjectElement jsonObjectElement = new JsonObjectElement(TaskDetail);
             if(jsonObjectElement.get("IsExsitTaskEquipment")!=null) {
@@ -202,7 +204,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,mContext);
+                                ToastUtil.showToastShort(R.string.FailGetDataPleaseRestartApp,mContext);
                             }
                         });
                     }
@@ -214,7 +216,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ToastUtil.showToastLong(R.string.FailGetDataPleaseRestartApp,mContext);
+                        ToastUtil.showToastShort(R.string.FailGetDataPleaseRestartApp,mContext);
                     }
                 });
             }
@@ -325,7 +327,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     convertView.setOnClickListener(new AdapterView.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if(!DataUtil.isDataElementNull(datas.get(position).get("Status")).equals("0")) {
+//                            if(!DataUtil.isDataElementNull(datas.get(position).get("Status")).equals("0")) {
                                 Intent intent = new Intent(mContext, MeasurePointActivity.class);
                                 intent.putExtra(Task.TASK_ID, taskId.toString());
                                 intent.putExtra("TaskEquipment", datas.get(position).toString());
@@ -335,14 +337,14 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                     intent.putExtra(Task.TASK_SUBCLASS, TaskSubClass);
                                 }
                                 startActivity(intent);
-                            }else{
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        ToastUtil.showToastLong(R.string.pleaseScanEquipmentCard,mContext);
-                                    }
-                                });
-                            }
+//                            }else{
+//                                runOnUiThread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        ToastUtil.showToastShort(R.string.pleaseScanEquipmentCard,mContext);
+//                                    }
+//                                });
+//                            }
                         }
                     });
                 }
@@ -478,11 +480,11 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
                 if (arg2 == dataList.size()) {
                     if(TaskStatus!=1||isTaskHistory){
-                        ToastUtil.showToastLong(R.string.OnlyDealingTaskCanAddPhoto,mContext);
+                        ToastUtil.showToastShort(R.string.OnlyDealingTaskCanAddPhoto,mContext);
                         return;
                     }
                     if(dataList.size()>=5){
-                        ToastUtil.showToastLong(R.string.pictureNumLimit,mContext);
+                        ToastUtil.showToastShort(R.string.pictureNumLimit,mContext);
                         return;
                     }
                     new PopupWindows(mContext, noScrollgridview);
@@ -868,17 +870,17 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 @Override
                 public void onFailure(int errorNo, String strMsg) {
                     super.onFailure(errorNo, strMsg);
-                     ToastUtil.showToastLong(R.string.FailSubmitPictureCauseByTimeOut,mContext);
+                     ToastUtil.showToastShort(R.string.FailSubmitPictureCauseByTimeOut,mContext);
                 }
                 @Override
                 public void onSuccess(String t) {
                     super.onSuccess(t);
                     JsonObjectElement json = new JsonObjectElement(t);
                     if(json.get("Success").valueAsBoolean()){
-                        ToastUtil.showToastLong(R.string.SuccessSubmitPicture,mContext);
+                        ToastUtil.showToastShort(R.string.SuccessSubmitPicture,mContext);
                         getTaskAttachmentDataFromServerByTaskId();
                     }else{
-                        ToastUtil.showToastLong(R.string.FailSubmitPicture,mContext);
+                        ToastUtil.showToastShort(R.string.FailSubmitPicture,mContext);
                     }
                 }
             });
@@ -979,12 +981,15 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
-
                 super.onFailure(errorNo, strMsg);
-
-                dismissCustomDialog();
-                getEquipmentListFail=true;
-                ToastUtil.showToastLong(R.string.FailGetEquipmentList,mContext);
+              runOnUiThread(new Runnable() {
+                  @Override
+                  public void run() {
+                      dismissCustomDialog();
+                      getEquipmentListFail=true;
+                      ToastUtil.showToastShort(R.string.FailGetEquipmentList,mContext);
+                  }
+              });
             }
         });
     }
@@ -1047,11 +1052,11 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 return;
          }
         if(TaskStatus!=1){
-            ToastUtil.showToastLong(R.string.OnlyDealingTaskCanAddEquipment,this);
+            ToastUtil.showToastShort(R.string.OnlyDealingTaskCanAddEquipment,this);
             return;
         }
         if(!HasTaskEquipment){
-            ToastUtil.showToastLong(R.string.error_add_equipment,mContext);
+            ToastUtil.showToastShort(R.string.error_add_equipment,mContext);
             return;
         }
             Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
@@ -1066,7 +1071,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private ChangeEquipmentDialog changeEquipmentDialog=null;
     private void addTaskEquipment(String iccardID) {
         if(getEquipmentListFail){
-            ToastUtil.showToastLong(R.string.ReGetEquipmentList,this);
+            ToastUtil.showToastShort(R.string.ReGetEquipmentList,this);
             getTaskEquipmentFromServerByTaskId();
             return;
         }
@@ -1097,7 +1102,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                             @Override
                             public void run() {
                                 if(Euqipment_ID_STATUS_map.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))).equals(STATUS_DONE)){
-                                    ToastUtil.showToastLong(R.string.CanNotChangeEquipmentStatus,mContext);
+                                    ToastUtil.showToastShort(R.string.CanNotChangeEquipmentStatus,mContext);
                                     return;
                                 }
 
@@ -1169,7 +1174,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            ToastUtil.showToastLong(R.string.NoEquipmentNum,mContext);
+                            ToastUtil.showToastShort(R.string.NoEquipmentNum,mContext);
                         }
                     });
 
@@ -1187,7 +1192,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
     private void postTaskEquipment(String equipmentID, String TaskEquipment_ID, int status) {
      if(TaskSubClass!=null){
-        ToastUtil.showToastLong(R.string.can_not_add_equipment,mContext);
+        ToastUtil.showToastShort(R.string.can_not_add_equipment,mContext);
         return;
      }
         HttpParams params = new HttpParams();
@@ -1212,7 +1217,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null){
-                ToastUtil.showToastLong(R.string.AddEquipmentSuccess,mContext);
+                ToastUtil.showToastShort(R.string.AddEquipmentSuccess,mContext);
                 getTaskEquipmentFromServerByTaskId();
                 }
             }
@@ -1223,7 +1228,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-               ToastUtil.showToastLong(R.string.err_add_task_equipment,mContext);
+               ToastUtil.showToastShort(R.string.err_add_task_equipment,mContext);
                     }
                 });
             }
@@ -1304,16 +1309,16 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         dataList.remove(data);
                         //getTaskAttachmentDataFromServerByTaskId();
                         adapter.notifyDataSetChanged();
-                        ToastUtil.showToastLong(R.string.deletePictureSuccess,mContext);
+                        ToastUtil.showToastShort(R.string.deletePictureSuccess,mContext);
                     }else{
-                        ToastUtil.showToastLong(R.string.deletePictureFail,mContext);
+                        ToastUtil.showToastShort(R.string.deletePictureFail,mContext);
                     }
                 }
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
-                ToastUtil.showToastLong(R.string.deletePicture_fail,mContext);
+                ToastUtil.showToastShort(R.string.deletePicture_fail,mContext);
                 super.onFailure(errorNo, strMsg);
             }
         });
@@ -1322,7 +1327,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private void searchDeviceHistory(){
         if(TaskDeviceIdList!=null){
         if(TaskDeviceIdList.size()==0){
-            ToastUtil.showToastLong(R.string.pleaseAddEquipment,mContext);
+            ToastUtil.showToastShort(R.string.pleaseAddEquipment,mContext);
         }else if(TaskDeviceIdList.size()==1){
             Intent intent=new Intent(this,EquipmentHistory.class);
             intent.putExtra(Equipment.EQUIPMENT_ID,TaskDeviceIdList.get(0));
@@ -1391,7 +1396,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                             JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                             if(jsonObjectElement.get("Success").valueAsBoolean()){
                                 getTaskEquipmentFromServerByTaskId();
-                                ToastUtil.showToastLong(R.string.SuccessToChangeStatus,mContext);
+                                ToastUtil.showToastShort(R.string.SuccessToChangeStatus,mContext);
                                 if(TaskSubClass!=null&&TaskClass!=null&&TaskStatus==1&&TaskClass.equals(Task.MAINTAIN_TASK)) {
                                     Intent intent = new Intent(mContext, MeasurePointActivity.class);
                                     intent.putExtra(Task.TASK_ID, taskId.toString());
@@ -1405,9 +1410,9 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                 }
                             }else {
                                 if(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")).equals("")){
-                                    ToastUtil.showToastLong(R.string.CanNotChangeStatus,mContext);
+                                    ToastUtil.showToastShort(R.string.CanNotChangeStatus,mContext);
                                 }else {
-                                    ToastUtil.showToastLong(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),mContext);
+                                    ToastUtil.showToastShort(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),mContext);
                                 }
                                 getTaskEquipmentFromServerByTaskId();
                             }
@@ -1418,7 +1423,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     @Override
                     public void onFailure(int errorNo, String strMsg) {
                         super.onFailure(errorNo, strMsg);
-                        ToastUtil.showToastLong(R.string.failToChangeStatus,mContext);
+                        ToastUtil.showToastShort(R.string.failToChangeStatus,mContext);
                         dismissCustomDialog();
                     }
                 });
@@ -1739,12 +1744,12 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 super.onSuccess(t);
                 dismissCustomDialog();
                 if(t!=null){
-                    ToastUtil.showToastLong(R.string.commandSuccess,mContext);
+                    ToastUtil.showToastShort(R.string.commandSuccess,mContext);
                     // TaskComplete(iccardID);
-                    if(getIntent().getStringExtra("FromFragment")!=null){
-                        if(getIntent().getStringExtra("FromFragment").equals("0")){
+                    if(FromFragment!=null){
+                        if(FromFragment.equals("0")){
                             setResult(3);
-                        }else  if(getIntent().getStringExtra("FromFragment").equals("1")){
+                        }else  if(FromFragment.equals("1")){
                             setResult(1);
                         }else {
                             setResult(2);
@@ -1752,14 +1757,14 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     }
                     finish();
                 }else {
-                    ToastUtil.showToastLong(R.string.submitFail,mContext);
+                    ToastUtil.showToastShort(R.string.submitFail,mContext);
                 }
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.submitFail,mContext);
+                ToastUtil.showToastShort(R.string.submitFail,mContext);
                 dismissCustomDialog();
             }
         });
@@ -1804,7 +1809,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 super.onFailure(errorNo, strMsg);
                 dismissCustomDialog();
                 isGetTaskOperatorListSuccess=true;
-                ToastUtil.showToastLong(R.string.FailGetTaskOperatorListCauseByTimeOut,mContext);
+                ToastUtil.showToastShort(R.string.FailGetTaskOperatorListCauseByTimeOut,mContext);
             }
         });
     }
@@ -1824,7 +1829,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     if(data.get(Data.SUCCESS).valueAsBoolean()){
                         getTaskOperatorStatus();
                     }else {
-                        ToastUtil.showToastLong(R.string.CanNotChangeStatus,mContext);
+                        ToastUtil.showToastShort(R.string.CanNotChangeStatus,mContext);
                     }
                 }
                 dismissCustomDialog();
@@ -1833,7 +1838,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.failToChangeStatus,mContext);
+                ToastUtil.showToastShort(R.string.failToChangeStatus,mContext);
                 dismissCustomDialog();
             }
         });

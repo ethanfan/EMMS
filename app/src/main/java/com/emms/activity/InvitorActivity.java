@@ -51,6 +51,8 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
     private Handler handler=new Handler();
     private ObjectElement groupData=null;
     private ArrayList<String> TaskOperator=new ArrayList<>();
+    private String Tag;
+    private String TaskParticipants;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +60,8 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
         //标识，判断当前界面操作是转单还是邀请协助，若为转单，只能选一人，若为邀请协助，可多选
         isExChangeOrder=getIntent().getBooleanExtra("isExChangeOrder",false);
         isInviteHelp=getIntent().getBooleanExtra("isInviteHelp",false);
+        Tag=getIntent().getStringExtra("Tag");
+        TaskParticipants=getIntent().getStringExtra("TaskParticipantsList");
         if(isExChangeOrder){
             ((TextView)findViewById(R.id.tv_title)).setText(R.string.exchangeOrder);
         }
@@ -65,7 +69,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
         taskId=getIntent().getStringExtra(Task.TASK_ID) ;
         getTaskOperatorListFromServer();
         adapter=new MultiAdapter(InvitorActivity.this,listItems,true);
-        if(getIntent().getStringExtra("Tag")!=null){
+        if(Tag!=null){
             ((TextView)findViewById(R.id.tv_title)).setText(R.string.AddTaskPeople);
             adapter.setFromTaskInfoEnteringActivity(true);
         }
@@ -178,12 +182,12 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                         }
                     }else{
                      listItems.clear();
-                        ToastUtil.showToastLong(R.string.thisGroupHasNoPerson,context);
+                        ToastUtil.showToastShort(R.string.thisGroupHasNoPerson,context);
                         }
                         adapter.setListItems(listItems);
                 }
                 else{
-                    ToastUtil.showToastLong(R.string.getDataFail,context);
+                    ToastUtil.showToastShort(R.string.getDataFail,context);
                     }
                 }
                 dismissCustomDialog();
@@ -250,13 +254,13 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                     @Override
                     public void run() {
                         if(adapter.getListItems()!=null){
-                            if(getIntent().getStringExtra("Tag")!=null){
-                                JsonArrayElement TaskParticipantsList=new JsonArrayElement(getIntent().getStringExtra("TaskParticipantsList"));
+                            if(Tag!=null){
+                                JsonArrayElement TaskParticipantsList=new JsonArrayElement(TaskParticipants);
                                 for(int j=0;j<TaskParticipantsList.size();j++){
                                     for(int k=0;k<adapter.getlistItemID().size();k++){
                                   if(   DataUtil.isDataElementNull(adapter.getListItems().get(adapter.getListItemID().get(k)).get(Operator.OPERATOR_ID))
                                           .equals(DataUtil.isDataElementNull(TaskParticipantsList.get(j).asObjectElement().get(Operator.OPERATOR_ID)))){
-                                      ToastUtil.showToastLong(DataUtil.isDataElementNull(TaskParticipantsList.get(j).asObjectElement().get("Name"))
+                                      ToastUtil.showToastShort(DataUtil.isDataElementNull(TaskParticipantsList.get(j).asObjectElement().get("Name"))
                                               +" "+getResources().getString(R.string.JoinerIsInTask),context);
                                       return;
                                   }
@@ -267,7 +271,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                                     data.add(adapter.getListItems().get(adapter.getListItemID().get(i)));
                                 }
                                 if(data.size()<=0){
-                                    ToastUtil.showToastLong(R.string.pleaseSelectJoiner,context);
+                                    ToastUtil.showToastShort(R.string.pleaseSelectJoiner,context);
                                     return;
                                 }
                                 Intent intent=new Intent();
@@ -282,19 +286,19 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                         }
                             if(invitorList.size()==0){
                                 if(isExChangeOrder){
-                                    ToastUtil.showToastLong(R.string.pleaseSelectExchangeOrderTarget,context);
+                                    ToastUtil.showToastShort(R.string.pleaseSelectExchangeOrderTarget,context);
                                     return;
                                 }else {
-                                    ToastUtil.showToastLong(R.string.pleaseSelectInviteTarget,context);
+                                    ToastUtil.showToastShort(R.string.pleaseSelectInviteTarget,context);
                                     return;
                                 }
                             }
                             for(int j=0;j<TaskOperator.size();j++) {
                                 if (invitorList.contains(Integer.valueOf(TaskOperator.get(j)))) {
                                     if(isExChangeOrder){
-                                        ToastUtil.showToastLong(R.string.exchangerIsInTask,context);
+                                        ToastUtil.showToastShort(R.string.exchangerIsInTask,context);
                                     }else{
-                                        ToastUtil.showToastLong(R.string.invitorIsInTask,context);
+                                        ToastUtil.showToastShort(R.string.invitorIsInTask,context);
                                     }
                                     return;
                                 }
@@ -342,7 +346,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                 if(t!=null){
                     JsonObjectElement json=new JsonObjectElement(t);
                     if(json.get(Data.SUCCESS)!=null&&json.get(Data.SUCCESS).valueAsBoolean()){
-                 if(getIntent().getStringExtra("Tag")==null) {
+                 if(Tag==null) {
                      if (isExChangeOrder) {
                          //setResult(1);
                          startActivity(new Intent(context, CusActivity.class));
@@ -356,14 +360,14 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                  }
                 finish();
             }else {
-                        if(getIntent().getStringExtra("Tag")==null) {
+                        if(Tag==null) {
                         if(isExChangeOrder){
-                            ToastUtil.showToastLong(R.string.exchangeOrderFail,context);
+                            ToastUtil.showToastShort(R.string.exchangeOrderFail,context);
                         }else {
-                            ToastUtil.showToastLong(R.string.inviteFail,context);
+                            ToastUtil.showToastShort(R.string.inviteFail,context);
                         }
                         }else {
-                            ToastUtil.showToastLong(R.string.FailAddTaskPeople,context);
+                            ToastUtil.showToastShort(R.string.FailAddTaskPeople,context);
                         }
                     }
                 }
@@ -372,7 +376,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.submitFail,context);
+                ToastUtil.showToastShort(R.string.submitFail,context);
                 dismissCustomDialog();
             }
         });
@@ -395,7 +399,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                    }
                    }
                }else{
-                       ToastUtil.showToastLong(R.string.getTaskOperatorFail,context);
+                       ToastUtil.showToastShort(R.string.getTaskOperatorFail,context);
                    }
                }
             }
@@ -403,7 +407,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.getTaskOperatorFail,context);
+                ToastUtil.showToastShort(R.string.getTaskOperatorFail,context);
             }
         });
     }

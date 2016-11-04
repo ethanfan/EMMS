@@ -184,7 +184,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
     private void getEquipmentHistoryFromServer(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
-                ToastUtil.showToastLong(R.string.noMoreData,context);
+                ToastUtil.showToastShort(R.string.noMoreData,context);
                 return;
             }}
         showCustomDialog(R.string.loadingData);
@@ -225,7 +225,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                         }
                         //      setData(datas);
                     }else {
-                        ToastUtil.showToastLong(R.string.noData,context);
+                        ToastUtil.showToastShort(R.string.noData,context);
                     }
                     handler.post(new Runnable() {
                         @Override
@@ -242,7 +242,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastLong(R.string.loadingFail,context);
+                ToastUtil.showToastShort(R.string.loadingFail,context);
                 dismissCustomDialog();
             }
         });
@@ -326,7 +326,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                         }
                     });
                 } else {
-                    ToastUtil.showToastLong(R.string.error_occur,context);
+                    ToastUtil.showToastShort(R.string.error_occur,context);
                 }
             }
         });
@@ -437,7 +437,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,context);
+                        ToastUtil.showToastShort(tips,context);
                     }
                 } else {
                     if (searchDataLists.size() > 0) {
@@ -448,7 +448,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                         mDrawer_layout.postInvalidate();
 
                     } else {
-                        ToastUtil.showToastLong(tips,context);
+                        ToastUtil.showToastShort(tips,context);
                     }
                 }
             }
@@ -504,7 +504,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ToastUtil.showToastLong(R.string.noSimpleDescriptionData,context);
+                        ToastUtil.showToastShort(R.string.noSimpleDescriptionData,context);
                     }
                 });
             }
@@ -529,7 +529,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        ToastUtil.showToastLong(R.string.NoFaultType,context);
+                        ToastUtil.showToastShort(R.string.NoFaultType,context);
                     }
                 });
             }

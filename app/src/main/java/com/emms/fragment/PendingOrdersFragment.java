@@ -1,5 +1,6 @@
 package com.emms.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +16,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.DatastoreException.DatastoreException;
+import com.datastore_android_sdk.callback.StoreCallback;
+import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
@@ -26,6 +30,8 @@ import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
+import com.emms.util.LocaleUtils;
+import com.emms.util.TipsUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -174,7 +180,7 @@ public class PendingOrdersFragment extends BaseFragment{
     private void getPendingOrderTaskDataFromServer(){
         if(RecCount!=0){
             if((pageIndex-1)*PAGE_SIZE>=RecCount){
-                ToastUtil.showToastLong(R.string.noMoreData,mContext);
+                ToastUtil.showToastShort(R.string.noMoreData,mContext);
                 return;
             }}
         showCustomDialog(R.string.loadingData);
@@ -223,6 +229,7 @@ public class PendingOrdersFragment extends BaseFragment{
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
+                ToastUtil.showToastShort(R.string.FailGetTaskListCauseByTimeOut,mContext);
                 dismissCustomDialog();
             }
         });
@@ -290,31 +297,30 @@ public class PendingOrdersFragment extends BaseFragment{
       //  params.put("task_id",Integer.valueOf(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_ID))));
         HttpUtils.post(mContext,"TaskRecieve?task_id="+DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_ID)), params, new HttpCallback() {
             @Override
-            public void onSuccess(String t) {
+            public void onSuccess(final String t) {
                 super.onSuccess(t);
                 if(t!=null) {
-                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                        if(jsonObjectElement.get("Success").valueAsBoolean()){
-                            //成功，通知用户接单成功
-                            ToastUtil.showToastLong(R.string.SuccessReceiveTask,mContext);
-                        }else{
-                            //失败，通知用户接单失败，单已经被接
-                            Toast toast=Toast.makeText(mContext,DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),Toast.LENGTH_LONG);
-                            toast.setGravity(Gravity.CENTER,0,0);
-                            toast.show();
-                            if(jsonObjectElement.get("Tag").valueAsInt()==2){
-                                dismissCustomDialog();
-                                return;
+
+                            final JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                            if(jsonObjectElement.get("Success").valueAsBoolean()){
+                                //成功，通知用户接单成功
+                                ToastUtil.showToastShort(R.string.SuccessReceiveTask,mContext);
+                            }else{
+                                //失败，通知用户接单失败，单已经被接
+                                TipsUtil.ShowTips(mContext,DataUtil.isDataElementNull(jsonObjectElement.get("Msg")));
+                                if(jsonObjectElement.get("Tag").valueAsInt()==2){
+                                    dismissCustomDialog();
+                                    return;
+                                }
                             }
-                        }
-                        datas.remove(position);
-                        removeNum++;
-                        if(taskNumInteface!=null){
-                            taskNumInteface.ChangeTaskNumListener(1,RecCount-removeNum);
-                            taskNumInteface.refreshProcessingFragment();
-                        }
-                        taskAdapter.setDatas(datas);
-                        taskAdapter.notifyDataSetChanged();
+                            datas.remove(position);
+                            removeNum++;
+                            if(taskNumInteface!=null){
+                                taskNumInteface.ChangeTaskNumListener(1,RecCount-removeNum);
+                                taskNumInteface.refreshProcessingFragment();
+                            }
+                            taskAdapter.setDatas(datas);
+                            taskAdapter.notifyDataSetChanged();
                 }
                 dismissCustomDialog();
             }

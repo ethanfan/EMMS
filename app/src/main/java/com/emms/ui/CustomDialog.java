@@ -214,7 +214,7 @@ public class CustomDialog extends Dialog {
 
     public void submitSubTaskData() {
         if(!DataUtil.isNum(approved_working_hours.getText().toString())){
-            ToastUtil.showToastLong(R.string.pleaseInputNum,context);
+            ToastUtil.showToastShort(R.string.pleaseInputNum,context);
             return;
         }
         HttpParams params = new HttpParams();
@@ -247,18 +247,18 @@ public class CustomDialog extends Dialog {
                     JsonObjectElement json=new JsonObjectElement(t);
                     if(json.get(Data.SUCCESS).valueAsBoolean()){
                         if(modifySubTask==null){
-                            ToastUtil.showToastLong(R.string.createSubTaskSuccess,context);
+                            ToastUtil.showToastShort(R.string.createSubTaskSuccess,context);
                         }
                         else{
-                          ToastUtil.showToastLong(R.string.changeSubTaskSuccess,context);
+                          ToastUtil.showToastShort(R.string.changeSubTaskSuccess,context);
                         }
                         dialogOnSubmit.onsubmit();
                     }else{
                         if(modifySubTask==null){
-                            ToastUtil.showToastLong(R.string.createSubTaskFail,context);
+                            ToastUtil.showToastShort(R.string.createSubTaskFail,context);
                         }
                         else{
-                            ToastUtil.showToastLong(R.string.changeSubTaskFail,context);
+                            ToastUtil.showToastShort(R.string.changeSubTaskFail,context);
                         }
                     }
                 }

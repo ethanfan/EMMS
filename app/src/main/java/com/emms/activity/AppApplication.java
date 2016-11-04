@@ -6,6 +6,7 @@ import com.datastore_android_sdk.datastore.Datastore;
 import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.push.PushService;
+import com.emms.util.BuildConfig;
 import com.emms.util.LocaleUtils;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -30,7 +31,7 @@ public class AppApplication extends Application {
         LocaleUtils.setLanguage(this, language != null ? language :  LocaleUtils.SupportedLanguage.getSupportedLanguage(getResources().getConfiguration().locale.getLanguage()));
         PushService.registerMessageReceiver(this);
         CrashReport.initCrashReport(getApplicationContext(), "900057191", true);
-
+        BuildConfig.NetWorkSetting(this);
     }
 
     public synchronized SqliteStore getSqliteStore() {
