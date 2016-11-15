@@ -17,6 +17,7 @@ import com.emms.R;
 
 /**
  * Created by jaffer.deng on 2016/6/17.
+ *
  */
 public abstract class NFCDialog extends Dialog {
 
@@ -51,5 +52,12 @@ public abstract class NFCDialog extends Dialog {
         dismissAction();
     }
 
+    @Override
+    public void show() {
+        super.show();
+        showAction();
+    }
+
     public abstract void dismissAction();
+    public abstract void showAction();
 }

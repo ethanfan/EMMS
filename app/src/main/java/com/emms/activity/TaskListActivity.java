@@ -135,6 +135,10 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
                ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.other_task));
                break;
            }
+           case Task.TRANSFER_MODEL_TASK:{
+               ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.transfer_model_task));
+               break;
+           }
        }
 
     }

@@ -390,7 +390,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
             public void onSuccess(String t) {
                 super.onSuccess(t);
                if(t!=null){
-                   JsonObjectElement json=new JsonObjectElement(t);
+                       JsonObjectElement json=new JsonObjectElement(t);
                    if(json.get(Data.SUCCESS)!=null&&json.get(Data.SUCCESS).valueAsBoolean()){
                    if(json.get(Data.PAGE_DATA)!=null&&json.get(Data.PAGE_DATA).asArrayElement().size()>0){
                  for(int i=0;i<json.get(Data.PAGE_DATA).asArrayElement().size();i++){

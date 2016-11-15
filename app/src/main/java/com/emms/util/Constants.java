@@ -22,4 +22,9 @@ public class Constants {
     public final static int REQUEST_CODE_END_TASK=120;
     public final static int REQUEST_CODE_END_TASK_TO_INVITOR_ACTIVITY=121;
 
+    public final static int REQUEST_CODE_TASK_DETAIL_TO_CAPTURE_ACTIVITY=122;
+    public final static int RESULT_CODE_CAPTURE_ACTIVITY_TO_TASK_DETAIL=123;
+    public final static String FLAG_CREATE_CAR_MOVING_TASK="CreateCarMovingTask";
+    public final static String FLAG_CREATE_SHUNTING_TASK="CreateShuntingTask";
+
 }

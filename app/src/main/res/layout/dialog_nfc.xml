@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/text_color"
         android:layout_gravity="center_horizontal"
-        android:text="@string/tips_nfc"/>
+        android:text="@string/pleaseSwipeICcardToMakeSureTaskComplete"/>
     <ImageView
         android:id="@+id/scan"
         android:layout_gravity="center"

@@ -28,7 +28,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
@@ -60,6 +60,10 @@
                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         <!--</activity>-->
+        <activity
+            android:name=".activity.CaptureActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <activity android:name=".activity.MeasurePointActivity"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait">
@@ -141,10 +145,18 @@
             android:name=".activity.EnteringEquipmentICCardIDActivity"
             android:screenOrientation="portrait" >
         </activity>
+        <!--<activity-->
+            <!--android:name=".activity.MainActivity"-->
+            <!--android:screenOrientation="portrait" >-->
+        <!--</activity>-->
         <activity
-            android:name=".activity.MainActivity"
-            android:screenOrientation="portrait" >
-        </activity>
+            android:name= ".activity.LoadResActivity"
+            android:launchMode= "singleTask"
+            android:process= ":mini"
+            android:alwaysRetainTaskState= "false"
+            android:excludeFromRecents= "true"
+            android:screenOrientation= "portrait" />
+
         <activity
             android:name=".activity.CreateTaskActivity"
             android:screenOrientation="portrait" >
@@ -292,9 +304,9 @@
         <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         <!--  </>值来自开发者平台取得的AppKey-->
         <!--  </>正式版本的AppKey-->
-            <meta-data android:name="JPUSH_APPKEY" android:value="5e06ea48dfe4d377295cbff3" />
+            <!--<meta-data android:name="JPUSH_APPKEY" android:value="5e06ea48dfe4d377295cbff3" />-->
         <!--  </>DEVELOPMENT的AppKey-->
-        <!--<meta-data android:name="JPUSH_APPKEY" android:value="8f158ccb3769786e8814d044" />-->
+        <meta-data android:name="JPUSH_APPKEY" android:value="8f158ccb3769786e8814d044" />
         <!--<activity-->
             <!--android:name="com.ic_emms.push.MainActivity"-->
             <!--android:label="@string/app_name" >-->

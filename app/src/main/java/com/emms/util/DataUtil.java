@@ -134,6 +134,7 @@ public class DataUtil {
                     +" where d.[DataName]=LT.[Translation_Code]"
                     +" and LT.[Translation_Display] is not null"
                     +" AND LT.[Translation_Display] <>''"
+                    +" AND LT.[Language_Code] ='en-US'"
                     +" order by LT.Translation_ID asc limit 1"
                     +" ) Translation_Display,d.[DataName]"
                     +" from DataDictionary d"
@@ -162,6 +163,7 @@ public class DataUtil {
                 +" where d.[DataName]=LT.[Translation_Code]"
                 +" and LT.[Translation_Display] is not null"
                 +" AND LT.[Translation_Display] <>''"
+                +" AND LT.[Language_Code] ='en-US'"
                 +" order by LT.Translation_ID asc limit 1"
                 +" ) Translation_Display,d.[DataName]"
                 +" from DataDictionary d"
@@ -193,6 +195,7 @@ public class DataUtil {
                    +" where d.[DataName]=LT.[Translation_Code]"
                    +" and LT.[Translation_Display] is not null"
                    +" AND LT.[Translation_Display] <>''"
+                   +" AND LT.[Language_Code] ='en-US'"
                    +" order by LT.Translation_ID asc limit 1"
                    +" ) Translation_Display,d.[DataName]"
                    +" from DataDictionary d"
@@ -204,7 +207,8 @@ public class DataUtil {
        ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
    }
     public static void getDataFromLanguageTranslation(Context context,String Translation_Code,StoreCallback storeCallback){
-        String sql="select distinct ifnull(LT.[Translation_Display],LT.[Translation_Code]) Translation_Display from Language_Translation LT where LT.[Translation_Code]='"+Translation_Code+"'";
+        String sql="select distinct ifnull(LT.[Translation_Display],LT.[Translation_Code]) Translation_Display from Language_Translation LT where LT.[Translation_Code]='"+Translation_Code+"'"
+                +" AND LT.[Language_Code] ='en-US'";
         ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "Language_Translation",storeCallback);
     }
 

@@ -132,6 +132,11 @@ public class CommandActivity extends NfcActivity  {
             public void dismissAction() {
                 nfctag = 0;
             }
+
+            @Override
+            public void showAction() {
+
+            }
         };
     }
 

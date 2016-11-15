@@ -1,6 +1,7 @@
 package com.emms.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
+import com.emms.activity.CaptureActivity;
 import com.emms.activity.CreateTaskActivity;
 import com.emms.activity.InvitorActivity;
 import com.emms.activity.SubTaskManageActivity;
@@ -30,10 +32,13 @@ import com.emms.activity.SummaryActivity;
 import com.emms.activity.WorkLoadActivity;
 import com.emms.schema.Task;
 import com.emms.util.Constants;
+import com.emms.util.DataUtil;
 import com.emms.util.RootUtil;
 import com.emms.util.ToastUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 public abstract class PopMenuTaskDetail {
 	private ArrayList<String> itemList;
@@ -45,6 +50,23 @@ public abstract class PopMenuTaskDetail {
     private ObjectElement TaskDetail;
 	private Long TaskId;
 	private String TaskClass;
+
+
+	public void setHasNFC(boolean hasNFC) {
+		isHasNFC = hasNFC;
+	}
+
+	private boolean isHasNFC=false;
+
+	public NFCDialog getNfcDialog() {
+		return nfcDialog;
+	}
+
+	public void setNfcDialog(NFCDialog nfcDialog) {
+		this.nfcDialog = nfcDialog;
+	}
+
+	private NFCDialog nfcDialog;
 	public void setIs_Main_person_in_charge_Operator_id(boolean is_Main_person_in_charge_Operator_id) {
 		this.is_Main_person_in_charge_Operator_id = is_Main_person_in_charge_Operator_id;
 	}
@@ -62,10 +84,21 @@ public abstract class PopMenuTaskDetail {
 	}
 
 	private int EquipmentNum=0;
+	private HashMap<String,Integer> item_image_mapping=new HashMap<>();
 	// private OnItemClickListener listener;
 	public PopMenuTaskDetail(Context context, int width,String taskDetail,String taskClass) {
 		// TODO Auto-generated constructor stub
+
 		this.context = context;
+		item_image_mapping.put(context.getResources().getString(R.string.menu_list_create_task),R.mipmap.create);
+		item_image_mapping.put(context.getResources().getString(R.string.sacn_qr_code),R.mipmap.more_scan);
+		item_image_mapping.put(context.getResources().getString(R.string.menu_list_fault_summary),R.mipmap.failure_summary);
+		item_image_mapping.put(context.getResources().getString(R.string.menu_list_workload_input),R.mipmap.more_input);
+		item_image_mapping.put(context.getResources().getString(R.string.menu_list_sub_task_manage),R.mipmap.sub_task_management);
+		item_image_mapping.put(context.getResources().getString(R.string.menu_list_invite_help),R.mipmap.more_invitation);
+		item_image_mapping.put(context.getResources().getString(R.string.menu_list_transfer_order),R.mipmap.more_single_turn);
+		item_image_mapping.put(context.getResources().getString(R.string.menu_list_task_complete),R.mipmap.more_finish);
+
 		this.TaskDetail=new JsonObjectElement(taskDetail);
 		TaskId=TaskDetail.get(Task.TASK_ID).valueAsLong();
 		TaskClass=taskClass;
@@ -116,19 +149,21 @@ public abstract class PopMenuTaskDetail {
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				if(position==0){
+				if(itemList.get(position).equals(context.getString(R.string.menu_list_create_task))){
 				   CreateTask();
-				}else if (position == 1) {
+				}else if(itemList.get(position).equals(context.getString(R.string.sacn_qr_code))){
+					ScanQRCode();
+				} else if (itemList.get(position).equals(context.getString(R.string.menu_list_fault_summary))) {
 					FaultSummary();
-				}else if (position == 2) {
+				}else if (itemList.get(position).equals(context.getString(R.string.menu_list_workload_input))) {
 					WorkloadInput();
-				}else if(position==3){
+				}else if(itemList.get(position).equals(context.getString(R.string.menu_list_sub_task_manage))){
 					SubTaskManage();
-				}else if(position==4){
+				}else if(itemList.get(position).equals(context.getString(R.string.menu_list_invite_help))){
 					InviteHelp();
-				}else if(position==5){
+				}else if(itemList.get(position).equals(context.getString(R.string.menu_list_transfer_order))){
 					ExChangeOrder();
-				}else if(position==6){
+				}else if(itemList.get(position).equals(context.getString(R.string.menu_list_task_complete))){
 					TaskComplete();
 				}
 				popMenuTaskDetail.dismiss();
@@ -139,8 +174,8 @@ public abstract class PopMenuTaskDetail {
 
 	// 批量添加菜单项
 	public void addItems(String[] items) {
-		for (String s : items){
-			itemList.add(s);}
+		itemList.clear();
+		Collections.addAll(itemList, items);
 	}
 
 	// 批量添加菜单项
@@ -221,21 +256,22 @@ public abstract class PopMenuTaskDetail {
 
 			holder.groupItem.setText(itemList.get(position));
 			Drawable img  = context.getResources().getDrawable(R.mipmap.more_input);
-			if (0 ==position) {
-				img = context.getResources().getDrawable(R.mipmap.create);
-			}else if (1 ==position){
-				img =context.getResources().getDrawable(R.mipmap.failure_summary);
-			}else if (2 == position){
-				img =context.getResources().getDrawable(R.mipmap.more_input);
-			}else if (3 == position){
-				img =context.getResources().getDrawable(R.mipmap.sub_task_management);
-			}else if (4 == position){
-				img =context.getResources().getDrawable(R.mipmap.more_invitation);
-			}else if (5 == position){
-				img =context.getResources().getDrawable(R.mipmap.more_single_turn);
-			}else if (6 == position){
-				img =context.getResources().getDrawable(R.mipmap.more_finish);
-			}
+//			if (0 ==position) {
+//				img = context.getResources().getDrawable(R.mipmap.create);
+//			}else if (1 ==position){
+//				img =context.getResources().getDrawable(R.mipmap.failure_summary);
+//			}else if (2 == position){
+//				img =context.getResources().getDrawable(R.mipmap.more_input);
+//			}else if (3 == position){
+//				img =context.getResources().getDrawable(R.mipmap.sub_task_management);
+//			}else if (4 == position){
+//				img =context.getResources().getDrawable(R.mipmap.more_invitation);
+//			}else if (5 == position){
+//				img =context.getResources().getDrawable(R.mipmap.more_single_turn);
+//			}else if (6 == position){
+//				img =context.getResources().getDrawable(R.mipmap.more_finish);
+//			}
+			img=context.getResources().getDrawable(item_image_mapping.get(itemList.get(position)));
 			// 调用setCompoundDrawables时，必须调用Drawable.setBounds()方法,否则图片不显示
 //			img.setBounds(0, 0, img.getMinimumWidth(), img.getMinimumHeight());
 //
@@ -318,34 +354,61 @@ public abstract class PopMenuTaskDetail {
 			ToastUtil.showToastShort(R.string.judgeTaskClass,context);
 		}
 	}
-	private void TaskComplete(){
-		if(!is_Main_person_in_charge_Operator_id){
-			ToastUtil.showToastShort(R.string.OnlyMainPersonCanSubmitTaskComplete,context);
+	private void TaskComplete() {
+		if (!is_Main_person_in_charge_Operator_id) {
+			ToastUtil.showToastShort(R.string.OnlyMainPersonCanSubmitTaskComplete, context);
 			return;
 		}
-		if(hasEquipment&&EquipmentNum<=0){
-			ToastUtil.showToastShort(R.string.TaskHasNoEquipment,context);
+		if (hasEquipment && EquipmentNum <= 0) {
+			ToastUtil.showToastShort(R.string.TaskHasNoEquipment, context);
 			return;
 		}
-		if(!taskComplete){
-			if(hasEquipment) {
+		if (!taskComplete) {
+			if (hasEquipment) {
 				ToastUtil.showToastShort(R.string.TaskEquipmentNotComplete, context);
-			}else {
-				ToastUtil.showToastShort(R.string.CanNotCompleteTask,context);
+			} else {
+				ToastUtil.showToastShort(R.string.CanNotCompleteTask, context);
 			}
 			return;
 		}
-		Intent intent=new Intent(context, SubTaskManageActivity.class);
+		if (TaskClass != null && TaskClass.equals(Task.MOVE_CAR_TASK)) {
+			if(isHasNFC) {
+				if (nfcDialog != null && !nfcDialog.isShowing()) {
+					nfcDialog.show();
+				}
+			}else {
+				TaskCompleteDialog taskCompleteDialog=new TaskCompleteDialog(context,R.style.MyDialog);
+				taskCompleteDialog.setTask_ID(DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
+				taskCompleteDialog.setTaskClass(TaskClass);
+				taskCompleteDialog.show();
+			}
+		} else if(TaskClass != null && TaskClass.equals(Task.TRANSFER_MODEL_TASK)){
+			Intent intent = new Intent(context, SummaryActivity.class);
+			//intent.putExtra(Task.TASK_ID,TaskId);
+			intent.putExtra("TaskDetail", TaskDetail.toString());
+			intent.putExtra("TaskComplete", true);
+			intent.putExtra(Task.TASK_CLASS, TaskClass);
+			context.startActivity(intent);
+		}else {
+		Intent intent = new Intent(context, SubTaskManageActivity.class);
 		//intent.putExtra(Task.TASK_ID,TaskId);
-		intent.putExtra("TaskDetail",TaskDetail.toString());
-		intent.putExtra("TaskComplete",true);
-		intent.putExtra(Task.TASK_CLASS,TaskClass);
+		intent.putExtra("TaskDetail", TaskDetail.toString());
+		intent.putExtra("TaskComplete", true);
+		intent.putExtra(Task.TASK_CLASS, TaskClass);
 		context.startActivity(intent);
+	}
 	}
 	private void CreateTask(){
 		Intent intent=new Intent(context, CreateTaskActivity.class);
 		intent.putExtra("FromTask_ID",String.valueOf(TaskId));
 		context.startActivity(intent);
+	}
+	private void ScanQRCode(){
+		if(!hasEquipment){
+			ToastUtil.showToastShort(R.string.error_add_equipment,context);
+			return;
+		}
+		((Activity)context).startActivityForResult(new Intent(context, CaptureActivity.class),Constants.REQUEST_CODE_TASK_DETAIL_TO_CAPTURE_ACTIVITY);
 	}
 
 //	public void setDialogOnSubmit(dialogOnSubmitInterface dialogOnSubmit) {

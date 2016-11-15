@@ -93,6 +93,15 @@ public class LinkedOrdersFragment extends BaseFragment{
                 if (convertView == null) {
                     convertView = LayoutInflater.from(mContext).inflate(R.layout.item_fr_process, parent, false);
                     holder = new TaskViewHolder();
+                    holder.tv_task_state = (TextView) convertView.findViewById(R.id.target_group_tag);
+                    holder.tv_device_name = (TextView) convertView.findViewById(R.id.target_group);
+                    if(TaskClass.equals(Task.MOVE_CAR_TASK)){
+                        holder.tv_task_state.setVisibility(View.VISIBLE);
+                        holder.tv_device_name.setVisibility(View.VISIBLE);
+                    }else {
+                        holder.tv_task_state.setVisibility(View.GONE);
+                        holder.tv_device_name.setVisibility(View.GONE);
+                    }
                     holder.tv_group = (TextView) convertView.findViewById(R.id.group);
                     holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);
                    // holder.tv_task_state = (TextView) convertView.findViewById(R.id.tv_task_state);
@@ -115,6 +124,7 @@ public class LinkedOrdersFragment extends BaseFragment{
                 holder.tv_start_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.START_TIME))));
                 holder.tv_end_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.FINISH_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_DESCRIPTION)));
+                holder.tv_device_name.setText(DataUtil.isDataElementNull(data.get(position).get("TargetTeam")));
                 return convertView;
             }
         };
@@ -153,7 +163,7 @@ public class LinkedOrdersFragment extends BaseFragment{
         }
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
-        HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
+        HttpUtils.get(mContext, "TaskAPI/GetTaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -163,7 +173,8 @@ public class LinkedOrdersFragment extends BaseFragment{
                     if(pageIndex==1){
                         data.clear();
                     }
-                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
+                    if(jsonObjectElement.get("PageData")!=null
+                            &&jsonObjectElement.get("PageData").isArray()&&jsonObjectElement.get("PageData").asArrayElement().size()>0){
                     pageIndex++;
                     for(int i=0;i<jsonObjectElement.get("PageData").asArrayElement().size();i++){
                         data.add(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());

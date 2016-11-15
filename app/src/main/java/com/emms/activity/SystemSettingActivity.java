@@ -53,9 +53,9 @@ public class SystemSettingActivity extends NfcActivity implements View.OnClickLi
     @Override
     protected void onRestart() {
         super.onRestart();
-        if(SharedPreferenceManager.getLanguageChange(this)){
+//        if(SharedPreferenceManager.getLanguageChange(this)){
             initView();
-        }
+//        }
     }
 
     private void initView(){

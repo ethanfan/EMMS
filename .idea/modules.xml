@@ -7,7 +7,6 @@
       <module fileurl="file://$PROJECT_DIR$/PullToRefresh/PullToRefresh.iml" filepath="$PROJECT_DIR$/PullToRefresh/PullToRefresh.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/datastore_android_sdk/datastore_android_sdk.iml" filepath="$PROJECT_DIR$/datastore_android_sdk/datastore_android_sdk.iml" />
-      <module fileurl="file://$PROJECT_DIR$/gesture-imageview/gesture-imageview.iml" filepath="$PROJECT_DIR$/gesture-imageview/gesture-imageview.iml" />
       <module fileurl="file://$PROJECT_DIR$/universal-image-loader/universal-image-loader.iml" filepath="$PROJECT_DIR$/universal-image-loader/universal-image-loader.iml" />
     </modules>
   </component>

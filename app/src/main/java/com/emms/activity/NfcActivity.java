@@ -89,7 +89,7 @@ public abstract class NfcActivity extends BaseActivity implements NfcInterface{
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialogInterface, int i) {
-                finish();
+                //finish();
             }
         });
         builder.create().show();

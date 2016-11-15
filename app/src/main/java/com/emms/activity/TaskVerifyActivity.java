@@ -138,9 +138,9 @@ public class TaskVerifyActivity extends NfcActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent=new Intent(mContext,TaskDetailsActivity.class);
-                intent.putExtra(Task.TASK_ID,VerifyTaskList.get(position-1).get(Task.TASK_ID).valueAsString());
+                intent.putExtra(Task.TASK_ID,DataUtil.isDataElementNull(VerifyTaskList.get(position-1).get(Task.TASK_ID)));
                 intent.putExtra("TaskDetail",VerifyTaskList.get(position-1).asObjectElement().toString());
-                intent.putExtra(Task.TASK_CLASS,"T01");
+                intent.putExtra(Task.TASK_CLASS,DataUtil.isDataElementNull(VerifyTaskList.get(position-1).asObjectElement().get(Task.TASK_CLASS)));
                 startActivity(intent);
             }
         });

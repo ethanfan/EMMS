@@ -93,7 +93,7 @@ public class OverDueVerifyFragment extends BaseFragment {
             @Override
             public View getCustomView(View convertView, final int position, ViewGroup parent) {
                 final TaskViewHolder holder;
-//                if (convertView == null) {
+                if (convertView == null) {
                     convertView = LayoutInflater.from(mContext).inflate(R.layout.item_activity_workload_verify_overdue, parent, false);
                     holder = new TaskViewHolder();
                     //显示6个内容，组别，报修人，状态，保修时间,开始时间，任务描述
@@ -106,11 +106,21 @@ public class OverDueVerifyFragment extends BaseFragment {
                     holder.tv_end_time=(TextView) convertView.findViewById(R.id.tv_end_time_process);
                     holder.tv_device_name=(TextView) convertView.findViewById(R.id.verifyWorkTime);
                     holder.tv_create_time=(TextView)convertView.findViewById(R.id.status);
+                    holder.tv_target_group=(TextView)convertView.findViewById(R.id.target_group);
+                    holder.tv_device_num=(TextView)convertView.findViewById(R.id.target_group_tag);
                     convertView.setTag(holder);
-//                } else {
-//                    holder = (TaskViewHolder) convertView.getTag();
-//                }
+                } else {
+                    holder = (TaskViewHolder) convertView.getTag();
+                }
+                if(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_CLASS)).equals(Task.MOVE_CAR_TASK)){
+                    holder.tv_target_group.setVisibility(View.VISIBLE);
+                    holder.tv_device_num.setVisibility(View.VISIBLE);
+                }else {
+                    holder.tv_target_group.setVisibility(View.GONE);
+                    holder.tv_device_num.setVisibility(View.GONE);
+                }
                 //待修改
+                holder.tv_target_group.setText(DataUtil.isDataElementNull(datas.get(position).get("TargetTeam")));
                 holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkTime")));
@@ -121,6 +131,8 @@ public class OverDueVerifyFragment extends BaseFragment {
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
                 if(taskStatusMap.get(DataUtil.isDataElementNull(datas.get(position).get("Status")))!=null) {
                     holder.tv_create_time.setText(taskStatusMap.get(DataUtil.isDataElementNull(datas.get(position).get("Status"))));
+                }else {
+                    holder.tv_create_time.setText(DataUtil.isDataElementNull(datas.get(position).get("Status")));
                 }
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -179,6 +191,7 @@ public class OverDueVerifyFragment extends BaseFragment {
                     }
                     RecCount = jsonObjectElement.get("RecCount").valueAsInt();
                     if(jsonObjectElement.get("PageData")!=null
+                            &&jsonObjectElement.get("PageData").isArray()
                             &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
                         pageIndex++;
                         for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {

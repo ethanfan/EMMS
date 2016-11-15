@@ -123,27 +123,48 @@ public class LinkedVerifyFragment extends BaseFragment {
             @Override
             public View getCustomView(View convertView, final int position, ViewGroup parent) {
                 final TaskViewHolder holder;
-//                if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.item_activity_workload_verify, parent, false);
-                holder = new TaskViewHolder();
-                //显示6个内容，组别，报修人，状态，保修时间,开始时间，任务描述
-                holder.tv_group = (TextView) convertView.findViewById(R.id.group);
-                holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);
-                holder.tv_task_state = (TextView) convertView.findViewById(R.id.standard_workload);
-                holder.tv_repair_time=(TextView)convertView.findViewById(R.id.tv_Warranty_time_process);
-                holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
-                holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
-                holder.tv_end_time=(TextView) convertView.findViewById(R.id.tv_end_time_process);
-                holder.editText=(EditText)convertView.findViewById(R.id.verify_workTime) ;
-                holder.editText2=(EditText)convertView.findViewById(R.id.verify_workTime_remark) ;
-                holder.editText.setInputType(EditorInfo.TYPE_CLASS_PHONE);
-                holder.image=(ImageView)convertView.findViewById(R.id.image) ;
-                holder.tv_create_time=(TextView)convertView.findViewById(R.id.status);
-                convertView.setTag(holder);
-//                } else {
-//                    holder = (TaskViewHolder) convertView.getTag();
-//                }
+                if (convertView == null) {
+                    convertView = LayoutInflater.from(mContext).inflate(R.layout.item_activity_workload_verify, parent, false);
+                    holder = new TaskViewHolder();
+                    //显示6个内容，组别，报修人，状态，保修时间,开始时间，任务描述
+                    holder.tv_group = (TextView) convertView.findViewById(R.id.group);
+                    holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);
+                    holder.tv_task_state = (TextView) convertView.findViewById(R.id.standard_workload);
+                    holder.tv_repair_time=(TextView)convertView.findViewById(R.id.tv_Warranty_time_process);
+                    holder.tv_start_time = (TextView) convertView.findViewById(R.id.tv_start_time_process);
+                    holder.tv_task_describe = (TextView) convertView.findViewById(R.id.tv_task_describe);
+                    holder.tv_end_time=(TextView) convertView.findViewById(R.id.tv_end_time_process);
+                    holder.editText=(EditText)convertView.findViewById(R.id.verify_workTime) ;
+                    holder.editText2=(EditText)convertView.findViewById(R.id.verify_workTime_remark) ;
+                    holder.editText.setInputType(EditorInfo.TYPE_CLASS_PHONE);
+                    holder.editText.setText(DataUtil.isDataElementNull(datas.get(position).get("Workload")));
+                    holder.editText2.setText(DataUtil.isDataElementNull(datas.get(position).get("UpdateRemark")));
+                    holder.textChanged1=new TaskAdapter.EtTextChanged(position,"Workload");
+                    holder.textChanged2=new TaskAdapter.EtTextChanged(position,"UpdateRemark");
+                    holder.editText.addTextChangedListener(holder.textChanged1);
+                    holder.editText2.addTextChangedListener(holder.textChanged2);
+                    holder.image=(ImageView)convertView.findViewById(R.id.image) ;
+                    holder.tv_create_time=(TextView)convertView.findViewById(R.id.status);
+                    holder.onClickListener=new ExOnClickListener(position,"tag");
+                    holder.image.setOnClickListener(holder.onClickListener);
+                    holder.tv_target_group=(TextView)convertView.findViewById(R.id.target_group);
+                    holder.tv_device_num=(TextView)convertView.findViewById(R.id.target_group_tag);
+                    convertView.setTag(holder);
+                } else {
+                    holder = (TaskViewHolder) convertView.getTag();
+                }
                 //待修改
+                if(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_CLASS)).equals(Task.MOVE_CAR_TASK)){
+                    holder.tv_target_group.setVisibility(View.VISIBLE);
+                    holder.tv_device_num.setVisibility(View.VISIBLE);
+                }else {
+                    holder.tv_target_group.setVisibility(View.GONE);
+                    holder.tv_device_num.setVisibility(View.GONE);
+                }
+                holder.tv_target_group.setText(DataUtil.isDataElementNull(datas.get(position).get("TargetTeam")));
+                holder.textChanged1.setPosition(position);
+                holder.textChanged2.setPosition(position);
+                holder.onClickListener.setPosition(position);
                 holder.tv_group.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT)));
                 holder.tv_task_state.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkTime")));
@@ -151,17 +172,17 @@ public class LinkedVerifyFragment extends BaseFragment {
                 holder.editText2.setText(DataUtil.isDataElementNull(datas.get(position).get("UpdateRemark")));
                 if(taskStatusMap.get(DataUtil.isDataElementNull(datas.get(position).get("Status")))!=null) {
                     holder.tv_create_time.setText(taskStatusMap.get(DataUtil.isDataElementNull(datas.get(position).get("Status"))));
+                }else {
+                    holder.tv_create_time.setText(DataUtil.isDataElementNull(datas.get(position).get("Status")));
                 }
                 holder.tv_end_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get("FinishTime"))));
                 holder.tv_repair_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
                 holder.tv_start_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
-                if(datas.get(position).get("tag")!=null) {
-                    if (datas.get(position).get("tag").valueAsBoolean()) {
-                        holder.image.setImageResource(R.mipmap.select_pressed);
-                    } else {
-                        holder.image.setImageResource(R.mipmap.select_normal);
-                    }
+                if (datas.get(position).get("tag").valueAsBoolean()) {
+                    holder.image.setImageResource(R.mipmap.select_pressed);
+                } else {
+                    holder.image.setImageResource(R.mipmap.select_normal);
                 }
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -174,60 +195,61 @@ public class LinkedVerifyFragment extends BaseFragment {
                         startActivity(intent);
                     }
                 });
-                holder.editText.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        datas.get(position).set("Workload",s.toString());
-                    }
-                });
-                holder.editText2.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        datas.get(position).set("UpdateRemark",s.toString());
-                    }
-                });
-                holder.image.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if(datas.get(position).get("tag").valueAsBoolean()){
-                            // holder.image.setImageResource(R.mipmap.select_pressed);
-                            datas.get(position).set("tag",false);
-                        }else {
-                            //holder.image.setImageResource(R.mipmap.select_normal);
-                            datas.get(position).set("tag",true);
-                        }
-                        notifyDataSetChanged();
-                        //submitWorkload(datas.get(position),holder.editText.getText().toString());
-                        if(submitData.contains(datas.get(position))){
-                            submitData.remove(datas.get(position));
-                        }else {
-                            submitData.add(datas.get(position));
-                        }
-                    }
-                });
+//                holder.editText.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable s) {
+//                        datas.get(position).set("Workload",s.toString());
+//                    }
+//                });
+//                holder.editText2.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//                    }
+//
+//                    @Override
+//                    public void afterTextChanged(Editable s) {
+//                        datas.get(position).set("UpdateRemark",s.toString());
+//                    }
+//                });
+//                holder.image.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if(datas.get(position).get("tag").valueAsBoolean()){
+//                            // holder.image.setImageResource(R.mipmap.select_pressed);
+//                            datas.get(position).set("tag",false);
+//                        }else {
+//                            //holder.image.setImageResource(R.mipmap.select_normal);
+//                            datas.get(position).set("tag",true);
+//                        }
+//                        notifyDataSetChanged();
+//                        //submitWorkload(datas.get(position),holder.editText.getText().toString());
+//                        if(submitData.contains(datas.get(position))){
+//                            submitData.remove(datas.get(position));
+//                        }else {
+//                            submitData.add(datas.get(position));
+//                        }
+//                    }
+//                });
                 return convertView;
             }
         };
+        taskAdapter.setExArray(submitData);
         listView.setAdapter(taskAdapter);
     }
     private void getCommandListFromServer(){
@@ -238,7 +260,7 @@ public class LinkedVerifyFragment extends BaseFragment {
             }}
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
-       // params.put("task_class",Task.REPAIR_TASK);
+        // params.put("task_class",Task.REPAIR_TASK);
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
         params.put("Verity",1);//1为已核验
@@ -253,6 +275,7 @@ public class LinkedVerifyFragment extends BaseFragment {
                     //提示没有处理中的任务
                     //  }
                     if(jsonObjectElement.get("PageData")!=null
+                            &&jsonObjectElement.get("PageData").isArray()
                             &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
                         RecCount = jsonObjectElement.get("RecCount").valueAsInt();
                         if (pageIndex == 1) {
@@ -281,7 +304,7 @@ public class LinkedVerifyFragment extends BaseFragment {
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
-               ToastUtil.showToastShort(R.string.FailGetList,mContext);
+                ToastUtil.showToastShort(R.string.FailGetList,mContext);
                 dismissCustomDialog();
             }
         });

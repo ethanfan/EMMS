@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -21,6 +22,7 @@ import com.emms.adapter.MainActivityAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.BaseData;
+import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
@@ -47,19 +49,37 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cus);
         {
-            TaskClass_moduleID_map.put(Task.REPAIR_TASK,3);
-            TaskClass_moduleID_map.put(Task.MAINTAIN_TASK,2);
-            TaskClass_moduleID_map.put(Task.MOVE_CAR_TASK,4);
-            TaskClass_moduleID_map.put(Task.OTHER_TASK,5);
-            TaskClass_moduleID_map.put(Task.ROUTING_INSPECTION,11);
-            TaskClass_moduleID_map.put(Task.UPKEEP,12);
-            TaskClass_moduleID_map.put("C2",8);
-            TaskClass_moduleID_map.put("C1",10);
-            TaskClass_moduleID_map.put("C3",7);
+            TaskClass_moduleID_map.put(Task.REPAIR_TASK,3);//维修任务
+            TaskClass_moduleID_map.put(Task.MAINTAIN_TASK,2);//维护任务
+            TaskClass_moduleID_map.put(Task.MOVE_CAR_TASK,4);//搬车任务
+            TaskClass_moduleID_map.put(Task.OTHER_TASK,5);//其它任务
+            TaskClass_moduleID_map.put(Task.ROUTING_INSPECTION,11);//点巡检
+            TaskClass_moduleID_map.put(Task.UPKEEP,12);//保养
+            TaskClass_moduleID_map.put(Task.MOVE_CAR_TASK,13);//搬车任务
+            TaskClass_moduleID_map.put(Task.TRANSFER_MODEL_TASK,14);//调车任务
+            TaskClass_moduleID_map.put("C2",8); //工时审核
+            TaskClass_moduleID_map.put("C1",10);//任务审核
+            TaskClass_moduleID_map.put("C3",7); //任务历史
         }
         initView();
         initData();
         getTaskCountFromServer();
+        if(getIntent().getStringExtra(Constants.FLAG_CREATE_SHUNTING_TASK)!=null){
+            Intent intent=new Intent(this,CreateTaskActivity.class);
+            intent.putExtra(Constants.FLAG_CREATE_SHUNTING_TASK,Constants.FLAG_CREATE_SHUNTING_TASK);
+            if(getIntent().getStringExtra("OperatorInfo")!=null){
+                intent.putExtra("OperatorInfo",getIntent().getStringExtra("OperatorInfo"));
+            }
+            startActivity(intent);
+        }
+        if(getIntent().getStringExtra(Constants.FLAG_CREATE_CAR_MOVING_TASK)!=null){
+            Intent intent=new Intent(this,CreateTaskActivity.class);
+            intent.putExtra(Constants.FLAG_CREATE_CAR_MOVING_TASK,Constants.FLAG_CREATE_CAR_MOVING_TASK);
+            if(getIntent().getStringExtra("OperatorInfo")!=null){
+                intent.putExtra("OperatorInfo",getIntent().getStringExtra("OperatorInfo"));
+            }
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -69,8 +89,10 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
     private void initView(){
         Button btn_exit = (Button) findViewById(R.id.btn_exit);
         btn_exit.setOnClickListener(this);
-        ((TextView)findViewById(R.id.UserName)).setText(getLoginInfo().getName());
-        ((TextView)findViewById(R.id.WorkNum_tag)).setText(getLoginInfo().getOperator_no());
+        if(getLoginInfo()!=null) {
+            ((TextView) findViewById(R.id.UserName)).setText(getLoginInfo().getName());
+            ((TextView) findViewById(R.id.WorkNum_tag)).setText(getLoginInfo().getOperator_no());
+        }
         GridView module_list = (GridView) findViewById(R.id.module_list);
         adapter=new MainActivityAdapter(moduleList) {
             @Override
@@ -309,6 +331,24 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                 obj.set("TaskNumType",1);
                 break;
             }
+            case 13:{//搬车
+                obj.set("module_image",R.mipmap.cur_activity_move_car);
+                obj.set("module_name",R.string.move_car);
+                obj.set(Task.TASK_CLASS,Task.MOVE_CAR_TASK);
+                obj.set("Class",packageName+"TaskListActivity");
+                obj.set("TaskNum","0/0");
+                obj.set("TaskNumType",1);
+                break;
+            }
+            case 14:{//转款
+                obj.set("module_image",R.mipmap.model_transfer_model);
+                obj.set("module_name",R.string.transfer_model);
+                obj.set(Task.TASK_CLASS,Task.TRANSFER_MODEL_TASK);
+                obj.set("Class",packageName+"TaskListActivity");
+                obj.set("TaskNum","0/0");
+                obj.set("TaskNumType",1);
+                break;
+            }
         }
         return obj;
     }
@@ -317,6 +357,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
     protected void onRestart() {
         super.onRestart();
         getTaskCountFromServer();
+        getDBDataLastUpdateTime();
     }
     //获取任务数量
     private void getTaskCountFromServer(){
@@ -324,37 +365,35 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         HttpParams params=new HttpParams();
         //params.put("id",String.valueOf(getLoginInfo().getId()));
         // String s=SharedPreferenceManager.getUserName(this);
-        HttpUtils.get(this, "TaskNum", params, new HttpCallback() {
+        HttpUtils.get(this, "TaskAPI/TaskNum", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if (t != null) {
-                    JsonObjectElement json = new JsonObjectElement(t);
+                    JsonArrayElement json = new JsonArrayElement(t);
                     //获取任务数目，Data_ID对应，1对应维修，2对应维护，3对应搬车，4对应其它
-                    if (json.get("PageData") != null&& json.get("PageData").isArray() && json.get("PageData").asArrayElement() != null&&json.get("PageData").asArrayElement().size()>0) {
-                        for (int i = 0; i < json.get("PageData").asArrayElement().size(); i++) {
+                        for (int i = 0; i < json.size(); i++) {
                             //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
                             //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
-                            if(json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1")!=null&&
-                                    json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0")!=null) {
-                                ObjectElement jsonObjectElement=json.get("PageData").asArrayElement().get(i).asObjectElement();
-                                optimizationData(jsonObjectElement,"S0","S1");
+                            if(json.get(i).asObjectElement().get("DoingNo")!=null&&
+                                    json.get(i).asObjectElement().get("ToDoNo")!=null) {
+                                ObjectElement jsonObjectElement=json.get(i).asObjectElement();
+                                optimizationData(jsonObjectElement,"ToDoNo","DoingNo");
                                 String taskNumToShow;
-                                if(DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")).equals("C1")
-                                        ||DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")).equals("C2")
-                                        ||DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")).equals("C3")){
-                                    taskNumToShow=DataUtil.isDataElementNull(jsonObjectElement.get("S0"));
+                                if(DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")).equals("C1")
+                                        ||DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")).equals("C2")
+                                        ||DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")).equals("C3")){
+                                    taskNumToShow=DataUtil.isDataElementNull(jsonObjectElement.get("ToDoNo"));
                                 }else {
-                                    taskNumToShow = DataUtil.isDataElementNull(jsonObjectElement.get("S1")) + "/" +
-                                            DataUtil.isDataElementNull(jsonObjectElement.get("S0"));
+                                    taskNumToShow = DataUtil.isDataElementNull(jsonObjectElement.get("DoingNo")) + "/" +
+                                            DataUtil.isDataElementNull(jsonObjectElement.get("ToDoNo"));
                                 }
-                                if(ID_module_map.get(TaskClass_moduleID_map.get(DataUtil.isDataElementNull(jsonObjectElement.get("DataCode"))))!=null){
-                               ID_module_map.get(TaskClass_moduleID_map.get(DataUtil.isDataElementNull(jsonObjectElement.get("DataCode")))).set("TaskNum",taskNumToShow);
+                                if(ID_module_map.get(TaskClass_moduleID_map.get(DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass"))))!=null){
+                               ID_module_map.get(TaskClass_moduleID_map.get(DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")))).set("TaskNum",taskNumToShow);
                                 }
                             }
                         }
                         adapter.notifyDataSetChanged();
-                    }
                 }
                 BaseData.setBaseData(context);
                 dismissCustomDialog();

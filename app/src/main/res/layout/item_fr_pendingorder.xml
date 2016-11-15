@@ -71,12 +71,35 @@
             android:layout_alignTop="@+id/textView"
             android:textColor="@color/text_color"
             android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/target_group_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/Task_Equipment_Num_tag"
+            android:layout_below="@+id/group_type"
+            android:layout_marginTop="4dp"
+            android:text="@string/target_group_tag"
+            android:textColor="@color/text_color"
+            android:visibility="gone"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/target_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_toRightOf="@+id/target_group_tag"
+            android:layout_alignTop="@+id/target_group_tag"
+            android:textColor="@color/text_color"
+            android:textSize="17sp" />
+
         <TextView
             android:id="@+id/textView7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignRight="@+id/Task_Equipment_Num_tag"
-            android:layout_below="@+id/group_type"
+            android:layout_below="@+id/target_group_tag"
             android:layout_marginTop="3dp"
             android:text="@string/create_time"
             android:textColor="@color/text_color"

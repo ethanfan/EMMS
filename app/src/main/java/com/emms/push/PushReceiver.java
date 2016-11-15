@@ -14,13 +14,17 @@ import android.widget.RemoteViews;
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
+import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
+import com.emms.activity.AppApplication;
+import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.util.DataUtil;
 import com.emms.util.LocaleUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Iterator;
 
 import cn.jpush.android.api.JPushInterface;
@@ -132,30 +136,76 @@ public class PushReceiver extends BroadcastReceiver {
 		return sb.toString();
 	}
 
-	//send msg to MainActivity
+	//send msg
 	private void processCustomMessage(final Context context, final Bundle bundle) {
-		if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH) {
-			DataUtil.getDataFromLanguageTranslation(context, bundle.getString(JPushInterface.EXTRA_MESSAGE), new StoreCallback() {
+		try {
+			final String msg=bundle.getString(JPushInterface.EXTRA_MESSAGE);
+			JsonObjectElement jsonObjectElement=new JsonObjectElement(msg);
+			final HashMap<String,String> msgMap=new HashMap<>();
+			msgMap.put("MainMessage",DataUtil.isDataElementNull(jsonObjectElement.get("MainMessage")));
+			msgMap.put("MonirMessage",DataUtil.isDataElementNull(jsonObjectElement.get("MonirMessage")));
+			String sql;
+			if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context) == LocaleUtils.SupportedLanguage.ENGLISH) {
+				sql="select distinct Message_ID,"
+						+" (case when Translation_Display is null then MessageContent"
+						+" when Translation_Display ='' then MessageContent"
+						+" else Translation_Display end) MessageContent"
+						+" FROM (select  d.[Message_ID],(select"
+						+" LT.[Translation_Display]"
+						+" from Language_Translation  LT"
+						+" where d.[MessageContent]=LT.[Translation_Code]"
+						+" and LT.[Translation_Display] is not null"
+						+" AND LT.[Translation_Display] <>''"
+						+" AND LT.[Language_Code] ='en-US'"
+						+" order by LT.Translation_ID asc limit 1"
+						+" ) Translation_Display,d.[MessageContent]"
+						+" from TaskMessage d"
+						+" where d.Message_ID in ("+DataUtil.isDataElementNull(jsonObjectElement.get("MainMessage"))+","+ DataUtil.isDataElementNull(jsonObjectElement.get("MonirMessage"))+")) a";
+			}else {
+				sql="select * from TaskMessage TM where TM.Message_ID in ("
+						+DataUtil.isDataElementNull(jsonObjectElement.get("MainMessage"))
+						+","+DataUtil.isDataElementNull(jsonObjectElement.get("MonirMessage"))+")";
+			}
+			((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_TASK_MESSAGE, new StoreCallback() {
 				@Override
 				public void success(DataElement element, String resource) {
-					if (element.isArray() && element.asArrayElement().size() > 0) {
-						showInspectorRecordNotification(context, DataUtil.isDataElementNull(element.asArrayElement().get(0).asObjectElement().get("Translation_Display")));
-					} else {
-						showInspectorRecordNotification(context, bundle.getString(JPushInterface.EXTRA_MESSAGE));
+					if(element!=null&&element.isArray()){
+						HashMap<String,String> msgData=new HashMap<>();
+						for(int i=0;i<element.asArrayElement().size();i++){
+							msgData.put(DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get("Message_ID")),
+									DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get("MessageContent")));
+						}
+						showInspectorRecordNotification(context, String.format(msgData.get(msgMap.get("MainMessage")),msgData.get(msgMap.get("MonirMessage"))));
 					}
 				}
 
 				@Override
 				public void failure(DatastoreException ex, String resource) {
-					showInspectorRecordNotification(context, bundle.getString(JPushInterface.EXTRA_MESSAGE));
+
 				}
 			});
-		}else {
-			showInspectorRecordNotification(context, bundle.getString(JPushInterface.EXTRA_MESSAGE));
+//			if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH) {
+//				DataUtil.getDataFromLanguageTranslation(context, message, new StoreCallback() {
+//					@Override
+//					public void success(DataElement element, String resource) {
+//						if (element.isArray() && element.asArrayElement().size() > 0) {
+//							showInspectorRecordNotification(context, DataUtil.isDataElementNull(element.asArrayElement().get(0).asObjectElement().get("Translation_Display")));
+//						} else {
+//							showInspectorRecordNotification(context, message);
+//						}
+//					}
+//
+//					@Override
+//					public void failure(DatastoreException ex, String resource) {
+//						showInspectorRecordNotification(context, message);
+//					}
+//				});
+//			}else {
+//				showInspectorRecordNotification(context, message);
+//			}
+		}catch (Throwable throwable){
+			throwable.printStackTrace();
 		}
-		//JsonObjectElement jsonObjectElement = new JsonObjectElement(message);
-
-
 	}
 	private void showInspectorRecordNotification(Context context,String message) {
 		RemoteViews customView = new RemoteViews(context.getPackageName(), R.layout.customer_notitfication_layout);

@@ -22,6 +22,7 @@
     </string-array>
     <string-array name="menu_list">
         <item>发起新任务</item>
+        <item>扫二维码</item>
         <item>故障总结</item>
         <item>工作量录入</item>
         <item>子任务管理</item>
@@ -29,6 +30,31 @@
         <item>转单</item>
         <item>完成任务</item>
     </string-array>
+    <string-array name="menu_list_maintain">
+        <item>发起新任务</item>
+        <item>扫二维码</item>
+        <item>工作量录入</item>
+        <item>子任务管理</item>
+        <item>邀请协助</item>
+        <item>转单</item>
+        <item>完成任务</item>
+    </string-array>
+    <string-array name="menu_list_move_car">
+        <item>发起新任务</item>
+        <item>扫二维码</item>
+        <item>邀请协助</item>
+        <item>转单</item>
+        <item>完成任务</item>
+    </string-array>
+    <string-array name="menu_list_transfer_model">
+        <item>发起新任务</item>
+        <item>扫二维码</item>
+        <item>故障总结</item>
+        <item>邀请协助</item>
+        <item>转单</item>
+        <item>完成任务</item>
+    </string-array>
+
     <string-array name="menu_login">
         <item>设置</item>
         <item>绑定设备</item>

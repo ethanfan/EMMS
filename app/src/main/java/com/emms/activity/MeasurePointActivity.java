@@ -298,8 +298,6 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                 holder.tv_end_time.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("Unit")));
                 holder.tv_device_num.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("Unit")));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("ReferenceValue")));
-
-
                 holder.tv_task_state.setText(String.valueOf(position+1));
                 holder.editText.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("Remarks")));
                 holder.dropEditText.setText(DataUtil.isDataElementNull(measure_point_list.get(position).get("ResultValue")));

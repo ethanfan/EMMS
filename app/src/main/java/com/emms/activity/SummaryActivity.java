@@ -1,11 +1,15 @@
 package com.emms.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
@@ -39,6 +43,9 @@ import com.emms.schema.Task;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
+import com.emms.ui.NFCDialog;
+import com.emms.ui.TaskCompleteDialog;
+import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.tencent.bugly.crashreport.CrashReport;
@@ -71,6 +78,8 @@ public class SummaryActivity extends NfcActivity{
     private String TaskClass=Task.REPAIR_TASK;
     private String TroubleType;
     private HashMap<String,String> map=new HashMap<>();
+    private NFCDialog nfcDialog;
+    private boolean nfcDialogTag=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,10 +87,21 @@ public class SummaryActivity extends NfcActivity{
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
         TaskComplete=getIntent().getBooleanExtra("TaskComplete",false);
         if(getIntent().getStringExtra(Task.TASK_CLASS)!=null){
-        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);}
+        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
+        }
         initView();
         initSearchView();
+        nfcDialog=new NFCDialog(context) {
+            @Override
+            public void dismissAction() {
+                nfcDialogTag=false;
+            }
 
+            @Override
+            public void showAction() {
+                nfcDialogTag=true;
+            }
+        };
     }
     public void initView(){
         //initTopToolbar
@@ -316,7 +336,19 @@ public class SummaryActivity extends NfcActivity{
 //                            intent.putExtra("TaskComplete", true);
 //                            intent.putExtra("TaskDetail", TaskDetail.toString());
 //                            startActivity(intent);
-                                TaskComplete();
+                                if(TaskClass!=null&&TaskClass.equals(Task.TRANSFER_MODEL_TASK)){
+                                if(mAdapter!=null&&mAdapter.isEnabled()) {
+                                    if (nfcDialog != null && !nfcDialog.isShowing()) {
+                                        nfcDialog.show();
+                                    }
+                                }else {
+                                    TaskCompleteDialog taskCompleteDialog=new TaskCompleteDialog(context,R.style.MyDialog);
+                                    taskCompleteDialog.setTask_ID(DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
+                                    taskCompleteDialog.setTaskClass(TaskClass);
+                                    taskCompleteDialog.show();
+                                }}else {
+                                    TaskComplete(null);
+                                }
                             }else{
                                 finish();
                             }
@@ -428,15 +460,60 @@ public class SummaryActivity extends NfcActivity{
 
     @Override
     public void resolveNfcMessage(Intent intent) {
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
+                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+            Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            String iccardID = NfcUtils.dumpTagData(tag);
+            if (nfcDialogTag) {
+                showCustomDialog(R.string.submitData);
+                HttpParams params = new HttpParams();
+                JsonObjectElement submitData = new JsonObjectElement();
+                submitData.set("ICCardID", iccardID);
+                submitData.set(Task.TASK_ID, DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
+                params.putJsonParams(submitData.toJson());
+                HttpUtils.post(context, "TaskOperatorAPI/CheckUserRoleForICCardID", params, new HttpCallback() {
+                    @Override
+                    public void onSuccess(final String t) {
+                        super.onSuccess(t);
+                        dismissCustomDialog();
+                        if (t != null) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    JsonObjectElement jsonObjectElement = new JsonObjectElement(t);
+                                    if (jsonObjectElement.get(Data.SUCCESS).valueAsBoolean()) {
+                                        ToastUtil.showToastShort(R.string.SuccessToCheckID, context);
+                                        TaskComplete(jsonObjectElement.get(Data.PAGE_DATA));
+                                    } else {
+                                        ToastUtil.showToastShort(R.string.FailToCheckID, context);
+                                    }
+                                }
+                            });
+                        }
+                        if (nfcDialog != null && nfcDialog.isShowing()) {
+                            nfcDialog.dismiss();
+                        }
+                    }
 
+                    @Override
+                    public void onFailure(int errorNo, String strMsg) {
+                        super.onFailure(errorNo, strMsg);
+                        ToastUtil.showToastShort(R.string.FailToCheckIDCauseByTimeOut, context);
+                        dismissCustomDialog();
+                    }
+                });
+            }
+        }
     }
-    private void TaskComplete(){
+    private void TaskComplete(final DataElement dataElement){
         showCustomDialog(R.string.submitData);
         HttpParams params=new HttpParams();
         JsonObjectElement data=new JsonObjectElement();
         data.set(Task.TASK_ID,DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
         params.putJsonParams(data.toJson());
-        HttpUtils.post(this, "TaskFinish", params, new HttpCallback() {
+        HttpUtils.post(this, "TaskAPI/TaskFinish", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 if(t!=null){
@@ -444,7 +521,32 @@ public class SummaryActivity extends NfcActivity{
                     if(jsonObjectElement.get("Success")!=null&&
                             jsonObjectElement.get("Success").valueAsBoolean()){
                         ToastUtil.showToastShort(R.string.taskComplete,context);
-                        startActivity(new Intent(context,CusActivity.class));
+                        if(TaskClass!=null&&TaskClass.equals(Task.TRANSFER_MODEL_TASK)){
+                            AlertDialog.Builder builder=new AlertDialog.Builder(context);
+                            builder.setMessage(R.string.DoYouNeedToCreateACarMovingTask);
+                            builder.setCancelable(false);
+                            builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    Intent intent=new Intent(context, CusActivity.class);
+                                    intent.putExtra(Constants.FLAG_CREATE_CAR_MOVING_TASK,Constants.FLAG_CREATE_CAR_MOVING_TASK);
+                                    if(dataElement!=null){
+                                        intent.putExtra("OperatorInfo",dataElement.toString());
+                                    }
+                                    context.startActivity(intent);
+                                }
+                            }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    context.startActivity(new Intent(context,CusActivity.class));
+                                }
+                            });
+                            builder.show();
+                        }else {
+                            startActivity(new Intent(context,CusActivity.class));
+                        }
                     }else {
                         runOnUiThread(new Runnable() {
                             @Override

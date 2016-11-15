@@ -3,6 +3,7 @@ package com.emms.activity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
@@ -43,6 +44,7 @@ import com.emms.schema.Team;
 import com.emms.ui.DropEditText;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.NFCDialog;
+import com.emms.util.BuildConfig;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.RootUtil;
@@ -69,7 +71,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
     private Context mContext;
 
-    private DropEditText task_type, task_subtype, group, device_name,simple_description,hasEquipment;
+    private DropEditText task_type, task_subtype, group, device_name,simple_description,hasEquipment,targetOrganise;
     private EditText create_task, device_num,task_description;
     private TextView task_subtype_name_desc;
     private TextView menuSearchTitle;
@@ -98,6 +100,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     public final static int SIMPLE_DESCRIPTION = 7;
     public final static int TASK_WORKLOAD=8;
     public final static int HAS_EQUIPMENT=9;
+    public final static int TARGET_ORGANISE=10;
 
     private ArrayList<String> mDeviceTypelist;
 
@@ -110,6 +113,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private ArrayList<ObjectElement> mSimpleDescriptionList=new ArrayList<>();
     private ArrayList<ObjectElement> mWorkLoadNoList=new ArrayList<>();
     private ArrayList<ObjectElement> mHasEquipment=new ArrayList<>();
+    private ArrayList<ObjectElement> mTargetGroup=new ArrayList<>();
     private String creatorId;
 
 
@@ -132,12 +136,13 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private HashMap<String,Integer> HasEquipment_map=new HashMap<>();
     private String IntentTaskSubClass;
     private String IntentTaskItem;
+    private String targetOrganiseID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_task);
         mContext = CreateTaskActivity.this;
-        TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
+        //TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         FromTask_ID=getIntent().getStringExtra("FromTask_ID");
         //getEquipmentClassTaskDescription();
         IntentTaskSubClass=getIntent().getStringExtra("TaskSubClass");
@@ -148,11 +153,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         initEvent();
         mDrawer_layout = (DrawerLayout) findViewById(R.id.main_drawer_layout);
         mDrawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-
         mDialog = new AlertDialog.Builder(this).setNeutralButton(R.string.warning_message_confirm, null).create();
-        if(getIntent().getStringExtra("FromMeasurePointActivity")!=null) {
-            CreateFromMeasurePoint();
-        }
     }
 
     private void initSearchView() {
@@ -197,7 +198,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         mResultListView.setAdapter(mResultAdapter);
         mResultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 isSearchview = true ;
                 final int inPosition = position;
                 String itemNam = mResultAdapter.getItemName();
@@ -210,6 +211,12 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                 case TASK_TYPE:
                                     getSubTaskType(searchResult);
                                     task_type.getmEditText().setText(searchResult);
+                                    if(DataUtil.isDataElementNull(mResultAdapter.getItem(position).
+                                            get(DataDictionary.DATA_CODE)).equals(Task.MOVE_CAR_TASK)){
+                                        findViewById(R.id.target_group_layout).setVisibility(View.VISIBLE);
+                                    }else {
+                                        findViewById(R.id.target_group_layout).setVisibility(View.GONE);
+                                    }
                                     break;
                                 case TASK_SUBTYPE:
                                     task_subtype.getmEditText().setText(searchResult);
@@ -248,6 +255,10 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                         findViewById(R.id.equipment_name).setVisibility(View.VISIBLE);
                                         findViewById(R.id.equipment_num).setVisibility(View.VISIBLE);
                                     }
+                                    break;
+                                case TARGET_ORGANISE:
+                                    targetOrganise.getmEditText().setText(searchResult);
+                                    targetOrganiseID=DataUtil.isDataElementNull(mResultAdapter.getItem(inPosition).get("Organise_ID"));
                                     break;
 //                                case TASK_WORKLOAD:
 //                                    standard_workload.getmEditText().setText(searchResult);
@@ -316,6 +327,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         getString(R.string.title_search_task_type), DataDictionary.DATA_NAME,
                 TASK_TYPE, R.string.getDataFail,task_type.getDropImage());
 
+        initDropSearchView(null, targetOrganise.getmEditText(), getResources().
+                        getString(R.string.title_target_group), "OrganiseName",
+                TARGET_ORGANISE, R.string.getDataFail,targetOrganise.getDropImage());
         task_type.getmEditText()
                 .addTextChangedListener(
                         new TextWatcher() {
@@ -493,11 +507,22 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
         initDropSearchView(device_name.getmEditText(), device_num,
                 getResources().
-                        getString(R.string.title_search_equipment_nun), Equipment.ASSETSID, DEVICE_NUM, R.string.pleaseSelectEquipment,null);
+                        getString(R.string.title_search_equipment_nun), Equipment.ASSETSID, DEVICE_NUM, R.string.pleaseSelectEquipment,(ImageView) findViewById(R.id.device_num_action));
         initDropSearchView(null,simple_description.getmEditText(),getResources().getString(R.string.simpleDescription),"DataName",SIMPLE_DESCRIPTION,R.string.NoEquipmentDescription,simple_description.getDropImage());
 //        initDropSearchView(null, standard_workload.getmEditText(),
 //                getResources().
 //                        getString(R.string.work_num_dialog),DataDictionary.DATA_NAME, TASK_WORKLOAD, R.string.noWorkTimeData,standard_workload.getDropImage());
+
+        if(1 == mTeamNamelist.size()){
+            teamId =DataUtil.isDataElementNull(mTeamNamelist.get(0).get("Team_ID"));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    group.getmEditText().setText(DataUtil.isDataElementNull(mTeamNamelist.get(0).get("TeamName")));
+                    getDeviceName();
+                }
+            });
+        }
     }
 
     private void initDeviceNum() {
@@ -589,35 +614,43 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         });
 
     }
-    private void initLoginData() {
-        Operator operator = getLoginInfo();
-        if(null !=  operator){
-            creatorId = String.valueOf(operator.getId());
-            getTeamId(operator);
-        }
-    }
+//    private void initLoginData() {
+//        Operator operator = getLoginInfo();
+//        if(null !=  operator){
+//            creatorId = String.valueOf(operator.getId());
+//            getTeamId(operator);
+//        }
+//    }
     private void getTeamId(Operator operator) {
 
 
         String teamIDStr = "";
         String teamNameStr = "";
-        if (null == operator) {
-            //get userData from server
+        if(getIntent().getStringExtra("OperatorInfo")!=null){
+            JsonObjectElement jsonObjectElement=new JsonObjectElement(getIntent().getStringExtra("OperatorInfo"));
+         creatorId=DataUtil.isDataElementNull(jsonObjectElement.get("Operator_ID"));
+            create_task.setText(DataUtil.isDataElementNull(jsonObjectElement.get("Name")));
+            getTeamIdByOrganiseID(DataUtil.isDataElementNull(jsonObjectElement.get("Organise_ID")),true);
+        }else {
+            if (null == operator) {
+                //get userData from server
 
-        } else {
-            create_task.setText(operator.getName());  //创建人名
-            getTeamIdByOrganiseID(operator.getOrganiseID());
+            } else {
+                create_task.setText(operator.getName());  //创建人名
+                getTeamIdByOrganiseID(operator.getOrganiseID(),false);
+            }
         }
     }
 
 
-    private void getTeamIdByOrganiseID(String organiseID) {
+    private void getTeamIdByOrganiseID(String organiseID,boolean isFromMovingCarOrShunting) {
 
 
 //        String teamIDStr = "";
 //        String teamNameStr = "";
         String rawQuery;
-        if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(this))==RootUtil.ROOT_WARRANTY){
+        if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(this))==RootUtil.ROOT_WARRANTY
+                ||  isFromMovingCarOrShunting){
                rawQuery= "select Organise_ID Team_ID,OrganiseName TeamName  from BaseOrganise where Organise_ID in(" + organiseID + ") and OrganiseType='2'";
         }else {
             rawQuery="select distinct b.[Organise_ID] Team_ID,b.[OrganiseName] TeamName from TaskOrganiseRelation a,BaseOrganise b" +
@@ -639,16 +672,16 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                             Group_ID_List.add(DataUtil.isDataElementNull(dataElement.asArrayElement().get(i).asObjectElement().get("Team_ID")));
                         }
 
-                        if(1 == mTeamNamelist.size()){
-                            teamId =mTeamNamelist.get(0).get("Team_ID").valueAsString();
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    group.getmEditText().setText(DataUtil.isDataElementNull(mTeamNamelist.get(0).get("TeamName")));
-                                    getDeviceName();
-                                }
-                            });
-                        }
+//                        if(1 == mTeamNamelist.size()){
+//                            teamId =DataUtil.isDataElementNull(mTeamNamelist.get(0).get("Team_ID"));
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    group.getmEditText().setText(DataUtil.isDataElementNull(mTeamNamelist.get(0).get("TeamName")));
+//                                    getDeviceName();
+//                                }
+//                            });
+//                        }
                     } else {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -692,42 +725,72 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                    @Override
                    public void success(DataElement element, String resource) {
                        System.out.println(element);
+                       final HashMap<String,String> map=new HashMap<>();
                        if (element != null && element.isArray()
                                && element.asArrayElement().size() > 0) {
                            searchDataLists.clear();
                            for (int i = 0; i < element.asArrayElement().size(); i++) {
                                String s=DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_CODE));
-                               if((s.equals(Task.REPAIR_TASK))
-                                       ||(s.equals(Task.OTHER_TASK)) )
+                               if((!s.equals(Task.MAINTAIN_TASK)))
                                {//TODO
-                                   mTaskType.add(element.asArrayElement().get(i).asObjectElement());
+                                   if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))==RootUtil.ROOT_WARRANTY
+                               ||getIntent().getStringExtra("OperatorInfo")!=null) {
+                                       mTaskType.add(element.asArrayElement().get(i).asObjectElement());
+                                   }else {
+                                       if(!s.equals(Task.MOVE_CAR_TASK)
+                                               &&!s.equals(Task.TRANSFER_MODEL_TASK)){
+                                           mTaskType.add(element.asArrayElement().get(i).asObjectElement());
+                                       }
+                                   }
                                }
-                               task_type_class.put(element.asArrayElement().get(i).asObjectElement().get("DataName").valueAsString(),
-                                       element.asArrayElement().get(i).asObjectElement().get("DataCode").valueAsString());
+                               task_type_class.put(DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get("DataName")),
+                                       DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get("DataCode")));
 //                        Task_Class_Name.put(element.asArrayElement().get(i).asObjectElement().get("DataCode").valueAsString(),
 //                                element.asArrayElement().get(i).asObjectElement().get("DataName").valueAsString());
+                               map.put(DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get("DataCode")),
+                                       DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get("DataName")));
                            }
                            runOnUiThread(new Runnable() {
                                @Override
                                public void run() {
                                    task_type.setDatas(mContext, mTaskType,DataDictionary.DATA_NAME);
+                                   if(getIntent().getStringExtra("FromMeasurePointActivity")!=null) {
+                                       CreateFromMeasurePoint(map.get(Task.MAINTAIN_TASK));
+                                   }
+                                   if(getIntent().getStringExtra(Constants.FLAG_CREATE_SHUNTING_TASK)!=null){
+                                       CreateShuntingTask(map.get(Task.TRANSFER_MODEL_TASK));
+                                   }
+                                   if(getIntent().getStringExtra(Constants.FLAG_CREATE_CAR_MOVING_TASK)!=null){
+                                       CreateCarMovingTask(map.get(Task.MOVE_CAR_TASK));
+                                   }
                                    //getSubTaskType(TaskClass);
                                }
                            });
                        } else {
-                           ToastUtil.showToastShort(R.string.ErrorCauseByNoDataBase,mContext);
+                           ToastUtil.showToastShort(R.string.noData,mContext);
                        }
+                       runOnUiThread(new Runnable() {
+                           @Override
+                           public void run() {
+                               getDBDataLastUpdateTime();
+                           }
+                       });
                    }
 
                    @Override
                    public void failure(DatastoreException ex, String resource) {
+                       ToastUtil.showToastShort(R.string.ErrorCauseByNoDataBase,mContext);
                    }
                });
 
     }
 
     private void initView() {
-       if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(this))!=RootUtil.ROOT_WARRANTY){
+        findViewById(R.id.filter).setVisibility(View.VISIBLE);
+        findViewById(R.id.filter).setOnClickListener(this);
+        ((ImageView)findViewById(R.id.filter)).setImageResource(R.mipmap.sync);
+       if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(this))!=RootUtil.ROOT_WARRANTY
+               &&getIntent().getStringExtra("OperatorInfo")==null){
         ((TextView)findViewById(R.id.organise)).setText(R.string.ServerTeam);
         }
         findViewById(R.id.btn_right_action).setOnClickListener(this);
@@ -736,13 +799,14 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
         task_subtype_name_desc = (TextView) findViewById(R.id.task_subtype_name_id);
         task_type = (DropEditText) findViewById(R.id.task_type);
-        task_type.setText(Task_Class_Name.get(TaskClass));
+        //task_type.setText(Task_Class_Name.get(TaskClass));
 
         simple_description=(DropEditText)findViewById(R.id.simple_description);
         task_description=(EditText)findViewById (R.id.task_description);
         task_subtype = (DropEditText) findViewById(R.id.task_subtype);
         group = (DropEditText) findViewById(R.id.group_id);
         device_name = (DropEditText) findViewById(R.id.device_name);
+        targetOrganise=(DropEditText)findViewById(R.id.target_group);
         //simple_description=(DropEditText)findViewById(R.id.simple_description);
         hasEquipment=(DropEditText)findViewById(R.id.hasEquipment);
 
@@ -775,6 +839,11 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             @Override
             public void dismissAction() {
                 nfctag = 0;
+            }
+
+            @Override
+            public void showAction() {
+
             }
         };
 
@@ -898,6 +967,8 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 clearBtn.setVisibility(View.GONE);
         } else if (id == R.id.sure) {
             createRequest();
+        }else if(id==R.id.filter){
+            getDBDataLastUpdateTime();
         }
     }
 
@@ -974,7 +1045,12 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 //                    }
                     SimpleDescriptionCode="Default";
                 }
-
+                if( task_type_class.get(taskType)!=null&&task_type_class.get(taskType).equals(Task.MOVE_CAR_TASK)){
+                    if(targetOrganise.getmEditText().getText().toString().equals("")){
+                        ToastUtil.showToastShort(R.string.pleaseSelectTargetGroup,mContext);
+                        return;
+                    }
+                }
 //                hud.show();
                 submitTask(taskType, taskSubType, "", deviceName, deviceNum, simpledescription);
 //                mHandler.postDelayed(new Runnable() {
@@ -1018,40 +1094,44 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             String iccardID = NfcUtils.dumpTagData(tag);
 
-            if (iccardID == null) {
-                return;
-            } else if (iccardID.equals("")) {
-                return;
-            }
-//            if(IntentTaskSubClass!=null){
-//                ToastUtil.showToastShort("不可修改设备",mContext);
-//                return;
-//            }
-            if(nfcDialog!=null&&nfcDialog.isShowing()){
-                nfcDialog.dismiss();
-            }
-//            if (nfctag == CREATER) {
-//                nfctag = 0;
-            //nfcDialog.dismiss();
-                //Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
-//           } else if (nfctag == DEVICE_NUM) {
-//                nfctag = 0;
+            getDataByICcardID(iccardID);
 
-            if(HasEquipment_map.get(hasEquipment.getText())==0){
-                ToastUtil.showToastShort(R.string.pleaseSelectHasEquipment,mContext);
-                return;
-            }
-              if(!teamId.equals("")) {
-                  getEquipmentNumByICcardId(iccardID);
-              }else {
-                  ToastUtil.showToastShort(R.string.pleaseSelectGroupFirst,mContext);
-              }
+
 
             }
 
        // }
     }
+    private void getDataByICcardID(String iccardID){
+        if (iccardID == null) {
+            return;
+        } else if (iccardID.equals("")) {
+            return;
+        }
+//            if(IntentTaskSubClass!=null){
+//                ToastUtil.showToastShort("不可修改设备",mContext);
+//                return;
+//            }
+        if(nfcDialog!=null&&nfcDialog.isShowing()){
+            nfcDialog.dismiss();
+        }
+//            if (nfctag == CREATER) {
+//                nfctag = 0;
+        //nfcDialog.dismiss();
+        //Toast.makeText(mContext, "刷卡成功", Toast.LENGTH_SHORT).show();
+//           } else if (nfctag == DEVICE_NUM) {
+//                nfctag = 0;
 
+        if(HasEquipment_map.get(hasEquipment.getText())==0){
+            ToastUtil.showToastShort(R.string.pleaseSelectHasEquipment,mContext);
+            return;
+        }
+        if(!teamId.equals("")) {
+            getEquipmentNumByICcardId(iccardID);
+        }else {
+            ToastUtil.showToastShort(R.string.pleaseSelectGroupFirst,mContext);
+        }
+    }
     private void initDropSearchView(
             final EditText condition,EditText subEditText,
             final String searchTitle,final String searchName,final int searTag ,final int tips,ImageView imageView){
@@ -1094,6 +1174,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 //                                            case TASK_WORKLOAD:
 //                                                    searchDataLists.addAll(mWorkLoadNoList);
 //                                                break;
+                                            case TARGET_ORGANISE:
+                                                searchDataLists.addAll(mTargetGroup);
+                                                break;
                                         }
                                         searchtag = searTag;
                                         if (condition != null) {
@@ -1132,6 +1215,11 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 //                            ToastUtil.showToastShort("不可修改",mContext);
 //                            return;
 //                        }
+//                        if(BuildConfig.isDebug) {
+//                            Intent it = new Intent(CreateTaskActivity.this, CaptureActivity.class);
+//                            startActivityForResult(it, 1);
+//                            return;
+//                        }
                         searchDataLists.clear();
                         switch (searTag){
                             case TASK_TYPE:
@@ -1148,8 +1236,13 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                 break;
 
                             case DEVICE_NUM:
-                                searchDataLists.addAll(mDeviceNumlist);
-                                break;
+                            if(group.getmEditText().getText().toString().equals("")){
+                                ToastUtil.showToastLong(R.string.pleaseSelectGroupFirst,mContext);
+                                return;
+                            }
+                            Intent it = new Intent(CreateTaskActivity.this, CaptureActivity.class);
+                            startActivityForResult(it, 1);
+                            return;
                             case SIMPLE_DESCRIPTION:
                                 searchDataLists.addAll(mSimpleDescriptionList);
                                 break;
@@ -1159,6 +1252,9 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 //                            case TASK_WORKLOAD:
 //                                searchDataLists.addAll(mWorkLoadNoList);
 //                                break;
+                            case TARGET_ORGANISE:
+                                searchDataLists.addAll(mTargetGroup);
+                                break;
                         }
                         searchtag = searTag;
                         if (condition != null) {
@@ -1203,6 +1299,10 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         taskDetail.set("TaskApplicantOrg",teamId);
         taskDetail.set("Factory",SharedPreferenceManager.getFactory(this));
         taskDetail.set("IsExsitTaskEquipment",HasEquipment_map.get(hasEquipment.getText()));
+        //TODO
+        if(task_type_class.get(TaskType).equals(Task.MOVE_CAR_TASK)){
+            taskDetail.set("TargetTeam_ID",targetOrganiseID);
+        }
         //TODO 先注释掉，待确认
         if(IntentTaskSubClass!=null){
             taskDetail.set("FromTask_ID",FromTask_ID);
@@ -1249,7 +1349,11 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         }
        //包装数据
       //填写创建人角色
-       task.set("UserRole_ID",SharedPreferenceManager.getUserRoleID(this));
+        if(getIntent().getStringExtra("OperatorInfo")!=null){
+            task.set("UserRole_ID",RootUtil.ROOT_WARRANTY);
+        }else {
+            task.set("UserRole_ID",SharedPreferenceManager.getUserRoleID(this));
+        }
         params.putJsonParams(task.toJson());
         HttpUtils.postWithoutCookie(this, "TaskCollection", params, new HttpCallback() {
             @Override
@@ -1396,17 +1500,13 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ToastUtil.showToastShort(R.string.FailToScanEquipment, mContext);
+                                //ToastUtil.showToastShort(R.string.FailToScanEquipment, mContext);
+                                showDataSyncDialog(R.string.FailToScanEquipment);
                             }
                         });
                     }
                     } else {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ToastUtil.showToastShort(R.string.NoCardDetail, mContext);
-                            }
-                        });
+                             showDataSyncDialog(R.string.NoCardDetailDoYouNeedToSyncData);
                     }
 
             }
@@ -1470,53 +1570,53 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
 
     }
 
-    private void getApplicantByICcardID(String iccardID){
-        HttpParams params = new HttpParams();
-        params.put("ICCardID", iccardID);
-        showCustomDialog(R.string.loadingData);
-        HttpUtils.getWithoutCookies(this, "Token", params, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-                try {
-                    JSONObject jsonObject = new JSONObject(t);
-                    int code = Integer.parseInt(jsonObject.get("Result").toString());
-                    boolean isSuccess = jsonObject.get("Success").equals(true);
-                    if ((code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS ||
-                            code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) && isSuccess) {
-
-                        String data=jsonObject.getString("Data");
-                        //  SharedPreferenceManager.setLoginData(mContext,jsonObject.get("Data").toString());
-                        Operator operator = getLoginInfo(data);
-                        if(null !=  operator){
-                            creatorId = String.valueOf(operator.getId());
-                            getTeamId(operator);
-                            resetCretor();
-
-                        }
-
-
-                    } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
-                        ToastUtil.showToastShort(R.string.warning_message_frozen,mContext);
-                    }
-                    else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
-                        ToastUtil.showToastShort("无该卡信息",mContext);
-                   }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    ToastUtil.showToastShort(R.string.warning_message_error,mContext);
-                }
-                dismissCustomDialog();
-            }
-
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-                dismissCustomDialog();
-                ToastUtil.showToastShort(R.string.loadingFail,mContext);
-            }
-        });
-    }
+//    private void getApplicantByICcardID(String iccardID){
+//        HttpParams params = new HttpParams();
+//        params.put("ICCardID", iccardID);
+//        showCustomDialog(R.string.loadingData);
+//        HttpUtils.getWithoutCookies(this, "Token", params, new HttpCallback() {
+//            @Override
+//            public void onSuccess(String t) {
+//                super.onSuccess(t);
+//                try {
+//                    JSONObject jsonObject = new JSONObject(t);
+//                    int code = Integer.parseInt(jsonObject.get("Result").toString());
+//                    boolean isSuccess = jsonObject.get("Success").equals(true);
+//                    if ((code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS ||
+//                            code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_SUCCESS_AUTO) && isSuccess) {
+//
+//                        String data=jsonObject.getString("Data");
+//                        //  SharedPreferenceManager.setLoginData(mContext,jsonObject.get("Data").toString());
+//                        Operator operator = getLoginInfo(data);
+//                        if(null !=  operator){
+//                            creatorId = String.valueOf(operator.getId());
+//                            getTeamId(operator);
+//                            resetCretor();
+//
+//                        }
+//
+//
+//                    } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
+//                        ToastUtil.showToastShort(R.string.warning_message_frozen,mContext);
+//                    }
+//                    else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
+//                        ToastUtil.showToastShort("无该卡信息",mContext);
+//                   }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                    ToastUtil.showToastShort(R.string.warning_message_error,mContext);
+//                }
+//                dismissCustomDialog();
+//            }
+//
+//            @Override
+//            public void onFailure(int errorNo, String strMsg) {
+//                super.onFailure(errorNo, strMsg);
+//                dismissCustomDialog();
+//                ToastUtil.showToastShort(R.string.loadingFail,mContext);
+//            }
+//        });
+//    }
     private void initSimpleDescription(){
         JsonObjectElement jsonObjectElement=new JsonObjectElement();
         jsonObjectElement.set(DataDictionary.DATA_NAME,getResources().getString(R.string.other));
@@ -1533,34 +1633,98 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
         mHasEquipment.add(data2);
     }
     private void initData(){
-        {
-            Task_Class_Name.put(Task.REPAIR_TASK,getResources().getString(R.string.repair_tag));
-            Task_Class_Name.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintenance));
-            Task_Class_Name.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car));
-            Task_Class_Name.put(Task.OTHER_TASK,getResources().getString(R.string.other));
-        }
-        {
-            task_type_class.put(getResources().getString(R.string.repair_tag), Task.REPAIR_TASK);
-            task_type_class.put(getResources().getString(R.string.maintenance), Task.MAINTAIN_TASK);
-            task_type_class.put(getResources().getString(R.string.move_car), Task.MOVE_CAR_TASK);
-            task_type_class.put(getResources().getString(R.string.other), Task.OTHER_TASK);
-        }
+//        {
+//            Task_Class_Name.put(Task.REPAIR_TASK,getResources().getString(R.string.repair_tag));
+//            Task_Class_Name.put(Task.MAINTAIN_TASK,getResources().getString(R.string.maintenance));
+//            Task_Class_Name.put(Task.MOVE_CAR_TASK,getResources().getString(R.string.move_car));
+//            Task_Class_Name.put(Task.OTHER_TASK,getResources().getString(R.string.other));
+//        }
+//        {
+//            task_type_class.put(getResources().getString(R.string.repair_tag), Task.REPAIR_TASK);
+//            task_type_class.put(getResources().getString(R.string.maintenance), Task.MAINTAIN_TASK);
+//            task_type_class.put(getResources().getString(R.string.move_car), Task.MOVE_CAR_TASK);
+//            task_type_class.put(getResources().getString(R.string.other), Task.OTHER_TASK);
+//        }
         {
              HasEquipment_map.put(getResources().getString(R.string.haveEquipment),1);
             HasEquipment_map.put(getResources().getString(R.string.NothaveEquipment),0);
         }
+        String sql="select * from BaseOrganise where OrganiseType=2";
+        getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE, new StoreCallback() {
+            @Override
+            public void success(DataElement element, String resource) {
+                if(element!=null&&element.isArray()){
+                    for(int i=0;i<element.asArrayElement().size();i++){
+                        mTargetGroup.add(element.asArrayElement().get(i).asObjectElement());
+                    }
+                }
+            }
+
+            @Override
+            public void failure(DatastoreException ex, String resource) {
+               ToastUtil.showToastShort(R.string.FailGetDataPleaseRestartApp,mContext);
+            }
+        });
     }
-    private void CreateFromMeasurePoint(){
+    private void CreateFromMeasurePoint(String TaskType){
         JsonObjectElement TaskEquipment=new JsonObjectElement(getIntent().getStringExtra("TaskEquipment"));
         device_num.setText(DataUtil.isDataElementNull(TaskEquipment.get(Equipment.ASSETSID)));
         equipmentName = DataUtil.isDataElementNull(TaskEquipment.get(Equipment.EQUIPMENT_NAME));
         device_name.getmEditText().setText(DataUtil.isDataElementNull(TaskEquipment.get(Equipment.EQUIPMENT_NAME)));
         equipmentID = DataUtil.isDataElementNull(TaskEquipment.get(Equipment.EQUIPMENT_ID));
         //TODO  现改为维修，待确认
-        task_type.setText(getResources().getString(R.string.maintenance));
+        task_type.setText(TaskType);
         //task_type.setText(getResources().getString(R.string.repair));
 
         getOrganiseNameAndEquipmentNameByEquipmentID(equipmentID);
+    }
+    private void CreateShuntingTask(String TaskType){
+        task_type.setText(TaskType);
+    }
+    private void CreateCarMovingTask(String TaskType){task_type.setText(TaskType);}
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        // TODO Auto-generated method stub
+        switch (requestCode)
+        {
+            case 1:
+                if (data != null)
+                {
+                    String result = data.getStringExtra("result");
+                    if (result != null){
+                        ToastUtil.showToastLong(result,mContext);
+                        getDataByICcardID(result);
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+    private void showDataSyncDialog(final int resId){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog.Builder builder=new AlertDialog.Builder(mContext);
+                builder.setMessage(resId);
+                builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        getDBDataLastUpdateTime();
+                    }
+                }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.show();
+            }
+        });
     }
 }
 

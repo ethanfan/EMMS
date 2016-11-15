@@ -37,6 +37,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.util.ArrayList;
+import java.util.jar.JarEntry;
 
 /**
  * Created by jaffer.deng on 2016/6/21.
@@ -106,6 +107,15 @@ public class PendingOrdersFragment extends BaseFragment{
                     convertView = LayoutInflater.from(mContext).inflate(R.layout.item_fr_pendingorder, parent, false);
                     holder = new TaskViewHolder();
                     holder.tv_creater = (TextView) convertView.findViewById(R.id.tv_creater_order);
+                    holder.tv_repair_time = (TextView) convertView.findViewById(R.id.target_group_tag);
+                    holder.tv_start_time = (TextView) convertView.findViewById(R.id.target_group);
+                    if(TaskClass.equals(Task.MOVE_CAR_TASK)){
+                        holder.tv_repair_time.setVisibility(View.VISIBLE);
+                        holder.tv_start_time.setVisibility(View.VISIBLE);
+                    }else {
+                        holder.tv_repair_time.setVisibility(View.GONE);
+                        holder.tv_start_time.setVisibility(View.GONE);
+                    }
                     if(TaskSubClass!=null){
                         convertView.findViewById(R.id.textView6).setVisibility(View.GONE);
                         holder.tv_creater.setVisibility(View.GONE);
@@ -134,7 +144,9 @@ public class PendingOrdersFragment extends BaseFragment{
                }else {
                    holder.tv_device_name.setText(R.string.NoEquipment);
                }
+
                 holder.tv_device_num.setText(DataUtil.isDataElementNull(datas.get(position).get("EquipmentAssetsIDList")));
+                holder.tv_start_time.setText(DataUtil.isDataElementNull(datas.get(position).get("TargetTeam")));
                 holder.acceptTaskButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -196,7 +208,7 @@ public class PendingOrdersFragment extends BaseFragment{
         }
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
-        HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
+        HttpUtils.get(mContext, "TaskAPI/GetTaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -208,7 +220,8 @@ public class PendingOrdersFragment extends BaseFragment{
                     if (pageIndex == 1) {
                         datas.clear();
                     }
-                    if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
+                    if(jsonObjectElement.get("PageData")!=null&& jsonObjectElement.get("PageData").isArray()
+                            &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
 
                         pageIndex++;
                         for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {

@@ -22,6 +22,7 @@
     </string-array>
     <string-array name="menu_list">
         <item>Create New Task</item>
+        <item>Scan QR Code</item>
         <item>Failure Summary</item>
         <item>Workload Input</item>
         <item>Sub Task</item>
@@ -29,6 +30,33 @@
         <item>Transfer Order</item>
         <item>Complete Task</item>
     </string-array>
+    <string-array name="menu_list_maintain">
+        <item>Create New Task</item>
+        <item>Scan QR Code</item>
+        <item>Workload Input</item>
+        <item>Sub Task</item>
+        <item>Invite Assistance</item>
+        <item>Transfer Order</item>
+        <item>Complete Task</item>
+    </string-array>
+
+    <string-array name="menu_list_move_car">
+        <item>Create New Task</item>
+        <item>Scan QR Code</item>
+        <item>Invite Assistance</item>
+        <item>Transfer Order</item>
+        <item>Complete Task</item>
+    </string-array>
+
+    <string-array name="menu_list_transfer_model">
+        <item>Create New Task</item>
+        <item>Scan QR Code</item>
+        <item>Failure Summary</item>
+        <item>Invite Assistance</item>
+        <item>Transfer Order</item>
+        <item>Complete Task</item>
+    </string-array>
+
     <string-array name="menu_login">
         <item>Set up</item>
         <item>Binding Equipment</item>

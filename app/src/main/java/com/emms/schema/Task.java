@@ -2,6 +2,7 @@ package com.emms.schema;
 
 /**
  * Created by Administrator on 2016/7/14.
+ *
  */
 public class Task {
     public static final String TASK_ID = "Task_ID";
@@ -19,7 +20,8 @@ public class Task {
     public static final String  TASK_STATUS= "DataName";
     public static final String  REPAIR_TASK= "T01";
     public static final String  MAINTAIN_TASK= "T02";
-    public static final String  MOVE_CAR_TASK= "T03";
+    public static final String  MOVE_CAR_TASK= "T05";
+    public static final String  TRANSFER_MODEL_TASK="T06";
     public static final String  OTHER_TASK= "T04";
     public static final String  ROUTING_INSPECTION="T0202";
     public static final String  UPKEEP="T0201";

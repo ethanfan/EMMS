@@ -58,6 +58,7 @@ import com.emms.ui.ChangeEquipmentDialog;
 import com.emms.ui.EquipmentSummaryDialog;
 import com.emms.ui.ExpandGridView;
 import com.emms.ui.HorizontalListView;
+import com.emms.ui.NFCDialog;
 import com.emms.ui.PopMenuTaskDetail;
 import com.emms.ui.ScrollViewWithListView;
 import com.emms.util.AnimateFirstDisplayListener;
@@ -136,6 +137,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private boolean HasTaskEquipment=true;
     private ArrayList<String> OrganiseList=new ArrayList<>();
     private String FromFragment;
+    private NFCDialog nfcDialog;
+    private boolean nfcDialogTag=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,6 +165,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 HasTaskEquipment = jsonObjectElement.get("IsExsitTaskEquipment").valueAsBoolean();
             }
             if(jsonObjectElement.get("OperatorOrganise_ID")!=null){
+                //OrganiseList任务创建人的所属组别
                 Collections.addAll(OrganiseList,DataUtil.isDataElementNull(jsonObjectElement.get("OperatorOrganise_ID")).split(","));
             }
         }
@@ -468,7 +472,12 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             ((TextView) findViewById(R.id.task_create_time)).setText(DataUtil.utc2Local(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT_TIME))));
             ((TextView) findViewById(R.id.task_creater)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT)));
             ((TextView) findViewById(R.id.task_description)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.TASK_DESCRIPTION)));
-            Main_person_in_charge_Operator_id = DataUtil.isDataElementNull(taskDetail.get("Operator_ID"));
+            ((TextView) findViewById(R.id.target_group)).setText(DataUtil.isDataElementNull(taskDetail.get("TargetTeam")));
+            if(TaskClass!=null&&TaskClass.equals(Task.MOVE_CAR_TASK)){
+                findViewById(R.id.target_group_tag).setVisibility(View.VISIBLE);
+                findViewById(R.id.target_group).setVisibility(View.VISIBLE);
+            }
+            Main_person_in_charge_Operator_id = DataUtil.isDataElementNull(taskDetail.get("MainOperator_ID"));
         }
         adapter = new GridAdapter(this);
 //        adapter.update1();
@@ -530,9 +539,42 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
 
             }
         };
+        nfcDialog=new NFCDialog(mContext) {
+            @Override
+            public void dismissAction() {
+                nfcDialogTag=false;
+            }
+
+            @Override
+            public void showAction() {
+                nfcDialogTag=true;
+            }
+        };
+        if (mAdapter!=null&&mAdapter.isEnabled()) {
+            popMenuTaskDetail.setHasNFC(true);
+        }
+        popMenuTaskDetail.setNfcDialog(nfcDialog);
         popMenuTaskDetail.setIs_Main_person_in_charge_Operator_id(RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id));
         String[] mTitles = getResources().getStringArray(R.array.menu_list);
-
+        if(TaskClass!=null) {
+            switch (TaskClass) {
+                case Task.MAINTAIN_TASK:{
+                    mTitles=getResources().getStringArray(R.array.menu_list_maintain);
+                    break;
+                }
+                case Task.MOVE_CAR_TASK:{
+                    mTitles=getResources().getStringArray(R.array.menu_list_move_car);
+                    break;
+                }
+                case Task.TRANSFER_MODEL_TASK:{
+                    mTitles=getResources().getStringArray(R.array.menu_list_move_car);
+                    break;
+                }
+                default:
+                    mTitles= getResources().getStringArray(R.array.menu_list);
+                    break;
+            }
+        }
         popMenuTaskDetail.addItems(mTitles);
         popMenuTaskDetail.setHasEquipment(HasTaskEquipment);
         if(TaskClass!=null&&!TaskClass.equals(Task.REPAIR_TASK)){
@@ -785,6 +827,19 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 if(resultCode==1){
                 setResult(2);
                 finish();
+                }
+                break;
+            }
+            case Constants.REQUEST_CODE_TASK_DETAIL_TO_CAPTURE_ACTIVITY:{
+                if(resultCode==Constants.RESULT_CODE_CAPTURE_ACTIVITY_TO_TASK_DETAIL){
+                    if (data != null)
+                    {
+                        String result = data.getStringExtra("result");
+                        if (result != null){
+                            ToastUtil.showToastLong(result,mContext);
+                            addTaskEquipment(result);
+                        }
+                    }
                 }
                 break;
             }
@@ -1048,26 +1103,63 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
                 || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-        if(isTaskHistory){
-                return;
-         }
-        if(TaskStatus!=1){
-            ToastUtil.showToastShort(R.string.OnlyDealingTaskCanAddEquipment,this);
-            return;
-        }
-        if(!HasTaskEquipment){
-            ToastUtil.showToastShort(R.string.error_add_equipment,mContext);
-            return;
-        }
             Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             String iccardID = NfcUtils.dumpTagData(tag);
+        if(nfcDialogTag){//搬车任务情况下，点击右上角菜单任务完成，显示扫卡对话框，并扫卡的情况下调用
+            showCustomDialog(R.string.submitData);
+            HttpParams params=new HttpParams();
+            JsonObjectElement submitData=new JsonObjectElement();
+            submitData.set("ICCardID",iccardID);
+            submitData.set(Task.TASK_ID,String.valueOf(taskId));
+            params.putJsonParams(submitData.toJson());
+            HttpUtils.post(mContext, "TaskOperatorAPI/CheckUserRoleForICCardID", params, new HttpCallback() {
+                @Override
+                public void onSuccess(String t) {
+                    super.onSuccess(t);
+                    dismissCustomDialog();
+                    if(t!=null){
+                        JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                        if(jsonObjectElement.get(Data.SUCCESS).valueAsBoolean()){
+                            ToastUtil.showToastShort(R.string.SuccessToCheckID,mContext);
+                            TaskComplete(jsonObjectElement.get(Data.PAGE_DATA));
+                        }else {
+                            ToastUtil.showToastShort(R.string.FailToCheckID,mContext);
+                        }
+                    }
+                    if(nfcDialog!=null&&nfcDialog.isShowing()){
+                        nfcDialog.dismiss();
+                    }
+                }
+
+                @Override
+                public void onFailure(int errorNo, String strMsg) {
+                    super.onFailure(errorNo, strMsg);
+                    ToastUtil.showToastShort(R.string.FailToCheckIDCauseByTimeOut,mContext);
+                    dismissCustomDialog();
+                }
+            });
+            return;
+        }
+            if(isTaskHistory){
+                return;
+            }
+            if(TaskStatus!=1){
+                ToastUtil.showToastShort(R.string.OnlyDealingTaskCanAddEquipment,this);
+                return;
+            }
+            if(!HasTaskEquipment){
+                ToastUtil.showToastShort(R.string.error_add_equipment,mContext);
+                return;
+            }
+
 
             addTaskEquipment(iccardID);
 
-//            MessageUtils.showToast(iccardID,this);
 
+//            MessageUtils.showToast(iccardID,this);
         }
     }
+
     private ChangeEquipmentDialog changeEquipmentDialog=null;
     private void addTaskEquipment(String iccardID) {
         if(getEquipmentListFail){
@@ -1177,7 +1269,6 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                             ToastUtil.showToastShort(R.string.NoEquipmentNum,mContext);
                         }
                     });
-
                 }
             }
 
@@ -1465,12 +1556,14 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         fault_type=(TextView)findViewById(R.id.fault_type);
         fault_description=(TextView)findViewById(R.id.fault_description);
         repair_status=(TextView)findViewById(R.id.repair_status);
+        //任务是已完成情况下调用，显示任务总结，工作量分配，任务评价模块
         if(TaskStatus>=2){
             findViewById(R.id.task_complete).setVisibility(View.VISIBLE);
             if(TaskClass.equals(Task.REPAIR_TASK)){
             findViewById(R.id.fault_summary).setVisibility(View.VISIBLE);
             getSummaryFromServer();
-            }else if(TaskClass.equals(Task.OTHER_TASK)){
+            }else if(TaskClass.equals(Task.OTHER_TASK)
+                    ||TaskClass.equals(Task.TRANSFER_MODEL_TASK)){
                 findViewById(R.id.fault_summary).setVisibility(View.VISIBLE);
                 ((TextView)findViewById(R.id.fault_title)).setText(R.string.task_summary);
                 ((TextView)findViewById(R.id.fault_description_tag)).setText(R.string.task_summary_tag);
@@ -1482,11 +1575,18 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             }
             //待权限
             //TODO
+            //如果角色为非报修人并且为非搬车或者非调车情况下显示工作量分配
             if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(mContext))!=7) {
-                initWorkload();
+                if ( TaskClass.equals(Task.MOVE_CAR_TASK)
+                        ||TaskClass.equals(Task.TRANSFER_MODEL_TASK)){
+                    findViewById(R.id.workload).setVisibility(View.GONE);
+                }else {
+                    initWorkload();
+                }
             }else {
                 findViewById(R.id.workload).setVisibility(View.GONE);
             }
+            //非维护任务显示任务评价
             if(TaskClass!=null&&!TaskClass.equals(Task.MAINTAIN_TASK)) {
                 findViewById(R.id.Command_layout).setVisibility(View.VISIBLE);
                 initTaskCommand();
@@ -1840,6 +1940,67 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 super.onFailure(errorNo, strMsg);
                 ToastUtil.showToastShort(R.string.failToChangeStatus,mContext);
                 dismissCustomDialog();
+            }
+        });
+    }
+    private void TaskComplete(final DataElement dataElement){
+        showCustomDialog(R.string.submitData);
+        HttpParams params=new HttpParams();
+        JsonObjectElement data=new JsonObjectElement();
+        data.set(Task.TASK_ID,String.valueOf(taskId));
+        params.putJsonParams(data.toJson());
+        HttpUtils.post(this, "TaskAPI/TaskFinish", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                if(t!=null){
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    if(jsonObjectElement.get("Success")!=null&&
+                            jsonObjectElement.get("Success").valueAsBoolean()){
+                        ToastUtil.showToastShort(R.string.taskComplete,mContext);
+                        AlertDialog.Builder builder=new AlertDialog.Builder(mContext);
+                        builder.setMessage(R.string.DoYouNeedToCreateAShuntingTask);
+                        builder.setCancelable(false);
+                        builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent=new Intent(mContext, CusActivity.class);
+                                intent.putExtra(Constants.FLAG_CREATE_SHUNTING_TASK,Constants.FLAG_CREATE_SHUNTING_TASK);
+                                if(dataElement!=null){
+                                    intent.putExtra("OperatorInfo",dataElement.toString());
+                                }
+                                mContext.startActivity(intent);
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mContext.startActivity(new Intent(mContext,CusActivity.class));
+                                dialog.dismiss();
+                            }
+                        });
+                        builder.show();
+                    }else {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ToastUtil.showToastShort(R.string.canNotSubmitTaskComplete,mContext);
+                            }
+                        });
+                    }
+                }
+                dismissCustomDialog();
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtil.showToastShort(R.string.submitFail,mContext);
+                    }
+                });
             }
         });
     }

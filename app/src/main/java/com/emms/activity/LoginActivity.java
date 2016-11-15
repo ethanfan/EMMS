@@ -21,29 +21,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.datastore_android_sdk.DatastoreException.DatastoreException;
-import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.ArrayElement;
-import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.datastore_android_sdk.rxvolley.toolbox.Loger;
-import com.emms.ConfigurationManager;
 import com.emms.R;
-import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.push.PushService;
-import com.emms.schema.BaseOrganise;
-import com.emms.schema.DataDictionary;
-import com.emms.schema.DataRelation;
-import com.emms.schema.DataType;
-import com.emms.schema.Equipment;
-import com.emms.schema.Language_Translation;
-import com.emms.schema.Languages;
 import com.emms.schema.Operator;
-import com.emms.schema.TaskOrganiseRelation;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.UserRoleDialog;
 import com.emms.util.BuildConfig;
@@ -73,7 +60,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     private EditText inputPassWord;
     private EditText inputname;
     private KProgressHUD hud;
-    private String def_Factory="GEW";
     //private ImageButton setting;
     private Handler pushHandler = PushService.mHandler;
     @Override
@@ -81,7 +67,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         if(SharedPreferenceManager.getFactory(this)==null){
-            SharedPreferenceManager.setFactory(this,def_Factory);
+            SharedPreferenceManager.setFactory(this, "GEW");
         }
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, new LinkedHashSet<>()));
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "All"));
@@ -101,10 +87,10 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     @Override
     protected void onRestart() {
         super.onRestart();
-        if(SharedPreferenceManager.getLanguageChange(this)){
+//        if(SharedPreferenceManager.getLanguageChange(this)){
             initView();
-            SharedPreferenceManager.setLanguageChange(this,false);
-        }
+//            SharedPreferenceManager.setLanguageChange(this,false);
+//        }
         //TODO 判断DB是否存在
         getNewDataFromServer();
     }
@@ -247,7 +233,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         }
        //final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".zip");
         //TODO 待修改
-        if(BuildConfig.endPoint==BuildConfig.ServerEndPoint.DEVELOPMENT){
+        if(BuildConfig.isDebug){
             final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".zip");
             if(dbFile.exists()){
                 try{
@@ -255,6 +241,10 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
                 }catch (Throwable e){
                     CrashReport.postCatchedException(e);
+                    if(dbFile.exists()&&dbFile.delete()){
+                        showErrorDownloadDatabaseDialog();
+                    }
+                    ToastUtil.showToastLong(R.string.FailToUnZipDB,mContext);
                 }
                 return;
             }
@@ -267,6 +257,10 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
                 }catch (Throwable e){
                     CrashReport.postCatchedException(e);
+                    if(dbFile.exists()&&dbFile.delete()){
+                        showErrorDownloadDatabaseDialog();
+                    }
+                    ToastUtil.showToastLong(R.string.FailToUnZipDB,mContext);
                 }
                 return;
             }
@@ -390,6 +384,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                showErrorDownloadDatabaseDialog();
             }
         });
     }
@@ -420,7 +415,13 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                showErrorDownloadDatabaseDialog();
+                if(dbFile.exists()) {
+                    if (dbFile.delete()) {
+                        showErrorDownloadDatabaseDialog();
+                    }
+                }else {
+                    showErrorDownloadDatabaseDialog();
+                }
                 //ToastUtil.showToastShort(R.string.loadingFail,mContext);
                 dismissCustomDialog();
             }

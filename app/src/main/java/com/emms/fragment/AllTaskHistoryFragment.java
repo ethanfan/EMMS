@@ -104,11 +104,21 @@ public class AllTaskHistoryFragment extends BaseFragment {
                     holder.tv_creater=(TextView)convertView.findViewById(R.id.command);
                     holder.tv_create_time=(TextView)convertView.findViewById(R.id.Task_Equipment);
                     holder.tv_device_num=(TextView)convertView.findViewById(R.id.Task_Equipment_Num);
+                    holder.tv_target_group=(TextView)convertView.findViewById(R.id.target_group);
+                    holder.tv_group=(TextView)convertView.findViewById(R.id.target_group_tag);
                     convertView.setTag(holder);
                 }else {
                     holder = (TaskViewHolder) convertView.getTag();
                 }
                 //  holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get("Organise_ID")));
+                if(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_CLASS)).equals(Task.MOVE_CAR_TASK)){
+                    holder.tv_target_group.setVisibility(View.VISIBLE);
+                    holder.tv_group.setVisibility(View.VISIBLE);
+                }else {
+                    holder.tv_target_group.setVisibility(View.GONE);
+                    holder.tv_group.setVisibility(View.GONE);
+                }
+                holder.tv_target_group.setText(DataUtil.isDataElementNull(data.get(position).get("TargetTeam")));
                 holder.tv_create_time.setText(DataUtil.isDataElementNull(data.get(position).get("EquipmentName")));
                 holder.tv_device_num.setText(DataUtil.isDataElementNull(data.get(position).get("EquipmentAssetsIDList")));
                // holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get(Task.ORGANISE_NAME)));
@@ -122,7 +132,7 @@ public class AllTaskHistoryFragment extends BaseFragment {
                 holder.tv_start_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.START_TIME))));
                 holder.tv_end_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.FINISH_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_DESCRIPTION)));
-                if(DataUtil.isDataElementNull(data.get(position).get("IsEvaluated")).equals("1")){
+                if(data.get(position).get("IsEvaluated").valueAsBoolean()){
                     holder.tv_creater.setText(getResources().getString(R.string.isCommand));
                     holder.tv_creater.setTextColor(getResources().getColor(R.color.order_color));
                 }else{
@@ -213,7 +223,7 @@ public class AllTaskHistoryFragment extends BaseFragment {
         objectElement.set("pageSize",PAGE_SIZE);
         objectElement.set("pageIndex",pageIndex);
         params.putJsonParams(objectElement.toJson());
-        HttpUtils.post(mContext, "TaskHistoryList", params, new HttpCallback() {
+        HttpUtils.post(mContext, "TaskAPI/TaskHistoryListGet", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

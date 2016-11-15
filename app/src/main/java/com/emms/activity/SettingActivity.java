@@ -31,6 +31,7 @@ import com.emms.schema.DataDictionary;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
+import com.emms.util.BaseData;
 import com.emms.util.BuildConfig;
 import com.emms.util.DataUtil;
 import com.emms.util.LocaleUtils;
@@ -233,6 +234,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                                     //SharedPreferenceManager.setLanguage(context,language.toString());
                                     LocaleUtils.setLanguage(SettingActivity.this, language);
                                     SharedPreferenceManager.setLanguageChange(SettingActivity.this,true);
+                                    BaseData.setBaseData(SettingActivity.this);
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {

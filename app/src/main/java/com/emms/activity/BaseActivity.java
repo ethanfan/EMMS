@@ -1,6 +1,7 @@
 package com.emms.activity;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,10 +25,13 @@ import com.emms.schema.Equipment;
 import com.emms.schema.Language_Translation;
 import com.emms.schema.Languages;
 import com.emms.schema.Operator;
+import com.emms.schema.TaskMessage;
 import com.emms.schema.TaskOrganiseRelation;
 import com.emms.ui.KProgressHUD;
+import com.emms.ui.LoadingDialog;
 import com.emms.util.DataUtil;
 import com.emms.util.SharedPreferenceManager;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -41,6 +45,7 @@ import cn.jpush.android.api.JPushInterface;
  */
 public abstract class BaseActivity extends AppCompatActivity {
     private KProgressHUD hud;
+    private LoadingDialog loadingDialog;
     protected void onResume() {
         super.onResume();
         JPushInterface.onResume(this);
@@ -58,8 +63,15 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        hud=KProgressHUD.create(this);
-
+          try {
+               if(Build.VERSION.SDK_INT>19) {
+                 hud = KProgressHUD.create(this);
+               }else {
+               loadingDialog = new LoadingDialog(this);
+               }
+          }catch (Throwable throwable){
+              CrashReport.postCatchedException(throwable);
+          }
     }
     protected SqliteStore getSqliteStore() {
         return ((AppApplication) getApplication()).getSqliteStore();
@@ -72,20 +84,20 @@ public abstract class BaseActivity extends AppCompatActivity {
             try {
                 operator = new Operator();
                 JsonObjectElement json = new JsonObjectElement(userData);
-                operator.setId(Long.valueOf(json.get("Operator_ID").valueAsString()));
-                operator.setTeamId(json.get("Team_ID").valueAsString());
-                operator.setTeamName(json.get("TeamName").valueAsString());
-                operator.setName(json.get("Name").valueAsString());
+                operator.setId(Long.valueOf(DataUtil.isDataElementNull(json.get("Operator_ID"))));
+                operator.setTeamId(DataUtil.isDataElementNull(json.get("Team_ID")));
+                operator.setTeamName(DataUtil.isDataElementNull(json.get("TeamName")));
+                operator.setName(DataUtil.isDataElementNull(json.get("Name")));
                 operator.setMaintenMan(json.get("IsMaintenMan").valueAsBoolean());
                // operator.setUserRole_ID(json.get("UserRole_ID").valueAsInt());
-                operator.setOrganiseID(json.get("Organise_ID").valueAsString());
-                operator.setOperator_no(json.get("OperatorNo").valueAsString());
+                operator.setOrganiseID(DataUtil.isDataElementNull(json.get("Organise_ID")));
+                operator.setOperator_no(DataUtil.isDataElementNull(json.get("OperatorNo")));
 //                operator = Operator.fromJson(userData, null, Operator.class);
-                JsonObjectElement objectElement=new JsonObjectElement(SharedPreferenceManager.getMsg(this));
-                operator.setUserRole_ID(objectElement.get("UserRole_ID").valueAsInt());
-                operator.setModuleList(objectElement.get("AppInterfaceList").valueAsString());
+//                JsonObjectElement objectElement=new JsonObjectElement(SharedPreferenceManager.getMsg(this));
+//                operator.setUserRole_ID(objectElement.get("UserRole_ID").valueAsInt());
+//                operator.setModuleList(DataUtil.isDataElementNull(objectElement.get("AppInterfaceList")));
             }catch (Exception e){
-                e.printStackTrace();
+                CrashReport.postCatchedException(e);
             }
         }
         return operator;
@@ -121,9 +133,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                 operator.setOrganiseID(json.get("Organise_ID").valueAsString());
                 operator.setOperator_no(json.get("OperatorNo").valueAsString());
 //              operator = Operator.fromJson(userData, null, Operator.class);
-                JsonObjectElement objectElement=new JsonObjectElement(SharedPreferenceManager.getMsg(this));
-                operator.setUserRole_ID(objectElement.get("UserRole_ID").valueAsInt());
-                operator.setModuleList(objectElement.get("AppInterfaceList").valueAsString());
+//                JsonObjectElement objectElement=new JsonObjectElement(SharedPreferenceManager.getMsg(this));
+//                operator.setUserRole_ID(objectElement.get("UserRole_ID").valueAsInt());
+//                operator.setModuleList(objectElement.get("AppInterfaceList").valueAsString());
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -137,14 +149,26 @@ public abstract class BaseActivity extends AppCompatActivity {
         return  hud;
     }
     public void showCustomDialog(int resId){
-        initCustomDialog(resId);
-        if(hud!=null&&!hud.isShowing()){
-            hud.show();
+        if(Build.VERSION.SDK_INT>19) {
+            initCustomDialog(resId);
+            if (hud != null && !hud.isShowing() && !isFinishing()) {
+                hud.show();
+            }
+        }else {
+            if (loadingDialog != null && !loadingDialog.isShowing()  && !isFinishing()) {
+                loadingDialog.show();
+            }
         }
     }
     public void dismissCustomDialog(){
-        if(hud!=null&&hud.isShowing()){
-            hud.dismiss();
+        if(Build.VERSION.SDK_INT>19) {
+            if (hud != null && hud.isShowing() && !isFinishing()) {
+                hud.dismiss();
+            }
+        }else {
+            if (loadingDialog != null && loadingDialog.isShowing()  && !isFinishing()) {
+                loadingDialog.dismiss();
+            }
         }
     }
     public void getDataBaseUpdateFromServer(DataElement dataElement){
@@ -159,6 +183,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         data.set("LastUpdateTime_DataRelation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataRelation")));
         data.set("LastUpdateTime_Language_Translation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_Language_Translation")));
         data.set("LastUpdateTime_Languages",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_Languages")));
+        data.set("LastUpdateTime_TaskMessage",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_TaskMessage")));
         if(SharedPreferenceManager.getFactory(this)==null){
             data.set("Factory_ID","GEW");}
         else {
@@ -168,7 +193,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         // params.put("sqlLiteDBModel",data.toJson());
         params.putJsonParams(data.toJson());
         showCustomDialog(R.string.loadingData);
-        HttpUtils.postWithoutCookie(this, "SqlToSqlite", params, new HttpCallback() {
+        HttpUtils.postWithoutCookie(this, "SqlToSqliteAPI/DBIncrementGet", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -214,6 +239,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                         if (json.get("Language_Translation") != null && json.get("Language_Translation").isArray() && json.get("Language_Translation").asArrayElement().size() > 0) {
                             Log.e("Language_Translation",String.valueOf(json.get("Language_Translation").asArrayElement().size()));
                             updateData(json.get("Language_Translation"), EPassSqliteStoreOpenHelper.SCHEMA_LANGUAGE_TRANSLATION);
+                        }
+                        if (json.get("TaskMessage") != null && json.get("TaskMessage").isArray() && json.get("TaskMessage").asArrayElement().size() > 0) {
+                            Log.e("TaskMessage",String.valueOf(json.get("TaskMessage").asArrayElement().size()));
+                            updateData(json.get("TaskMessage"), EPassSqliteStoreOpenHelper.SCHEMA_TASK_MESSAGE);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -277,6 +306,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                 }
                 case "Language_Translation":{
                     s= Language_Translation.TRANSLATION_ID;
+                    break;
+                }
+                case "TaskMessage":{
+                    s= TaskMessage.MESSAGE_ID;
                     break;
                 }
             }
@@ -346,11 +379,12 @@ public abstract class BaseActivity extends AppCompatActivity {
                 "    (select max(LastUpdateTime) LastUpdateTime_TaskOrganiseRelation from TaskOrganiseRelation),"+
                 "    (select max(LastUpdateTime) LastUpdateTime_DataRelation from DataRelation), "+
                 "    (select ifnull(max(LastUpdateTime),'0x0000000000000000') LastUpdateTime_Languages from Languages), "+
-                "    (select ifnull(max(LastUpdateTime),'0x0000000000000000') LastUpdateTime_Language_Translation from Language_Translation)";
+                "    (select ifnull(max(LastUpdateTime),'0x0000000000000000') LastUpdateTime_Language_Translation from Language_Translation),"+
+                "    (select ifnull(max(LastUpdateTime),'0x0000000000000000') LastUpdateTime_TaskMessage from TaskMessage)";
         getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
             @Override
             public void success(final DataElement element, String resource) {
-                ConfigurationManager.getInstance().startToGetNewConfig(getApplicationContext());
+                ConfigurationManager.getInstance().startToGetNewConfig(BaseActivity.this);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -361,7 +395,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
             @Override
             public void failure(DatastoreException ex, String resource) {
-                ConfigurationManager.getInstance().startToGetNewConfig(getApplicationContext());
+                ConfigurationManager.getInstance().startToGetNewConfig(BaseActivity.this);
             }
         });
     }

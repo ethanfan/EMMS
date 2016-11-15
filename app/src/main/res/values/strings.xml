@@ -18,6 +18,8 @@
     <string name="repair">维修</string>
     <string name="move_car">搬车</string>
     <string name="other">其它</string>
+    <string name="transfer_model">调车</string>
+    <string name="task_transfer_model">衣车调动</string>
     <string name="login">登录</string>
     <string name="systemSetting">系统设置</string>
     <string name="logining">登录中. . .</string>
@@ -71,6 +73,7 @@
     <string name="maintain_task">维护任务</string>
     <string name="move_car_task">搬车任务</string>
     <string name="other_task">其它任务</string>
+    <string name="transfer_model_task">调车任务</string>
     <string name="working">进行中</string>
     <string name="paused">已暂停</string>
     <string name="group_type">所属组别：</string>
@@ -170,7 +173,7 @@
     <string name="response_speed">响应速度：</string>
     <string name="service_attitude">服务态度：</string>
     <string name="repair_speed">维修速度：</string>
-    <string name="command_standard">评分标准：1-5星，5星最高</string>
+    <string name="command_standard">评分标准：1–5星，5星最高</string>
     <string name="waitingDeal">待处理</string>
     <string name="start">处理中</string>
     <string name="pause">暂停</string>
@@ -318,6 +321,7 @@
     <string name="canNotSubmitTaskCompleteCauseByTimeOut">无法提交任务完成，请检查网络</string>
     <string name="standardWorkload">标准工时:</string>
     <string name="NoCardDetail">无该卡信息</string>
+    <string name="NoCardDetailDoYouNeedToSyncData">无该扫描对象信息，是否需要进行数据同步?</string>
     <string name="NoOperatorGroup">未找到操作员的分组</string>
     <string name="NoFaultType">无故障类型数据</string>
     <string name="NoEquipmentDescription">无该设备的简要描述</string>
@@ -342,7 +346,7 @@
     <string name="FailCreateTaskCauseByTimeout">任务创建失败,连接超时</string>
     <string name="FailChangeEquipmentStatusCauseByTimeOut">修改设备状态失败,请检查网络</string>
     <string name="FailChangeEquipmentStatusCauseByOperator">修改设备状态失败,请检查参与人状态</string>
-    <string name="FailToScanEquipment">该设备不属于所选组别,不允许添加</string>
+    <string name="FailToScanEquipment">该设备不属于所选组别,是否需要进行数据同步?</string>
     <string name="FailGetTaskOperatorListCauseByTimeOut">获取任务参与人状态列表失败，请检查网络</string>
     <string name="FailGetMeasurePointListCauseByTimeOut">获取测点列表失败，请检查网络</string>
     <string name="FailGetTaskListCauseByTimeOut">获取任务列表失败，请检查网络</string>
@@ -395,8 +399,7 @@
     <string name="empty_tips">空空如也╮(╯▽╰)╭</string>
     <string name="error_tips">加载失败╮(╯▽╰)╭</string>
     <string name="error_refresh">点击重试</string>
-    <string name="loading_tips">正在加载...</string>
-
+    <string name="loading_tips">正在加载…</string>
     <string name="txt_show_data">显示数据页面</string>
     <string name="txt_show_empty">显示数据为空页面</string>
     <string name="txt_show_error">显示加载错误页面</string>
@@ -481,4 +484,29 @@
     <string name="busy">忙</string>
     <string name="process">处理中</string>
     <string name="Update">立即更新</string>
+    <string name="target_group">目标车间:</string>
+    <string name="target_group_tag">目标车间：</string>
+    <string name="title_target_group">目标车间</string>
+    <string name="pleaseSelectTargetGroup">请选择目标车间</string>
+    <string name="menu_list_create_task">发起新任务</string>
+    <string name="menu_list_fault_summary">故障总结</string>
+    <string name="menu_list_workload_input">工作量录入</string>
+    <string name="menu_list_sub_task_manage">子任务管理</string>
+    <string name="menu_list_invite_help">邀请协助</string>
+    <string name="menu_list_transfer_order">转单</string>
+    <string name="menu_list_task_complete">完成任务</string>
+    <string name="pleaseSwipeICcardToMakeSureTaskComplete">请目标车间人员刷卡确认任务完成</string>
+    <string name="SuccessToCheckID">身份验证通过,正在提交任务完成</string>
+    <string name="FailToCheckID">身份验证失败，请检查信息</string>
+    <string name="FailToCheckIDCauseByTimeOut">身份验证失败，请检查网络</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="msg_default_status">将二维码放入框内，即可自动扫描</string>
+    <string name="sacn_qr_code">扫二维码</string>
+    <string name="account">账号:</string>
+    <string name="password">密码:</string>
+    <string name="pleaseInputAccoutAndPasswordToMakeSureTaskComplete">请输入账号密码确认任务完成</string>
+    <string name="DoYouNeedToCreateAShuntingTask">是否需要创建调车任务?</string>
+    <string name="DoYouNeedToCreateACarMovingTask">是否需要创建搬车任务?</string>
+    <string name="FailToUnZipDB">数据文件解析异常，请重新下载</string>
 </resources>

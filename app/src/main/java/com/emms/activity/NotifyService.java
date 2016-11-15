@@ -128,7 +128,7 @@ public class NotifyService extends Service {
     }
     //发送Notification
     private void sendNotification(){
-        Intent resultIntent=new Intent(this,MainActivity.class);
+        Intent resultIntent=new Intent(this,CusActivity.class);
         resultIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent=PendingIntent.getActivity(this,0,resultIntent,PendingIntent.FLAG_UPDATE_CURRENT);
         Bitmap bitmap= BitmapFactory.decodeResource(getResources(), R.mipmap.star_selected);

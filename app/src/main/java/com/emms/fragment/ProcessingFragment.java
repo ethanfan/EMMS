@@ -107,6 +107,15 @@ public class ProcessingFragment extends BaseFragment {
 
                     holder.tv_group = (TextView) convertView.findViewById(R.id.group);
                     holder.warranty_person=(TextView)convertView.findViewById(R.id.Warranty_person);
+                    holder.tv_task_state = (TextView) convertView.findViewById(R.id.target_group_tag);
+                    holder.tv_device_name = (TextView) convertView.findViewById(R.id.target_group);
+                    if(TaskClass.equals(Task.MOVE_CAR_TASK)){
+                        holder.tv_task_state.setVisibility(View.VISIBLE);
+                        holder.tv_device_name.setVisibility(View.VISIBLE);
+                    }else {
+                        holder.tv_task_state.setVisibility(View.GONE);
+                        holder.tv_device_name.setVisibility(View.GONE);
+                    }
                     if(TaskSubClass!=null){
                         convertView.findViewById(R.id.Warranty_person_tag).setVisibility(View.GONE);
                         holder.warranty_person.setVisibility(View.GONE);
@@ -134,6 +143,7 @@ public class ProcessingFragment extends BaseFragment {
                 holder.tv_repair_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get(Task.APPLICANT_TIME))));
                 holder.tv_start_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get(Task.START_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_DESCRIPTION)));
+                holder.tv_device_name.setText(DataUtil.isDataElementNull(datas.get(position).get("TargetTeam")));
                 return convertView;
             }
         };
@@ -186,7 +196,7 @@ public class ProcessingFragment extends BaseFragment {
         }
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
-        HttpUtils.get(mContext, "TaskList", params, new HttpCallback() {
+        HttpUtils.get(mContext, "TaskAPI/GetTaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -202,7 +212,7 @@ public class ProcessingFragment extends BaseFragment {
                     }
                     if(taskNumInteface!=null){
                         taskNumInteface.ChangeTaskNumListener(0,RecCount);}
-                    if(jsonObjectElement.get("PageData")!=null
+                    if(jsonObjectElement.get("PageData")!=null &&jsonObjectElement.get("PageData").isArray()
                             &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
 
                         pageIndex++;

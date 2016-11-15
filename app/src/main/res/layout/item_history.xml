@@ -138,6 +138,29 @@
             android:layout_alignTop="@+id/id_Warranty_time_description"
             android:layout_toRightOf="@+id/id_Warranty_time_description"
             android:textSize="17sp"/>
+
+        <TextView
+            android:id="@+id/target_group_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/target_group_tag"
+            android:textColor="@color/text_color"
+            android:layout_below="@+id/id_Warranty_time_description"
+            android:layout_alignRight="@+id/Task_Equipment_Num_tag"
+            android:visibility="gone"
+            android:textSize="17sp"/>
+
+        <TextView
+            android:id="@+id/target_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color"
+            android:layout_alignTop="@+id/target_group_tag"
+            android:layout_toRightOf="@+id/target_group_tag"
+            android:visibility="gone"
+            android:textSize="17sp"/>
+
         <TextView
             android:id="@+id/tv_task_class_tag"
             android:layout_width="wrap_content"
@@ -145,7 +168,7 @@
             android:layout_marginTop="5dp"
             android:text="@string/task_t"
             android:textColor="@color/text_color"
-            android:layout_below="@+id/id_Warranty_time_description"
+            android:layout_below="@+id/target_group_tag"
             android:layout_alignRight="@+id/Task_Equipment_Num_tag"
             android:textSize="17sp"/>
 

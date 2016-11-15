@@ -42,6 +42,28 @@
         android:layout_toRightOf="@+id/textView8"
         android:layout_alignTop="@+id/textView8"
         android:id="@+id/task_group" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/target_group_tag"
+        android:layout_marginTop="5dp"
+        android:textColor="@color/text_color"
+        android:layout_below="@+id/textView8"
+        android:visibility="gone"
+        android:layout_alignRight="@+id/textView16"
+        android:textSize="17sp"
+        android:id="@+id/target_group_tag" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="17sp"
+        android:visibility="gone"
+        android:layout_toRightOf="@+id/target_group_tag"
+        android:layout_alignTop="@+id/target_group_tag"
+        android:id="@+id/target_group" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -67,7 +89,7 @@
         android:textSize="17sp"
         android:layout_marginTop="5dp"
         android:text="@string/issue_time"
-        android:layout_below="@+id/textView8"
+        android:layout_below="@+id/target_group_tag"
         android:layout_alignRight="@+id/textView16"
         android:id="@+id/textView14" />
     <TextView

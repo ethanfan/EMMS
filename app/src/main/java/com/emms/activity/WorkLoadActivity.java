@@ -39,9 +39,9 @@ public class WorkLoadActivity extends NfcActivity{
     private Context context=this;
     private WorkloadAdapter workloadAdapter;
     private ArrayList<ObjectElement> datas=new ArrayList<>();
-    private HashMap<Integer,EditText> workloadMap=new HashMap<>();
+   // private HashMap<Integer,EditText> workloadMap=new HashMap<>();
     private boolean TaskComplete=false;
-    private ArrayList<Integer> workloadKeylist=new ArrayList<>();
+  //  private ArrayList<Integer> workloadKeylist=new ArrayList<>();
  //   private HashMap<Integer,String> workloadEditTextNum=new HashMap<Integer, String>();
     private String TaskClass;
     @Override
@@ -80,7 +80,7 @@ public class WorkLoadActivity extends NfcActivity{
             @Override
             public View getCustomView(View convertView, final int position, ViewGroup parent) {
                 final WorkloadAdapter.ViewHolder holder;
-               // if (convertView == null) {
+                if (convertView == null) {
                     convertView = LayoutInflater.from(context).inflate(R.layout.item_workload_activity, parent, false);
                     holder = new WorkloadAdapter.ViewHolder();
                     holder.name=(TextView)convertView.findViewById(R.id.name) ;
@@ -88,55 +88,49 @@ public class WorkLoadActivity extends NfcActivity{
                     holder.startTime=(TextView)convertView.findViewById(R.id.start_time);
                    // holder.endTime=(TextView)convertView.findViewById(R.id.end_time) ;
                     holder.workload=(EditText)convertView.findViewById(R.id.workload) ;
+                    holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Work")));
+                    holder.etTextChanged = new WorkloadAdapter.EtTextChanged(position);
+                    holder.workload.addTextChangedListener(holder.etTextChanged);
                     holder.workload.setInputType(EditorInfo.TYPE_CLASS_PHONE);
                     convertView.setTag(holder);
-//                } else {
-//                    holder = (WorkloadAdapter.ViewHolder) convertView.getTag();
-//                }
+                } else {
+                    holder = (WorkloadAdapter.ViewHolder) convertView.getTag();
+                }
+                holder.etTextChanged.setPosition(position);
                 holder.name.setText(DataUtil.isDataElementNull(datas.get(position).get("OperatorName")));
                 holder.skill.setText(DataUtil.isDataElementNull(datas.get(position).get("Skill")));
                 holder.startTime.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(datas.get(position).get("StartTime"))));
                 //holder.endTime.setText(DataUtil.getDate(DataUtil.isDataElementNull(datas.get(position).get("FinishTime"))));
-                if(DataUtil.isFloat(DataUtil.isDataElementNull(datas.get(position).get("Coefficient")))){
-                    if(  !(((int)(Float.parseFloat(DataUtil.isDataElementNull(datas.get(position).get("Coefficient")))*100))==0)    ){
-                        holder.workload.setText(String.valueOf( (int)(Float.valueOf(DataUtil.isDataElementNull(datas.get(position).get("Coefficient"))) * 100)));
-                        datas.get(position).set("Work",DataUtil.isDataElementNull(datas.get(position).get("Coefficient")));
-                    }
-                }
-                if(datas.get(position).get("Work")!=null){
-                if(DataUtil.isFloat(DataUtil.isDataElementNull(datas.get(position).get("Work")))){
-                        holder.workload.setText(String.valueOf((int) (Float.valueOf(DataUtil.isDataElementNull(datas.get(position).get("Work"))) * 100)));
-                }else {
-                    holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Work")));
-                }}
-                workloadMap.put(position,holder.workload);
+                holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Work")));
+
+                //workloadMap.put(position,holder.workload);
 //               if(datas.get(position).get("Workload")!=null){
 //                   holder.workload.setText(DataUtil.isDataElementNull(datas.get(position).get("Workload")));
 //                }
 //                if(workloadEditTextNum.get(position)!=null){
 //                    holder.workload.setText(workloadEditTextNum.get(position));
 //                }
-                holder.workload.addTextChangedListener(new TextWatcher() {
-                   @Override
-                   public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                   }
-
-                   @Override
-                   public void onTextChanged(CharSequence s, int start, int before, int count) {
-                          //if(s.toString().
-                   }
-
-                   @Override
-                   public void afterTextChanged(Editable s) {
-                       if(DataUtil.isInt(s.toString())){
-                              datas.get(position).set("Work",Float.parseFloat(s.toString())/100.0f);
-                       }else{
-                           datas.get(position).set("Work",s.toString());
-                       }
-                      // workloadEditTextNum.put(position,holder.workload.getText().toString());
-                   }
-               });
+//                holder.workload.addTextChangedListener(new TextWatcher() {
+//                   @Override
+//                   public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//                   }
+//
+//                   @Override
+//                   public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                          //if(s.toString().
+//                   }
+//
+//                   @Override
+//                   public void afterTextChanged(Editable s) {
+//                       if(DataUtil.isInt(s.toString())){
+//                              datas.get(position).set("Work",Float.parseFloat(s.toString())/100.0f);
+//                       }else{
+//                           datas.get(position).set("Work",s.toString());
+//                       }
+//                      // workloadEditTextNum.put(position,holder.workload.getText().toString());
+//                   }
+//               });
                 return convertView;
             }
 
@@ -201,10 +195,17 @@ public class WorkLoadActivity extends NfcActivity{
         total_worktime.setText(s);
         if(ViewData.get("TaskOperator")!=null&&ViewData.get("TaskOperator").isArray()&&ViewData.get("TaskOperator").asArrayElement().size()>0) {
                 for (int i = 0; i < ViewData.get("TaskOperator").asArrayElement().size(); i++) {
-                    datas.add(ViewData.get("TaskOperator").asArrayElement().get(i).asObjectElement());
+                    ObjectElement objectElement=ViewData.get("TaskOperator").asArrayElement().get(i).asObjectElement();
+                    if(DataUtil.isFloat(DataUtil.isDataElementNull(objectElement.get("Coefficient")))){
+                        if(  !(((int)(Float.parseFloat(DataUtil.isDataElementNull(objectElement.get("Coefficient")))*100))==0)    ){
+                            objectElement.set("Work",(int)(Float.parseFloat(DataUtil.isDataElementNull(objectElement.get("Coefficient")))*100));
+                        }
+                    }
+                    objectElement.set("Tag",true);
+                    datas.add(objectElement);
                 }
             if(datas.size()==1){
-                datas.get(0).set("Coefficient",1.0);
+                datas.get(0).set("Work",100);
             }
             workloadAdapter.notifyDataSetChanged();
        /*     workloadAdapter.unregisterDataSetObserver(new DataSetObserver() {
@@ -217,22 +218,35 @@ public class WorkLoadActivity extends NfcActivity{
         }
     }
     private void submitWorkLoadToServer(){
-        workloadKeylist.clear();
-        workloadKeylist.addAll(workloadMap.keySet());
+//        workloadKeylist.clear();
+//        workloadKeylist.addAll(workloadMap.keySet());
 
         int sum=0;
-        for(int i=0;i<workloadKeylist.size();i++){
-            if(workloadMap.get(workloadKeylist.get(i)).getText().toString().equals("")){
+//        for(int i=0;i<workloadKeylist.size();i++){
+//            if(workloadMap.get(workloadKeylist.get(i)).getText().toString().equals("")){
+//                ToastUtil.showToastShort(R.string.pleaseInputWorkload,this);
+//                return;
+//            }
+//            if(    !DataUtil.isNum(workloadMap.get(workloadKeylist.get(i)).getText().toString())
+//                   || !DataUtil.isInt(workloadMap.get(workloadKeylist.get(i)).getText().toString())
+//                   ||  Integer.parseInt(workloadMap.get(workloadKeylist.get(i)).getText().toString())<0 ){
+//                ToastUtil.showToastShort(R.string.pleaseInputInteger,this);
+//                return;
+//            }
+//            sum+=Integer.valueOf(workloadMap.get(workloadKeylist.get(i)).getText().toString());
+//        }
+        for(int i=0;i<datas.size();i++){
+           if(DataUtil.isDataElementNull(datas.get(i).get("Work")).equals("")){
                 ToastUtil.showToastShort(R.string.pleaseInputWorkload,this);
                 return;
             }
-            if(    !DataUtil.isNum(workloadMap.get(workloadKeylist.get(i)).getText().toString())
-                   || !DataUtil.isInt(workloadMap.get(workloadKeylist.get(i)).getText().toString())
-                   ||  Integer.parseInt(workloadMap.get(workloadKeylist.get(i)).getText().toString())<0 ){
+            if(    !DataUtil.isNum(DataUtil.isDataElementNull(datas.get(i).get("Work")))
+                   || !DataUtil.isInt(DataUtil.isDataElementNull(datas.get(i).get("Work")))
+                   ||  Integer.parseInt(DataUtil.isDataElementNull(datas.get(i).get("Work")))<0 ){
                 ToastUtil.showToastShort(R.string.pleaseInputInteger,this);
                 return;
             }
-            sum+=Integer.valueOf(workloadMap.get(workloadKeylist.get(i)).getText().toString());
+            sum+=Integer.valueOf(DataUtil.isDataElementNull(datas.get(i).get("Work")));
         }
         if(sum!=100){
             ToastUtil.showToastShort(R.string.judgeWorkloadSum,this);
@@ -246,7 +260,7 @@ public class WorkLoadActivity extends NfcActivity{
           ObjectElement obj=workloadAdapter.getDatas().get(i);
           JsonObjectElement jsonObjectElement=new JsonObjectElement();
           jsonObjectElement.set("TaskOperator_ID", DataUtil.isDataElementNull(obj.get("TaskOperator_ID")));
-          jsonObjectElement.set("Coefficient",Float.valueOf(DataUtil.isDataElementNull(obj.get("Work"))));
+          jsonObjectElement.set("Coefficient",Float.valueOf(DataUtil.isDataElementNull(obj.get("Work")))/100.0f);
           submitWorkloadData.add(jsonObjectElement);
       }
         JsonArrayElement submitData=new JsonArrayElement(submitWorkloadData.toString());
@@ -304,7 +318,7 @@ public class WorkLoadActivity extends NfcActivity{
         JsonObjectElement data=new JsonObjectElement();
         data.set(Task.TASK_ID,task_id.getText().toString());
         params.putJsonParams(data.toJson());
-        HttpUtils.post(this, "TaskFinish", params, new HttpCallback() {
+        HttpUtils.post(this, "TaskAPI/TaskFinish", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 if(t!=null){

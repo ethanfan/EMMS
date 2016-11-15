@@ -187,6 +187,40 @@
                             drop:hintColor="@color/hint_color" />
 
                     </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="16dp"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone"
+                        android:id="@+id/target_group_layout"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginRight="8dp"
+                            android:layout_weight="1.6"
+                            android:gravity="end"
+                            android:text="@string/target_group"
+                            android:id="@+id/target_organise"
+                            android:textColor="@color/text_color"
+                            android:textSize="18sp" />
+
+                        <com.emms.ui.DropEditText
+                            android:id="@+id/target_group"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            drop:drawableRight="@mipmap/drop_down"
+                            drop:dropMode="flow_parent"
+                            drop:hint="@string/select"
+                            drop:hintColor="@color/hint_color" />
+
+                    </LinearLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -383,6 +417,8 @@
                             android:minHeight="40dip"
                             android:textColor="@color/text_color"
                             android:hint="@string/task_description_hint"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp"
                             android:background="@color/transparent"
                             android:id="@+id/task_description"
                             >

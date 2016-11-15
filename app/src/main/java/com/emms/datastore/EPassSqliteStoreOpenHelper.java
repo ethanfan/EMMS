@@ -15,6 +15,7 @@ import com.emms.schema.Language_Translation;
 import com.emms.schema.Languages;
 import com.emms.schema.Maintain;
 import com.emms.schema.Operator;
+import com.emms.schema.TaskMessage;
 import com.emms.schema.TaskOrganiseRelation;
 import com.emms.schema.Team;
 import com.emms.schema.TeamService;
@@ -69,7 +70,8 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 			Languages.class).getTableName();
 	public static final String SCHEMA_LANGUAGE_TRANSLATION=Schema.getAttributes(
 			Language_Translation.class).getTableName();
-
+	public static final String SCHEMA_TASK_MESSAGE=Schema.getAttributes(
+			TaskMessage.class).getTableName();
 
 	/**
 	 * A HashMap store a key pair a schema object class.
@@ -154,6 +156,7 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 		schema.put(SCHEMA_DATA_RELATION,DataRelation.class);
 		schema.put(SCHEMA_LANGUAGES,Languages.class);
 		schema.put(SCHEMA_LANGUAGE_TRANSLATION,Language_Translation.class);
+		schema.put(SCHEMA_TASK_MESSAGE,TaskMessage.class);
 	}
 
 }
