@@ -25,4 +25,5 @@ public class Task {
     public static final String  OTHER_TASK= "T04";
     public static final String  ROUTING_INSPECTION="T0202";
     public static final String  UPKEEP="T0201";
+    public static final String  GROUP_ARRANGEMENT="T07";
 }

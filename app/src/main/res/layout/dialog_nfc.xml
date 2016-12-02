@@ -1,20 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="320dp"
-    android:layout_height="210dp"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/white">
     <TextView
         android:layout_marginTop="30dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/text_color"
-        android:layout_gravity="center_horizontal"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/title"
+        android:gravity="center"
+        android:textSize="17sp"
         android:text="@string/pleaseSwipeICcardToMakeSureTaskComplete"/>
-    <ImageView
-        android:id="@+id/scan"
-        android:layout_gravity="center"
+    <!--<ImageView-->
+        <!--android:id="@+id/scan"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="30dp"-->
+        <!--android:src="@mipmap/swiping_card"-->
+        <!--android:layout_marginTop="50dp"/>-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="30dp"
+        android:layout_below="@+id/title">
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/swiping_card"
-        android:layout_marginTop="50dp"/>
-</LinearLayout>
+        android:text="@string/scan"
+        android:id="@+id/scan"
+        android:gravity="center"
+        android:textColor="@color/esquel_red"
+        android:layout_centerInParent="true"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/scan"
+        android:src="@mipmap/swiping_card_left"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/scan"
+        android:src="@mipmap/swiping_card_right"/>
+    </RelativeLayout>
+</RelativeLayout>

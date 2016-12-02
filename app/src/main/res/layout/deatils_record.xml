@@ -98,6 +98,7 @@
         android:textColor="@color/text_color"
         android:id="@+id/task_create_time"
         android:textSize="17sp"
+        android:singleLine="true"
         android:layout_alignTop="@+id/textView14"
         android:layout_toRightOf="@+id/textView14" />
     <TextView
@@ -116,6 +117,7 @@
         android:textColor="@color/text_color"
         android:id="@+id/task_start_time"
         android:textSize="17sp"
+        android:singleLine="true"
         android:layout_alignTop="@+id/textView15"
         android:layout_toRightOf="@+id/textView15" />
     <TextView

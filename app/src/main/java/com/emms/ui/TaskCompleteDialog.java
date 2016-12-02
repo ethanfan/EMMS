@@ -24,6 +24,7 @@ import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.util.Constants;
+import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 
 /**
@@ -151,6 +152,9 @@ public class TaskCompleteDialog extends Dialog {
                                 if(dataElement!=null){
                                     intent.putExtra("OperatorInfo",dataElement.toString());
                                 }
+
+                                intent.putExtra("FromTask_ID",
+                                        Task_ID);
                                 context.startActivity(intent);
                             }
                         }).setNegativeButton(R.string.cancel, new OnClickListener() {

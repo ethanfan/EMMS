@@ -1,12 +1,16 @@
 package com.emms.activity;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,10 +22,14 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.DatastoreException.DatastoreException;
+import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.ArrayElement;
+import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
@@ -30,6 +38,7 @@ import com.datastore_android_sdk.rxvolley.toolbox.Loger;
 import com.emms.R;
 import com.emms.httputils.HttpUtils;
 import com.emms.push.PushService;
+import com.emms.schema.Data;
 import com.emms.schema.Operator;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.UserRoleDialog;
@@ -37,6 +46,7 @@ import com.emms.util.BuildConfig;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.DownloadCallback;
+import com.emms.util.LocaleUtils;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.tencent.bugly.crashreport.CrashReport;
@@ -61,7 +71,10 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     private EditText inputname;
     private KProgressHUD hud;
     //private ImageButton setting;
+    private static final String FILE_NAME = "emms.apk";
     private Handler pushHandler = PushService.mHandler;
+    private final int DBVersion=2;//需要进行DB更新的时候+1
+    private AlertDialog dialog ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,20 +83,57 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             SharedPreferenceManager.setFactory(this, "GEW");
         }
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, new LinkedHashSet<>()));
-        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, "All"));
-        JPushInterface.init(mContext);
+        pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, ""));
         setStyleCustom();
+
         //init();
         initView();
         //  registerMessageReceiver();
-       if(!getIntent().getBooleanExtra("FromCusActivity",false)) {
-           getNewDataFromServer();
-       }
-        if (mAdapter!=null&&!mAdapter.isEnabled()) {
-            showWirelessSettingsDialog();
-        }
-    }
+        showCustomDialog(R.string.loadingData);
+        HttpParams httpParams=new HttpParams();
+        HttpUtils.getWithoutCookies(mContext, "System_Version/GetAppDownloadInfo", httpParams, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                dismissCustomDialog();
+                if(t!=null) {
+                    handleVersionUpdate(mContext, t);
+                }
+            }
 
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
+                DoInit();
+            }
+        });
+
+    }
+   private void DoInit(){
+       runOnUiThread(new Runnable() {
+           @Override
+           public void run() {
+               if(!getIntent().getBooleanExtra("FromCusActivity", false)) {
+                   if(SharedPreferenceManager.getDatabaseVersion(mContext)!=null&&Integer.valueOf(SharedPreferenceManager.getDatabaseVersion(mContext))<DBVersion){
+                       if(BuildConfig.isDebug){
+                           final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(mContext)+".zip");
+                           getDBFromServer(dbFile);
+                       }
+                       else {
+                           final File dbFile = new File(getExternalFilesDir(null), "/EMMS.zip");
+                           getDBFromServer(dbFile);
+                       }
+                   }else {
+                       getNewDataFromServer();
+                   }
+               }
+               if (mAdapter!=null&&!mAdapter.isEnabled()) {
+                   showWirelessSettingsDialog();
+               }
+           }
+       });
+   }
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -266,54 +316,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             }
             getDBFromServer(dbFile);
         }
-//        final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".zip");
-//           if(dbFile.exists()){
-//               try{
-//                   //解压db文件
-//                   HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);}catch (Exception e){
-//               }
-//             return;
-//          }
-//        getDBFromServer(dbFile);
-
-       // String savepath = dbFile.getParentFile().getAbsolutePath();
-      /*  new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-                HttpUtils.downloadData(dbFile, "",LoginActivity.this);
-                Looper.loop();
-            }
-        }).start();*/
-      //  HttpUtils.downloadData(dbFile, "");
-  /*      final RelativeLayout progress=(RelativeLayout)findViewById(R.id.downloadProgress);
-        progress.setVisibility(View.VISIBLE);
-        HttpUtils.download(LoginActivity.this, savepath, BuildConfig.getConfigurationDownload(), new ProgressListener() {
-            @Override
-            public void onProgress(long transferredBytes, long totalSize) {
-                int a=(int)totalSize;
-                ((ProgressBar)findViewById(R.id.progress)).setProgress((int)transferredBytes/(int)totalSize);
-                if(transferredBytes>=totalSize){
-                    progress.setVisibility(View.GONE);
-                }
-            }
-        }, new HttpCallback() {
-            @Override
-            public void onSuccessInAsync(byte[] t) {
-                super.onSuccessInAsync(t);
-            }
-
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-            }
-
-            @Override
-            public void onFailure(VolleyError error) {
-                super.onFailure(error);
-            }
-        });
-    }*/
     }
 
     @Override
@@ -370,26 +372,29 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     }
     private void getDBFromServer(final File dbFile){
         // 下载Db文件
+     showCustomDialog(R.string.DownloadDataBase);
      HttpParams params=new HttpParams();
-        params.put("factory",SharedPreferenceManager.getFactory(this));
-        HttpUtils.getWithoutCookies(this, "SqlToSqlite", params, new HttpCallback() {
+        params.put("factory",SharedPreferenceManager.getFactory(this)==null?"GEW":SharedPreferenceManager.getFactory(this));
+            HttpUtils.getWithoutCookies(this, "SqlToSqliteAPI/GetDBDownloadUrl", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
               if(t!=null){
-                  JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                  JsonObjectElement jsonObjectElement=new JsonObjectElement(t.trim());
                   downloadDB(dbFile,DataUtil.isDataElementNull(jsonObjectElement.get("DownloadUrl")));
+              }else {
+                  dismissCustomDialog();
               }
             }
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 showErrorDownloadDatabaseDialog();
+                dismissCustomDialog();
             }
         });
     }
     private void downloadDB(final File dbFile,String url){
-        showCustomDialog(R.string.DownloadDataBase);
         HttpUtils.download(this, dbFile.getAbsolutePath(), url, null, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -399,6 +404,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     fileUtil.upZipFile(dbFile, dbFile.getParentFile().getAbsolutePath(), mContext, new DownloadCallback() {
                         @Override
                         public void success(boolean hasUpdate) {
+                            SharedPreferenceManager.setDatabaseVersion(mContext,String.valueOf(DBVersion));
                             getDBDataLastUpdateTime();
                         }
                         @Override
@@ -407,9 +413,10 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     });
                 }catch (Exception e){
                     Log.e("","");
+                }finally {
+                    dismissCustomDialog();
+                    ToastUtil.showToastShort(R.string.SuccessDownloadDB,mContext);
                 }
-                dismissCustomDialog();
-                ToastUtil.showToastShort(R.string.SuccessDownloadDB,mContext);
             }
 
             @Override
@@ -536,6 +543,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
           }
     }
     private void SetRole(ObjectElement objectElement,String data){
+
         SharedPreferenceManager.setUserRoleID(mContext,DataUtil.isDataElementNull(objectElement.get("UserRole_ID")));
         SharedPreferenceManager.setUserModuleList(mContext,DataUtil.isDataElementNull(objectElement.get("AppInterfaceList")));
         Intent intent=new Intent(LoginActivity.this,CusActivity.class);
@@ -564,5 +572,140 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 });
         builder.setCancelable(false);
         builder.show();
+    }
+    public void handleVersionUpdate(final Context context, String element) {
+        JsonObjectElement json=new JsonObjectElement(element);
+        final ObjectElement data=json.get(Data.PAGE_DATA).asArrayElement().get(0).asObjectElement();
+        int version=data.get("Version").valueAsInt();
+        try {
+            PackageInfo packageInfo=context.getPackageManager().getPackageInfo(
+                    context.getPackageName(), 0);
+            int CurrentVersion=packageInfo.versionCode;
+            if(CurrentVersion<version){
+                if (data.get("Content") != null && data.get("Content").isPrimitive()) {
+                    if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH
+                            || LocaleUtils.SupportedLanguage.getSupportedLanguage(context.getResources().getConfiguration().locale.getLanguage())==LocaleUtils.SupportedLanguage.ENGLISH) {
+                        DataUtil.getDataFromLanguageTranslation(context.getApplicationContext(),DataUtil.isDataElementNull(data.get("Content")), new StoreCallback() {
+                            @Override
+                            public void success(DataElement e, String resource) {
+                                if(e.isArray()&&e.asArrayElement().size()>0) {
+                                    showDialog(context,data,DataUtil.isDataElementNull(e.asArrayElement().get(0).asObjectElement().get("Translation_Display"))
+                                            + "1.0." + DataUtil.isDataElementNull(data.get("Version")));
+                                }else {
+                                    showDialog(context,data,DataUtil.isDataElementNull(data.get("Content"))
+                                            +"1.0."+DataUtil.isDataElementNull(data.get("Version")));
+                                }
+                            }
+
+                            @Override
+                            public void failure(DatastoreException ex, String resource) {
+                                showDialog(context,data,DataUtil.isDataElementNull(data.get("Content"))
+                                        +"1.0."+DataUtil.isDataElementNull(data.get("Version")));
+                            }
+                        });
+                    }else {
+                        showDialog(context,data,DataUtil.isDataElementNull(data.get("Content"))
+                                +"1.0."+DataUtil.isDataElementNull(data.get("Version")));
+                    }
+                }else {
+                    DoInit();
+                }
+
+            }else {
+                DoInit();
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            // TODO Auto-generated catch block
+            DoInit();
+            e.printStackTrace();
+        }
+    }
+    public void showDialog(final Context context, final ObjectElement element, final String message) {
+        Handler mainHandler = new Handler(context.getMainLooper());
+        mainHandler.post(new Runnable() {
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public void run() {
+                try{
+                    if (dialog == null || dialog.getContext() != context) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(
+                                context);
+                        dialog = builder.create();
+                    }
+                    DataElement e = element.get("Header");
+                    if (e != null && e.isPrimitive()) {
+                        dialog.setTitle(e.asPrimitiveElement()
+                                .valueAsString());
+                    }
+
+                    //e = element.get("Content");
+                    dialog.setMessage(message);
+
+
+                    e = element.get("ConfirmButtonText");
+                    if (e != null&&e.isPrimitive()) {
+//                    final DataElement clickEventUrl = element
+//                            .asObjectElement().get("URL");
+//                    final Reference url = new Reference(clickEventUrl.asPrimitiveElement().valueAsString());
+                        String pathDir = FILE_NAME;
+                        if (context.getExternalFilesDir(null) != null) {
+                            //noinspection ConstantConditions
+                            pathDir = context.getExternalFilesDir(null).toString() + "/" + FILE_NAME;
+                        }
+                        final File file = new File(pathDir);
+                        //final Reference destination = new Reference(file.getAbsolutePath());
+//                    if (downloadTask == null) {
+//                        downloadTask = new DownloadTask(context, url, destination);
+//                    }
+                        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialog) {
+                                DoInit();
+                            }
+                        });
+                        dialog.setButton(context.getResources().getString(R.string.Update), new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                                ProgressBar progressView = new ProgressBar(context);
+                                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                                alertDialog.setCancelable(false);
+                                alertDialog.setView(progressView);
+                                alertDialog.setTitle(R.string.downloading);
+                                final Dialog d=alertDialog.create();
+                                d.show();
+                                HttpUtils.download(context, file.getAbsolutePath(), DataUtil.isDataElementNull(element.get("URL")), null, new HttpCallback() {
+                                    @Override
+                                    public void onSuccess(String t) {
+                                        super.onSuccess(t);
+                                        d.dismiss();
+                                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                                        intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        context.startActivity(intent);
+                                    }
+
+                                    @Override
+                                    public void onFailure(int errorNo, String strMsg) {
+                                        d.dismiss();
+                                        DoInit();
+                                        super.onFailure(errorNo, strMsg);
+                                    }
+                                });
+
+                            }
+                        });
+                    }
+                    if (!dialog.isShowing()) {
+                        dialog.show();
+                    }
+                }catch (Exception e){
+                    CrashReport.postCatchedException(e);
+                    DoInit();
+                }
+            }
+        });
     }
 }

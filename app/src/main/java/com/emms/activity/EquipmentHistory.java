@@ -212,6 +212,8 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
             public void onSuccess(String t) {
                     super.onSuccess(t);
                 if(t!=null){
+
+
                     if (pageIndex == 1) {
                         fault_summary_list.clear();
                     }
@@ -482,7 +484,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
         });
     }
     private void getTaskDecriptionFromDataBaseByEquipmentName(String EquipmentClass){
-        DataUtil.getDataFromDataBase(context, "EquipmentClassTrouble", EquipmentClass, new StoreCallback() {
+        DataUtil.getDataFromDataBase(context, "EquipmentClassTrouble", EquipmentClass,"'01','02','03'", new StoreCallback() {
             @Override
             public void success(DataElement element, String resource) {
                 task_description_list.clear();

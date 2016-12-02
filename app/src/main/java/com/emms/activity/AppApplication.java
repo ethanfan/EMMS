@@ -5,28 +5,33 @@ import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Handler;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.datastore_android_sdk.datastore.Datastore;
 import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
+import com.emms.push.PushReceiver;
 import com.emms.push.PushService;
 import com.emms.util.BuildConfig;
 import com.emms.util.LocaleUtils;
+import com.google.common.util.concurrent.ServiceManager;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import org.apache.commons.lang.StringUtils;
-
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
+import cn.jpush.android.api.JPushInterface;
 
 /**
  * Created by jaffer.deng on 2016/6/3.
@@ -35,7 +40,6 @@ import java.util.jar.Manifest;
 public class AppApplication extends Application {
 
     private EPassSqliteStoreOpenHelper sqliteStoreOpenHelper;
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -45,14 +49,25 @@ public class AppApplication extends Application {
 //        CrashHandler catchHandler = CrashHandler.getInstance();
 //        // 注册crashHandler
 //        catchHandler.init(getApplicationContext());
+
+        JPushInterface.init(this);
+        PushService.registerMessageReceiver(getApplicationContext());
         System.setProperty("ssl.TrustManagerFactory.algorithm",
                 javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm());
         LocaleUtils.SupportedLanguage language = LocaleUtils.getLanguage(this);
         //LocaleUtils.setLanguage(this, language != null ? language : LocaleUtils.SupportedLanguage.getSupportedLanguage(Locale.CHINESE.toString()));
         LocaleUtils.setLanguage(this, language != null ? language :  LocaleUtils.SupportedLanguage.getSupportedLanguage(getResources().getConfiguration().locale.getLanguage()));
-        PushService.registerMessageReceiver(this);
         CrashReport.initCrashReport(getApplicationContext(), "900057191", true);
         BuildConfig.NetWorkSetting(this);
+        JPushInterface.stopPush(getApplicationContext());
+    }
+
+    @Override
+    public void onTerminate() {
+        if(!JPushInterface.isPushStopped(getApplicationContext())) {
+            JPushInterface.stopPush(getApplicationContext());
+        }
+        super.onTerminate();
     }
 
     public synchronized SqliteStore getSqliteStore() {

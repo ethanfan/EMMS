@@ -139,6 +139,10 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
                ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.transfer_model_task));
                break;
            }
+           case Task.GROUP_ARRANGEMENT:{
+               ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.GroupArrangementTask));
+               break;
+           }
        }
 
     }

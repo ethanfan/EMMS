@@ -116,7 +116,8 @@ public class DataUtil {
     }
     public static void getDataFromDataBase(Context context,String DataType, StoreCallback storeCallback){
         String sql;
-        if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH){
+        if( (LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH)
+                || LocaleUtils.SupportedLanguage.getSupportedLanguage(context.getResources().getConfiguration().locale.getLanguage())==LocaleUtils.SupportedLanguage.ENGLISH){
 //            sql="select distinct d.[DataCode],(case LT.[Translation_Display]"
 //                    +" when '' then d.[DataName]"
 //                    +" when null then d.[DataName]"
@@ -146,7 +147,8 @@ public class DataUtil {
     }
     public static void getDataFromDataBase(Context context,String DataType,int Pdata_ID, StoreCallback storeCallback){
         String sql;
-        if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH){
+        if( (LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH)
+                || LocaleUtils.SupportedLanguage.getSupportedLanguage(context.getResources().getConfiguration().locale.getLanguage())==LocaleUtils.SupportedLanguage.ENGLISH){
 //            sql="select d.[DataCode],ifnull(LT.[Translation_Display],d.[DataName]) DataName "
 //                    + " from DataDictionary d,Language_Translation LT"
 //                    + " where d.[DataName]=LT.[Translation_Code]"
@@ -168,15 +170,16 @@ public class DataUtil {
                 +" ) Translation_Display,d.[DataName]"
                 +" from DataDictionary d"
                 +" where d.DataType='"+DataType+"'"
-                +" and d.PData_ID ='" +Pdata_ID+"') a";
+                +" and d.PData_ID ='" +Pdata_ID+"' Order By Sort asc) a";
         }else {
-            sql=  "select * from DataDictionary where DataType='"+DataType+"' and PData_ID ='" +Pdata_ID+"'";
+            sql=  "select * from DataDictionary where DataType='"+DataType+"' and PData_ID ='" +Pdata_ID+"' Order By Sort asc";
         }
         ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
     }
-   public static void getDataFromDataBase(Context context,String DataType, String DataValue1, StoreCallback storeCallback){
+   public static void getDataFromDataBase(Context context,String DataType, String DataValue1,String DataValue2, StoreCallback storeCallback){
        String sql;
-       if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH){
+       if( (LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH )
+               || LocaleUtils.SupportedLanguage.getSupportedLanguage(context.getResources().getConfiguration().locale.getLanguage())==LocaleUtils.SupportedLanguage.ENGLISH){
 //           sql="select distinct d.[DataCode],(case LT.[Translation_Display]"
 //                   +" when '' then d.[DataName]"
 //                   +" when null then d.[DataName]"
@@ -185,26 +188,73 @@ public class DataUtil {
 //                   +" where d.[DataName]=LT.[Translation_Code]"
 //                   +" and d.DataType='"+DataType+"'"
 //                   +" and d.DataValue1 ='" +DataValue1+"'";
-           sql= "select distinct DataCode,"
-                   +" (case when Translation_Display is null then DataName"
-                   +" when Translation_Display ='' then DataName"
-                   +" else Translation_Display end) DataName"
-                   +" FROM (select  d.[DataCode],(select"
-                   +" LT.[Translation_Display]"
-                   +" from Language_Translation  LT"
-                   +" where d.[DataName]=LT.[Translation_Code]"
-                   +" and LT.[Translation_Display] is not null"
-                   +" AND LT.[Translation_Display] <>''"
-                   +" AND LT.[Language_Code] ='en-US'"
-                   +" order by LT.Translation_ID asc limit 1"
-                   +" ) Translation_Display,d.[DataName]"
-                   +" from DataDictionary d"
-                   +" where d.DataType='"+DataType+"'"
-                   +" and d.DataValue1 ='" +DataValue1+"') a";
+
+
+//           sql= "select distinct DataCode,"
+//                   +" (case when Translation_Display is null then DataName"
+//                   +" when Translation_Display ='' then DataName"
+//                   +" else Translation_Display end) DataName"
+//                   +" FROM (select  d.[DataCode],(select"
+//                   +" LT.[Translation_Display]"
+//                   +" from Language_Translation  LT"
+//                   +" where d.[DataName]=LT.[Translation_Code]"
+//                   +" and LT.[Translation_Display] is not null"
+//                   +" AND LT.[Translation_Display] <>''"
+//                   +" AND LT.[Language_Code] ='en-US'"
+//                   +" order by LT.Translation_ID asc limit 1"
+//                   +" ) Translation_Display,d.[DataName]"
+//                   +" from DataDictionary d"
+//                   +" where d.DataType='"+DataType+"'"
+//                   +" and d.DataValue2 in ("+DataValue2+")"
+//                   +" and d.DataValue1 ='" +DataValue1+"') a";
+//                if(BuildConfig.isDebug){
+                    sql = "select distinct DataCode DataCode,"
+                            + " (case when Translation_Display is null then Name"
+                            + " when Translation_Display ='' then Name"
+                            + " else Translation_Display end) DataName"
+                            + " FROM (select  DD.[DataCode],(select"
+                            + " LT.[Translation_Display]"
+                            + " from Language_Translation  LT"
+                            + " where DD.[DataName]=LT.[Translation_Code]"
+                            + " and LT.[Translation_Display] is not null"
+                            + " AND LT.[Translation_Display] <>''"
+                            + " AND LT.[Language_Code] ='en-US'"
+                            + " order by LT.Translation_ID asc limit 1"
+                            + " ) Translation_Display,DD.DataName Name"
+                            + " from DataRelation d,DataDictionary DD"
+                            + " where d.DataType1='" + DataType + "'"
+                            + " and d.RelationCode in (" + DataValue2 + ")"
+                            + " and d.DataCode2 ='" + DataValue1 + "' and d.DataCode1=DD.DataCode and DD.DataType='" + DataType + "') a";
+//                }else {
+//                    sql = "select distinct DataCode DataCode,"
+//                            + " (case when Translation_Display is null then Name"
+//                            + " when Translation_Display ='' then Name"
+//                            + " else Translation_Display end) DataName"
+//                            + " FROM (select  DD.[DataCode],(select"
+//                            + " LT.[Translation_Display]"
+//                            + " from Language_Translation  LT"
+//                            + " where DD.[DataName]=LT.[Translation_Code]"
+//                            + " and LT.[Translation_Display] is not null"
+//                            + " AND LT.[Translation_Display] <>''"
+//                            + " AND LT.[Language_Code] ='en-US'"
+//                            + " order by LT.Translation_ID asc limit 1"
+//                            + " ) Translation_Display,DD.DataName Name"
+//                            + " from DataRelation d,DataDictionary DD"
+//                            + " where d.CodeType='" + DataType + "'"
+//                            + " and d.RelationType in (" + DataValue2 + ")"
+//                            + " and d.MatchingCode ='" + DataValue1 + "' and d.Code=DD.DataCode and DD.DataType='" + DataType + "') a";
+//                }
        }else {
-           sql=  "select * from DataDictionary where DataType='"+DataType+"' and 1=1 and DataValue1='" + DataValue1+"'";
+//           sql=  "select * from DataDictionary where DataType='"+DataType+"' and 1=1 and DataValue1='" + DataValue1+"' and DataValue2 in ("+DataValue2+")";
+//           if (BuildConfig.isDebug) {
+               sql = "select distinct DR.DataCode1 DataCode,DD.DataName DataName from DataRelation DR,DataDictionary DD where DR.DataType1='" + DataType + "' and 1=1 "
+                       + " and DR.DataCode2='" + DataValue1 + "' and DR.RelationCode in (" + DataValue2 + ") and DR.DataCode1=DD.DataCode and DD.DataType='" + DataType +"'";
+//           } else {
+//               sql = "select distinct DR.Code DataCode,DD.DataName DataName from DataRelation DR,DataDictionary DD where DR.CodeType='" + DataType + "' and 1=1 "
+//                       + " and DR.MatchingCode='" + DataValue1 + "' and DR.RelationType in (" + DataValue2 + ") and DR.Code=DD.DataCode and DD.DataType='" + DataType + "'";
+//           }
        }
-       ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
+       ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "DataRelation",storeCallback);
    }
     public static void getDataFromLanguageTranslation(Context context,String Translation_Code,StoreCallback storeCallback){
         String sql="select distinct ifnull(LT.[Translation_Display],LT.[Translation_Code]) Translation_Display from Language_Translation LT where LT.[Translation_Code]='"+Translation_Code+"'"

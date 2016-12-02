@@ -77,7 +77,7 @@ public final class ConfigurationManager {
         task.execute((Void) null);
     }
 
-    private void showDialog(final Context context, final ObjectElement element, final String message) {
+    public void showDialog(final Context context, final ObjectElement element, final String message) {
         Handler mainHandler = new Handler(context.getMainLooper());
         mainHandler.post(new Runnable() {
 
@@ -216,7 +216,8 @@ public final class ConfigurationManager {
             int CurrentVersion=packageInfo.versionCode;
             if(CurrentVersion<version){
                 if (data.get("Content") != null && data.get("Content").isPrimitive()) {
-                    if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH) {
+                    if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH
+                            || LocaleUtils.SupportedLanguage.getSupportedLanguage(context.getResources().getConfiguration().locale.getLanguage())==LocaleUtils.SupportedLanguage.ENGLISH) {
                         DataUtil.getDataFromLanguageTranslation(context.getApplicationContext(),DataUtil.isDataElementNull(data.get("Content")), new StoreCallback() {
                             @Override
                             public void success(DataElement e, String resource) {

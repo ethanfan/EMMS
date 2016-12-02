@@ -49,8 +49,8 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cus);
         {
-            TaskClass_moduleID_map.put(Task.REPAIR_TASK,3);//维修任务
-            TaskClass_moduleID_map.put(Task.MAINTAIN_TASK,2);//维护任务
+            TaskClass_moduleID_map.put(Task.REPAIR_TASK,3);//车间报修
+            TaskClass_moduleID_map.put(Task.GROUP_ARRANGEMENT,2);//组内安排
             TaskClass_moduleID_map.put(Task.MOVE_CAR_TASK,4);//搬车任务
             TaskClass_moduleID_map.put(Task.OTHER_TASK,5);//其它任务
             TaskClass_moduleID_map.put(Task.ROUTING_INSPECTION,11);//点巡检
@@ -69,6 +69,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             intent.putExtra(Constants.FLAG_CREATE_SHUNTING_TASK,Constants.FLAG_CREATE_SHUNTING_TASK);
             if(getIntent().getStringExtra("OperatorInfo")!=null){
                 intent.putExtra("OperatorInfo",getIntent().getStringExtra("OperatorInfo"));
+                intent.putExtra("FromTask_ID",getIntent().getStringExtra("FromTask_ID"));
             }
             startActivity(intent);
         }
@@ -77,6 +78,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             intent.putExtra(Constants.FLAG_CREATE_CAR_MOVING_TASK,Constants.FLAG_CREATE_CAR_MOVING_TASK);
             if(getIntent().getStringExtra("OperatorInfo")!=null){
                 intent.putExtra("OperatorInfo",getIntent().getStringExtra("OperatorInfo"));
+                intent.putExtra("FromTask_ID",getIntent().getStringExtra("FromTask_ID"));
             }
             startActivity(intent);
         }
@@ -120,12 +122,13 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                         }
                         case 1:{
                             String s[]=DataUtil.isDataElementNull(moduleList.get(position).get("TaskNum")).split("/");
-                            if(Integer.valueOf(s[1])==0){
+                            if(DataUtil.isInt(s[1])&&Integer.valueOf(s[1])==0){
                                 holder.msgView.setBgSelector2();
                             }
                             break;
                         }case 2:{
-                            if(moduleList.get(position).get("TaskNum").valueAsInt()==0){
+                            if(DataUtil.isInt(DataUtil.isDataElementNull(moduleList.get(position).get("TaskNum")))
+                                    &&moduleList.get(position).get("TaskNum").valueAsInt()==0){
                                 holder.msgView.setBgSelector2();
                             }
                             break;
@@ -227,132 +230,101 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
     //个性化开发，根据服务器返回的角色模块ID进行个性化配置
     private JsonObjectElement moduleMatchingRule(JsonObjectElement obj){
          int module_id=obj.get("module_ID").valueAsInt();
-        String packageName="com.emms.activity.";
         switch (module_id){
             case 1:{//createTask
-                obj.set("module_image",R.mipmap.cur_activity_create_task);
-                obj.set("module_name",R.string.create_task);
-                obj.set("Class",packageName+"CreateTaskActivity");
-                obj.set("TaskNumType",0);
+                setModelProperty(obj,R.mipmap.cur_activity_create_task,
+                        R.string.create_task,null,null,"CreateTaskActivity",null,0);
                 break;
             }
             case 2:{//maintainTask
-                obj.set("module_image",R.mipmap.cur_activity_maintain);
-                obj.set("module_name",R.string.maintenance);
-                obj.set("Class",packageName+"TaskListActivity");
-                obj.set(Task.TASK_CLASS,Task.MAINTAIN_TASK);
-                obj.set("TaskNum","0/0");
-                obj.set("TaskNumType",1);
+                setModelProperty(obj,R.mipmap.cur_activity_maintain,
+                        R.string.GroupArrangement,Task.GROUP_ARRANGEMENT,null,"TaskListActivity","0/0",1);
                 break;
             }
             case 3:{//repairTask
-                obj.set("module_image",R.mipmap.cur_activity_repair);
-                obj.set("module_name",R.string.repair);
-                obj.set("Class",packageName+"TaskListActivity");
-                obj.set(Task.TASK_CLASS,Task.REPAIR_TASK);
-                obj.set("TaskNum","0/0");
-                obj.set("TaskNumType",1);
+                setModelProperty(obj,R.mipmap.cur_activity_repair,
+                        R.string.repair,Task.REPAIR_TASK,null,"TaskListActivity","0/0",1);
                 break;
             }
             case 4:{//moveCarTask
-                obj.set("module_image",R.mipmap.cur_activity_move_car);
-                obj.set("module_name",R.string.move_car);
-                obj.set("Class",packageName+"TaskListActivity");
-                obj.set(Task.TASK_CLASS,Task.MOVE_CAR_TASK);
-                obj.set("TaskNum","0/0");
-                obj.set("TaskNumType",1);
+                setModelProperty(obj,R.mipmap.cur_activity_move_car,
+                        R.string.move_car,Task.MOVE_CAR_TASK,null,"TaskListActivity","0/0",1);
                 break;
             }
             case 5:{//teamStatus
-                obj.set("module_image",R.mipmap.cur_activity_other);
-                obj.set("module_name",R.string.other);
-                obj.set("Class",packageName+"TaskListActivity");
-                obj.set(Task.TASK_CLASS,Task.OTHER_TASK);
-                obj.set("TaskNum","0/0");
-                obj.set("TaskNumType",1);
+                setModelProperty(obj,R.mipmap.cur_activity_other,
+                        R.string.other,Task.OTHER_TASK,null,"TaskListActivity","0/0",1);
                 break;
             }
             case 6:{//deviceFaultSummary
-                obj.set("module_image",R.mipmap.cur_activity_equipment_summary);
-                obj.set("module_name",R.string.DeveceHistory);
-                obj.set("Class",packageName+"EquipmentHistory");
-                obj.set("TaskNumType",0);
+                setModelProperty(obj,R.mipmap.cur_activity_equipment_summary,
+                        R.string.DeveceHistory,null,null,"EquipmentHistory",null,0);
                 break;
             }
             case 7:{//TaskCommand
-                obj.set("module_image",R.mipmap.cur_activity_task_history);
-                obj.set("module_name",R.string.taskHistory);
-                obj.set("Class",packageName+"TaskHistoryCheck");
-                obj.set("TaskNum","0");
-                obj.set("TaskNumType",2);
-                //obj.set(Task.TASK_CLASS,Task.REPAIR_TASK);
+                setModelProperty(obj,R.mipmap.cur_activity_task_history,
+                        R.string.taskHistory,null,null,"TaskHistoryCheck","0",2);
                 break;
             }
             case 8:{//workloadverify
-                obj.set("module_image",R.mipmap.cur_activity_workload_verify);
-                obj.set("module_name",R.string.workloadVerify);
-                obj.set("Class",packageName+"WorkloadVerifyActivity");
-                obj.set("TaskNum","0");
-                obj.set("TaskNumType",2);
+                setModelProperty(obj,R.mipmap.cur_activity_workload_verify,
+                        R.string.workloadVerify,null,null,"WorkloadVerifyActivity","0",2);
                 break;
             }
-            case 9:{//otherTask
-                obj.set("module_image",R.mipmap.cur_activity_team);
-                obj.set("module_name",R.string.team);
-                obj.set("Class",packageName+"TeamStatusActivity");
-                obj.set("TaskNumType",0);
+            case 9:{//team staff
+                setModelProperty(obj,R.mipmap.cur_activity_team,
+                        R.string.team,null,null,"TeamStatusActivity",null,0);
                 break;
             }
             case 10:{//taskverify
-                obj.set("module_image",R.mipmap.cur_activity_verify);
-                obj.set("module_name",R.string.TaskVerify);
-                obj.set("Class",packageName+"TaskVerifyActivity");
-                obj.set("TaskNum","0");
-                obj.set("TaskNumType",2);
+                setModelProperty(obj,R.mipmap.cur_activity_verify,
+                        R.string.TaskVerify,null,null,"TaskVerifyActivity","0",2);
                 break;
             }
             case 11:{//巡检
-                obj.set("module_image",R.mipmap.module_measure_point);
-                obj.set("module_name",R.string.routingInspection);
-                obj.set(Task.TASK_CLASS,Task.MAINTAIN_TASK);
-                obj.set(Task.TASK_SUBCLASS,Task.ROUTING_INSPECTION);
-                obj.set("Class",packageName+"TaskListActivity");
-                obj.set("TaskNum","0/0");
-                obj.set("TaskNumType",1);
+                setModelProperty(obj,R.mipmap.module_measure_point,
+                        R.string.routingInspection,Task.MAINTAIN_TASK,Task.ROUTING_INSPECTION, "TaskListActivity","0/0",1);
                 break;
             }
             case 12:{//保养
-                obj.set("module_image",R.mipmap.module_upkeep);
-                obj.set("module_name",R.string.upkeep);
-                obj.set(Task.TASK_CLASS,Task.MAINTAIN_TASK);
-                obj.set(Task.TASK_SUBCLASS,Task.UPKEEP);
-                obj.set("Class",packageName+"TaskListActivity");
-                obj.set("TaskNum","0/0");
-                obj.set("TaskNumType",1);
+                setModelProperty(obj,R.mipmap.module_upkeep,
+                        R.string.upkeep,Task.MAINTAIN_TASK,Task.UPKEEP,"TaskListActivity","0/0",1);
                 break;
             }
             case 13:{//搬车
-                obj.set("module_image",R.mipmap.cur_activity_move_car);
-                obj.set("module_name",R.string.move_car);
-                obj.set(Task.TASK_CLASS,Task.MOVE_CAR_TASK);
-                obj.set("Class",packageName+"TaskListActivity");
-                obj.set("TaskNum","0/0");
-                obj.set("TaskNumType",1);
+                setModelProperty(obj,R.mipmap.cur_activity_move_car,
+                        R.string.move_car,Task.MOVE_CAR_TASK,null,"TaskListActivity","0/0",1);
                 break;
             }
-            case 14:{//转款
-                obj.set("module_image",R.mipmap.model_transfer_model);
-                obj.set("module_name",R.string.transfer_model);
-                obj.set(Task.TASK_CLASS,Task.TRANSFER_MODEL_TASK);
-                obj.set("Class",packageName+"TaskListActivity");
-                obj.set("TaskNum","0/0");
-                obj.set("TaskNumType",1);
+            case 14: {//转款
+                setModelProperty(obj, R.mipmap.model_transfer_model,
+                        R.string.transfer_model, Task.TRANSFER_MODEL_TASK, null, "TaskListActivity", "0/0", 1);
                 break;
+            }
+            default:{
+                setModelProperty(obj, R.mipmap.model_transfer_model,
+                        R.string.transfer_model, Task.TRANSFER_MODEL_TASK, null, "TaskListActivity", "0/0", 1);
             }
         }
         return obj;
     }
-
+    private void setModelProperty(JsonObjectElement obj,int module_image,int module_name,String TaskClass,String TaskSubClass,
+                                  String Class,String TaskNum,int TaskNumType){
+        String packageName="com.emms.activity.";
+        obj.set("module_image",module_image);
+        obj.set("module_name",module_name);
+        if(TaskClass!=null) {
+            obj.set(Task.TASK_CLASS, TaskClass);
+        }
+        if(TaskSubClass!=null) {
+            obj.set(Task.TASK_SUBCLASS, TaskSubClass);
+        }
+        obj.set("Class",packageName+Class);
+        if(TaskNum!=null) {
+            obj.set("TaskNum", TaskNum);
+        }
+        obj.set("TaskNumType",TaskNumType);
+    }
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -469,12 +441,12 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         if(data.get(key1)!=null
                 &&DataUtil.isNum(DataUtil.isDataElementNull(data.get(key1)))
                 &&data.get(key1).valueAsInt()>=100){
-            data.set(key1,"99+");
+            data.set(key1,"99");
         }
         if(data.get(key2)!=null
                 &&DataUtil.isNum(DataUtil.isDataElementNull(data.get(key2)))
                 &&data.get(key2).valueAsInt()>=100){
-            data.set(key2,"99+");
+            data.set(key2,"99");
         }
     }
 }

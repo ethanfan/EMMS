@@ -346,7 +346,8 @@ public abstract class PopMenuTaskDetail {
 			ToastUtil.showToastShort(R.string.OnlyMainPersonCanWriteFaultSummary,context);
 			return;
 		}
-		if(RootUtil.rootTaskClass(TaskClass,Task.REPAIR_TASK)){
+		if(RootUtil.rootTaskClass(TaskClass,Task.REPAIR_TASK)
+				|| RootUtil.rootTaskClass(TaskClass,Task.GROUP_ARRANGEMENT) ){
 		Intent intent=new Intent(context, SummaryActivity.class);
 		//intent.putExtra(Task.TASK_ID,TaskId);
 		intent.putExtra("TaskDetail",TaskDetail.toString());

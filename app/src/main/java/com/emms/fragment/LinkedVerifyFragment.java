@@ -274,14 +274,14 @@ public class LinkedVerifyFragment extends BaseFragment {
                     //  if(jsonObjectElement.get("PageData")!=null&&jsonObjectElement.get("PageData").asArrayElement().size()==0){
                     //提示没有处理中的任务
                     //  }
+                    if (pageIndex == 1) {
+                        datas.clear();
+                        submitData.clear();
+                    }
                     if(jsonObjectElement.get("PageData")!=null
                             &&jsonObjectElement.get("PageData").isArray()
                             &&jsonObjectElement.get("PageData").asArrayElement().size()>0) {
                         RecCount = jsonObjectElement.get("RecCount").valueAsInt();
-                        if (pageIndex == 1) {
-                            datas.clear();
-                            submitData.clear();
-                        }
                         pageIndex++;
                         for (int i = 0; i < jsonObjectElement.get("PageData").asArrayElement().size(); i++) {
                             jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().set("tag",false);
@@ -392,6 +392,7 @@ public class LinkedVerifyFragment extends BaseFragment {
             public void onSuccess(String t) {
                 super.onSuccess(t);
                 if(t!=null){
+                    dismissCustomDialog();
                     JsonObjectElement json=new JsonObjectElement(t);
                     if(json.get(Data.SUCCESS).valueAsBoolean()){
                         ToastUtil.showToastShort(R.string.SuccessVerify,mContext);
@@ -403,7 +404,6 @@ public class LinkedVerifyFragment extends BaseFragment {
                         ToastUtil.showToastShort(R.string.FailVerify,mContext);
                     }
                 }
-                dismissCustomDialog();
             }
 
             @Override

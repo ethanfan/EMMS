@@ -29,7 +29,7 @@ public class PushService {
     private static final String TAG = "PushService";
     //for receive customer msg from jpush server
     public static MessageReceiver mMessageReceiver;
-    public static final String MESSAGE_RECEIVED_ACTION = "com.ic_emms.push.MESSAGE_RECEIVED_ACTION";
+    public static final String MESSAGE_RECEIVED_ACTION = "com.emms.push.MESSAGE_RECEIVED_ACTION";
     public static final String KEY_TITLE = "title";
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_EXTRAS = "extras";
@@ -44,7 +44,7 @@ public class PushService {
     public static final int MSG_SET_ALIAS = 1001;
     public static final int MSG_SET_TAGS = 1002;
 
-    private static Context applicationContext = null;
+    public static Context applicationContext = null;
 
    private static boolean isMessageReceiverRegister=false;
     public static void  registerMessageReceiver(Context context) {
@@ -148,16 +148,17 @@ public class PushService {
             switch (code) {
                 case 0:
                     logs = "Set tag and alias success";
-                    Log.i(TAG, logs);
+                    //PushService.registerMessageReceiver(applicationContext);
+                    Log.e(TAG, logs);
                     break;
 
                 case 6002:
                     logs = "Failed to set alias and tags due to timeout. Try again after 60s.";
-                    Log.i(TAG, logs);
+                    Log.e(TAG, logs);
                     if (ExampleUtil.isConnected(applicationContext)) {
                         mHandler.sendMessageDelayed(mHandler.obtainMessage(MSG_SET_TAGS, tags), 1000 * 60);
                     } else {
-                        Log.i(TAG, "No network");
+                        Log.e(TAG, "No network");
                     }
                     break;
 

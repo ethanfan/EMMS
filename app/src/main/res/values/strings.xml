@@ -15,7 +15,7 @@
     <string name="warning_message_error">登录失败，员工号或密码错误</string>
     <string name="warning_message_frozen">帐号已冻结</string>
     <string name="task_history_query">任务历史查询</string>
-    <string name="repair">维修</string>
+    <string name="repair">车间报修</string>
     <string name="move_car">搬车</string>
     <string name="other">其它</string>
     <string name="transfer_model">调车</string>
@@ -27,7 +27,7 @@
 
     <string name="login_error">员工号不存在或密码错误</string>
     <string name="create_task">创建任务</string>
-    <string name="repair_tag">维修</string>
+    <string name="repair_tag">车间报修</string>
     <string name="maintenance">维护</string>
     <string name="team_status">班组人员状态</string>
     <string name="team">班组人员</string>
@@ -69,7 +69,7 @@
     <string name="no_nfc">在这个装置没有发现NFC功能</string>
     <string name="nfc_disabled">NFC没有启用。请转到无线设置来启用.</string>
 
-    <string name="repair_task">维修任务</string>
+    <string name="repair_task">车间报修任务</string>
     <string name="maintain_task">维护任务</string>
     <string name="move_car_task">搬车任务</string>
     <string name="other_task">其它任务</string>
@@ -495,7 +495,7 @@
     <string name="menu_list_invite_help">邀请协助</string>
     <string name="menu_list_transfer_order">转单</string>
     <string name="menu_list_task_complete">完成任务</string>
-    <string name="pleaseSwipeICcardToMakeSureTaskComplete">请目标车间人员刷卡确认任务完成</string>
+    <string name="pleaseSwipeICcardToMakeSureTaskComplete">请车间人员刷卡确认任务完成</string>
     <string name="SuccessToCheckID">身份验证通过,正在提交任务完成</string>
     <string name="FailToCheckID">身份验证失败，请检查信息</string>
     <string name="FailToCheckIDCauseByTimeOut">身份验证失败，请检查网络</string>
@@ -509,4 +509,7 @@
     <string name="DoYouNeedToCreateAShuntingTask">是否需要创建调车任务?</string>
     <string name="DoYouNeedToCreateACarMovingTask">是否需要创建搬车任务?</string>
     <string name="FailToUnZipDB">数据文件解析异常，请重新下载</string>
+    <string name="GroupArrangement">组内安排</string>
+    <string name="GroupArrangementTask">组内安排任务</string>
+    <string name="ThisEquipmentIsBinding">该设备已绑定IC卡，是否更改绑定？</string>
 </resources>

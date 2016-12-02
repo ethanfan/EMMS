@@ -28,6 +28,7 @@ import com.datastore_android_sdk.sqlite.SqliteStoreHelper;
 import org.restlet.data.Language;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -79,9 +80,10 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 	private final Map<String, Class<? extends Model<?, ?>>> schema = new ConcurrentHashMap<String, Class<? extends Model<?, ?>>>() {
 		private static final long serialVersionUID = 9084349657357243355L;
 	};
-
+    private Context context;
 	public EPassSqliteStoreOpenHelper(Context context) {
 		super(context);
+		this.context=context;
 		setTables();
 	}
 
@@ -136,7 +138,6 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 			int newVersion) {
 		Log.d("old version", oldVersion + "");
 		Log.d("new version", newVersion + "");
-
 		// Do nothing
 	}
 

@@ -67,7 +67,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
         }
 
         taskId=getIntent().getStringExtra(Task.TASK_ID) ;
-        getTaskOperatorListFromServer();
+
         adapter=new MultiAdapter(InvitorActivity.this,listItems,true);
         if(Tag!=null){
             ((TextView)findViewById(R.id.tv_title)).setText(R.string.AddTaskPeople);
@@ -112,7 +112,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
         groupAdapter=new GroupAdapter(InvitorActivity.this,listGroup);
         mGroupListView.setAdapter(groupAdapter);
        // getListItems(); //获取假数据
-        getGroupData(); //设置组别
+        //设置组别
      //   adapter = new MultiAdapter(this, listItems);
    //     mListView.setAdapter(adapter);
 
@@ -145,6 +145,11 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                 },0);
             }
         });
+        if(Tag!=null){
+            getGroupData();
+        }else {
+            getTaskOperatorListFromServer();
+        }
     }
 
     /**
@@ -380,7 +385,6 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                 dismissCustomDialog();
             }
         });
-
     }
     private void getTaskOperatorListFromServer(){
         HttpParams params=new HttpParams();
@@ -390,7 +394,13 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
             public void onSuccess(String t) {
                 super.onSuccess(t);
                if(t!=null){
-                       JsonObjectElement json=new JsonObjectElement(t);
+                   runOnUiThread(new Runnable() {
+                       @Override
+                       public void run() {
+                           getGroupData();
+                       }
+                   });
+                   JsonObjectElement json=new JsonObjectElement(t);
                    if(json.get(Data.SUCCESS)!=null&&json.get(Data.SUCCESS).valueAsBoolean()){
                    if(json.get(Data.PAGE_DATA)!=null&&json.get(Data.PAGE_DATA).asArrayElement().size()>0){
                  for(int i=0;i<json.get(Data.PAGE_DATA).asArrayElement().size();i++){
@@ -401,13 +411,20 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                }else{
                        ToastUtil.showToastShort(R.string.getTaskOperatorFail,context);
                    }
+               }else{
+                   ToastUtil.showToastShort(R.string.getTaskOperatorFail,context);
                }
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastShort(R.string.getTaskOperatorFail,context);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtil.showToastShort(R.string.getTaskOperatorFail,context);
+                    }
+                });
             }
         });
     }

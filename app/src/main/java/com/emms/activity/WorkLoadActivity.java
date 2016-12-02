@@ -72,7 +72,9 @@ public class WorkLoadActivity extends NfcActivity{
                     submitWorkLoadToServer();
                 }
             });
-            if((!TaskClass.equals(Task.REPAIR_TASK))&&(!TaskClass.equals(Task.OTHER_TASK))){
+            if((!TaskClass.equals(Task.REPAIR_TASK))
+                    &&(!TaskClass.equals(Task.OTHER_TASK))
+                    &&(!TaskClass.equals(Task.GROUP_ARRANGEMENT))){
                 ((Button)findViewById(R.id.nextStep)).setText(R.string.taskComplete);
             }
         }
@@ -275,7 +277,9 @@ public class WorkLoadActivity extends NfcActivity{
                         ToastUtil.showToastShort(R.string.submitSuccess,context);
                         dismissCustomDialog();
                         if(TaskComplete){
-                            if(  TaskClass.equals(Task.REPAIR_TASK)  ||  TaskClass.equals(Task.OTHER_TASK)  ){
+                            if(  TaskClass.equals(Task.REPAIR_TASK)
+                                    ||  TaskClass.equals(Task.OTHER_TASK)
+                                    || TaskClass.equals(Task.GROUP_ARRANGEMENT)){
                                 Intent intent=new Intent(context,SummaryActivity.class);
                                 intent.putExtra("TaskComplete",true);
                                 intent.putExtra(Task.TASK_CLASS,TaskClass);

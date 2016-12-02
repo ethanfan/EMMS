@@ -279,16 +279,14 @@ public class PendingVerifyFragment extends BaseFragment {
 //                                    ,DataUtil.isDataElementNull(json.get("UpdateRemark")));
                                 datas.add(json);
                             }
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    taskAdapter.setDatas(datas);
-                                    taskAdapter.notifyDataSetChanged();
-                                }
-                            });
-                            //      setData(datas);
                         }
-
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                taskAdapter.setDatas(datas);
+                                taskAdapter.notifyDataSetChanged();
+                            }
+                        });
                     }
                     dismissCustomDialog();
                 }catch (Throwable throwable){

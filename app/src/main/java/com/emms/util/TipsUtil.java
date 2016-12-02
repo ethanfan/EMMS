@@ -15,7 +15,8 @@ import com.datastore_android_sdk.datastore.DataElement;
  */
 public class TipsUtil {
     public static void ShowTips(final Context context, final String tips){
-        if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH){
+        if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH
+                || LocaleUtils.SupportedLanguage.getSupportedLanguage(context.getResources().getConfiguration().locale.getLanguage())==LocaleUtils.SupportedLanguage.ENGLISH){
             DataUtil.getDataFromLanguageTranslation(context, tips, new StoreCallback() {
                 @Override
                 public void success(final DataElement element, String resource) {

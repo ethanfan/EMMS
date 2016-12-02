@@ -6,31 +6,32 @@
     <View
         android:layout_width="wrap_content"
         android:layout_height="8sp"
-        android:id="@+id/ttt"
-        ></View>
+        android:id="@+id/ttt"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ttt"
+        android:id="@+id/layout">
     <ImageView
         android:id="@+id/menu_detail"
-        android:layout_width="wrap_content"
+        android:layout_width="25dp"
         android:layout_height="wrap_content"
         android:scaleX="0.8"
         android:scaleY="0.8"
-        android:layout_below="@+id/ttt"
-        android:paddingLeft="5dp"
-        android:src="@mipmap/sub_task_management"/>
+        android:layout_marginLeft="5dp"
+        android:src="@mipmap/sub_task_management" />
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
-        android:paddingLeft="8dp"
+        android:layout_marginLeft="5dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/menu_detail"
-        android:layout_toRightOf="@+id/menu_detail"
         android:background="@color/white"
         android:textColor="@color/text_login"
         android:textSize="17.0sp" />
+    </LinearLayout>
     <View
         android:layout_width="wrap_content"
         android:layout_height="8sp"
-        android:layout_below="@+id/textView"
-        ></View>
+        android:layout_below="@+id/layout"
+        />
 </RelativeLayout>

@@ -48,7 +48,7 @@ public class systemSqliteStoreOpenHelper extends SqliteStoreHelper {
 
 	@Override
 	public int getVersion() {
-		return 1000;
+		return 1001;
 	}
 
 	@Override

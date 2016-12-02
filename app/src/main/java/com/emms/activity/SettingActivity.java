@@ -88,16 +88,16 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
         Factory.getmEditText().setHint(R.string.select);
         NetWork.getmEditText().setHint(R.string.select);
         Language.getmEditText().setHint(R.string.select);
-        String currentLanguage = "";
+        String currentLanguage;
         LocaleUtils.SupportedLanguage language = LocaleUtils.getLanguage(this);
         if (language == LocaleUtils.SupportedLanguage.ENGLISH) {
             currentLanguage = getString(R.string.english);
-        } else if (language == LocaleUtils.SupportedLanguage.VIETNAMESE) {
-            //currentLanguage = getString(R.string.vietnamese);
-        } else {
+        } else if (language == LocaleUtils.SupportedLanguage.CHINESE_SIMPLFIED) {
             currentLanguage = getString(R.string.chinese);
+        } else {
+            currentLanguage=getResources().getConfiguration().locale.getLanguage();
         }
-        Language.getmEditText().setText(currentLanguage);
+        Language.getmEditText().setText(currentLanguage!=null?currentLanguage:getString(R.string.chinese));
         if(SharedPreferenceManager.getNetwork(context)!=null  &&
                  SharedPreferenceManager.getNetwork(context).equals("InnerNetwork")){
             NetWork.getmEditText().setText(R.string.innerNetWork);
@@ -128,18 +128,18 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
 
         }
     }
-    private void submitEquipmentData(){
-        if(Factory.getText().equals("")){
-            ToastUtil.showToastShort(R.string.pleaseSelectFactory,this);
-            return;
-        }
-        SharedPreferenceManager.setFactory(this,Factory.getText());
-        ToastUtil.showToastShort(R.string.setting_su,this);
-        finish();
-    }
+//    private void submitEquipmentData(){
+//        if(Factory.getText().equals("")){
+//            ToastUtil.showToastShort(R.string.pleaseSelectFactory,this);
+//            return;
+//        }
+//        SharedPreferenceManager.setFactory(this,Factory.getText());
+//        ToastUtil.showToastShort(R.string.setting_su,this);
+//        finish();
+//    }
     private void initData(){
         initFactory();
-        initNewWork();
+        initNetWork();
         LanguageList.clear();
         JsonObjectElement language1=new JsonObjectElement();
         language1.set(DataDictionary.DATA_CODE,"zh");
@@ -172,7 +172,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
             }
         });
     }
-    private void initNewWork(){
+    private void initNetWork(){
         NetWorkList.clear();
         JsonObjectElement json1=new JsonObjectElement();
         json1.set(DataDictionary.DATA_NAME,getResources().getString(R.string.innerNetWork));

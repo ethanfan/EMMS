@@ -201,7 +201,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                 SetTextChangeListener(holder.dropEditText.getmEditText(),measure_point_list.get(position),"ResultValue");
                 SetTextChangeListener(holder.dropEditText2.getmEditText(),measure_point_list.get(position),"ReferenceValue");
                 //等于-1为计数器测点，等于T0203为采集器测点
-                if(DataUtil.isDataElementNull(measure_point_list.get(position).get("MaintainWorkItem_ID")).equals("-1")
+                if(DataUtil.isDataElementNull(measure_point_list.get(position).get("MaintainItem_ID")).equals("-1")
                         ||(DataUtil.isDataElementNull(measure_point_list.get(position).get("TaskSubClass")).equals("T0203"))){
                     holder.dropEditText.setVisibility(View.GONE);
                     holder.dropEditText2.setVisibility(View.GONE);
@@ -573,7 +573,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-             if(DataUtil.isDataElementNull(measure_point_list.get(searTag).get("MaintainWorkItem_ID")).equals("-1")) {
+             if(DataUtil.isDataElementNull(measure_point_list.get(searTag).get("MaintainItem_ID")).equals("-1")) {
                 ToastUtil.showToastShort(R.string.pleaseInputMeasureValue,context);
              }else {
                  subEditText.setText(MeasureValueMap2.get("MPR03"));
@@ -719,7 +719,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                 return;
             }
             //TODO
-            if(!DataUtil.isDataElementNull(submitData.get(i).get("MaintainWorkItem_ID")).equals("-1")
+            if(!DataUtil.isDataElementNull(submitData.get(i).get("MaintainItem_ID")).equals("-1")
                     && !(DataUtil.isDataElementNull(submitData.get(i).get("TaskSubClass")).equals("T0203")) ) {
                 if (!DataUtil.isDataElementNull(submitData.get(i).get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
                     if (submitData.get(i).get("ReferenceValue") == null || DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).equals("")) {
@@ -784,7 +784,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
             }else {
                 jsonObjectElement.set("ResultValue", DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")));
             }
-            if(!DataUtil.isDataElementNull(submitData.get(i).get("MaintainWorkItem_ID")).equals("-1")
+            if(!DataUtil.isDataElementNull(submitData.get(i).get("MaintainItem_ID")).equals("-1")
                     && !(DataUtil.isDataElementNull(submitData.get(i).get("TaskSubClass")).equals("T0203")) ) {
                 if (!DataUtil.isDataElementNull(submitData.get(i).get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
                     if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))) != null) {
@@ -814,7 +814,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
 //                        ToastUtil.showToastShort(R.string.submit_Fail,context);
 //                    }
 //                }
-
+                submitData.clear();
                 GetMeasurePointList();
                 ToastUtil.showToastShort(R.string.submitSuccess,context);
                 final JsonArrayElement data=new JsonArrayElement(t);
@@ -875,7 +875,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
     private void CreateNewTask(ObjectElement objectElement){
             Intent intent=new Intent(MeasurePointActivity.this,CreateTaskActivity.class);
             intent.putExtra("TaskEquipment",TaskEquipment);
-            intent.putExtra(Task.TASK_ID,Task_ID);
+            intent.putExtra("FromTask_ID",Task_ID);
             intent.putExtra("FromMeasurePointActivity","FromMeasurePointActivity");
             intent.putExtra("TaskSubClass",TaskSubClass);
             intent.putExtra("TaskItem",objectElement.toJson());
@@ -938,21 +938,21 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
 //        });
     }
     private boolean checkResultValue(ObjectElement objectElement,final EditText editText){
-        if(DataUtil.isDataElementNull(objectElement.get("MaintainWorkItem_ID")).equals("-1")
+        if(DataUtil.isDataElementNull(objectElement.get("MaintainItem_ID")).equals("-1")
                 ||(DataUtil.isDataElementNull(objectElement.get("TaskSubClass")).equals("T0203")) ){
             //TODO  检查用户输入
             if(!DataUtil.isDataElementNull(objectElement.get("ReferenceValue")).equals("")
                &&!DataUtil.isDataElementNull(objectElement.get("ResultValue")).equals("")
-                    &&DataUtil.isNum(DataUtil.isDataElementNull(objectElement.get("ResultValue")))
-                    &&DataUtil.isNum(DataUtil.isDataElementNull(objectElement.get("ReferenceValue")))){
+                    &&DataUtil.isFloat(DataUtil.isDataElementNull(objectElement.get("ResultValue")))
+                    &&DataUtil.isFloat(DataUtil.isDataElementNull(objectElement.get("ReferenceValue")))){
             if(!DataUtil.isDataElementNull(objectElement.get("UnitCode")).equals("")
                  && DataUtil.isDataElementNull(objectElement.get("UnitCode")).equals("MSNU02")
-                     &&DataUtil.isDataElementNull(objectElement.get("MaintainWorkItem_ID")).equals("-1")
+                     &&DataUtil.isDataElementNull(objectElement.get("MaintainItem_ID")).equals("-1")
                       &&!DataUtil.isDataElementNull(objectElement.get("UpdateTime")).equals("")){
                 //TODO 根据ReferenceValue以及时间进行限制
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat(getResources().getString(R.string.UpdateTime));
-                    long updateTime = sdf.parse(DataUtil.isDataElementNull(objectElement.get("UpdateTime"))).getTime();
+                    long updateTime = sdf.parse(DataUtil.utc2Local(DataUtil.isDataElementNull(objectElement.get("UpdateTime")))).getTime();
                     long currentTime = new Date().getTime();
                     int Time = (int) ((currentTime - updateTime) / hour);
                     if(objectElement.get("ResultValue").valueAsFloat()<objectElement.get("ReferenceValue").valueAsFloat()

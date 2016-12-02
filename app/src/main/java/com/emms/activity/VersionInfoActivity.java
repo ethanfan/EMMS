@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.emms.R;
+import com.emms.util.BuildConfig;
 import com.tencent.bugly.crashreport.CrashReport;
 
 /**
@@ -36,7 +37,7 @@ public class VersionInfoActivity extends NfcActivity implements View.OnClickList
         }
         String email="PengA@esquel.com(Andy)";
         ((TextView)findViewById(R.id.connect_email)).setText(email);
-        if(com.emms.util.BuildConfig.endPoint== com.emms.util.BuildConfig.ServerEndPoint.DEVELOPMENT){
+        if(BuildConfig.isDebug){
             ((ImageView)findViewById(R.id.downloadImage)).setImageResource(R.mipmap.download_image_test);
         }
     }

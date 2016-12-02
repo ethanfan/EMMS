@@ -17,16 +17,17 @@ public class DataRelation extends Model<Operator, Long> implements Identity<Long
 
     public static final String DATARELATION_ID = "DataRelation_ID";
     public static final String FACTORY = "Factory";
-    public static final String RELATION_TYPE = "RelationType";
-    public static final String CODETYPE = "CodeType";
-    public static final String CODE = "Code";
-    public static final String NAME = "Name";
-    public static final String MATCHING_CODE_TYPE = "MatchingCodeType";
-    public static final String MATCHING_CODE = "MatchingCode";
-    public static final String MATCHING_NAME = "MatchingName";
+    public static final String RELATION_CODE= "RelationCode";
+    public static final String RELATION_NAME = "RelationName";
+    public static final String DATATYPE1 = "DataType1";
+    public static final String DATACODE1 = "DataCode1";
+    public static final String DATATYPE2 = "DataType2";
+    public static final String DATACODE2 = "DataCode2";
+    public static final String LASTUPDATEOPERATOR = "lastUpdateOperator";
     public static final String REMARK = "Remark";
     public static final String CREATE_OPERATOR = "CreateOperator";
     public static final String CREATETIME = "CreateTime";
+    public static final String SYNCDATATIME="SyncDataTime";
     public static final String LASTUPDATETIME = "LastUpdateTime";
 
     public Long getDataRelation_id() {
@@ -43,45 +44,46 @@ public class DataRelation extends Model<Operator, Long> implements Identity<Long
     @Expose
     private Long dataRelation_id;
 
+
     @DatabaseField(columnName = FACTORY, canBeNull = false,defaultValue = "")
     @SerializedName(FACTORY)
     @Expose
     private String factory;
 
-    @DatabaseField(columnName = RELATION_TYPE, canBeNull = false,defaultValue = "")
-    @SerializedName(RELATION_TYPE)
+    @DatabaseField(columnName = RELATION_CODE, canBeNull = false,defaultValue = "")
+    @SerializedName(RELATION_CODE)
     @Expose
-    private String relation_type;
+    private String RelationCode;
 
-    @DatabaseField(columnName = CODETYPE, canBeNull = true,defaultValue = "")
-    @SerializedName(CODETYPE)
+    @DatabaseField(columnName = RELATION_NAME, canBeNull = true,defaultValue = "")
+    @SerializedName(RELATION_NAME)
     @Expose
-    private String code_type;
+    private String RelationName;
 
-    @DatabaseField(columnName = CODE, canBeNull = false,defaultValue = "")
-    @SerializedName(CODE)
+    @DatabaseField(columnName = DATATYPE1, canBeNull = false,defaultValue = "")
+    @SerializedName(DATATYPE1)
     @Expose
-    private String code;
+    private String DataType1;
 
-    @DatabaseField(columnName = NAME, canBeNull = false,defaultValue = "")
-    @SerializedName(NAME)
+    @DatabaseField(columnName = DATACODE1, canBeNull = false,defaultValue = "")
+    @SerializedName(DATACODE1)
     @Expose
-    private String name;
+    private String DataCode1;
 
-    @DatabaseField(columnName = MATCHING_CODE_TYPE, canBeNull = true,defaultValue = "")
-    @SerializedName(MATCHING_CODE_TYPE)
+    @DatabaseField(columnName = DATATYPE2, canBeNull = false,defaultValue = "")
+    @SerializedName(DATATYPE2)
     @Expose
-    private String matching_code_type;
+    private String DataType2;
 
-    @DatabaseField(columnName = MATCHING_CODE, canBeNull = false,defaultValue = "")
-    @SerializedName(MATCHING_CODE)
+    @DatabaseField(columnName = DATACODE2, canBeNull = false,defaultValue = "")
+    @SerializedName(DATACODE2)
     @Expose
-    private String matching_code;
+    private String DataCode2;
 
-    @DatabaseField(columnName = MATCHING_NAME, canBeNull = false,defaultValue = "")
-    @SerializedName(MATCHING_NAME)
+    @DatabaseField(columnName = LASTUPDATEOPERATOR, canBeNull = true,defaultValue = "")
+    @SerializedName(LASTUPDATEOPERATOR)
     @Expose
-    private String matching_name;
+    private String lastUpdateOperator;
 
     @DatabaseField(columnName = REMARK, canBeNull = true,defaultValue = "")
     @SerializedName(REMARK)
@@ -98,6 +100,16 @@ public class DataRelation extends Model<Operator, Long> implements Identity<Long
     @Expose
     private String createTime;
 
+    @DatabaseField(columnName = SYNCDATATIME, canBeNull = true,defaultValue = "")
+    @SerializedName(SYNCDATATIME)
+    @Expose
+    private String SyncDataTime;
+
+    @DatabaseField(columnName = LASTUPDATETIME, canBeNull = false,defaultValue = "")
+    @SerializedName(LASTUPDATETIME)
+    @Expose
+    private String lastupdatetime;
+
     public String getFactory() {
         return factory;
     }
@@ -106,60 +118,60 @@ public class DataRelation extends Model<Operator, Long> implements Identity<Long
         this.factory = factory;
     }
 
-    public String getRelation_type() {
-        return relation_type;
+    public String getRelationCode() {
+        return RelationCode;
     }
 
-    public void setRelation_type(String relation_type) {
-        this.relation_type = relation_type;
+    public void setRelationCode(String relationCode) {
+        RelationCode = relationCode;
     }
 
-    public String getCode_type() {
-        return code_type;
+    public String getRelationName() {
+        return RelationName;
     }
 
-    public void setCode_type(String code_type) {
-        this.code_type = code_type;
+    public void setRelationName(String relationName) {
+        RelationName = relationName;
     }
 
-    public String getCode() {
-        return code;
+    public String getDataType1() {
+        return DataType1;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setDataType1(String dataType1) {
+        DataType1 = dataType1;
     }
 
-    public String getName() {
-        return name;
+    public String getDataCode1() {
+        return DataCode1;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDataCode1(String dataCode1) {
+        DataCode1 = dataCode1;
     }
 
-    public String getMatching_code_type() {
-        return matching_code_type;
+    public String getDataType2() {
+        return DataType2;
     }
 
-    public void setMatching_code_type(String matching_code_type) {
-        this.matching_code_type = matching_code_type;
+    public void setDataType2(String dataType2) {
+        DataType2 = dataType2;
     }
 
-    public String getMatching_code() {
-        return matching_code;
+    public String getDataCode2() {
+        return DataCode2;
     }
 
-    public void setMatching_code(String matching_code) {
-        this.matching_code = matching_code;
+    public void setDataCode2(String dataCode2) {
+        DataCode2 = dataCode2;
     }
 
-    public String getMatching_name() {
-        return matching_name;
+    public String getLastUpdateOperator() {
+        return lastUpdateOperator;
     }
 
-    public void setMatching_name(String matching_name) {
-        this.matching_name = matching_name;
+    public void setLastUpdateOperator(String lastUpdateOperator) {
+        this.lastUpdateOperator = lastUpdateOperator;
     }
 
     public String getRemark() {
@@ -186,6 +198,14 @@ public class DataRelation extends Model<Operator, Long> implements Identity<Long
         this.createTime = createTime;
     }
 
+    public String getSyncDataTime() {
+        return SyncDataTime;
+    }
+
+    public void setSyncDataTime(String syncDataTime) {
+        SyncDataTime = syncDataTime;
+    }
+
     public String getLastupdatetime() {
         return lastupdatetime;
     }
@@ -193,11 +213,6 @@ public class DataRelation extends Model<Operator, Long> implements Identity<Long
     public void setLastupdatetime(String lastupdatetime) {
         this.lastupdatetime = lastupdatetime;
     }
-
-    @DatabaseField(columnName = LASTUPDATETIME, canBeNull = false,defaultValue = "")
-    @SerializedName(LASTUPDATETIME)
-    @Expose
-    private String lastupdatetime;
     @Override
     public int hashCode() {
         return dataRelation_id.hashCode();

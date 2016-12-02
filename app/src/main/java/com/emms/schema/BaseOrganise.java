@@ -17,7 +17,7 @@ public class BaseOrganise extends Model<BaseOrganise, Long> implements Identity<
     public static final String ORGANISECODE = "OrganiseCode";
     public static final String ORGANISENAME = "OrganiseName";
     public static final String STATUS = "Status";
-    public static final String ISSPAREORDEPOT = "IsSpareOrDepot";
+    public static final String ORGANISECLASS = "OrganiseClass";
     public static final String ORGANISETYPE = "OrganiseType";
     public static final String FROMFACTORY = "FromFactory";
     public static final String LASTUPDATETIME="LastUpdateTime";
@@ -43,10 +43,10 @@ public class BaseOrganise extends Model<BaseOrganise, Long> implements Identity<
     @Expose
     private String organiseName;
 
-    @DatabaseField(columnName = ISSPAREORDEPOT, canBeNull = true)
-    @SerializedName(ISSPAREORDEPOT)
+    @DatabaseField(columnName = ORGANISECLASS, canBeNull = true)
+    @SerializedName(ORGANISECLASS)
     @Expose
-    private String isSpareOrDepot;
+    private String OrganiseClass;
 
     @DatabaseField(columnName = ORGANISETYPE, canBeNull = true)
     @SerializedName(ORGANISETYPE)
@@ -109,12 +109,12 @@ public class BaseOrganise extends Model<BaseOrganise, Long> implements Identity<
         this.organiseName = organiseName;
     }
 
-    public String getIsSpareOrDepot() {
-        return isSpareOrDepot;
+    public String getOrganiseClass() {
+        return OrganiseClass;
     }
 
-    public void setIsSpareOrDepot(String isSpareOrDepot) {
-        this.isSpareOrDepot = isSpareOrDepot;
+    public void setOrganiseClass(String organiseClass) {
+        OrganiseClass = organiseClass;
     }
 
     public String getOrganiseType() {

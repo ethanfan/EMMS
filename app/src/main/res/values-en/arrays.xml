@@ -11,9 +11,9 @@
         <item>Screening</item>
     </string-array>
     <string-array name="select_tab_verify_status">
-        <item>None Check</item>
-        <item>Checked</item>
-        <item>Condition Query</item>
+        <item>Unaudited</item>
+        <item>Audited</item>
+        <item>Query</item>
     </string-array>
     <string-array name="select_tab_time">
         <item>Within 1 months</item>
@@ -23,7 +23,7 @@
     <string-array name="menu_list">
         <item>Create New Task</item>
         <item>Scan QR Code</item>
-        <item>Failure Summary</item>
+        <item>Fault Summary</item>
         <item>Workload Input</item>
         <item>Sub Task</item>
         <item>Invite Assistance</item>
@@ -51,7 +51,6 @@
     <string-array name="menu_list_transfer_model">
         <item>Create New Task</item>
         <item>Scan QR Code</item>
-        <item>Failure Summary</item>
         <item>Invite Assistance</item>
         <item>Transfer Order</item>
         <item>Complete Task</item>

@@ -1,7 +1,9 @@
 package com.emms.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.nfc.NfcAdapter;
@@ -75,6 +77,13 @@ private void initView(){
     findViewById(R.id.iccard_scan).setOnClickListener(this);
     equipment_id=(DropEditText)findViewById(R.id.equipment_id);
     iccard_id=(EditText)findViewById(R.id.iccard_id);
+    findViewById(R.id.iccard_scan).setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent it = new Intent(EnteringEquipmentICCardIDActivity.this, CaptureActivity.class);
+            startActivityForResult(it, 1);
+        }
+    });
 }
 
     //刷nfc卡处理
@@ -153,7 +162,7 @@ private void initView(){
         });
     }
     private void initData(){
-        String rawQuery="select AssetsID,Equipment_ID from Equipment";
+        String rawQuery="select AssetsID,Equipment_ID,ifnull(ICCardID,'') ICCardID from Equipment";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -200,14 +209,37 @@ private void initView(){
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 String itemNam = mResultAdapter.getItemName();
                 SelectItem=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(Equipment.EQUIPMENT_ID));
-                final String searchResult =mResultAdapter.getItem(position).get(itemNam).valueAsString();
+                final String searchResult =DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(itemNam));
                 if (!searchResult.equals("")) {
                     ((Activity)context).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             switch (searchtag) {
                                 case 1:
-                                    equipment_id.getmEditText().setText(searchResult);
+                                    if(!DataUtil.isDataElementNull(mResultAdapter.getItem(position).get("ICCardID")).equals("")){
+                                        AlertDialog.Builder dialog=new AlertDialog.Builder(context);
+                                        dialog.setMessage(R.string.ThisEquipmentIsBinding);
+                                        dialog.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                SelectItem="";
+                                                dialog.dismiss();
+                                            }
+                                        }).setPositiveButton(R.string.sure,new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        equipment_id.getmEditText().setText(searchResult);
+                                                    }
+                                                });
+                                            }
+                                        });
+                                        dialog.show();
+                                    }else {
+                                        equipment_id.getmEditText().setText(searchResult);
+                                    }
                                     break;
                             }
                             mDrawer_layout.closeDrawer(Gravity.RIGHT);
@@ -329,5 +361,30 @@ private void initView(){
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode)
+        {
+            case 1:
+                if (data != null)
+                {
+                    final String result = data.getStringExtra("result");
+                    if (result != null){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                iccard_id.setText(result);
+                            }
+                        });
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

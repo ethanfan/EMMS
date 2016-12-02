@@ -30,7 +30,7 @@ public class BaseFragment extends Fragment{
         return  hud;
     }
     public void showCustomDialog(int resId){
-        if(Build.VERSION.SDK_INT>19) {
+        if(Build.VERSION.SDK_INT>14) {
             initCustomDialog(resId);
             if (hud != null && !hud.isShowing()) {
                 hud.show();
@@ -45,7 +45,7 @@ public class BaseFragment extends Fragment{
         }
     }
     public void dismissCustomDialog(){
-        if(Build.VERSION.SDK_INT>19) {
+        if(Build.VERSION.SDK_INT>14) {
             if (hud != null && hud.isShowing()) {
                 hud.dismiss();
             }

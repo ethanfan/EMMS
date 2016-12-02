@@ -219,7 +219,6 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/ValueUnit"
                         android:textSize="17sp"
-                        android:paddingLeft="5dp"
                         android:layout_centerVertical="true"
                         android:layout_alignParentRight="true"
                         android:textColor="@color/text_color"

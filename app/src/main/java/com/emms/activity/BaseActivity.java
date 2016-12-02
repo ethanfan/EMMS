@@ -9,6 +9,7 @@ import android.util.Log;
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
+import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -35,7 +36,12 @@ import com.tencent.bugly.crashreport.CrashReport;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.SynchronousQueue;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -46,6 +52,7 @@ import cn.jpush.android.api.JPushInterface;
 public abstract class BaseActivity extends AppCompatActivity {
     private KProgressHUD hud;
     private LoadingDialog loadingDialog;
+    //private Queue<ObjectElement> queue=new SynchronousQueue<>();
     protected void onResume() {
         super.onResume();
         JPushInterface.onResume(this);
@@ -64,7 +71,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
           try {
-               if(Build.VERSION.SDK_INT>19) {
+               if(Build.VERSION.SDK_INT>14) {
                  hud = KProgressHUD.create(this);
                }else {
                loadingDialog = new LoadingDialog(this);
@@ -90,6 +97,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 operator.setName(DataUtil.isDataElementNull(json.get("Name")));
                 operator.setMaintenMan(json.get("IsMaintenMan").valueAsBoolean());
                // operator.setUserRole_ID(json.get("UserRole_ID").valueAsInt());
+                operator.setFromFactory(DataUtil.isDataElementNull(json.get("FromFactory")));
                 operator.setOrganiseID(DataUtil.isDataElementNull(json.get("Organise_ID")));
                 operator.setOperator_no(DataUtil.isDataElementNull(json.get("OperatorNo")));
 //                operator = Operator.fromJson(userData, null, Operator.class);
@@ -149,7 +157,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return  hud;
     }
     public void showCustomDialog(int resId){
-        if(Build.VERSION.SDK_INT>19) {
+        if(Build.VERSION.SDK_INT>14) {
             initCustomDialog(resId);
             if (hud != null && !hud.isShowing() && !isFinishing()) {
                 hud.show();
@@ -161,7 +169,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
     public void dismissCustomDialog(){
-        if(Build.VERSION.SDK_INT>19) {
+        if(Build.VERSION.SDK_INT>14) {
             if (hud != null && hud.isShowing() && !isFinishing()) {
                 hud.dismiss();
             }
@@ -183,7 +191,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         data.set("LastUpdateTime_DataRelation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataRelation")));
         data.set("LastUpdateTime_Language_Translation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_Language_Translation")));
         data.set("LastUpdateTime_Languages",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_Languages")));
-        data.set("LastUpdateTime_TaskMessage",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_TaskMessage")));
+        //data.set("LastUpdateTime_TaskMessage",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_TaskMessage")));
         if(SharedPreferenceManager.getFactory(this)==null){
             data.set("Factory_ID","GEW");}
         else {
@@ -240,10 +248,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                             Log.e("Language_Translation",String.valueOf(json.get("Language_Translation").asArrayElement().size()));
                             updateData(json.get("Language_Translation"), EPassSqliteStoreOpenHelper.SCHEMA_LANGUAGE_TRANSLATION);
                         }
-                        if (json.get("TaskMessage") != null && json.get("TaskMessage").isArray() && json.get("TaskMessage").asArrayElement().size() > 0) {
-                            Log.e("TaskMessage",String.valueOf(json.get("TaskMessage").asArrayElement().size()));
-                            updateData(json.get("TaskMessage"), EPassSqliteStoreOpenHelper.SCHEMA_TASK_MESSAGE);
-                        }
+//                        if (json.get("TaskMessage") != null && json.get("TaskMessage").isArray() && json.get("TaskMessage").asArrayElement().size() > 0) {
+//                            Log.e("TaskMessage",String.valueOf(json.get("TaskMessage").asArrayElement().size()));
+//                            updateData(json.get("TaskMessage"), EPassSqliteStoreOpenHelper.SCHEMA_TASK_MESSAGE);
+//                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -308,10 +316,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                     s= Language_Translation.TRANSLATION_ID;
                     break;
                 }
-                case "TaskMessage":{
-                    s= TaskMessage.MESSAGE_ID;
-                    break;
-                }
+//                case "TaskMessage":{
+//                    s= TaskMessage.MESSAGE_ID;
+//                    break;
+//                }
             }
             for(int i=0;i<data.asArrayElement().size();i++){
 //           if(s==DataDictionary.DATA_ID){
@@ -379,12 +387,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                 "    (select max(LastUpdateTime) LastUpdateTime_TaskOrganiseRelation from TaskOrganiseRelation),"+
                 "    (select max(LastUpdateTime) LastUpdateTime_DataRelation from DataRelation), "+
                 "    (select ifnull(max(LastUpdateTime),'0x0000000000000000') LastUpdateTime_Languages from Languages), "+
-                "    (select ifnull(max(LastUpdateTime),'0x0000000000000000') LastUpdateTime_Language_Translation from Language_Translation),"+
-                "    (select ifnull(max(LastUpdateTime),'0x0000000000000000') LastUpdateTime_TaskMessage from TaskMessage)";
+                "    (select ifnull(max(LastUpdateTime),'0x0000000000000000') LastUpdateTime_Language_Translation from Language_Translation)";
         getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
             @Override
             public void success(final DataElement element, String resource) {
-                ConfigurationManager.getInstance().startToGetNewConfig(BaseActivity.this);
+                //ConfigurationManager.getInstance().startToGetNewConfig(BaseActivity.this);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -395,7 +402,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
             @Override
             public void failure(DatastoreException ex, String resource) {
-                ConfigurationManager.getInstance().startToGetNewConfig(BaseActivity.this);
+                //ConfigurationManager.getInstance().startToGetNewConfig(BaseActivity.this);
             }
         });
     }

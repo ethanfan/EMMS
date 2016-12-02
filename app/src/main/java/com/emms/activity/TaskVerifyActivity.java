@@ -195,7 +195,10 @@ public class TaskVerifyActivity extends NfcActivity {
                 ToastUtil.showToastShort(R.string.noMoreData,mContext);
                 return;
             }}
-        showCustomDialog(R.string.loadingData);        HttpParams params=new HttpParams();
+        showCustomDialog(R.string.loadingData);
+        HttpParams params=new HttpParams();
+        params.put("pageSize",PAGE_SIZE);
+        params.put("pageIndex",pageIndex);
         //   String s=SharedPreferenceManager.getLoginData(mContext);
         //  JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
         //  String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
@@ -204,7 +207,7 @@ public class TaskVerifyActivity extends NfcActivity {
 //        params.put("taskClass","T01");
 //        params.put("pageSize",PAGE_SIZE);
 //        params.put("pageIndex",pageIndex);
-        HttpUtils.post(mContext, "TaskList?pageSize="+ PAGE_SIZE +"&pageIndex="+pageIndex, params, new HttpCallback() {
+        HttpUtils.get(mContext, "TaskAPI/GetTaskCheckList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

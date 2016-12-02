@@ -91,7 +91,7 @@ public class SummaryActivity extends NfcActivity{
         }
         initView();
         initSearchView();
-        nfcDialog=new NFCDialog(context) {
+        nfcDialog=new NFCDialog(context,R.style.MyDialog) {
             @Override
             public void dismissAction() {
                 nfcDialogTag=false;
@@ -105,7 +105,8 @@ public class SummaryActivity extends NfcActivity{
     }
     public void initView(){
         //initTopToolbar
-        if(TaskClass.equals(Task.REPAIR_TASK)){
+        if(TaskClass.equals(Task.REPAIR_TASK)
+                ||TaskClass.equals(Task.GROUP_ARRANGEMENT)){
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.fault_summary);
         }else {
             ((TextView)findViewById(R.id.tv_title)).setText(R.string.task_summary);
@@ -286,7 +287,8 @@ public class SummaryActivity extends NfcActivity{
         });
     }
     private void submitFaultSummaryToServer(){
-        if(TaskClass.equals(Task.REPAIR_TASK)) {
+        if(TaskClass.equals(Task.REPAIR_TASK)
+                ||TaskClass.equals(Task.GROUP_ARRANGEMENT)) {
             if (type.getText().trim().equals("")) {
                 ToastUtil.showToastShort(R.string.NoFaultSummaryType,context);
                 return;
@@ -534,6 +536,8 @@ public class SummaryActivity extends NfcActivity{
                                     if(dataElement!=null){
                                         intent.putExtra("OperatorInfo",dataElement.toString());
                                     }
+                                    intent.putExtra("FromTask_ID",
+                                            DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
                                     context.startActivity(intent);
                                 }
                             }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

@@ -39,6 +39,7 @@ public final class SharedPreferenceManager {
 	public static final String NETWORK="network";
 
 	public static final String DATA_UPDATE_TIME="data_update_time";
+	public static final String DATABASE_VERSION="DataBase_version";
 	private SharedPreferenceManager() {
 
 	}
@@ -192,6 +193,18 @@ public final class SharedPreferenceManager {
 		SharedPreferences pref = PreferenceManager
 				.getDefaultSharedPreferences(context);
 		pref.edit().putString(NETWORK, Data).commit();
+	}
+
+	public static String getDatabaseVersion(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getString(DATABASE_VERSION, null);
+	}
+
+	public static void setDatabaseVersion(Context context, String Data) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putString(DATABASE_VERSION, Data).commit();
 	}
 
 	public static long getDataUpdateTime(Context context) {
