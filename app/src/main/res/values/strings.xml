@@ -347,6 +347,7 @@
     <string name="FailChangeEquipmentStatusCauseByTimeOut">修改设备状态失败,请检查网络</string>
     <string name="FailChangeEquipmentStatusCauseByOperator">修改设备状态失败,请检查参与人状态</string>
     <string name="FailToScanEquipment">该设备不属于所选组别,是否需要进行数据同步?</string>
+    <string name="FailGetTaskOperatorList">获取任务参与人状态列表失败</string>
     <string name="FailGetTaskOperatorListCauseByTimeOut">获取任务参与人状态列表失败，请检查网络</string>
     <string name="FailGetMeasurePointListCauseByTimeOut">获取测点列表失败，请检查网络</string>
     <string name="FailGetTaskListCauseByTimeOut">获取任务列表失败，请检查网络</string>

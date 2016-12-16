@@ -38,7 +38,6 @@ import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.adapter.StatusAdapter;
 import com.emms.adapter.TaskAdapter;
-import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.DataDictionary;
 import com.emms.schema.MeasurePoint;
@@ -90,12 +89,13 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
     private HashMap<String,String> TranslationMap=new HashMap<>();
     private ArrayList<ObjectElement> submitData=new ArrayList<>();
     private ArrayList<String> ObPointValueList=new ArrayList<>();
-    private int hour=60*60*1000;
+    private final int hour=60*60*1000;
     private String TaskSubClass;
     private boolean isMain=false;
     private boolean isEquipmentComplete=false;
     private String Task_ID;
     private String TaskEquipment;
+    private final String IsNeedRefer="IsNeedRefer";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -206,8 +206,8 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                     holder.dropEditText.setVisibility(View.GONE);
                     holder.dropEditText2.setVisibility(View.GONE);
                     holder.gridView.setVisibility(View.GONE);
-                    holder.tv_create_time.setVisibility(View.GONE);
-                    holder.tv_repair_time.setVisibility(View.GONE);
+//                    holder.tv_create_time.setVisibility(View.GONE);
+//                    holder.tv_repair_time.setVisibility(View.GONE);
                     holder.warranty_person.setVisibility(View.VISIBLE);
                     holder.tv_device_num.setVisibility(View.VISIBLE);
                     convertView.findViewById(R.id.CollectionPoint_layout).setVisibility(View.VISIBLE);
@@ -217,8 +217,8 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                     String pointType=DataUtil.isDataElementNull(measure_point_list.get(position).get("PointType"));
                     switch (pointType) {
                         case MeasurePoint.OBVERSE_MEASURE_POINT: {
-                            holder.tv_create_time.setVisibility(View.GONE);
-                            holder.tv_repair_time.setVisibility(View.GONE);
+//                            holder.tv_create_time.setVisibility(View.GONE);
+//                            holder.tv_repair_time.setVisibility(View.GONE);
                             convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.GONE);
                             holder.dropEditText.setVisibility(View.GONE);
                             ((TextView) convertView.findViewById(R.id.MeasureValueSelect_tag)).setText(R.string.checkResult);
@@ -277,6 +277,10 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                             convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.VISIBLE);
                             holder.gridView.setVisibility(View.GONE);
                             holder.dropEditText.setVisibility(View.VISIBLE);
+                            if(measure_point_list.get(position).get(IsNeedRefer)!=null&&!measure_point_list.get(position).get(IsNeedRefer).valueAsBoolean())
+                            {
+                                convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.GONE);
+                            }
                             ((TextView) convertView.findViewById(R.id.MeasureValueSelect_tag)).setText(R.string.MeasureValue);
                             ((TextView) convertView.findViewById(R.id.MeasureValueStandard_tag)).setText(R.string.StandardValue);
                             break;
@@ -287,6 +291,10 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                             convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.VISIBLE);
                             holder.gridView.setVisibility(View.GONE);
                             holder.dropEditText.setVisibility(View.VISIBLE);
+                            if(measure_point_list.get(position).get(IsNeedRefer)!=null&&!measure_point_list.get(position).get(IsNeedRefer).valueAsBoolean())
+                            {
+                                convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.GONE);
+                            }
                             ((TextView) convertView.findViewById(R.id.MeasureValueSelect_tag)).setText(R.string.MeasureValue);
                             ((TextView) convertView.findViewById(R.id.MeasureValueStandard_tag)).setText(R.string.SettingMeasureResult);
                             break;
@@ -645,7 +653,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
             @Override
             public void onSuccess(String t) {
                     super.onSuccess(t);
-                    if(t!=null) {
+                    if(!DataUtil.isNullOrEmpty(t)) {
                         try {
                             submitData.clear();
                             measure_point_list.clear();
@@ -711,7 +719,8 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
             return;
         }
         for(int i=0;i<submitData.size();i++){
-            if(submitData.get(i).get("ResultValue")==null||DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")).equals("")){
+            //判断测量值是否为空，没值返回并提示
+            if(submitData.get(i).get("ResultValue")==null||DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")).isEmpty()){
                 String s=getResources().getString(R.string.pleaseInputMeasureData)+","
                         +getResources().getString(R.string.id)
                         +DataUtil.isDataElementNull(submitData.get(i).get("num"));
@@ -719,42 +728,11 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                 return;
             }
             //TODO
+
             if(!DataUtil.isDataElementNull(submitData.get(i).get("MaintainItem_ID")).equals("-1")
                     && !(DataUtil.isDataElementNull(submitData.get(i).get("TaskSubClass")).equals("T0203")) ) {
-                if (!DataUtil.isDataElementNull(submitData.get(i).get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
-                    if (submitData.get(i).get("ReferenceValue") == null || DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).equals("")) {
-                        String s = getResources().getString(R.string.pleaseInputMeasureDataStandard) + ","
-                                + getResources().getString(R.string.id)
-                                + DataUtil.isDataElementNull(submitData.get(i).get("num"));
-                        ToastUtil.showToastShort(s, context);
-                        return;
-                    }
-                    if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))) == null) {
-                        if (!DataUtil.isNum(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).trim())
-                                || !DataUtil.isFloat(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).trim())) {
-                            String s = getResources().getString(R.string.pleaseInputNum) + ","
-                                    + getResources().getString(R.string.id)
-                                    + DataUtil.isDataElementNull(submitData.get(i).get("num"));
-                            ToastUtil.showToastShort(s, context);
-                            return;
-                        }
-                    }else {
-                        if(MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")))==null){
-                            String s = getResources().getString(R.string.pleaseSelectMeaValue) + ","
-                                    + getResources().getString(R.string.id)
-                                    + DataUtil.isDataElementNull(submitData.get(i).get("num"));
-                            ToastUtil.showToastShort(s, context);
-                            return;
-                        }
-                    }
-                } else {
-                    if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue"))) == null) {
-                        String s = getResources().getString(R.string.pleaseSelectMeasureValue) + ","
-                                + getResources().getString(R.string.id)
-                                + DataUtil.isDataElementNull(submitData.get(i).get("num"));
-                        ToastUtil.showToastShort(s, context);
-                        return;
-                    }
+                if(judgeNonCounterOrCollectorPoint(i)){
+                    return;
                 }
             }else {
                 if(checkResultValue(submitData.get(i),null)){
@@ -762,8 +740,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                 }
             }
             if(MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")))==null) {
-                if (!DataUtil.isNum(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")).trim())
-                        || !DataUtil.isFloat(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")).trim())) {
+                if (!DataUtil.isFloat(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")).trim())) {
                     String s = getResources().getString(R.string.pleaseInputNum) + ","
                             + getResources().getString(R.string.id)
                             + DataUtil.isDataElementNull(submitData.get(i).get("num"));
@@ -790,7 +767,9 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                     if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))) != null) {
                        //jsonObjectElement.set("ResultCode",MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))));
                     } else {
-                        jsonObjectElement.set("ReferenceValue", DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")));
+                        if(submitData.get(i).get(IsNeedRefer)==null||submitData.get(i).get(IsNeedRefer).valueAsBoolean()){
+                            jsonObjectElement.set("ReferenceValue", DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")));
+                        }
                     }
                 }
             }
@@ -1001,6 +980,53 @@ private void showdialog(String message,final EditText editText){
     });
     builder.show();
 }
-
-
+private boolean judgeNonObverseMeasurePoint(int i) {
+    if (submitData.get(i).get("ReferenceValue") == null || DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).equals("")) {
+        String s = getResources().getString(R.string.pleaseInputMeasureDataStandard) + ","
+                + getResources().getString(R.string.id)
+                + DataUtil.isDataElementNull(submitData.get(i).get("num"));
+        ToastUtil.showToastShort(s, context);
+        return true;
+    }
+    if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))) == null) {
+        if (!DataUtil.isFloat(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).trim())) {
+            String s = getResources().getString(R.string.pleaseInputNum) + ","
+                    + getResources().getString(R.string.id)
+                    + DataUtil.isDataElementNull(submitData.get(i).get("num"));
+            ToastUtil.showToastShort(s, context);
+            return true;
+        }
+    } else {
+        if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue"))) == null) {
+            String s = getResources().getString(R.string.pleaseSelectMeaValue) + ","
+                    + getResources().getString(R.string.id)
+                    + DataUtil.isDataElementNull(submitData.get(i).get("num"));
+            ToastUtil.showToastShort(s, context);
+            return true;
+        }
+    }
+    return false;
+}
+private boolean judgeNonCounterOrCollectorPoint(int i){
+    if (!DataUtil.isDataElementNull(submitData.get(i).get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)) {
+        //非观察测点判断
+        if(submitData.get(i).get(IsNeedRefer)==null||submitData.get(i).get(IsNeedRefer).valueAsBoolean()) {
+            //当需要输入标准测值的之后进行检查
+            if (judgeNonObverseMeasurePoint(i)) {
+                //返回true，表示输入不符合要求
+                return true;
+            }
+        }
+    } else {
+        //观察测点判断
+        if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue"))) == null) {
+            String s = getResources().getString(R.string.pleaseSelectMeaValue) + ","
+                    + getResources().getString(R.string.id)
+                    + DataUtil.isDataElementNull(submitData.get(i).get("num"));
+            ToastUtil.showToastShort(s, context);
+            return true;
+        }
+    }
+    return false;
+}
 }

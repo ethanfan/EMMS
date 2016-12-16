@@ -33,6 +33,7 @@ import com.emms.fragment.AllTaskHistoryFragment;
 import com.emms.fragment.FliterTaskHistoryFragment;
 import com.emms.fragment.PendingCommandFragment;
 import com.emms.schema.DataDictionary;
+import com.emms.schema.Task;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
@@ -132,8 +133,14 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
         task_class=(DropEditText)findViewById(R.id.task_class) ;
         task_status=(DropEditText)findViewById(R.id.task_status) ;
         time=(DropEditText)findViewById(R.id.time) ;
+        if(BaseData.getTaskClass().get(Task.REPAIR_TASK)!=null){
+            task_class.getmEditText().setText(BaseData.getTaskClass().get(Task.REPAIR_TASK));
+        }else {
         task_class.getmEditText().setText(R.string.repair);
+        }
+        taskClassCode=Task.REPAIR_TASK;
         time.getmEditText().setText(R.string.OneDay);
+        timeCode="1";
         findViewById(R.id.filter).setOnClickListener(this);
         findViewById(R.id.search_button).setOnClickListener(this);
     }
@@ -356,7 +363,12 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
               JsonObjectElement jsonObjectElement=new JsonObjectElement();
               jsonObjectElement.set(DataDictionary.DATA_CODE,key);
               jsonObjectElement.set(DataDictionary.DATA_NAME,BaseData.getTaskClass().get(key));
+              if(!"T0301".equals(key)
+                      &&!"T0302".equals(key)
+                      &&!"T03".equals(key)
+                      &&!Task.MAINTAIN_TASK.equals(key)){
               taskClassList.add(jsonObjectElement);
+              }
           }
 //        String rawQuery = "select * from DataDictionary " +
 //                "where DataType = 'TaskClass' and PData_ID = 0";

@@ -346,6 +346,7 @@
     <string name="FailChangeEquipmentStatusCauseByTimeOut">Modifying Equipment status failed, please check the network</string>
     <string name="FailChangeEquipmentStatusCauseByOperator">To modify the Equipment status failed, please check the status of the participant</string>
     <string name="FailToScanEquipment">The Equipment does not belong to the selected group, do you need to synchronize the data?</string>
+    <string name="FailGetTaskOperatorList">Failed to get the task participant status list</string>
     <string name="FailGetTaskOperatorListCauseByTimeOut">Failed to get the task participant status list, please check the network</string>
     <string name="FailGetMeasurePointListCauseByTimeOut">Failed to obtain a list of test points, please check the network</string>
     <string name="FailGetTaskListCauseByTimeOut">Failed to obtain a list of tasks, please check the network</string>

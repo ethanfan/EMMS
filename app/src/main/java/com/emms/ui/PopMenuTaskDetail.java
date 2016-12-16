@@ -351,6 +351,7 @@ public abstract class PopMenuTaskDetail {
 		Intent intent=new Intent(context, SummaryActivity.class);
 		//intent.putExtra(Task.TASK_ID,TaskId);
 		intent.putExtra("TaskDetail",TaskDetail.toString());
+		intent.putExtra(Task.TASK_CLASS, TaskClass);
 		context.startActivity(intent);}else {
 			ToastUtil.showToastShort(R.string.judgeTaskClass,context);
 		}

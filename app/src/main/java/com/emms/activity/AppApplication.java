@@ -49,15 +49,18 @@ public class AppApplication extends Application {
 //        CrashHandler catchHandler = CrashHandler.getInstance();
 //        // 注册crashHandler
 //        catchHandler.init(getApplicationContext());
-
+        //初始化Jpush推送服务
         JPushInterface.init(this);
         PushService.registerMessageReceiver(getApplicationContext());
         System.setProperty("ssl.TrustManagerFactory.algorithm",
                 javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm());
+        //语言设置
         LocaleUtils.SupportedLanguage language = LocaleUtils.getLanguage(this);
         //LocaleUtils.setLanguage(this, language != null ? language : LocaleUtils.SupportedLanguage.getSupportedLanguage(Locale.CHINESE.toString()));
         LocaleUtils.setLanguage(this, language != null ? language :  LocaleUtils.SupportedLanguage.getSupportedLanguage(getResources().getConfiguration().locale.getLanguage()));
+        //bugly初始化
         CrashReport.initCrashReport(getApplicationContext(), "900057191", true);
+        //地址设置
         BuildConfig.NetWorkSetting(this);
         JPushInterface.stopPush(getApplicationContext());
     }
@@ -122,7 +125,7 @@ public class AppApplication extends Application {
                 Attributes a = map.get("classes2.dex");
                 return a.getValue("SHA1-Digest");
             } catch (Exception e) {
-                e.printStackTrace();
+                CrashReport.postCatchedException(e);
             }
             return null ;
         }
@@ -171,7 +174,7 @@ public class AppApplication extends Application {
                     }
                     Thread.sleep(200 );
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    CrashReport.postCatchedException(e);
                 }
             }
         }

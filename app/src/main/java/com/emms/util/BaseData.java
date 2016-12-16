@@ -14,10 +14,12 @@ import java.util.HashMap;
 
 /**
  * Created by Administrator on 2016/10/24.
- *
+ * This Util is used to keep base data.
  */
 public class BaseData {
-
+    private BaseData(){
+        //no instance
+    }
     public static HashMap<String,String> TaskClass=new HashMap<>();
 
     public static HashMap<String,String> TaskStatus=new HashMap<>();
@@ -34,16 +36,22 @@ public class BaseData {
                     TaskStatus.put(DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_CODE)),
                             DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_NAME)));
                 }
+                if(baseDataListener!=null){
+                    baseDataListener.GetBaseDataSuccess();
+                }
             }
 
             @Override
             public void failure(DatastoreException ex, String resource) {
-                ((Activity)context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ToastUtil.showToastShort(R.string.FailGetDataPleaseRestartApp,context);
-                    }
-                });
+                if(baseDataListener!=null){
+                    baseDataListener.GetBaseDataFail();
+                }
+//                ((Activity)context).runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        ToastUtil.showToastShort(R.string.FailGetDataPleaseRestartApp,context);
+//                    }
+//                });
             }
         });
     }
@@ -59,16 +67,22 @@ public class BaseData {
                     TaskClass.put(DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_CODE)),
                             DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_NAME)));
                 }
+                if(baseDataListener!=null){
+                    baseDataListener.GetBaseDataSuccess();
+                }
             }
 
             @Override
             public void failure(DatastoreException ex, String resource) {
-                ((Activity)context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ToastUtil.showToastShort(R.string.FailGetDataPleaseRestartApp,context);
-                    }
-                });
+                if(baseDataListener!=null){
+                    baseDataListener.GetBaseDataFail();
+                }
+//                ((Activity)context).runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        ToastUtil.showToastShort(R.string.FailGetDataPleaseRestartApp,context);
+//                    }
+//                });
             }
         });
     }
@@ -90,4 +104,19 @@ public class BaseData {
        }
        return true;
    }
+    private interface BaseDataListener{
+       void GetBaseDataSuccess();
+        void GetBaseDataFail();
+    }
+
+    public BaseDataListener getBaseDataListener() {
+        return baseDataListener;
+    }
+
+    public void setBaseDataListener(BaseDataListener baseDataListener) {
+        this.baseDataListener = baseDataListener;
+    }
+
+    private static BaseDataListener baseDataListener;
+
 }

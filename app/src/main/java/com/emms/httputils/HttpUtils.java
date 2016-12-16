@@ -2,27 +2,24 @@ package com.emms.httputils;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Handler;
+import android.system.ErrnoException;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
 
+import com.datastore_android_sdk.rxvolley.RxVolley;
+import com.datastore_android_sdk.rxvolley.client.HttpCallback;
+import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.datastore_android_sdk.rxvolley.client.ProgressListener;
 import com.datastore_android_sdk.rxvolley.http.DefaultRetryPolicy;
-import com.datastore_android_sdk.rxvolley.http.RetryPolicy;
-import com.datastore_android_sdk.rxvolley.http.VolleyError;
 import com.emms.R;
 import com.emms.ui.KProgressHUD;
 import com.emms.util.BuildConfig;
 import com.emms.util.Md5Utils;
 import com.emms.util.SharedPreferenceManager;
-import com.datastore_android_sdk.rxvolley.RxVolley;
-import com.datastore_android_sdk.rxvolley.client.HttpCallback;
-import com.datastore_android_sdk.rxvolley.client.HttpParams;
-import com.datastore_android_sdk.rxvolley.client.ProgressListener;
 
 import org.apache.http.protocol.HTTP;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -33,10 +30,9 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.zip.DataFormatException;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
 
 /**
  * Created by jaffer.deng on 2016/6/3.
@@ -256,10 +252,10 @@ public  class HttpUtils {
             upZipFile(fileName,fileName.getParentFile().getAbsolutePath(),context);
         } catch (Exception e) {
             System.out.println("error！" + e);
-            e.printStackTrace();
         }
     }
-    public static void upZipFile(File zipFile, String folderPath, final Context context) throws ZipException, IOException {
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void upZipFile(File zipFile, String folderPath, final Context context) throws ErrnoException,DataFormatException,IOException {
         File desDir = new File(folderPath);
         if (!desDir.exists()) {
             desDir.mkdirs();
@@ -288,6 +284,8 @@ public  class HttpUtils {
                     out.write(buffer, 0, realLength);
                 }
             }
+         }catch (Exception e){
+          throw new IOException();
         } finally {
             if (in != null)
                 in.close();

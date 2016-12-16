@@ -215,7 +215,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 
         params.putJsonParams(taskEquepment.toJson());
 
-        HttpUtils.post(context, "TaskEquipmentStatus", params, new HttpCallback() {
+        HttpUtils.post(context, "TaskEquipmentAPI/ModifyTaskEquipmentStatus", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -343,7 +343,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
      //   TaskOperatorDataToSubmit.set("TaskEquipment_ID",Integer.valueOf(TaskEquipmentId));
      //   TaskOperatorDataToSubmit.set("status",status);
      //   params.putJsonParams(TaskOperatorDataToSubmit.toJson());
-        HttpUtils.post(context, "TaskOperatorStatus?task_id="+TaskId+"&equipment_id="+EquipmentId+"&status="+status,
+        HttpUtils.post(context, "TaskOperatorAPI/MotifyTaskOperatorStatus?task_id="+TaskId+"&equipment_id="+EquipmentId+"&status="+status,
                 params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -490,7 +490,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         JsonObjectElement jsonObjectElement=new JsonObjectElement();
         jsonObjectElement.set("IDList",TaskEquipmentId);
         params.putJsonParams(jsonObjectElement.toJson());
-        HttpUtils.post(context, "TaskEquipmentStatus/TaskEquipmentDelete", params, new HttpCallback() {
+        HttpUtils.post(context, "TaskEquipmentAPI/TaskEquipmentDelete", params, new HttpCallback() {
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
@@ -534,7 +534,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
        submitData.set("TaskOperator_ID",TaskOperatorID);
        submitData.set("Status",Status);
        params.putJsonParams(submitData.toJson());
-       HttpUtils.post(context, "TaskOperatorStatus/TaskOperatorStatusChange", params, new HttpCallback() {
+       HttpUtils.post(context, "TaskOperatorAPI/MotifyTaskOperatorStatusForSimple", params, new HttpCallback() {
            @Override
            public void onSuccess(String t) {
                super.onSuccess(t);

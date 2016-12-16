@@ -1,6 +1,6 @@
 package com.emms.util;
 
-import android.app.Activity;
+
 import android.content.Context;
 
 import com.datastore_android_sdk.callback.StoreCallback;
@@ -20,6 +20,13 @@ import java.util.regex.Pattern;
  */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class DataUtil {
+    private DataUtil(){
+     //no instance
+    }
+
+    public static boolean isNullOrEmpty(String checkStr){
+        return checkStr == null || checkStr.isEmpty();
+    }
     /**
      *  check whether the DataElement is null
      * @param s the DataElement to be checked
@@ -91,7 +98,6 @@ public class DataUtil {
         try {
             gpsUTCDate = utcFormater.parse(utcTime);
         } catch (ParseException e) {
-            e.printStackTrace();
             return utcTime;
         }
         SimpleDateFormat localFormater = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
@@ -107,7 +113,6 @@ public class DataUtil {
         try {
             gpsLocalDate = LocalFormater.parse(Local);
         } catch (ParseException e) {
-            e.printStackTrace();
             return Local;
         }
         SimpleDateFormat utcFormater = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
@@ -169,10 +174,10 @@ public class DataUtil {
                 +" order by LT.Translation_ID asc limit 1"
                 +" ) Translation_Display,d.[DataName]"
                 +" from DataDictionary d"
-                +" where d.DataType='"+DataType+"'"
-                +" and d.PData_ID ='" +Pdata_ID+"' Order By Sort asc) a";
+                +" where d.DataType in ('"+DataType+"','TaskSubClass')"
+                +" and d.PData_ID in ('" +Pdata_ID+"','2') Order By Sort asc) a";
         }else {
-            sql=  "select * from DataDictionary where DataType='"+DataType+"' and PData_ID ='" +Pdata_ID+"' Order By Sort asc";
+            sql=  "select * from DataDictionary where DataType in ('"+DataType+"','TaskSubClass') and PData_ID in ('" +Pdata_ID+"','2') Order By Sort asc";
         }
         ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
     }

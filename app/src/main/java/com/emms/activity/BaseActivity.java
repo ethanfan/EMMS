@@ -120,7 +120,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 operator.setUserRole_ID(json.get("UserRole_ID").valueAsInt());
                 //operator.setModuleList(json.get("AppInterfaceList").valueAsString());
             }catch (Exception e){
-                e.printStackTrace();
+                CrashReport.postCatchedException(e);
             }
         }
         return operator;
@@ -145,7 +145,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 //                operator.setUserRole_ID(objectElement.get("UserRole_ID").valueAsInt());
 //                operator.setModuleList(objectElement.get("AppInterfaceList").valueAsString());
             }catch (Exception e){
-                e.printStackTrace();
+                CrashReport.postCatchedException(e);
             }
         }
         return operator;
@@ -253,7 +253,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 //                            updateData(json.get("TaskMessage"), EPassSqliteStoreOpenHelper.SCHEMA_TASK_MESSAGE);
 //                        }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        CrashReport.postCatchedException(e);
                     }
                     finally {
                         dismissCustomDialog();

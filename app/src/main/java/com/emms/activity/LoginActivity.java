@@ -141,7 +141,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             initView();
 //            SharedPreferenceManager.setLanguageChange(this,false);
 //        }
-        //TODO 判断DB是否存在
         getNewDataFromServer();
     }
 
@@ -282,7 +281,6 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             return;
         }
        //final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".zip");
-        //TODO 待修改
         if(BuildConfig.isDebug){
             final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".zip");
             if(dbFile.exists()){
@@ -505,7 +503,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                         }
                     }
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    CrashReport.postCatchedException(e);
                     if(isAccountPasswordLogin){
                     hud.dismiss();
                     Toast.makeText(mContext, getResources().getString(R.string.warning_message_error), Toast.LENGTH_SHORT).show();}
@@ -615,9 +613,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 DoInit();
             }
         } catch (PackageManager.NameNotFoundException e) {
-            // TODO Auto-generated catch block
             DoInit();
-            e.printStackTrace();
         }
     }
     public void showDialog(final Context context, final ObjectElement element, final String message) {

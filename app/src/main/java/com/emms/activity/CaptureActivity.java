@@ -17,6 +17,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
+import android.widget.TextView;
 
 import com.emms.R;
 import com.emms.qrcodescan.camera.CameraManager;
@@ -51,7 +52,8 @@ public class CaptureActivity extends Activity implements Callback
 
         CameraManager.init(getApplication());
         viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
-        findViewById(R.id.iv_left).setOnClickListener(new View.OnClickListener() {
+        ((TextView)findViewById(R.id.tv_title)).setText(R.string.sacn_qr_code);
+        findViewById(R.id.btn_right_action).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();

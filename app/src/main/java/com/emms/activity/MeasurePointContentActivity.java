@@ -63,19 +63,22 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.measure_point_content_input);
         findViewById(R.id.btn_right_action).setOnClickListener(this);
         JsonObjectElement measure_point_detail = new JsonObjectElement(getIntent().getStringExtra("measure_point_detail"));
-        ((TextView)findViewById(R.id.measure_point_id)).setText(DataUtil.isDataElementNull(measure_point_detail.get("MaintainPoint_ID")));
+        ((TextView)findViewById(R.id.measure_point_id)).setText(DataUtil.isDataElementNull(measure_point_detail.get("MaintainItem_ID")));
         ((TextView)findViewById(R.id.measure_point_name)).setText(DataUtil.isDataElementNull(measure_point_detail.get("TaskItemName")));
-        ((TextView)findViewById(R.id.measure_point_type)).setText(MeasurePointType.get(DataUtil.isDataElementNull(measure_point_detail.get("PointType"))));
-        ((TextView)findViewById(R.id.measure_point_unit)).setText(DataUtil.isDataElementNull(measure_point_detail.get("Unit")));
-        //((TextView)findViewById(R.id.measure_point_range)).setText("10-20");
-        if(measure_point_detail.get("Value")!=null&& measure_point_detail.get("Value").isArray()) {
-            if(measure_point_detail.get("Value").asArrayElement().size()>0) {
-                ObjectElement value = measure_point_detail.get("Value").asArrayElement().get(0).asObjectElement();
-                String s = DataUtil.isDataElementNull(value.get("MinValue")) + "-"
-                        + DataUtil.isDataElementNull(value.get("MaxValue"));
-                ((TextView) findViewById(R.id.measure_point_range)).setText(s);
-            }
+        if(MeasurePointType.get(DataUtil.isDataElementNull(measure_point_detail.get("PointType")))!=null) {
+            ((TextView) findViewById(R.id.measure_point_type)).setText(MeasurePointType.get(DataUtil.isDataElementNull(measure_point_detail.get("PointType"))));
         }
+        ((TextView)findViewById(R.id.measure_point_unit)).setText(DataUtil.isDataElementNull(measure_point_detail.get("Unit")));
+        ((TextView)findViewById(R.id.measure_point_range)).setText(DataUtil.isDataElementNull(measure_point_detail.get("MaintainStandard")));
+        //((TextView)findViewById(R.id.measure_point_range)).setText("10-20");
+//        if(measure_point_detail.get("Value")!=null&& measure_point_detail.get("Value").isArray()) {
+//            if(measure_point_detail.get("Value").asArrayElement().size()>0) {
+//                ObjectElement value = measure_point_detail.get("Value").asArrayElement().get(0).asObjectElement();
+//                String s = DataUtil.isDataElementNull(value.get("MinValue")) + "-"
+//                        + DataUtil.isDataElementNull(value.get("MaxValue"));
+//                ((TextView) findViewById(R.id.measure_point_range)).setText(s);
+//            }
+//        }
 
 
     }

@@ -105,8 +105,7 @@ public class SummaryActivity extends NfcActivity{
     }
     public void initView(){
         //initTopToolbar
-        if(TaskClass.equals(Task.REPAIR_TASK)
-                ||TaskClass.equals(Task.GROUP_ARRANGEMENT)){
+        if(Task.REPAIR_TASK.equals(TaskClass)){
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.fault_summary);
         }else {
             ((TextView)findViewById(R.id.tv_title)).setText(R.string.task_summary);
@@ -287,8 +286,7 @@ public class SummaryActivity extends NfcActivity{
         });
     }
     private void submitFaultSummaryToServer(){
-        if(TaskClass.equals(Task.REPAIR_TASK)
-                ||TaskClass.equals(Task.GROUP_ARRANGEMENT)) {
+        if(TaskClass.equals(Task.REPAIR_TASK)) {
             if (type.getText().trim().equals("")) {
                 ToastUtil.showToastShort(R.string.NoFaultSummaryType,context);
                 return;

@@ -172,12 +172,16 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
 //            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.applicant);
 //        }
         //TODO
-        if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(this))==7){
-            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.applicant);
-        }else if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(this))<5){
-            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.repairerleader);
+        if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(this))!=null) {
+            if (Integer.valueOf(SharedPreferenceManager.getUserRoleID(this)) == 7) {
+                ((ImageView) findViewById(R.id.rootImage)).setImageResource(R.mipmap.applicant);
+            } else if (Integer.valueOf(SharedPreferenceManager.getUserRoleID(this)) < 5) {
+                ((ImageView) findViewById(R.id.rootImage)).setImageResource(R.mipmap.repairerleader);
+            } else {
+                ((ImageView) findViewById(R.id.rootImage)).setImageResource(R.mipmap.repairer);
+            }
         }else {
-            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.repairer);
+            ((ImageView) findViewById(R.id.rootImage)).setImageResource(R.mipmap.repairer);
         }
     }
     private void initData(){

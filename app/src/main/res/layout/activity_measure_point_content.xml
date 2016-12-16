@@ -103,7 +103,7 @@
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/measure_point_id_tag"
         android:textColor="@color/text_color"
-        android:text="@string/measure_point_range"
+        android:text="@string/measure_point_standard"
         android:textSize="18sp"/>
     <TextView
         android:id="@+id/measure_point_range"

@@ -16,6 +16,8 @@
             android:layout_height="wrap_content"
             android:textColor="@color/text_color"
             android:text="@string/measure_point_name"
+            android:visibility="gone"
+            android:layout_marginTop="5dp"
             android:layout_alignRight="@+id/measure_point_content_tag"
             android:textSize="17sp"/>
         <TextView
@@ -25,6 +27,7 @@
             android:textColor="@color/text_color"
             android:layout_toLeftOf="@+id/measure_point_status"
             android:singleLine="true"
+            android:visibility="gone"
             android:layout_toRightOf="@id/measure_point_name_tag"
             android:textSize="17sp"/>
         <TextView
@@ -46,12 +49,15 @@
             android:textColor="@color/text_color"
             android:textSize="17sp"
             android:layout_alignTop="@+id/measure_point_content_tag"
+            android:layout_toLeftOf="@+id/measure_point_status"
+            android:singleLine="true"
             android:layout_toRightOf="@+id/measure_point_content_tag" />
         <TextView
             android:id="@+id/measure_point_standard_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="17dp"
+            android:layout_marginBottom="6dp"
             android:text="@string/measure_point_standard"
             android:textColor="@color/text_color"
             android:layout_below="@+id/measure_point_content"
@@ -82,9 +88,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/order_color"
-            android:layout_alignTop="@+id/measure_point_name_tag"
             android:layout_alignParentRight="true"
             android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
             android:textSize="17sp"/>
 
         <TextView
@@ -143,6 +149,8 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/text_color"
                     android:textSize="17sp"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginBottom="6dp"
                     android:visibility="gone"
                     android:id="@+id/MeasureStandard_value"/>
                 <TextView
@@ -189,6 +197,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/ObPointValueList"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
                         android:numColumns="3"
                         android:visibility="gone"
                         />
@@ -268,17 +278,17 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/measure_point_content_tag"
-            android:layout_alignBottom="@+id/MeasureValueInputLayout"
             android:layout_centerVertical="true"
             android:background="@color/transparent"
             android:id="@+id/imageLayout">
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
-            android:layout_marginRight="20dp"
-            android:layout_marginLeft="10dp"
+            android:paddingRight="20dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="50dp"
+            android:paddingBottom="50dp"
             android:id="@+id/image"
             android:src="@mipmap/select_normal"/>
         </LinearLayout>

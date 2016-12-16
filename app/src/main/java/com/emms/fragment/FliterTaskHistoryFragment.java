@@ -144,6 +144,9 @@ public class FliterTaskHistoryFragment extends BaseFragment {
                 if(map.get(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_CLASS)))!=null) {
                     holder.tv_device_name.setText(map.get(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_CLASS))));
                 }
+                if(map.get(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_SUBCLASS)))!=null){
+                    holder.tv_device_name.setText(map.get(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_SUBCLASS))));
+                }
                 return convertView;
             }
         };

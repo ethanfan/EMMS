@@ -143,6 +143,7 @@
                                     android:layout_marginRight="8dp"
                                     android:layout_marginTop="2dip"
                                     android:paddingRight="2dip"
+                                    android:visibility="gone"
                                     android:src="@mipmap/scan" />
 
                             </LinearLayout>
@@ -153,6 +154,7 @@
                                 android:layout_height="40dp"
                                 android:layout_alignParentRight="true"
                                 android:background="@color/transparent"
+                                android:visibility="gone"
                                 android:contentDescription="@null" />
                         </RelativeLayout>
                     </LinearLayout>
@@ -408,7 +410,6 @@
                         android:layout_width="0dp"
                         android:layout_height="130dp"
                         android:layout_weight="3"
-                        android:visibility="gone"
                         android:background="@color/white"
                         >
                         <EditText
@@ -417,6 +418,7 @@
                             android:minHeight="40dip"
                             android:textColor="@color/text_color"
                             android:hint="@string/task_description_hint"
+                            android:textColorHint="@color/hint_color"
                             android:paddingLeft="8dp"
                             android:paddingRight="8dp"
                             android:background="@color/transparent"

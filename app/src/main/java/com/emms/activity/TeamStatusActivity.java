@@ -63,7 +63,7 @@ public class TeamStatusActivity extends NfcActivity implements View.OnClickListe
         params.put("team_id", DataUtil.isDataElementNull(groupData.get("Organise_ID")));
         params.put("pageSize", PAGE_SIZE);
         params.put("pageIndex",pageIndex);
-        HttpUtils.get(this, "OperatorStatus", params, new HttpCallback() {
+        HttpUtils.get(this, "TaskOperatorAPI/GetTaskOperatorStatus", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -157,7 +157,7 @@ public class TeamStatusActivity extends NfcActivity implements View.OnClickListe
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
         params.put(Task.TASK_ID,0);
-        HttpUtils.get(this, "BaseOrganiseTeam", params, new HttpCallback() {
+        HttpUtils.get(this, "BaseDataAPI/GetBaseOrganise", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

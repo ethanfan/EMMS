@@ -78,6 +78,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -583,7 +584,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         }
         popMenuTaskDetail.addItems(mTitles);
         popMenuTaskDetail.setHasEquipment(HasTaskEquipment);
-        if(TaskClass!=null&&!TaskClass.equals(Task.REPAIR_TASK)&&!TaskClass.equals(Task.GROUP_ARRANGEMENT)){
+        if(TaskClass!=null&&!TaskClass.equals(Task.REPAIR_TASK)){
             findViewById(R.id.serchDeviceHistory).setVisibility(View.GONE);
         }
         findViewById(R.id.serchDeviceHistory).setOnClickListener(this);
@@ -749,14 +750,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     dismiss();
                 }
             });
-//            bt2.setOnClickListener(new View.OnClickListener() {
-//                public void onClick(View v) {
-//                    Intent intent = new Intent(TaskDetailsActivity.this,
-//                            GetPicActivity.class);
-//                    startActivity(intent);
-//                    dismiss();
-//                }
-//            });
+
             bt3.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     dismiss();
@@ -785,7 +779,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             openCameraIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
             startActivityForResult(openCameraIntent, TAKE_PICTURE);
         } catch (Exception e) {
-            e.printStackTrace();
+            CrashReport.postCatchedException(e);
         }
 
     }
@@ -821,7 +815,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         }
 
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        CrashReport.postCatchedException(e);
                     }
 
 
@@ -874,7 +868,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 result = Base64.encodeToString(bitmapBytes, Base64.NO_WRAP);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            CrashReport.postCatchedException(e);
         } finally {
             try {
                 if (baos != null) {
@@ -882,7 +876,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     baos.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                CrashReport.postCatchedException(e);
             }
         }
         return result;
@@ -1485,7 +1479,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         //   TaskOperatorDataToSubmit.set("TaskEquipment_ID",Integer.valueOf(TaskEquipmentId));
         //   TaskOperatorDataToSubmit.set("status",status);
         //   params.putJsonParams(TaskOperatorDataToSubmit.toJson());
-        HttpUtils.post(this, "TaskOperatorStatus?task_id="+taskId+"&equipment_id="+EquipmentId+"&status="+status,
+        HttpUtils.post(this, "TaskOperatorAPI/MotifyTaskOperatorStatus?task_id="+taskId+"&equipment_id="+EquipmentId+"&status="+status,
                 params, new HttpCallback() {
                     @Override
                     public void onSuccess(String t) {
@@ -1566,12 +1560,12 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         //任务是已完成情况下调用，显示任务总结，工作量分配，任务评价模块
         if(TaskStatus>=2){
             findViewById(R.id.task_complete).setVisibility(View.VISIBLE);
-            if(TaskClass.equals(Task.REPAIR_TASK)
-                    ||TaskClass.equals(Task.GROUP_ARRANGEMENT)){
+            if(TaskClass.equals(Task.REPAIR_TASK)){
             findViewById(R.id.fault_summary).setVisibility(View.VISIBLE);
             getSummaryFromServer();
             }else if(TaskClass.equals(Task.OTHER_TASK)
-                    ||TaskClass.equals(Task.TRANSFER_MODEL_TASK)){
+                    ||TaskClass.equals(Task.TRANSFER_MODEL_TASK)
+                    ||TaskClass.equals(Task.GROUP_ARRANGEMENT)){
                 findViewById(R.id.fault_summary).setVisibility(View.VISIBLE);
                 ((TextView)findViewById(R.id.fault_title)).setText(R.string.task_summary);
                 ((TextView)findViewById(R.id.fault_description_tag)).setText(R.string.task_summary_tag);
@@ -1908,7 +1902,13 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                             }
                         });
                         isGetTaskOperatorListSuccess=true;
+                    }else {
+                        isGetTaskOperatorListSuccess=false;
+                        ToastUtil.showToastShort(R.string.FailGetTaskOperatorList,mContext);
                     }
+                }else {
+                    isGetTaskOperatorListSuccess=false;
+                    ToastUtil.showToastShort(R.string.FailGetTaskOperatorList,mContext);
                 }
                 dismissCustomDialog();
             }
@@ -1917,7 +1917,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 dismissCustomDialog();
-                isGetTaskOperatorListSuccess=true;
+                isGetTaskOperatorListSuccess=false;
                 ToastUtil.showToastShort(R.string.FailGetTaskOperatorListCauseByTimeOut,mContext);
             }
         });
@@ -1929,19 +1929,18 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         submitData.set("TaskOperator_ID",0);
         submitData.set("Status",0);
         params.putJsonParams(submitData.toJson());
-        HttpUtils.post(mContext, "TaskOperatorStatus/TaskOperatorStatusChange", params, new HttpCallback() {
+        HttpUtils.post(mContext, "TaskOperatorAPI/MotifyTaskOperatorStatusForSimple", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                dismissCustomDialog();
                 if(t!=null){
                     JsonObjectElement data=new JsonObjectElement(t);
-                    if(data.get(Data.SUCCESS).valueAsBoolean()){
-                        getTaskOperatorStatus();
-                    }else {
+                    if(!data.get(Data.SUCCESS).valueAsBoolean()){
                         ToastUtil.showToastShort(R.string.CanNotChangeStatus,mContext);
                     }
                 }
-                dismissCustomDialog();
+                getTaskOperatorStatus();
             }
 
             @Override
