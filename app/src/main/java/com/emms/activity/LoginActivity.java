@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -39,13 +38,14 @@ import com.emms.R;
 import com.emms.httputils.HttpUtils;
 import com.emms.push.PushService;
 import com.emms.schema.Data;
+import com.emms.schema.Equipment;
 import com.emms.schema.Operator;
+import com.emms.ui.EquipmentSummaryDialog;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.UserRoleDialog;
 import com.emms.util.BuildConfig;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
-import com.emms.util.DownloadCallback;
 import com.emms.util.LocaleUtils;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
@@ -73,42 +73,47 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     //private ImageButton setting;
     private static final String FILE_NAME = "emms.apk";
     private Handler pushHandler = PushService.mHandler;
-    private final int DBVersion=2;//需要进行DB更新的时候+1
     private AlertDialog dialog ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        if(SharedPreferenceManager.getFactory(this)==null){
-            SharedPreferenceManager.setFactory(this, "GEW");
-        }
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, new LinkedHashSet<>()));
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, ""));
         setStyleCustom();
-
-        //init();
         initView();
-        //  registerMessageReceiver();
-        showCustomDialog(R.string.loadingData);
-        HttpParams httpParams=new HttpParams();
-        HttpUtils.getWithoutCookies(mContext, "System_Version/GetAppDownloadInfo", httpParams, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-                dismissCustomDialog();
-                if(t!=null) {
-                    handleVersionUpdate(mContext, t);
+        if(SharedPreferenceManager.getFactory(mContext)==null){
+            ArrayList<ObjectElement> s=new ArrayList<>();
+            JsonObjectElement GEW=new JsonObjectElement();
+            GEW.set(Equipment.EQUIPMENT_NAME,"GEW");
+            JsonObjectElement EGM=new JsonObjectElement();
+            EGM.set(Equipment.EQUIPMENT_NAME,"EGM");
+            s.add(GEW);
+            s.add(EGM);
+            final EquipmentSummaryDialog equipmentSummaryDialog=new EquipmentSummaryDialog(this,s);
+            equipmentSummaryDialog.dismissCancelButton();
+            equipmentSummaryDialog.setTitle(R.string.SelectFactory);
+            equipmentSummaryDialog.setCancelable(false);
+            equipmentSummaryDialog.show();
+            equipmentSummaryDialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String factory=DataUtil.isDataElementNull(equipmentSummaryDialog.getList().get(position).get(Equipment.EQUIPMENT_NAME));
+                    DataUtil.FactoryAndNetWorkAddressSetting(mContext,factory);
+                    BuildConfig.NetWorkSetting(mContext);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            equipmentSummaryDialog.dismiss();
+                            getVersion();
+                        }
+                    });
                 }
-            }
-
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-                dismissCustomDialog();
-                DoInit();
-            }
-        });
-
+            });
+        }else {
+            BuildConfig.NetWorkSetting(this);
+            getVersion();
+        }
     }
    private void DoInit(){
        runOnUiThread(new Runnable() {
@@ -116,14 +121,14 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
            public void run() {
                if(!getIntent().getBooleanExtra("FromCusActivity", false)) {
                    if(SharedPreferenceManager.getDatabaseVersion(mContext)!=null&&Integer.valueOf(SharedPreferenceManager.getDatabaseVersion(mContext))<DBVersion){
+                       File dbFile;
                        if(BuildConfig.isDebug){
-                           final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(mContext)+".zip");
-                           getDBFromServer(dbFile);
+                           dbFile = new File(getExternalFilesDir(null), "/EMMS_TEST_"+SharedPreferenceManager.getFactory(mContext)+".zip");
                        }
                        else {
-                           final File dbFile = new File(getExternalFilesDir(null), "/EMMS.zip");
-                           getDBFromServer(dbFile);
+                           dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(mContext)+".zip");
                        }
+                       getDBFromServer(dbFile);
                    }else {
                        getNewDataFromServer();
                    }
@@ -269,52 +274,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
 
     }
     //下载DB文件
-    private void getNewDataFromServer() {
-       // final File db = new File(getExternalFilesDir(null), "/EMMS"+SharedPreferenceManager.getFactory(this)+".db");
-        //检测数据库文件是否已经存在，若已存在，则调用增量接口
-        final File db = new File(getExternalFilesDir(null), "/EMMS.db");
-        //final File db = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".db");
-        if(db.exists()){
-            //getDataBaseUpdateFromServer();
-           // getDBFromServer();
-            getDBDataLastUpdateTime();
-            return;
-        }
-       //final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".zip");
-        if(BuildConfig.isDebug){
-            final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".zip");
-            if(dbFile.exists()){
-                try{
-                    //解压db文件
-                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
-                }catch (Throwable e){
-                    CrashReport.postCatchedException(e);
-                    if(dbFile.exists()&&dbFile.delete()){
-                        showErrorDownloadDatabaseDialog();
-                    }
-                    ToastUtil.showToastLong(R.string.FailToUnZipDB,mContext);
-                }
-                return;
-            }
-            getDBFromServer(dbFile);
-        }else {
-            final File dbFile = new File(getExternalFilesDir(null), "/EMMS.zip");
-            if(dbFile.exists()){
-                try{
-                    //解压db文件
-                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
-                }catch (Throwable e){
-                    CrashReport.postCatchedException(e);
-                    if(dbFile.exists()&&dbFile.delete()){
-                        showErrorDownloadDatabaseDialog();
-                    }
-                    ToastUtil.showToastLong(R.string.FailToUnZipDB,mContext);
-                }
-                return;
-            }
-            getDBFromServer(dbFile);
-        }
-    }
+
 
     @Override
     public void resolveNfcMessage(Intent intent) {
@@ -368,70 +328,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         super.onStop();
 
     }
-    private void getDBFromServer(final File dbFile){
-        // 下载Db文件
-     showCustomDialog(R.string.DownloadDataBase);
-     HttpParams params=new HttpParams();
-        params.put("factory",SharedPreferenceManager.getFactory(this)==null?"GEW":SharedPreferenceManager.getFactory(this));
-            HttpUtils.getWithoutCookies(this, "SqlToSqliteAPI/GetDBDownloadUrl", params, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-              if(t!=null){
-                  JsonObjectElement jsonObjectElement=new JsonObjectElement(t.trim());
-                  downloadDB(dbFile,DataUtil.isDataElementNull(jsonObjectElement.get("DownloadUrl")));
-              }else {
-                  dismissCustomDialog();
-              }
-            }
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-                showErrorDownloadDatabaseDialog();
-                dismissCustomDialog();
-            }
-        });
-    }
-    private void downloadDB(final File dbFile,String url){
-        HttpUtils.download(this, dbFile.getAbsolutePath(), url, null, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-                try{
-                    com.emms.util.FileUtils fileUtil=new com.emms.util.FileUtils();
-                    fileUtil.upZipFile(dbFile, dbFile.getParentFile().getAbsolutePath(), mContext, new DownloadCallback() {
-                        @Override
-                        public void success(boolean hasUpdate) {
-                            SharedPreferenceManager.setDatabaseVersion(mContext,String.valueOf(DBVersion));
-                            getDBDataLastUpdateTime();
-                        }
-                        @Override
-                        public void fail(Exception e) {
-                        }
-                    });
-                }catch (Exception e){
-                    Log.e("","");
-                }finally {
-                    dismissCustomDialog();
-                    ToastUtil.showToastShort(R.string.SuccessDownloadDB,mContext);
-                }
-            }
 
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-                super.onFailure(errorNo, strMsg);
-                if(dbFile.exists()) {
-                    if (dbFile.delete()) {
-                        showErrorDownloadDatabaseDialog();
-                    }
-                }else {
-                    showErrorDownloadDatabaseDialog();
-                }
-                //ToastUtil.showToastShort(R.string.loadingFail,mContext);
-                dismissCustomDialog();
-            }
-        });
-    }
     public void getOperatorInfoFromServer(String iccardID){
         showCustomDialog(R.string.logining);
         HttpParams httpParams=new HttpParams();
@@ -442,13 +339,11 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 super.onSuccess(t);
                 LoginSuccessEvent(t,false);
             }
-
             @Override
             public void onSuccess(Map<String, String> headers, byte[] t) {
                 super.onSuccess(headers, t);
                 SaveCookies(headers);
             }
-
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
@@ -558,19 +453,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         intent.addCategory(Intent.CATEGORY_HOME);
         startActivity(intent);
     }
-    private void showErrorDownloadDatabaseDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.FailDownloadDB);
-        builder.setPositiveButton(R.string.retry,
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        getNewDataFromServer();
-                    }
-                });
-        builder.setCancelable(false);
-        builder.show();
-    }
+
     public void handleVersionUpdate(final Context context, String element) {
         JsonObjectElement json=new JsonObjectElement(element);
         final ObjectElement data=json.get(Data.PAGE_DATA).asArrayElement().get(0).asObjectElement();
@@ -637,7 +520,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
 
                     //e = element.get("Content");
                     dialog.setMessage(message);
-
+                    dialog.setCancelable(false);
 
                     e = element.get("ConfirmButtonText");
                     if (e != null&&e.isPrimitive()) {
@@ -701,6 +584,27 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     CrashReport.postCatchedException(e);
                     DoInit();
                 }
+            }
+        });
+    }
+    private void getVersion(){
+        showCustomDialog(R.string.loadingData);
+        HttpParams httpParams=new HttpParams();
+        HttpUtils.getWithoutCookies(mContext, "System_Version/GetAppDownloadInfo", httpParams, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                dismissCustomDialog();
+                if(t!=null) {
+                    handleVersionUpdate(mContext, t);
+                }
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                dismissCustomDialog();
+                DoInit();
             }
         });
     }

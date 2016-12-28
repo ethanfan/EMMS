@@ -19,6 +19,8 @@ import com.emms.util.DataUtil;
 import com.emms.util.ListViewUtility;
 import com.nostra13.universalimageloader.utils.L;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,5 +82,10 @@ public class EquipmentSummaryDialog extends Dialog {
     public void setListView(ListView listView) {
         this.listView = listView;
     }
-
+    public void setTitle(int resID){
+        ((TextView)findViewById(R.id.title)).setText(resID);
+    }
+    public void dismissCancelButton(){
+        findViewById(R.id.cancel).setVisibility(View.GONE);
+    }
 }

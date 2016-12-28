@@ -53,7 +53,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub_task);
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
-        taskId=TaskDetail.get(Task.TASK_ID).valueAsString();
+        taskId=DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID));
         TaskComplete=getIntent().getBooleanExtra("TaskComplete",false);
         TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         initView();
@@ -210,7 +210,7 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
         params.put("task_id",taskId);
         params.put("pageSize",PAGE_SIZE);
         params.put("pageIndex",pageIndex);
-        HttpUtils.get(this, "TaskItemList", params, new HttpCallback() {
+        HttpUtils.get(this, "TaskItemAPI/GetTaskItemList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

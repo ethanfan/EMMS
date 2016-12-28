@@ -223,7 +223,7 @@ public class CustomDialog extends Dialog {
         if(modifySubTask==null){
         jsonObjectElement.set("TaskItem_ID",0);}
         else {
-            jsonObjectElement.set("TaskItem_ID",modifySubTask.get("TaskItem_ID").valueAsString());
+            jsonObjectElement.set("TaskItem_ID",DataUtil.isDataElementNull(modifySubTask.get("TaskItem_ID")));
         }
         jsonObjectElement.set(Task.TASK_ID,TaskId);
 
@@ -362,7 +362,7 @@ public class CustomDialog extends Dialog {
         if (null == o || o.isNull()) {
             return "";
         }
-        return o.valueAsString();
+        return DataUtil.isDataElementNull(o);
     }
 
     private <T> T getDataFromDataMap(String key, Class<T> cls) {
@@ -445,7 +445,7 @@ public class CustomDialog extends Dialog {
                 isSearchview = true ;
                 final int inPosition = position;
                 String itemNam = mResultAdapter.getItemName();
-                final String searchResult =mResultAdapter.getItem(position).get(itemNam).valueAsString();
+                final String searchResult =DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(itemNam));
                 if (!searchResult.equals("")) {
                     ((Activity)context).runOnUiThread(new Runnable() {
                         @Override
@@ -456,7 +456,7 @@ public class CustomDialog extends Dialog {
                                     break;
                                 case 2:
                                     sub_task_equipment_num.getmEditText().setText(searchResult);
-                                    EquipmentId=mResultAdapter.getItem(position).get(Equipment.EQUIPMENT_ID).valueAsString();
+                                    EquipmentId=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(Equipment.EQUIPMENT_ID));
                                     break;
                             }
                             mDrawer_layout.closeDrawer(Gravity.RIGHT);
@@ -516,7 +516,7 @@ public class CustomDialog extends Dialog {
     private ArrayList<ObjectElement> search(String keyword,String  tagString) {
         ArrayList<ObjectElement> reDatas = new ArrayList<>();
         for (int i = 0; i < searchDataLists.size(); i++) {
-            if (searchDataLists.get(i).get(tagString).valueAsString().toUpperCase().contains(keyword.toUpperCase())) {
+            if (DataUtil.isDataElementNull(searchDataLists.get(i).get(tagString)).toUpperCase().contains(keyword.toUpperCase())) {
                 reDatas.add(searchDataLists.get(i));
             }
         }

@@ -41,6 +41,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -151,26 +152,33 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
         LanguageList.add(language2);
     }
     private void initFactory(){
-        String rawQuery="select * from BaseOrganise where  OrganiseType = 1";
-        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
-                EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
-        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
-            @Override
-            public void onSuccess(DataElement element) {
-                if(element!=null) {
-                    if(element.isArray()&&element.asArrayElement().size()>0){
-                        FactoryList.clear();
-                        for (int i=0;i<element.asArrayElement().size();i++){
-                            FactoryList.add(element.asArrayElement().get(i).asObjectElement());}
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                System.out.println(throwable.getMessage());
-            }
-        });
+//        String rawQuery="select * from BaseOrganise where  OrganiseType = 1";
+//        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
+//                EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
+//        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
+//            @Override
+//            public void onSuccess(DataElement element) {
+//                if(element!=null) {
+//                    if(element.isArray()&&element.asArrayElement().size()>0){
+//                        FactoryList.clear();
+//                        for (int i=0;i<element.asArrayElement().size();i++){
+//                            FactoryList.add(element.asArrayElement().get(i).asObjectElement());}
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable throwable) {
+//                System.out.println(throwable.getMessage());
+//            }
+//        });
+        FactoryList.clear();
+        ObjectElement GEW=new JsonObjectElement();
+        GEW.set("OrganiseName","GEW");
+        ObjectElement EGM=new JsonObjectElement();
+        EGM.set("OrganiseName","EGM");
+        FactoryList.add(GEW);
+        FactoryList.add(EGM);
     }
     private void initNetWork(){
         NetWorkList.clear();
@@ -205,7 +213,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 isSearchview = true ;
                 String itemNam = mResultAdapter.getItemName();
-                final String searchResult =mResultAdapter.getItem(position).get(itemNam).valueAsString();
+                final String searchResult =DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(itemNam));
                 if (!searchResult.equals("")) {
                     ((Activity)context).runOnUiThread(new Runnable() {
                         @Override
@@ -213,7 +221,34 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                             switch (searchtag) {
                                 case FACTORY_SETTING:
                                     Factory.getmEditText().setText(searchResult);
-                                    SharedPreferenceManager.setFactory(context,searchResult);
+                                    String oldFactory=SharedPreferenceManager.getFactory(context);
+                                    DataUtil.FactoryAndNetWorkAddressSetting(context,searchResult);
+                                    BuildConfig.NetWorkSetting(context);
+//                                    AlertDialog.Builder dialog=new AlertDialog.Builder(context);
+//                                    dialog.setMessage("");
+//                                    dialog.setPositiveButton(R.string.sure,new DialogInterface.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int which) {
+                                    if(!searchResult.equals(oldFactory)) {
+                                        ToastUtil.showToastLong(R.string.ChangeFactory,context);
+                                        File dbFile;
+                                        if (BuildConfig.isDebug) {
+                                            dbFile = new File(getExternalFilesDir(null), "/EMMS_TEST_" + SharedPreferenceManager.getFactory(context) + ".zip");
+                                        } else {
+                                            dbFile = new File(getExternalFilesDir(null), "/EMMS_" + SharedPreferenceManager.getFactory(context) + ".zip");
+                                        }
+                                        getDBFromServer(dbFile);
+                                    }
+//                                            dialog.dismiss();
+//                                        }
+//                                    });
+//                                    dialog.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int which) {
+//                                            dialog.dismiss();
+//                                        }
+//                                    });
+//                                    dialog.show();
                                     break;
                                 case NETWORK_SETTING:
                                     NetWork.getmEditText().setText(searchResult);
@@ -311,7 +346,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
     private ArrayList<ObjectElement> search(String keyword,String  tagString) {
         ArrayList<ObjectElement> reDatas = new ArrayList<>();
         for (int i = 0; i < searchDataLists.size(); i++) {
-            if (searchDataLists.get(i).get(tagString).valueAsString().toUpperCase().contains(keyword.toUpperCase())) {
+            if (DataUtil.isDataElementNull(searchDataLists.get(i).get(tagString)).toUpperCase().contains(keyword.toUpperCase())) {
                 reDatas.add(searchDataLists.get(i));
             }
         }

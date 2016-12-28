@@ -196,7 +196,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final int inPosition = position;
                 String itemNam = mResultAdapter.getItemName();
-                final String searchResult =mResultAdapter.getItem(position).get(itemNam).valueAsString();
+                final String searchResult =DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(itemNam));
                 if (!searchResult.equals("")) {
                     ((Activity)context).runOnUiThread(new Runnable() {
                         @Override
@@ -261,7 +261,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
     private ArrayList<ObjectElement> search(String keyword,String  tagString) {
         ArrayList<ObjectElement> reDatas = new ArrayList<>();
         for (int i = 0; i < searchDataLists.size(); i++) {
-            if (searchDataLists.get(i).get(tagString).valueAsString().toUpperCase().contains(keyword.toUpperCase())) {
+            if (DataUtil.isDataElementNull(searchDataLists.get(i).get(tagString)).toUpperCase().contains(keyword.toUpperCase())) {
                 reDatas.add(searchDataLists.get(i));
             }
         }
@@ -641,7 +641,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
         EvaluationData.set("MaintainSpeed",command.get("repair_speed"));
         SubmitData.set("Evaluation",EvaluationData);
         params.putJsonParams(SubmitData.toJson());
-        HttpUtils.post(this, "TaskRecieve/TaskStatement", params, new HttpCallback() {
+        HttpUtils.post(this, "TaskAPI/TaskStatement", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

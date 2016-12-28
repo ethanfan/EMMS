@@ -11,6 +11,7 @@ import com.emms.util.ToastUtil;
 
 /**
  * Created by Administrator on 2016/8/26.
+ *
  */
 public class CancelTaskDialog extends Dialog{
     private Context context;
@@ -28,7 +29,7 @@ public class CancelTaskDialog extends Dialog{
             @Override
             public void onClick(View v) {
                 cancelReason.requestFocus();
-                InputMethodManager imm = (InputMethodManager) context.getSystemService(context.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.toggleSoftInput(0, InputMethodManager.RESULT_SHOWN);
             }
         });

@@ -154,9 +154,9 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                     holder = (TaskViewHolder) convertView.getTag();
                 }
                 // if(!showList.get(position).get("Type").valueAsString().equals("delete")){
-                if (showList.get(position).get("Type").valueAsString().equals("EquipmentStatus")) {
+                if (DataUtil.isDataElementNull(showList.get(position).get("Type")).equals("EquipmentStatus")) {
                     holder.image.setImageResource(R.mipmap.equipment_status);
-                } else if (showList.get(position).get("Type").valueAsString().equals("EquipmentOperatorStatus")) {
+                } else if (DataUtil.isDataElementNull(showList.get(position).get("Type")).equals("EquipmentOperatorStatus")) {
                     holder.image.setImageResource(R.mipmap.equipment_operator_status_mipmap);
                 } else {
                     holder.image.setImageResource(R.mipmap.delete_equipment);
@@ -171,9 +171,9 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //修改设备状态
-                if(showList.get(position).get("Type").valueAsString().equals("EquipmentStatus")){
+                if(DataUtil.isDataElementNull(showList.get(position).get("Type")).equals("EquipmentStatus")){
                     postTaskEquipment(Equipment_Status_Name_ID_map.get(DataUtil.isDataElementNull(showList.get(position).get("Status"))));
-                }else if(showList.get(position).get("Type").valueAsString().equals("EquipmentOperatorStatus")){
+                }else if(DataUtil.isDataElementNull(showList.get(position).get("Type")).equals("EquipmentOperatorStatus")){
                     //修改设备参与人状态
                     if(isNoEuqipment){
                         ChangeTaskOperatorStatus(Equipment_Operator_Status_Name_ID_map.get(DataUtil.isDataElementNull(showList.get(position).get("Status"))));
@@ -181,7 +181,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                         postTaskOperatorEquipment(Equipment_Operator_Status_Name_ID_map.get(DataUtil.isDataElementNull(showList.get(position).get("Status"))));
                     }
                 }
-                else if(showList.get(position).get("Type").valueAsString().equals(DELETE)){
+                else if(DataUtil.isDataElementNull(showList.get(position).get("Type")).equals(DELETE)){
                     AlertDialog.Builder builder=new AlertDialog.Builder(context);
                     builder.setMessage(R.string.sureDeleteEquipment);
                     builder.setPositiveButton(R.string.sure, new OnClickListener() {

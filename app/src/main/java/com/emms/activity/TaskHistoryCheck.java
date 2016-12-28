@@ -200,7 +200,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 String itemNam = mResultAdapter.getItemName();
-                final String searchResult =mResultAdapter.getItem(position).get(itemNam).valueAsString();
+                final String searchResult =DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(itemNam));
                 if (!searchResult.equals("")) {
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
@@ -282,7 +282,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
     private ArrayList<ObjectElement> search(String keyword,String  tagString) {
         ArrayList<ObjectElement> reDatas = new ArrayList<>();
         for (int i = 0; i < searchDataLists.size(); i++) {
-            if (searchDataLists.get(i).get(tagString).valueAsString().toUpperCase().contains(keyword.toUpperCase())) {
+            if (DataUtil.isDataElementNull(searchDataLists.get(i).get(tagString)).toUpperCase().contains(keyword.toUpperCase())) {
                 reDatas.add(searchDataLists.get(i));
             }
         }

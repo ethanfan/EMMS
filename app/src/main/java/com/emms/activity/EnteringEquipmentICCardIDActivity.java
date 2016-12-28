@@ -162,7 +162,7 @@ private void initView(){
         });
     }
     private void initData(){
-        String rawQuery="select AssetsID,Equipment_ID,ifnull(ICCardID,'') ICCardID from Equipment";
+        String rawQuery="select AssetsID,Equipment_ID,ifnull(ICCardID,'') ICCardID from Equipment where AssetsID not null";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -297,7 +297,7 @@ private void initView(){
     private ArrayList<ObjectElement> search(String keyword,String  tagString) {
         ArrayList<ObjectElement> reDatas = new ArrayList<>();
         for (int i = 0; i < searchDataLists.size(); i++) {
-            if (searchDataLists.get(i).get(tagString).valueAsString().toUpperCase().contains(keyword.toUpperCase())) {
+            if (DataUtil.isDataElementNull(searchDataLists.get(i).get(tagString)).toUpperCase().contains(keyword.toUpperCase())) {
                 reDatas.add(searchDataLists.get(i));
             }
         }

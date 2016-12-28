@@ -334,9 +334,11 @@
     <string name="OneWeek">Within a week</string>
     <string name="error_occur">Error occurred</string>
     <string name="getDataFail">Failed to get data</string>
+    <string name="gettingDataPleaseWait">Data loading,please wait</string>
     <string name="cancleTask">Cancel Task</string>
     <string name="NoCancelReason">The cause of cancelling task can not be empty</string>
     <string name="FailCancelTask">Cancel task failure</string>
+    <string name="FailCancelTaskCauseByNetWork">Failed to cancel task,please check network</string>
     <string name="FailCancelTaskCauseByTaskCompleted">Linked task cannot be cancelled</string>
     <string name="FailGetEquipmentList">Access to Equipment list failed, access timeout</string>
     <string name="FailSubmitPicture">Upload picture failed</string>
@@ -514,4 +516,9 @@
     <string name="GroupArrangement">Group Arrange</string>
     <string name="GroupArrangementTask">Group Arrange Task</string>
     <string name="ThisEquipmentIsBinding">This equipment has been bound to the ICcard, do you want to change the binding?</string>
+    <string name="GetGroupDataFail">Fail to get group data</string>
+    <string name="GetGroupDataFailCauseByNetWork">Fail to get group data,please check network</string>
+    <string name="ChangeFactory">Factory modification success,synchronized corresponding data</string>
+    <string name="SelectFactory">Please select factory</string>
+    <string name="DataTooMorePleaseWait">Large amount of data, please wait patiently</string>
 </resources>

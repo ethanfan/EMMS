@@ -335,9 +335,11 @@
     <string name="OneWeek">一周内</string>
     <string name="error_occur">发生错误</string>
     <string name="getDataFail">获取数据失败</string>
+    <string name="gettingDataPleaseWait">数据加载中，请稍候</string>
     <string name="cancleTask">取消任务</string>
     <string name="NoCancelReason">取消任务原因不能为空</string>
     <string name="FailCancelTask">取消任务失败</string>
+    <string name="FailCancelTaskCauseByNetWork">取消任务失败,请检查网络</string>
     <string name="FailCancelTaskCauseByTaskCompleted">已结单任务不可取消</string>
     <string name="FailGetEquipmentList">获取设备列表失败，访问超时</string>
     <string name="FailSubmitPicture">上传图片失败</string>
@@ -513,4 +515,9 @@
     <string name="GroupArrangement">组内安排</string>
     <string name="GroupArrangementTask">组内安排任务</string>
     <string name="ThisEquipmentIsBinding">该设备已绑定IC卡，是否更改绑定？</string>
+    <string name="GetGroupDataFail">获取班组信息失败</string>
+    <string name="GetGroupDataFailCauseByNetWork">获取班组信息失败，请检查网络</string>
+    <string name="ChangeFactory">分厂修改成功，正在同步相应数据</string>
+    <string name="SelectFactory">请选择分厂</string>
+    <string name="DataTooMorePleaseWait">数据量较大，请耐心等候</string>
 </resources>

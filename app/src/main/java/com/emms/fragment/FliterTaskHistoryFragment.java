@@ -282,17 +282,18 @@ public class FliterTaskHistoryFragment extends BaseFragment {
         submitData.set(Task.TASK_ID,DataUtil.isDataElementNull(task.get(Task.TASK_ID)));
         submitData.set("QuitReason",reason);
         params.putJsonParams(submitData.toJson());
-        HttpUtils.post(mContext, "TaskRecieve/TaskQuit", params, new HttpCallback() {
+        HttpUtils.post(mContext, "TaskAPI/TaskQuit", params, new HttpCallback() {
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastShort(R.string.FailCancelTask,mContext);
+                ToastUtil.showToastShort(R.string.FailCancelTaskCauseByNetWork,mContext);
                 dismissCustomDialog();
             }
 
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
+                dismissCustomDialog();
                 if(t!=null){
                     JsonObjectElement returnData=new JsonObjectElement(t);
                     if(returnData.get(Data.SUCCESS).valueAsBoolean()){
@@ -303,7 +304,6 @@ public class FliterTaskHistoryFragment extends BaseFragment {
                         ToastUtil.showToastShort(R.string.FailCancelTask,mContext);
                     }
                 }
-                dismissCustomDialog();
             }
         });
     }

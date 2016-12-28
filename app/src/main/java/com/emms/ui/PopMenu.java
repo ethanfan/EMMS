@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.emms.R;
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.emms.util.DataUtil;
 
 import java.util.ArrayList;
 
@@ -138,7 +139,7 @@ public class PopMenu {
 				holder = (ViewHolder) convertView.getTag();
 			}
 
-			holder.groupItem.setText(itemList.get(position).get(itemName).valueAsString());
+			holder.groupItem.setText(DataUtil.isDataElementNull(itemList.get(position).get(itemName)));
 
 			return convertView;
 		}

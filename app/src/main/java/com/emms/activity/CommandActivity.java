@@ -31,6 +31,7 @@ import java.util.HashMap;
 
 /**
  * Created by Administrator on 2016/7/25.
+ *
  */
 public class CommandActivity extends NfcActivity  {
     private TextView group,task_id,task_create_time,task_accept_time,task_complete_time;

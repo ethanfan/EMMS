@@ -153,7 +153,7 @@ public class TaskVerifyActivity extends NfcActivity {
         jsonObjectElement.set(Task.TASK_ID,DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.TASK_ID)));
         jsonObjectElement.set("CheckStatus",status);
         params.putJsonParams(jsonObjectElement.toJson());
-        HttpUtils.post(this, "Task/TaskCheck", params, new HttpCallback() {
+        HttpUtils.post(this, "TaskAPI/TaskCheck", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

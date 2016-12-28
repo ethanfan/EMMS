@@ -51,8 +51,11 @@
             android:textColor="#FFFFFF"
             android:layout_toRightOf="@+id/rootImage"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="18dp"
-            android:text="daf"
+            android:layout_marginTop="15dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="name"
+            android:layout_toLeftOf="@+id/button2"
             android:textSize="17sp"/>
         <TextView
             android:layout_width="wrap_content"
@@ -61,7 +64,7 @@
             android:layout_below="@+id/UserName"
             android:id="@+id/WorkNum_tag"
             android:layout_marginTop="2dp"
-            android:text="daf"
+            android:text="num"
             android:textColor="#FFFFFF"
             android:textSize="17sp"/>
         <!--<TextView-->

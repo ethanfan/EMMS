@@ -219,7 +219,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                if(t!=null){
+                if(!DataUtil.isNullOrEmpty(t)){
                     JsonObjectElement json=new JsonObjectElement(t);
                    if(json.get("PageData")!=null&&json.get("PageData").isArray()&&json.get("PageData").asArrayElement().size()>0){
                        listGroup.clear();
@@ -234,12 +234,20 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
                     }
 
                    // if(json!=null)
+                }else {
+                    ToastUtil.showToastLong(R.string.GetGroupDataFail,context);
                 }
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtil.showToastLong(R.string.GetGroupDataFailCauseByNetWork,context);
+                    }
+                });
                 dismissCustomDialog();
             }
         });
@@ -343,7 +351,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
         jsonObjectElement.set("Operator_IDS",jsonArrayElement);
        // Log.e("daf",a.toString());
         params.putJsonParams(jsonObjectElement.toJson());
-        HttpUtils.post(this, "TaskOperatorChange", params, new HttpCallback() {
+        HttpUtils.post(this, "TaskOperatorAPI/ChangeTaskOperator", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -389,7 +397,7 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
     private void getTaskOperatorListFromServer(){
         HttpParams params=new HttpParams();
         params.put("task_id",taskId);
-        HttpUtils.get(this, "TaskOperatorJoin", params, new HttpCallback() {
+        HttpUtils.get(this, "TaskOperatorAPI/GetTaskOperatorList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

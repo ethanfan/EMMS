@@ -245,10 +245,16 @@ public class PendingVerifyFragment extends BaseFragment {
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
         // params.put("task_class",Task.REPAIR_TASK);
-        params.put("pageSize",PAGE_SIZE);
-        params.put("pageIndex",pageIndex);
-        params.put("Verity",0);//0为未核验
-        HttpUtils.get(mContext, "TaskWorkloadVerity", params, new HttpCallback() {
+//        params.put("pageSize",PAGE_SIZE);
+//        params.put("pageIndex",pageIndex);
+//        params.put("Verity",0);//0为未核验
+        JsonObjectElement data=new JsonObjectElement();
+        data.set("pageSize",PAGE_SIZE);
+        data.set("pageIndex",pageIndex);
+        data.set("Verity",0);//0为未核验
+        params.putJsonParams(data.toJson());
+        //params.put("filterModel",data.toJson());
+        HttpUtils.post(mContext, "TaskAPI/GetTaskWorkloadVerityList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -390,7 +396,7 @@ public class PendingVerifyFragment extends BaseFragment {
         }
         final JsonArrayElement jsonArrayElement=new JsonArrayElement(list.toString());
         params.putJsonParams(jsonArrayElement.toJson());
-        HttpUtils.post(mContext, "TaskWorkloadVerity", params, new HttpCallback() {
+        HttpUtils.post(mContext, "TaskAPI/VerityTaskWorkload", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

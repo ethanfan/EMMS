@@ -192,7 +192,7 @@ public class SummaryActivity extends NfcActivity{
                 isSearchview = true ;
                 final int inPosition = position;
                 String itemNam = mResultAdapter.getItemName();
-                final String searchResult =mResultAdapter.getItem(position).get(itemNam).valueAsString();
+                final String searchResult =DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(itemNam));
                 if (!searchResult.equals("")) {
                     ((Activity)context).runOnUiThread(new Runnable() {
                         @Override
@@ -257,7 +257,7 @@ public class SummaryActivity extends NfcActivity{
     private ArrayList<ObjectElement> search(String keyword,String  tagString) {
         ArrayList<ObjectElement> reDatas = new ArrayList<>();
         for (int i = 0; i < searchDataLists.size(); i++) {
-            if (searchDataLists.get(i).get(tagString).valueAsString().toUpperCase().contains(keyword.toUpperCase())) {
+            if (DataUtil.isDataElementNull(searchDataLists.get(i).get(tagString)).toUpperCase().contains(keyword.toUpperCase())) {
                 reDatas.add(searchDataLists.get(i));
             }
         }
@@ -375,7 +375,7 @@ public class SummaryActivity extends NfcActivity{
         showCustomDialog(R.string.loadingData);
         HttpParams httpParams=new HttpParams();
         httpParams.put("task_id", DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
-        HttpUtils.get(this, "TaskTroubleContent", httpParams, new HttpCallback() {
+        HttpUtils.get(this, "TaskTroubleAPI/GetTaskTroubleList", httpParams, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -517,11 +517,14 @@ public class SummaryActivity extends NfcActivity{
             @Override
             public void onSuccess(String t) {
                 if(t!=null){
-                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                    final JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                     if(jsonObjectElement.get("Success")!=null&&
                             jsonObjectElement.get("Success").valueAsBoolean()){
                         ToastUtil.showToastShort(R.string.taskComplete,context);
-                        if(TaskClass!=null&&TaskClass.equals(Task.TRANSFER_MODEL_TASK)){
+                        if(TaskClass!=null
+                                &&TaskClass.equals(Task.TRANSFER_MODEL_TASK)
+                                &&(jsonObjectElement.get("Tag")==null||"1".equals(DataUtil.isDataElementNull(jsonObjectElement.get("Tag"))))
+                                ){//Tag为1即需要弹出对话框询问用户是否需要创建新任务
                             AlertDialog.Builder builder=new AlertDialog.Builder(context);
                             builder.setMessage(R.string.DoYouNeedToCreateACarMovingTask);
                             builder.setCancelable(false);
@@ -553,7 +556,11 @@ public class SummaryActivity extends NfcActivity{
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ToastUtil.showToastShort(R.string.canNotSubmitTaskComplete,context);
+//                                if(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")).isEmpty()){
+                                    ToastUtil.showToastShort(R.string.canNotSubmitTaskComplete,context);
+//                                }else {
+//                                    ToastUtil.showToastLong(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")),context);
+//                                }
                             }
                         });
                     }

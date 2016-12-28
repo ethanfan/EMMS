@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Handler;
 import android.support.multidex.MultiDex;
@@ -22,10 +23,15 @@ import com.emms.push.PushReceiver;
 import com.emms.push.PushService;
 import com.emms.util.BuildConfig;
 import com.emms.util.LocaleUtils;
+import com.emms.util.SharedPreferenceManager;
 import com.google.common.util.concurrent.ServiceManager;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import org.apache.commons.lang.StringUtils;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -50,6 +56,13 @@ public class AppApplication extends Application {
 //        // 注册crashHandler
 //        catchHandler.init(getApplicationContext());
         //初始化Jpush推送服务
+//        if(SharedPreferenceManager.getFactory(this)==null){
+//            SharedPreferenceManager.setFactory(this, "GEW");
+//        }
+        //Garment测试包设置
+        //SharedPreferenceManager.setFactory(this,"EGM");
+        //SharedPreferenceManager.setNetwork(this,"InnerNetwork");
+
         JPushInterface.init(this);
         PushService.registerMessageReceiver(getApplicationContext());
         System.setProperty("ssl.TrustManagerFactory.algorithm",
@@ -61,7 +74,6 @@ public class AppApplication extends Application {
         //bugly初始化
         CrashReport.initCrashReport(getApplicationContext(), "900057191", true);
         //地址设置
-        BuildConfig.NetWorkSetting(this);
         JPushInterface.stopPush(getApplicationContext());
     }
 
@@ -188,5 +200,35 @@ public class AppApplication extends Application {
         }
         return  new PackageInfo();
     }
-
+    // 从asserts目录下拷贝文件到files
+//    private void copyDB() {
+//
+//        // 获取输出流,文件存储目录:data/data/包名/files目录下，文件名相同
+//        File file = new File(getFilesDir(), "EMMS.db");
+//
+//        // 当文件不存在的时候：才去拷贝，已经存在的不再去拷贝了。
+//        if (!file.exists()) {
+//            AssetManager assetManager = getAssets();
+//
+//            try {
+//
+//                // 获取输入流
+//                InputStream is = assetManager.open("EMMS.db");
+//
+//                FileOutputStream fos = new FileOutputStream(file);
+//                // 开始读和写
+//                byte[] bys = new byte[1024];
+//                int len;
+//                while ((len = is.read(bys)) != -1) {
+//                    fos.write(bys, 0, len);
+//                }
+//                is.close();
+//                fos.close();
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//    }
 }

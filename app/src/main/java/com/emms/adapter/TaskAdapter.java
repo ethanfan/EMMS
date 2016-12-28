@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.emms.ui.DropEditText;
+import com.emms.ui.MyListView;
 
 import java.util.ArrayList;
 
@@ -78,7 +79,7 @@ public abstract class TaskAdapter extends BaseAdapter{
         public Button acceptTaskButton;
         public Button rejectTaskButton;
         public Button EndTaskButton;
-        public ListView listView;
+        public MyListView listView;
         public ImageView image;
         public EditText editText;
         public EditText editText2;

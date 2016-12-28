@@ -21,6 +21,7 @@ import com.emms.fragment.ProcessingFragment;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.Constants;
+import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.emms.util.ViewFindUtils;
 import com.flyco.tablayout.SlidingTabLayout;
@@ -296,7 +297,7 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
                         for (int i = 0; i < json.get("PageData").asArrayElement().size(); i++) {
                             //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
                             //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectEl
-                            if(json.get("PageData").asArrayElement().get(i).asObjectElement().get("DataCode").valueAsString().equals(TaskClass)){
+                            if(DataUtil.isDataElementNull(json.get("PageData").asArrayElement().get(i).asObjectElement().get("DataCode")).equals(TaskClass)){
                                 tabLayout_2.showMsg(1, json.get("PageData").asArrayElement().get(i).asObjectElement().get("S0").valueAsInt());
                                 tabLayout_2.showMsg(0, json.get("PageData").asArrayElement().get(i).asObjectElement().get("S1").valueAsInt());
                             }

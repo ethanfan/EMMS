@@ -169,14 +169,17 @@ public class OverDueVerifyFragment extends BaseFragment {
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
        // params.put("task_class",Task.REPAIR_TASK);
-        params.put("pageSize",PAGE_SIZE);
-        params.put("pageIndex",pageIndex);
+
+        JsonObjectElement data=new JsonObjectElement();
         if(Verity==4){
-            params.put("dateLength",filterTime);
+            data.set("dateLength",filterTime);
         }else {
-            params.put("Verity",Verity);
+            data.set("Verity",Verity);
         }
-        HttpUtils.get(mContext, "TaskWorkloadVerity", params, new HttpCallback() {
+        data.set("pageSize",PAGE_SIZE);
+        data.set("pageIndex",pageIndex);
+        params.putJsonParams(data.toJson());
+        HttpUtils.post(mContext, "TaskAPI/GetTaskWorkloadVerityList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

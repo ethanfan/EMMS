@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import com.emms.R;
 import com.emms.adapter.MenuAdapter;
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.emms.util.DataUtil;
 
 import java.util.ArrayList;
 
@@ -138,7 +139,7 @@ public  class DropEditText extends FrameLayout implements View.OnClickListener{
 								long id) {
 			selectPosition =position;
 			try {
-				mEditText.setText(datas.get(position).get(itemName).valueAsString());
+				mEditText.setText(DataUtil.isDataElementNull(datas.get(position).get(itemName)));
 			}catch (Exception e){
 				e.printStackTrace();
 			}

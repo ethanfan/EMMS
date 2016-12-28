@@ -551,7 +551,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
     private ArrayList<ObjectElement> search(String keyword,String  tagString) {
         ArrayList<ObjectElement> reDatas = new ArrayList<>();
         for (int i = 0; i < searchDataLists.size(); i++) {
-            if (searchDataLists.get(i).get(tagString).valueAsString().toUpperCase().contains(keyword.toUpperCase())) {
+            if (DataUtil.isDataElementNull(searchDataLists.get(i).get(tagString)).toUpperCase().contains(keyword.toUpperCase())) {
                 reDatas.add(searchDataLists.get(i));
             }
         }
@@ -667,16 +667,18 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
                                     ObjectElement json=jsonArrayElement.get(i).asObjectElement();
                                     json.set("tag",false);
                                     if(DataUtil.isDataElementNull(json.get("PointType")).equals(MeasurePoint.PROCESS_MEASURE_POINT)
-                                            ||DataUtil.isDataElementNull(json.get("PointType")).equals(MeasurePoint.CHECK_POINT)){
+                                            ||DataUtil.isDataElementNull(json.get("PointType")).equals(MeasurePoint.CHECK_POINT)
+                                            ||DataUtil.isDataElementNull(json.get("PointType")).equals(MeasurePoint.OBVERSE_MEASURE_POINT)){
                                         if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH) {
+                                            //英文环境的情况下，实际测值为无法检测情况下，翻译为英文
                                             if(TranslationMap.get(DataUtil.isDataElementNull(json.get("ResultValue")))!=null) {
                                                 if (MeasureValueMap.get(TranslationMap.get(DataUtil.isDataElementNull(json.get("ResultValue")))) != null) {
                                                     json.set("ResultValue", TranslationMap.get(DataUtil.isDataElementNull(json.get("ResultValue"))));
                                                     json.set("ReferenceValue",DataUtil.isDataElementNull(json.get("ResultValue")));
-
                                                 }
                                             }
                                         }else {
+                                            //中文环境下，过程测点和校验测点的实际测值为无法检测的情况下，设定标准测值也为无法检测
                                             if(MeasureValueMap.get(DataUtil.isDataElementNull(json.get("ResultValue")))!=null){
                                                 json.set("ReferenceValue",DataUtil.isDataElementNull(json.get("ResultValue")));
                                             }

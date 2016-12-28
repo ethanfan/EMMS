@@ -19,7 +19,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/workname"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textColor="@color/text_color"
                 android:id="@+id/textView22"
                 android:layout_alignParentTop="true" />
@@ -28,15 +28,17 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/textView22"
                 android:layout_toEndOf="@+id/textView22"
+                android:id="@+id/aaaaaaaa"
                 android:layout_alignTop="@+id/textView22">
             <TextView
                 android:id="@+id/id_worknum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="工单号"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textColor="@color/text_color"
-                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/workstatus"
                 android:layout_marginRight="5dp" />
             <TextView
                 android:layout_width="wrap_content"
@@ -46,19 +48,18 @@
                 android:textColor="@color/white"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/id_worknum"
-                android:layout_toEndOf="@+id/id_worknum" />
+                android:layout_marginRight="8dp"
+                android:layout_alignParentRight="true" />
             </RelativeLayout>
             <TextView
                 android:layout_marginTop="5dp"
                 android:paddingLeft="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textColor="@color/text_color"
                 android:text="@string/tech"
-                android:layout_below="@+id/textView22"
+                android:layout_below="@+id/aaaaaaaa"
                 android:layout_alignRight="@+id/textView22"
                 android:id="@+id/textView23"
                 android:paddingBottom="13dp"/>
@@ -67,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="特殊设备维修"
-                android:textSize="17sp"
+                android:textSize="16sp"
                 android:textColor="@color/text_color"
                 android:layout_alignTop="@+id/textView23"
                 android:layout_toRightOf="@+id/textView23"

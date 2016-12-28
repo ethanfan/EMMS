@@ -7,15 +7,18 @@ import android.util.Log;
 
 import org.apache.http.protocol.HTTP;
 
+import java.io.BufferedOutputStream;
+import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 public class FileUtils
@@ -121,7 +124,7 @@ public class FileUtils
 		}
 		return true;
 	}
-	public  void upZipFile(File zipFile, String folderPath, final Context context,DownloadCallback downloadCallback) throws ZipException, IOException {
+	public  void upZipFile(File zipFile, String folderPath, final Context context,DownloadCallback downloadCallback) throws IOException {
 		File desDir = new File(folderPath);
 		if (!desDir.exists()) {
 			desDir.mkdirs();
@@ -144,10 +147,16 @@ public class FileUtils
 					desFile.createNewFile();
 				}
 				out = new FileOutputStream(desFile);
-				byte buffer[] = new byte[1024];
+				byte buffer[] = new byte[1024*1024];
 				int realLength;
-				while ((realLength = in.read(buffer)) > 0) {
-					out.write(buffer, 0, realLength);
+				try {
+					while ((realLength = in.read(buffer)) > 0) {
+						out.write(buffer, 0, realLength);
+						out.flush();
+					}
+				}catch (IOException e){
+					//DO nothing
+					//Log.e("","");
 				}
 			}
 			if(downloadCallback!=null) {
@@ -160,5 +169,56 @@ public class FileUtils
 				out.close();
 		}
 	}
-
+	public static boolean unzip(
+			File zipFile,
+			String folderpath,
+			DownloadCallback downloadCallback)throws IOException {
+		File desDir = new File(folderpath);
+		if (!desDir.exists()) {
+			desDir.mkdirs();
+		}
+		FileInputStream fin = null;
+		GZIPInputStream zin = null;
+		BufferedOutputStream bufout = null;
+		File file = null;
+		try {
+			fin = new FileInputStream(zipFile);
+			zin = new GZIPInputStream(fin);
+				file = new File(zipFile.getParentFile().getAbsolutePath()+"/EMMS.db");
+				if (!file.exists()) {
+					file.getParentFile().mkdirs();
+					file.createNewFile();
+				}
+				FileOutputStream fout = new FileOutputStream(file);
+				bufout = new BufferedOutputStream(fout);
+				byte[] buffer = new byte[8096];
+				int length = -1;
+				while((length = zin.read(buffer)) != -1) {
+					bufout.write(buffer, 0, length);//涓�娆℃�у皢缂撳啿鍖虹殑鎵�鏈夋暟鎹兘鍐欏嚭鍘�
+					bufout.flush();
+				}
+				if(downloadCallback!=null) {
+					downloadCallback.success(true);
+				}
+		} catch (Exception e) {
+			if (file != null && file.exists()) {
+				file.delete();
+			}
+			return false;
+		} finally {
+			close(fin);
+			close(zin);
+			close(bufout);
+		}
+		return true;
+	}
+	private static void close(Closeable closeable) {
+		if (closeable != null) {
+			try {
+				closeable.close();
+			} catch (IOException e) {
+				// Ignored
+			}
+		}
+	}
 }

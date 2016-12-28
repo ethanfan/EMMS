@@ -20,6 +20,15 @@
         <item>Within 2 months</item>
         <item>Within 3 months</item>
     </string-array>
+    <string-array name="menu_list_group_arrange">
+        <item>Create New Task</item>
+        <item>Scan QR Code</item>
+        <item>Workload Input</item>
+        <item>Sub Task</item>
+        <item>Invite Assistance</item>
+        <item>Transfer Order</item>
+        <item>Complete Task</item>
+    </string-array>
     <string-array name="menu_list">
         <item>Create New Task</item>
         <item>Scan QR Code</item>

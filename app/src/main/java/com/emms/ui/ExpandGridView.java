@@ -6,6 +6,7 @@ import android.widget.GridView;
 
 /**
  * Created by jaffer.deng on 2016/6/27.
+ *
  */
 public class ExpandGridView extends GridView {
 

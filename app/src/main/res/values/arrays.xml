@@ -30,6 +30,15 @@
         <item>转单</item>
         <item>完成任务</item>
     </string-array>
+    <string-array name="menu_list_group_arrange">
+        <item>发起新任务</item>
+        <item>扫二维码</item>
+        <item>工作量录入</item>
+        <item>子任务管理</item>
+        <item>邀请协助</item>
+        <item>转单</item>
+        <item>完成任务</item>
+    </string-array>
     <string-array name="menu_list_maintain">
         <item>发起新任务</item>
         <item>扫二维码</item>

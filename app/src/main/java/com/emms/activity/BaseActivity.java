@@ -1,20 +1,21 @@
 package com.emms.activity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
-import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.datastore_android_sdk.sqlite.SqliteStore;
-import com.emms.ConfigurationManager;
 import com.emms.R;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
@@ -26,22 +27,20 @@ import com.emms.schema.Equipment;
 import com.emms.schema.Language_Translation;
 import com.emms.schema.Languages;
 import com.emms.schema.Operator;
-import com.emms.schema.TaskMessage;
 import com.emms.schema.TaskOrganiseRelation;
 import com.emms.ui.KProgressHUD;
 import com.emms.ui.LoadingDialog;
+import com.emms.util.BuildConfig;
 import com.emms.util.DataUtil;
+import com.emms.util.DownloadCallback;
 import com.emms.util.SharedPreferenceManager;
+import com.emms.util.ToastUtil;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Collections;
+import java.io.File;
 import java.util.Date;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.SynchronousQueue;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -52,6 +51,9 @@ import cn.jpush.android.api.JPushInterface;
 public abstract class BaseActivity extends AppCompatActivity {
     private KProgressHUD hud;
     private LoadingDialog loadingDialog;
+    private Handler mHandler;
+    private Context mContext=this;
+    public final int DBVersion=4;//需要进行DB更新的时候+1
     //private Queue<ObjectElement> queue=new SynchronousQueue<>();
     protected void onResume() {
         super.onResume();
@@ -71,6 +73,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
           try {
+              mHandler=new Handler(getMainLooper());
                if(Build.VERSION.SDK_INT>14) {
                  hud = KProgressHUD.create(this);
                }else {
@@ -105,26 +108,26 @@ public abstract class BaseActivity extends AppCompatActivity {
 //                operator.setUserRole_ID(objectElement.get("UserRole_ID").valueAsInt());
 //                operator.setModuleList(DataUtil.isDataElementNull(objectElement.get("AppInterfaceList")));
             }catch (Exception e){
-                CrashReport.postCatchedException(e);
+                //Do nothing
             }
         }
         return operator;
     }
-    protected Operator getLoginMsg(){
-        Operator operator = null;
-        String userData= SharedPreferenceManager.getMsg(this);
-        if(StringUtils.isNotBlank(userData)){
-            try {
-                operator = new Operator();
-                JsonObjectElement json = new JsonObjectElement(userData);
-                operator.setUserRole_ID(json.get("UserRole_ID").valueAsInt());
-                //operator.setModuleList(json.get("AppInterfaceList").valueAsString());
-            }catch (Exception e){
-                CrashReport.postCatchedException(e);
-            }
-        }
-        return operator;
-    }
+//    protected Operator getLoginMsg(){
+//        Operator operator = null;
+//        String userData= SharedPreferenceManager.getMsg(this);
+//        if(StringUtils.isNotBlank(userData)){
+//            try {
+//                operator = new Operator();
+//                JsonObjectElement json = new JsonObjectElement(userData);
+//                operator.setUserRole_ID(json.get("UserRole_ID").valueAsInt());
+//                //operator.setModuleList(json.get("AppInterfaceList").valueAsString());
+//            }catch (Exception e){
+//                CrashReport.postCatchedException(e);
+//            }
+//        }
+//        return operator;
+//    }
 
     protected Operator getLoginInfo(String data){
         Operator operator = null;
@@ -132,20 +135,20 @@ public abstract class BaseActivity extends AppCompatActivity {
             try {
                 operator = new Operator();
                 JsonObjectElement json = new JsonObjectElement(data);
-                operator.setId(Long.valueOf(json.get("Operator_ID").valueAsString()));
-                operator.setTeamId(json.get("Team_ID").valueAsString());
-                operator.setTeamName(json.get("TeamName").valueAsString());
-                operator.setName(json.get("Name").valueAsString());
+                operator.setId(Long.valueOf(DataUtil.isDataElementNull(json.get("Operator_ID"))));
+                operator.setTeamId(DataUtil.isDataElementNull(json.get("Team_ID")));
+                operator.setTeamName(DataUtil.isDataElementNull(json.get("TeamName")));
+                operator.setName(DataUtil.isDataElementNull(json.get("Name")));
                 //operator.setUserRole_ID(json.get("UserRole_ID").valueAsInt());
                 operator.setMaintenMan(json.get("IsMaintenMan").valueAsBoolean());
-                operator.setOrganiseID(json.get("Organise_ID").valueAsString());
-                operator.setOperator_no(json.get("OperatorNo").valueAsString());
+                operator.setOrganiseID(DataUtil.isDataElementNull(json.get("Organise_ID")));
+                operator.setOperator_no(DataUtil.isDataElementNull(json.get("OperatorNo")));
 //              operator = Operator.fromJson(userData, null, Operator.class);
 //                JsonObjectElement objectElement=new JsonObjectElement(SharedPreferenceManager.getMsg(this));
 //                operator.setUserRole_ID(objectElement.get("UserRole_ID").valueAsInt());
 //                operator.setModuleList(objectElement.get("AppInterfaceList").valueAsString());
             }catch (Exception e){
-                CrashReport.postCatchedException(e);
+                //Do nothing
             }
         }
         return operator;
@@ -190,6 +193,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         data.set("LastUpdateTime_TaskOrganiseRelation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_TaskOrganiseRelation")));
         data.set("LastUpdateTime_DataRelation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_DataRelation")));
         data.set("LastUpdateTime_Language_Translation",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_Language_Translation")));
+        //data.set("LastUpdateTime_Language_Translation","0x000000000003568F");//用于测试大量数据情况下数据更新效率
         data.set("LastUpdateTime_Languages",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_Languages")));
         //data.set("LastUpdateTime_TaskMessage",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_TaskMessage")));
         if(SharedPreferenceManager.getFactory(this)==null){
@@ -213,40 +217,49 @@ public abstract class BaseActivity extends AppCompatActivity {
                     if(jsonArray!=null){
                         Log.e("dd","bb");
                     }*/
-
+                    int Count=0;
                     try {
                         JsonObjectElement json = new JsonObjectElement(t);
+                        if(DataUtil.isInt(DataUtil.isDataElementNull(json.get("Count")))) {
+                            Count =json.get("Count").valueAsInt();
+                        }
                         if (json.get("DataType") != null && json.get("DataType").isArray() && json.get("DataType").asArrayElement().size() > 0) {
                             Log.e("DataType",String.valueOf(json.get("DataType").asArrayElement().size()));
-                            updateData(json.get("DataType"), EPassSqliteStoreOpenHelper.SCHEMA_DATATYPE);
+                            updateData(json.get("DataType"), EPassSqliteStoreOpenHelper.SCHEMA_DATATYPE,DataType.DATATYPE_ID);
+                           // DoUpdate(0,DataType.DATATYPE_ID,json.get("DataType"),EPassSqliteStoreOpenHelper.SCHEMA_DATATYPE);
                         }
                         if (json.get("BaseOrganise") != null && json.get("BaseOrganise").isArray() && json.get("BaseOrganise").asArrayElement().size() > 0) {
                             Log.e("BaseOrganise",String.valueOf(json.get("BaseOrganise").asArrayElement().size()));
-                            updateData(json.get("BaseOrganise"), EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE);
+                            updateData(json.get("BaseOrganise"), EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE,BaseOrganise.ORGANISE_ID);
+                            //DoUpdate(0,BaseOrganise.ORGANISE_ID,json.get("BaseOrganise"),EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE);
                         }
                         if (json.get("DataDictionary") != null && json.get("DataDictionary").isArray() && json.get("DataDictionary").asArrayElement().size() > 0) {
                             Log.e("DataDictionary",String.valueOf(json.get("DataDictionary").asArrayElement().size()));
-                            updateData(json.get("DataDictionary"), EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY);
+                            updateData(json.get("DataDictionary"), EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY,DataDictionary.DATA_ID);
+                            //DoUpdate(0,DataDictionary.DATA_ID,json.get("DataDictionary"),EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY);
                         }
                         if (json.get("Equipment") != null && json.get("Equipment").isArray() && json.get("Equipment").asArrayElement().size() > 0) {
                             Log.e("Equipment",String.valueOf(json.get("Equipment").asArrayElement().size()));
-                            updateData(json.get("Equipment"), EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT);
+                            updateData(json.get("Equipment"), EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT,Equipment.EQUIPMENT_ID);
+                            //DoUpdate(0,Equipment.EQUIPMENT_ID,json.get("Equipment"),EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT);
                         }
                         if (json.get("TaskOrganiseRelation") != null && json.get("TaskOrganiseRelation").isArray() && json.get("TaskOrganiseRelation").asArrayElement().size() > 0) {
                             Log.e("TaskOrganiseRelation",String.valueOf(json.get("TaskOrganiseRelation").asArrayElement().size()));
-                            updateData(json.get("TaskOrganiseRelation"), EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION);
+                            updateData(json.get("TaskOrganiseRelation"), EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION,TaskOrganiseRelation.TEAM_SERVICE_ID);
+                            //DoUpdate(0,TaskOrganiseRelation.TEAM_SERVICE_ID,json.get("TaskOrganiseRelation"),EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION);
                         }
                         if (json.get("DataRelation") != null && json.get("DataRelation").isArray() && json.get("DataRelation").asArrayElement().size() > 0) {
                             Log.e("DataRelation",String.valueOf(json.get("DataRelation").asArrayElement().size()));
-                            updateData(json.get("DataRelation"), EPassSqliteStoreOpenHelper.SCHEMA_DATA_RELATION);
+                            updateData(json.get("DataRelation"), EPassSqliteStoreOpenHelper.SCHEMA_DATA_RELATION,DataRelation.DATARELATION_ID);
+                            //DoUpdate(0,DataRelation.DATARELATION_ID,json.get("DataRelation"),EPassSqliteStoreOpenHelper.SCHEMA_DATA_RELATION);
                         }
                         if (json.get("Languages") != null && json.get("Languages").isArray() && json.get("Languages").asArrayElement().size() > 0) {
                             Log.e("Languages",String.valueOf(json.get("Languages").asArrayElement().size()));
-                            updateData(json.get("Languages"), EPassSqliteStoreOpenHelper.SCHEMA_LANGUAGES);
+                            updateData(json.get("Languages"), EPassSqliteStoreOpenHelper.SCHEMA_LANGUAGES,Languages.LANGUAGE_ID);
                         }
                         if (json.get("Language_Translation") != null && json.get("Language_Translation").isArray() && json.get("Language_Translation").asArrayElement().size() > 0) {
                             Log.e("Language_Translation",String.valueOf(json.get("Language_Translation").asArrayElement().size()));
-                            updateData(json.get("Language_Translation"), EPassSqliteStoreOpenHelper.SCHEMA_LANGUAGE_TRANSLATION);
+                            updateData(json.get("Language_Translation"), EPassSqliteStoreOpenHelper.SCHEMA_LANGUAGE_TRANSLATION,Language_Translation.TRANSLATION_ID);
                         }
 //                        if (json.get("TaskMessage") != null && json.get("TaskMessage").isArray() && json.get("TaskMessage").asArrayElement().size() > 0) {
 //                            Log.e("TaskMessage",String.valueOf(json.get("TaskMessage").asArrayElement().size()));
@@ -256,11 +269,35 @@ public abstract class BaseActivity extends AppCompatActivity {
                         CrashReport.postCatchedException(e);
                     }
                     finally {
-                        dismissCustomDialog();
+                        try {
+//                            if (Count > 50) {
+//                                RunDelay(5);
+//                            } else if (Count > 100) {
+//                                RunDelay(10);
+//                            } else if (Count > 200) {
+//                                RunDelay(15);
+//                            }else if(Count>1000){
+//                              RunDelay(60);
+//                            } else {
+//                                RunDelay(10);
+//                            }
+                            RunDelay((int)(Count/15));
+                            if(Count>500) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        ToastUtil.showToastLong(R.string.DataTooMorePleaseWait, mContext);
+                                    }
+                                });
+                            }
+                        }catch (Exception e){
+                            CrashReport.postCatchedException(e);
+                        }
                     }
+                }else {
+                    dismissCustomDialog();
                 }
                 // ConfigurationManager.getInstance().startToGetNewConfig(mContext);
-                dismissCustomDialog();
             }
             @Override
             public void onFailure(int errorNo, String strMsg) {
@@ -269,99 +306,77 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         });
     }
-    public void updateData(DataElement data,String resource){
+    public void updateData(final DataElement data, String resource, final String key){
         getSqliteStore().createElement(data, resource, new StoreCallback() {
             @Override
             public void success(DataElement element, String resource) {
                 Log.e("Success","successSave");
+                DoUpdate(0,key,data,resource);
             }
 
             @Override
             public void failure(DatastoreException ex, String resource) {
                 Log.e("Fail","FailSave");
+                DoUpdate(0,key,data,resource);
             }
         });
-        if(data!=null&&data.isArray()){
-            String s="";
-            switch (resource){
-                case "DataDictionary":{
-                    s= DataDictionary.DATA_ID;
-                    break;
-                }
-                case "Equipment":{
-                    s= Equipment.EQUIPMENT_ID;
-                    break;
-                }
-                case "BaseOrganise":{
-                    s= BaseOrganise.ORGANISE_ID;
-                    break;
-                }
-                case "DataType":{
-                    s= DataType.DATATYPE_ID;
-                    break;
-                }
-                case "TaskOrganiseRelation":{
-                    s= TaskOrganiseRelation.TEAM_SERVICE_ID;
-                    break;
-                }
-                case "DataRelation":{
-                    s= DataRelation.DATARELATION_ID;
-                    break;
-                }
-                case "Languages":{
-                    s= Languages.LANGUAGE_ID;
-                    break;
-                }
-                case "Language_Translation":{
-                    s= Language_Translation.TRANSLATION_ID;
-                    break;
-                }
+//        if(data!=null&&data.isArray()){
+//            String s="";
+//            switch (resource){
+//                case "DataDictionary":{
+//                    s= DataDictionary.DATA_ID;
+//                    break;
+//                }
+//                case "Equipment":{
+//                    s= Equipment.EQUIPMENT_ID;
+//                    break;
+//                }
+//                case "BaseOrganise":{
+//                    s= BaseOrganise.ORGANISE_ID;
+//                    break;
+//                }
+//                case "DataType":{
+//                    s= DataType.DATATYPE_ID;
+//                    break;
+//                }
+//                case "TaskOrganiseRelation":{
+//                    s= TaskOrganiseRelation.TEAM_SERVICE_ID;
+//                    break;
+//                }
+//                case "DataRelation":{
+//                    s= DataRelation.DATARELATION_ID;
+//                    break;
+//                }
+//                case "Languages":{
+//                    s= Languages.LANGUAGE_ID;
+//                    break;
+//                }
+//                case "Language_Translation":{
+//                    s= Language_Translation.TRANSLATION_ID;
+//                    break;
+//                }
 //                case "TaskMessage":{
 //                    s= TaskMessage.MESSAGE_ID;
 //                    break;
 //                }
-            }
-            for(int i=0;i<data.asArrayElement().size();i++){
-//           if(s==DataDictionary.DATA_ID){
-//               ObjectElement objectElement=data.asArrayElement().get(i).asObjectElement();
-//               String sql="UPDATE DATADICTIONARY SET "
-//                       + DataDictionary.FACTORY_ID+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.FACTORY_ID))
-//                       +"',"+DataDictionary.PDATA_ID+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.PDATA_ID))
-//                       +"',"+DataDictionary.DATA_TYPE+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_TYPE))
-//                       +"',"+DataDictionary.DATA_NAME+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_NAME))
-//                       +"',"+DataDictionary.DATA_DESCR+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_DESCR))
-//                       +"',"+DataDictionary.DATA_VALUE1+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_VALUE1))
-//                       +"',"+DataDictionary.DATA_VALUE2+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_VALUE2))
-//                       +"',"+DataDictionary.DATA_VALUE3+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_VALUE3))
-//                       +"',"+DataDictionary.LASTUPDATETIME+"='"+DataUtil.isDataElementNull(objectElement.get(DataDictionary.LASTUPDATETIME))
-//                       +"' WHERE "+DataDictionary.DATA_ID+"="+DataUtil.isDataElementNull(objectElement.get(DataDictionary.DATA_ID));
-//               getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
-//                   @Override
-//                   public void success(DataElement element, String resource) {
-//                       Log.e("","");
-//                   }
-//
-//                   @Override
-//                   public void failure(DatastoreException ex, String resource) {
-//                     Log.e("","");
-//                   }
-//               });
-//           }else {
-                getSqliteStore().updateElement(DataUtil.isDataElementNull(data.asArrayElement().get(i).asObjectElement().get(s)),
-                        data.asArrayElement().get(i), resource, new StoreCallback() {
-                            @Override
-                            public void success(DataElement element, String resource) {
-                                Log.e("SuccessUpdate", "SuccessUpdate");
-                            }
+//            }
 
-                            @Override
-                            public void failure(DatastoreException ex, String resource) {
-                                Log.e("FailUpdate", "FailUpdate");
-                            }
-                        });
-                //}
-            }
-        }
+//            for(int i=0;i<data.asArrayElement().size();i++){
+//                getSqliteStore().updateElement(DataUtil.isDataElementNull(data.asArrayElement().get(i).asObjectElement().get(s)),
+//                        data.asArrayElement().get(i), resource, new StoreCallback() {
+//                            @Override
+//                            public void success(DataElement element, String resource) {
+//                                Log.e("SuccessUpdate", "SuccessUpdate");
+//                            }
+//
+//                            @Override
+//                            public void failure(DatastoreException ex, String resource) {
+//                                Log.e("FailUpdate", "FailUpdate");
+//                            }
+//                        });
+//                //}
+//            }
+//        }
 
       /*  for(int i=0;i<data.asArrayElement().size();i++) {
             getSqliteStore().updateElements(new Query(), data.asArrayElement().get(i),resource, new StoreCallback() {
@@ -406,4 +421,166 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         });
     }
+    private void DoUpdate(final int i,final String key, final DataElement data,final String resource){
+        if(data.asArrayElement().get(i)!=null){
+            getSqliteStore().updateElement(DataUtil.isDataElementNull(data.asArrayElement().get(i).asObjectElement().get(key)),
+                    data.asArrayElement().get(i), resource, new StoreCallback() {
+                        @Override
+                        public void success(DataElement element, String resource) {
+                            Log.e("SuccessUpdate", "SuccessUpdate");
+                            DoUpdate(i+1,key,data,resource);
+                        }
+
+                        @Override
+                        public void failure(DatastoreException ex, String resource) {
+                            Log.e("FailUpdate", "FailUpdate");
+                            DoUpdate(i+1,key,data,resource);
+                        }
+                    });
+        }
+    }
+    private void RunDelay(int DelayTime){
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                dismissCustomDialog();
+            }
+        },DelayTime*1000);
+    }
+    public void getDBFromServer(final File dbFile){
+        // 下载Db文件
+        showCustomDialog(R.string.DownloadDataBase);
+        HttpParams params=new HttpParams();
+        params.put("factory",SharedPreferenceManager.getFactory(this)==null?"GEW":SharedPreferenceManager.getFactory(this));
+        HttpUtils.getWithoutCookies(this, "SqlToSqliteAPI/GetDBDownloadUrl", params, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                if(t!=null){
+                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t.trim());
+                    downloadDB(dbFile,DataUtil.isDataElementNull(jsonObjectElement.get("DownloadUrl")));
+                }else {
+                    dismissCustomDialog();
+                }
+            }
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                showErrorDownloadDatabaseDialog();
+                dismissCustomDialog();
+            }
+        });
+    }
+    public void downloadDB(final File dbFile,String url){
+        HttpUtils.download(this, dbFile.getAbsolutePath(), url, null, new HttpCallback() {
+            @Override
+            public void onSuccess(String t) {
+                super.onSuccess(t);
+                try{
+                    com.emms.util.FileUtils fileUtil=new com.emms.util.FileUtils();
+                    fileUtil.upZipFile(dbFile, dbFile.getParentFile().getAbsolutePath(), mContext, new DownloadCallback() {
+                        @Override
+                        public void success(boolean hasUpdate) {
+                            SharedPreferenceManager.setDatabaseVersion(mContext,String.valueOf(DBVersion));
+                            getDBDataLastUpdateTime();
+                        }
+                        @Override
+                        public void fail(Exception e) {
+                        }
+                    });
+                    ToastUtil.showToastShort(R.string.SuccessDownloadDB,mContext);
+                }catch (Exception e){
+                    showErrorDownloadDatabaseDialog();
+                }finally {
+                    dismissCustomDialog();
+                }
+            }
+
+            @Override
+            public void onFailure(int errorNo, String strMsg) {
+                super.onFailure(errorNo, strMsg);
+                if(dbFile.exists()) {
+                    if (dbFile.delete()) {
+                        showErrorDownloadDatabaseDialog();
+                    }
+                }else {
+                    showErrorDownloadDatabaseDialog();
+                }
+                //ToastUtil.showToastShort(R.string.loadingFail,mContext);
+                dismissCustomDialog();
+            }
+        });
+    }
+    private AlertDialog alertDialog;
+    public void showErrorDownloadDatabaseDialog() {
+        try {
+            if (alertDialog == null) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(R.string.FailDownloadDB);
+                builder.setPositiveButton(R.string.retry,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                getNewDataFromServer();
+                            }
+                        });
+                builder.setCancelable(false);
+                alertDialog = builder.create();
+            }
+            if (alertDialog != null && !alertDialog.isShowing()) {
+                alertDialog.show();
+            }
+        }catch (Exception e){
+            CrashReport.postCatchedException(e);
+        }
+    }
+    public void getNewDataFromServer() {
+        //检测数据库文件是否已经存在，若已存在，则调用增量接口
+        final File db = new File(getExternalFilesDir(null), "/EMMS.db");
+        if(db.exists()){
+            getDBDataLastUpdateTime();
+            return;
+        }
+        if(BuildConfig.isDebug){
+            final File dbFile = new File(getExternalFilesDir(null), "/EMMS_TEST_"+SharedPreferenceManager.getFactory(this)+".zip");
+            if(dbFile.exists()){
+                try{
+                    //解压db文件
+                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
+                }catch (Throwable e){
+                    CrashReport.postCatchedException(e);
+                    if(dbFile.exists()&&dbFile.delete()){
+                        showErrorDownloadDatabaseDialog();
+                    }
+                    ToastUtil.showToastLong(R.string.FailToUnZipDB,mContext);
+                }
+                return;
+            }
+            getDBFromServer(dbFile);
+        }else {
+            final File dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(this)+".zip");
+            if(dbFile.exists()){
+                try{
+                    //解压db文件
+                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
+                }catch (Throwable e){
+                    CrashReport.postCatchedException(e);
+                    if(dbFile.exists()&&dbFile.delete()){
+                        showErrorDownloadDatabaseDialog();
+                    }
+                    ToastUtil.showToastLong(R.string.FailToUnZipDB,mContext);
+                }
+                return;
+            }
+            getDBFromServer(dbFile);
+        }
+    }
+//    private void RunDelayToast(int DelayTime){
+//        mHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                ToastUtil.showToastLong(R.string.DataTooMorePleaseWait,mContext);
+//            }
+//        },DelayTime*1000);
+//    }
 }

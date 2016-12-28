@@ -41,10 +41,10 @@ public class BuildConfig {
 	private static final String garmentContentServerDownload = "http://10.20.252.20/emmswebapi/api/DataBase";
 
 	//GarmentTest
-	private static final String garmentTestAPIEndPoint = "http://devazure.gfg1.esquel.com/EMMS/api/";
-	private static final String garmentTestConfigurationEndPoint = "http://devazure.gfg1.esquel.com/EMMS/api/Token";
-	private static final String garmentTestContentServerEndPoint = "http://devazure.gfg1.esquel.com/EMMS/api/DataBase";
-	private static final String garmentTestContentServerDownload = "http://devazure.gfg1.esquel.com/EMMS/api/DataBase";
+	private static final String garmentTestAPIEndPoint = "http://192.168.4.63/emmsEGMtestAPI/";
+	private static final String garmentTestConfigurationEndPoint = "http://192.168.4.63/emmsEGMtestAPI/Token";
+	private static final String garmentTestContentServerEndPoint = "http://192.168.4.63/emmsEGMtestAPI/DataBase";
+	private static final String garmentTestContentServerDownload = "http://192.168.4.63/emmsEGMtestAPI/DataBase";
 //DB下载地址
 //	https://edpazure.esquel.cn/apps/hrcampus/prod/EMMS.zip
 
@@ -108,22 +108,22 @@ public class BuildConfig {
         if(BuildConfig.isDebug){
             if(SharedPreferenceManager.getNetwork(context)!=null){
                 if(SharedPreferenceManager.getNetwork(context).equals("InnerNetwork")){
-                    BuildConfig.endPoint= BuildConfig.ServerEndPoint.GARMENTTEST;
+                    BuildConfig.endPoint= ServerEndPoint.DEVELOPMENT;
                 }else {
-                    BuildConfig.endPoint= BuildConfig.ServerEndPoint.DEVELOPMENT;
+                    BuildConfig.endPoint= ServerEndPoint.DEVELOPMENT;
                 }
             }else {
-                BuildConfig.endPoint=BuildConfig.ServerEndPoint.DEVELOPMENT;
+                BuildConfig.endPoint=ServerEndPoint.DEVELOPMENT;
             }
         }else {
             if(SharedPreferenceManager.getNetwork(context)!=null){
                 if(SharedPreferenceManager.getNetwork(context).equals("InnerNetwork")){
-                    BuildConfig.endPoint= BuildConfig.ServerEndPoint.GARMENT;
+                    BuildConfig.endPoint= ServerEndPoint.UAT;
                 }else {
-                    BuildConfig.endPoint= BuildConfig.ServerEndPoint.UAT;
+                    BuildConfig.endPoint= ServerEndPoint.UAT;
                 }
             }else {
-                BuildConfig.endPoint=BuildConfig.ServerEndPoint.UAT;
+                BuildConfig.endPoint=ServerEndPoint.UAT;
             }
         }
     }

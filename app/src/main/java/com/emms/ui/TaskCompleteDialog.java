@@ -132,39 +132,41 @@ public class TaskCompleteDialog extends Dialog {
                             jsonObjectElement.get("Success").valueAsBoolean()){
                         dismiss();
                         ToastUtil.showToastShort(R.string.taskComplete,context);
-                        AlertDialog.Builder builder=new AlertDialog.Builder(context);
-                        if(TaskClass!=null&&TaskClass.equals(Task.TRANSFER_MODEL_TASK)){
-                            builder.setMessage(R.string.DoYouNeedToCreateACarMovingTask);
-                        }else {
-                            builder.setMessage(R.string.DoYouNeedToCreateAShuntingTask);
-                        }
-                        builder.setCancelable(false);
-                        builder.setPositiveButton(R.string.sure, new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                Intent intent=new Intent(context, CusActivity.class);
-                                if(TaskClass!=null&&TaskClass.equals(Task.TRANSFER_MODEL_TASK)){
-                                    intent.putExtra(Constants.FLAG_CREATE_CAR_MOVING_TASK,Constants.FLAG_CREATE_CAR_MOVING_TASK);
-                                }else {
-                                    intent.putExtra(Constants.FLAG_CREATE_SHUNTING_TASK,Constants.FLAG_CREATE_SHUNTING_TASK);
-                                }
-                                if(dataElement!=null){
-                                    intent.putExtra("OperatorInfo",dataElement.toString());
-                                }
+                        if(jsonObjectElement.get("Tag")==null||"1".equals(DataUtil.isDataElementNull(jsonObjectElement.get("Tag")))) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            if (TaskClass != null && TaskClass.equals(Task.TRANSFER_MODEL_TASK)) {
+                                builder.setMessage(R.string.DoYouNeedToCreateACarMovingTask);
+                            } else {
+                                builder.setMessage(R.string.DoYouNeedToCreateAShuntingTask);
+                            }
+                            builder.setCancelable(false);
+                            builder.setPositiveButton(R.string.sure, new OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    Intent intent = new Intent(context, CusActivity.class);
+                                    if (TaskClass != null && TaskClass.equals(Task.TRANSFER_MODEL_TASK)) {
+                                        intent.putExtra(Constants.FLAG_CREATE_CAR_MOVING_TASK, Constants.FLAG_CREATE_CAR_MOVING_TASK);
+                                    } else {
+                                        intent.putExtra(Constants.FLAG_CREATE_SHUNTING_TASK, Constants.FLAG_CREATE_SHUNTING_TASK);
+                                    }
+                                    if (dataElement != null) {
+                                        intent.putExtra("OperatorInfo", dataElement.toString());
+                                    }
 
-                                intent.putExtra("FromTask_ID",
-                                        Task_ID);
-                                context.startActivity(intent);
-                            }
-                        }).setNegativeButton(R.string.cancel, new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                context.startActivity(new Intent(context,CusActivity.class));
-                            }
-                        });
-                        builder.show();
+                                    intent.putExtra("FromTask_ID",
+                                            Task_ID);
+                                    context.startActivity(intent);
+                                }
+                            }).setNegativeButton(R.string.cancel, new OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    context.startActivity(new Intent(context, CusActivity.class));
+                                }
+                            });
+                            builder.show();
+                        }
                     }else {
                        ToastUtil.showToastShort(R.string.canNotSubmitTaskComplete,context);
                     }

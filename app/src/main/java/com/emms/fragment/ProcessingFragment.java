@@ -153,7 +153,7 @@ public class ProcessingFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent=new Intent(mContext,TaskDetailsActivity.class);
-                intent.putExtra(Task.TASK_ID,datas.get(position-1).get(Task.TASK_ID).valueAsString());
+                intent.putExtra(Task.TASK_ID,DataUtil.isDataElementNull(datas.get(position-1).get(Task.TASK_ID)));
                 intent.putExtra("TaskDetail",datas.get(position-1).toString());
                 intent.putExtra(Task.TASK_CLASS,TaskClass);
                 intent.putExtra("FromProcessingFragment","1");

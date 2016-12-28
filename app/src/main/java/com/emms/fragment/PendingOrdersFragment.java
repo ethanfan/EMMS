@@ -163,7 +163,7 @@ public class PendingOrdersFragment extends BaseFragment{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent=new Intent(mContext,TaskDetailsActivity.class);
-                intent.putExtra(Task.TASK_ID,datas.get(position-1).get(Task.TASK_ID).valueAsString());
+                intent.putExtra(Task.TASK_ID,DataUtil.isDataElementNull(datas.get(position-1).get(Task.TASK_ID)));
                 intent.putExtra("TaskDetail",datas.get(position-1).asObjectElement().toString());
                 intent.putExtra(Task.TASK_CLASS,TaskClass);
                 startActivity(intent);
@@ -308,7 +308,7 @@ public class PendingOrdersFragment extends BaseFragment{
         showCustomDialog(R.string.submitData);
         HttpParams params=new HttpParams();
       //  params.put("task_id",Integer.valueOf(DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_ID))));
-        HttpUtils.post(mContext,"TaskRecieve?task_id="+DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_ID)), params, new HttpCallback() {
+        HttpUtils.post(mContext,"TaskAPI/TaskRecieve?task_id="+DataUtil.isDataElementNull(datas.get(position).get(Task.TASK_ID)), params, new HttpCallback() {
             @Override
             public void onSuccess(final String t) {
                 super.onSuccess(t);

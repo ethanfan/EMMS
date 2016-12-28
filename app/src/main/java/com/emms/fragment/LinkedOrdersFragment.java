@@ -136,7 +136,7 @@ public class LinkedOrdersFragment extends BaseFragment{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent=new Intent(mContext,TaskDetailsActivity.class);
-                intent.putExtra(Task.TASK_ID,data.get(position-1).get(Task.TASK_ID).valueAsString());
+                intent.putExtra(Task.TASK_ID,DataUtil.isDataElementNull(data.get(position-1).get(Task.TASK_ID)));
                 intent.putExtra("TaskDetail",data.get(position-1).asObjectElement().toString());
                 intent.putExtra("TaskStatus",2);
                 intent.putExtra(Task.TASK_CLASS,TaskClass);

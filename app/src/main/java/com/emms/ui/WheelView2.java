@@ -49,11 +49,7 @@ import com.emms.util.OnWheelChangedListener;
 import com.emms.util.OnWheelScrollListener;
 import com.emms.util.WheelAdapter;
 
-/**
- * Numeric wheel view.
- * 
- * @author Yuri Kanivets
- */
+
 public class WheelView2 extends View {
 	/** Scrolling duration */
 	private static final int SCROLLING_DURATION = 400;

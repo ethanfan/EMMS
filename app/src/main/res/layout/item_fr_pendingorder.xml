@@ -42,6 +42,7 @@
             android:textColor="@color/order_color"
             android:textSize="17sp"
             android:layout_marginRight="25dp"
+            android:visibility="gone"
             android:layout_alignTop="@+id/tv_creater_order"
             android:layout_alignParentRight="true" />
         <!--<TextView-->
@@ -69,6 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/textView"
             android:layout_alignTop="@+id/textView"
+            android:singleLine="true"
             android:textColor="@color/text_color"
             android:textSize="17sp" />
 

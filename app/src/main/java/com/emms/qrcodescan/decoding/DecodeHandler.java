@@ -104,7 +104,7 @@ final class DecodeHandler extends Handler {
 		for (int x = 0; x < width; x++)
 			rotatedData[x * height + height - y - 1] = data[x + y * width];
 	}
-	  
+
     long start = System.currentTimeMillis();
     Result rawResult = null;
 //     PlanarYUVLuminanceSource source = CameraManager.get().buildLuminanceSource(data, width, height);

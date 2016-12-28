@@ -58,6 +58,7 @@ import com.emms.ui.ChangeEquipmentDialog;
 import com.emms.ui.EquipmentSummaryDialog;
 import com.emms.ui.ExpandGridView;
 import com.emms.ui.HorizontalListView;
+import com.emms.ui.MyListView;
 import com.emms.ui.NFCDialog;
 import com.emms.ui.PopMenuTaskDetail;
 import com.emms.ui.ScrollViewWithListView;
@@ -91,7 +92,8 @@ import java.util.Map;
 
 /**
  * Created by jaffer.deng on 2016/6/22.
- *
+ * 任务详情界面，用以显示任务的设备，图片,参与人，总结，评分，工作量等，并提供设备状态修改动作入口
+ * 是app的核心界面之一
  */
 public class TaskDetailsActivity extends NfcActivity implements View.OnClickListener {
 
@@ -267,7 +269,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     holder.tv_create_time = (TextView) convertView.findViewById(R.id.tv_start_time_details);
                     holder.tv_end_time = (TextView) convertView.findViewById(R.id.tv_end_time_details);
                     holder.tv_task_state = (TextView) convertView.findViewById(R.id.tv_task_state_details);
-                    holder.listView=(ListView)convertView.findViewById(R.id.equipment_opeartor_list);
+                    holder.listView=(MyListView) convertView.findViewById(R.id.equipment_opeartor_list);
               //      convertView.setTag(holder);
               //  } else {
               //      holder = (TaskViewHolder) convertView.getTag();
@@ -575,6 +577,10 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 }
                 case Task.TRANSFER_MODEL_TASK:{
                     mTitles=getResources().getStringArray(R.array.menu_list_move_car);
+                    break;
+                }
+                case Task.GROUP_ARRANGEMENT:{
+                    mTitles=getResources().getStringArray(R.array.menu_list_group_arrange);
                     break;
                 }
                 default:
@@ -1057,7 +1063,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         // params.put("id", taskId.toString());
         //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
         params.put("task_id",taskId.toString());
-        HttpUtils.get(mContext, "TaskImgsList", params, new HttpCallback() {
+        HttpUtils.get(mContext, "TaskAPI/GetTaskImgsList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -1070,7 +1076,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                         for (int i = 0; i < jsonArrayElement.size(); i++) {
                          //   Map<String, Object> dataMap = new HashMap<String, Object>();
 
-                            String path = jsonArrayElement.get(i).asObjectElement().get("FileName").valueAsString();
+                            String path = DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("FileName"));
                             addImageUrlToDataList(path,DataUtil.isDataElementNull(jsonArrayElement.get(i).asObjectElement().get("TaskAttachment_ID")));
 
                         }
@@ -1185,7 +1191,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                    runOnUiThread(new Runnable() {
                        @Override
                        public void run() {
-                           postTaskEquipment(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),"0",0);
+                           postTaskEquipment(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)),"0",0);
                        }
                    });
                     }
@@ -1222,8 +1228,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                                     changeEquipmentDialog = new ChangeEquipmentDialog(TaskDetailsActivity.this, R.layout.dialog_equipment_status, R.style.MyDialog,
                                             RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()), Main_person_in_charge_Operator_id), isOneOperator, false, TaskSubClass != null,
                                             DataUtil.isDataElementNull(objectElement.get(Equipment.ASSETSID)));
-                                    changeEquipmentDialog.setDatas(String.valueOf(taskId), objectElement.get(Equipment.EQUIPMENT_ID).valueAsString(),
-                                            Task_DeviceId_TaskEquipmentId.get(objectElement.get(Equipment.EQUIPMENT_ID).valueAsString()));
+                                    changeEquipmentDialog.setDatas(String.valueOf(taskId), DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID)),
+                                            Task_DeviceId_TaskEquipmentId.get(DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_ID))));
                                     // changeEquipmentDialog.setMainPersonInChargeOperatorId(Main_person_in_charge_Operator_id.equals(String.valueOf(getLoginInfo().getId())));
                                     // changeEquipmentDialog.setMainPersonInChargeOperatorId(RootUtil.rootMainPersonInTask(String.valueOf(getLoginInfo().getId()),Main_person_in_charge_Operator_id));
                                     changeEquipmentDialog.setOnSubmitInterface(new dialogOnSubmitInterface() {
@@ -1303,7 +1309,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         //taskEquepment.set();
         params.putJsonParams(taskEquepment.toJson());
 
-        HttpUtils.post(this, "TaskEquipmentCollection", params, new HttpCallback() {
+        HttpUtils.post(this, "TaskEquipmentAPI/AddTaskEquipment", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -1524,7 +1530,7 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         showCustomDialog(R.string.loadingData);
         HttpParams httpParams=new HttpParams();
         httpParams.put("task_id", String.valueOf(taskId));
-        HttpUtils.get(this, "TaskTroubleContent", httpParams, new HttpCallback() {
+        HttpUtils.get(this, "TaskTroubleAPI/GetTaskTroubleList", httpParams, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -1875,7 +1881,8 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
     private void getTaskOperatorStatus(){
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
-        HttpUtils.post(mContext, "TaskDetailList/TaskOperatorDetailList?task_id="+taskId.toString(), params, new HttpCallback() {
+        params.put("task_id",taskId.toString());
+        HttpUtils.get(mContext, "TaskOperatorAPI/GetTaskOperatorDetailList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -1965,30 +1972,32 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                     if(jsonObjectElement.get("Success")!=null&&
                             jsonObjectElement.get("Success").valueAsBoolean()){
                         ToastUtil.showToastShort(R.string.taskComplete,mContext);
-                        AlertDialog.Builder builder=new AlertDialog.Builder(mContext);
-                        builder.setMessage(R.string.DoYouNeedToCreateAShuntingTask);
-                        builder.setCancelable(false);
-                        builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Intent intent=new Intent(mContext, CusActivity.class);
-                                intent.putExtra(Constants.FLAG_CREATE_SHUNTING_TASK,Constants.FLAG_CREATE_SHUNTING_TASK);
-                                if(dataElement!=null){
-                                    intent.putExtra("OperatorInfo",dataElement.toString());
+                        if(jsonObjectElement.get("Tag")==null || "1".equals(DataUtil.isDataElementNull(jsonObjectElement.get("Tag")))) {//Tag为1即需要弹出对话框询问用户是否需要创建新任务
+                            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                            builder.setMessage(R.string.DoYouNeedToCreateAShuntingTask);
+                            builder.setCancelable(false);
+                            builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent intent = new Intent(mContext, CusActivity.class);
+                                    intent.putExtra(Constants.FLAG_CREATE_SHUNTING_TASK, Constants.FLAG_CREATE_SHUNTING_TASK);
+                                    if (dataElement != null) {
+                                        intent.putExtra("OperatorInfo", dataElement.toString());
+                                    }
+                                    intent.putExtra("FromTask_ID",
+                                            String.valueOf(taskId));
+                                    mContext.startActivity(intent);
+                                    dialog.dismiss();
                                 }
-                                intent.putExtra("FromTask_ID",
-                                        String.valueOf(taskId));
-                                mContext.startActivity(intent);
-                                dialog.dismiss();
-                            }
-                        }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mContext.startActivity(new Intent(mContext,CusActivity.class));
-                                dialog.dismiss();
-                            }
-                        });
-                        builder.show();
+                            }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mContext.startActivity(new Intent(mContext, CusActivity.class));
+                                    dialog.dismiss();
+                                }
+                            });
+                            builder.show();
+                        }
                     }else {
                         runOnUiThread(new Runnable() {
                             @Override

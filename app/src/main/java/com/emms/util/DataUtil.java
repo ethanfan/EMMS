@@ -266,5 +266,12 @@ public class DataUtil {
                 +" AND LT.[Language_Code] ='en-US'";
         ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "Language_Translation",storeCallback);
     }
-
+    public static void FactoryAndNetWorkAddressSetting(Context context,String factory){
+        SharedPreferenceManager.setFactory(context,factory);
+        if("GEW".equals(factory)){
+            SharedPreferenceManager.setNetwork(context,"OuterNetwork");
+        }else {
+            SharedPreferenceManager.setNetwork(context,"InnerNetwork");
+        }
+    }
 }
