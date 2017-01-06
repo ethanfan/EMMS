@@ -36,11 +36,8 @@ public abstract class TaskAdapter extends BaseAdapter{
     public TaskAdapter() {
     }
     public void setDatas(ArrayList<ObjectElement> mDatas){
-        if (mDatas.size()>0) {
             this.datas = mDatas;
-      //  notifyDataSetInvalidated();
            notifyDataSetChanged();
-        }
     }
     @Override
     public int getCount() {

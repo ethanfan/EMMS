@@ -29,11 +29,10 @@ public abstract class WorkloadAdapter extends BaseAdapter{
         this.datas = datas;
     }
     public void setDatas(ArrayList<ObjectElement> mDatas){
-        if (mDatas.size()>0) {
             this.datas = mDatas;
             //  notifyDataSetInvalidated();
             notifyDataSetChanged();
-        }
+
     }
     @Override
     public int getCount() {

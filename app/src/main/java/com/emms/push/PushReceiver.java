@@ -190,7 +190,7 @@ public class PushReceiver extends BroadcastReceiver {
 			final String message=DataUtil.isDataElementNull(jsonObjectElement.get("MainMessage"));
 			if( (LocaleUtils.getLanguage(context)!=null
 					&&  LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH )
-					|| LocaleUtils.SupportedLanguage.getSupportedLanguage(context.getResources().getConfiguration().locale.getLanguage())==LocaleUtils.SupportedLanguage.ENGLISH) {
+					|| LocaleUtils.SupportedLanguage.ENGLISH == LocaleUtils.SupportedLanguage.getSupportedLanguage(context.getResources().getConfiguration().locale.getLanguage())  ) {
 				DataUtil.getDataFromLanguageTranslation(context, message, new StoreCallback() {
 					@Override
 					public void success(DataElement element, String resource) {

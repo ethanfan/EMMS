@@ -817,8 +817,12 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                                        //若为报修人角色，即UserRoleID==7,创建任务，默认为车间报修任务
                                        task_type.setText(map.get(Task.REPAIR_TASK));
                                    }else {
+                                       if("GEW".equals(getLoginInfo().getFromFactory())){
                                        task_type.setText(map.get(Task.GROUP_ARRANGEMENT));
                                        getGroupArrangeSimpleDesList();
+                                       }else {
+                                           task_type.setText(map.get(Task.OTHER_TASK));
+                                       }
                                    }
                                    if(getIntent().getStringExtra("FromMeasurePointActivity")!=null) {
                                        //从点巡检、保养任务中由于测点异常创建新任务调用此方法填充相应数据

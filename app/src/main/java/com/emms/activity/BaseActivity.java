@@ -15,6 +15,7 @@ import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
+import com.datastore_android_sdk.rxvolley.http.VolleyError;
 import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.emms.R;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
@@ -73,6 +74,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
           try {
+              BuildConfig.NetWorkSetting(this);
               mHandler=new Handler(getMainLooper());
                if(Build.VERSION.SDK_INT>14) {
                  hud = KProgressHUD.create(this);
@@ -421,22 +423,26 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         });
     }
-    private void DoUpdate(final int i,final String key, final DataElement data,final String resource){
-        if(data.asArrayElement().get(i)!=null){
-            getSqliteStore().updateElement(DataUtil.isDataElementNull(data.asArrayElement().get(i).asObjectElement().get(key)),
-                    data.asArrayElement().get(i), resource, new StoreCallback() {
-                        @Override
-                        public void success(DataElement element, String resource) {
-                            Log.e("SuccessUpdate", "SuccessUpdate");
-                            DoUpdate(i+1,key,data,resource);
-                        }
+    private void DoUpdate(final  int i,final String key, final DataElement data,final String resource){
+        try {
+            if (i<data.asArrayElement().size()&&data.asArrayElement().get(i) != null) {
+                getSqliteStore().updateElement(DataUtil.isDataElementNull(data.asArrayElement().get(i).asObjectElement().get(key)),
+                        data.asArrayElement().get(i), resource, new StoreCallback() {
+                            @Override
+                            public void success(DataElement element, String resource) {
+                                Log.e("SuccessUpdate", "SuccessUpdate");
+                                DoUpdate(i + 1, key, data, resource);
+                            }
 
-                        @Override
-                        public void failure(DatastoreException ex, String resource) {
-                            Log.e("FailUpdate", "FailUpdate");
-                            DoUpdate(i+1,key,data,resource);
-                        }
-                    });
+                            @Override
+                            public void failure(DatastoreException ex, String resource) {
+                                Log.e("FailUpdate", "FailUpdate");
+                                DoUpdate(i + 1, key, data, resource);
+                            }
+                        });
+            }
+        }catch (Exception e){
+             CrashReport.postCatchedException(e);
         }
     }
     private void RunDelay(int DelayTime){

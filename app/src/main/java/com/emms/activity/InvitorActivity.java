@@ -235,7 +235,13 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
 
                    // if(json!=null)
                 }else {
-                    ToastUtil.showToastLong(R.string.GetGroupDataFail,context);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dismissCustomDialog();
+                            ToastUtil.showToastLong(R.string.GetGroupDataFail,context);
+                        }
+                    });
                 }
             }
 

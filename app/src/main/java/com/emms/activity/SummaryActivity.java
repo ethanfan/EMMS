@@ -90,6 +90,7 @@ public class SummaryActivity extends NfcActivity{
         TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         }
         initView();
+        initData();
         initSearchView();
         nfcDialog=new NFCDialog(context,R.style.MyDialog) {
             @Override
@@ -169,7 +170,6 @@ public class SummaryActivity extends NfcActivity{
         });
     }
     private void initSearchView() {
-        initData();
         searchBox = (EditText) findViewById(R.id.et_search);
         mDrawer_layout = (CustomDrawerLayout) findViewById(R.id.search_page);
         mDrawer_layout.setCloseDrawerListener(new CloseDrawerListener() {

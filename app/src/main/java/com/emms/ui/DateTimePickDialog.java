@@ -6,6 +6,7 @@ package com.emms.ui;
  */
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -151,11 +152,12 @@ public class DateTimePickDialog implements OnDateChangedListener,
         String hourStr = spliteString(time, ":", "index", "front"); // 时
         String minuteStr = spliteString(time, ":", "index", "back"); // 分
 
+
         int currentYear = Integer.valueOf(yearStr.trim());
         int currentMonth = Integer.valueOf(monthStr.trim()) - 1;
         int currentDay = Integer.valueOf(dayStr.trim());
         int currentHour = Integer.valueOf(hourStr.trim());
-        int currentMinute = Integer.valueOf(minuteStr.trim());
+        int currentMinute =Integer.valueOf(minuteStr.trim());
 
         calendar.set(currentYear, currentMonth, currentDay, currentHour,
                 currentMinute);

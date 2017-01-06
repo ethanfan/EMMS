@@ -22,6 +22,8 @@ import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
 import com.emms.schema.Task;
+import com.emms.ui.CancelTaskDialog;
+import com.emms.ui.TaskCancelListener;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
@@ -88,13 +90,28 @@ public class TaskVerifyActivity extends NfcActivity {
                     @Override
                     public void onClick(View v) {
                         // acceptTask(position);
-                        TaskPass(position,1);
+                        TaskPass(position,1,null);
                     }
                 });
                 holder.rejectTaskButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        TaskPass(position,2);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                CancelTaskDialog cancleTaskDialog = new CancelTaskDialog(mContext);
+                                cancleTaskDialog.setDialogTitle(R.string.RejectTask);
+                                cancleTaskDialog.setTipsResID(R.string.RejectReasonCannotEmpty);
+                                cancleTaskDialog.setTaskCancelListener(new TaskCancelListener() {
+                                    @Override
+                                    public void submitCancel(String CancelReason) {
+                                        //CancelTask(datas.get(position-1), CancelReason);
+                                        TaskPass(position,2,CancelReason);
+                                    }
+                                });
+                                cancleTaskDialog.show();
+                            }
+                        });
                     }
                 });
                 holder.EndTaskButton.setOnClickListener(new View.OnClickListener() {
@@ -146,12 +163,15 @@ public class TaskVerifyActivity extends NfcActivity {
         });
         getVerfyTaskListFromServer();
     }
-    private void TaskPass(final int position, int status){
+    private void TaskPass(final int position, int status,String reason){
         showCustomDialog(R.string.submitData);
         HttpParams params=new HttpParams();
         JsonObjectElement jsonObjectElement=new JsonObjectElement();
         jsonObjectElement.set(Task.TASK_ID,DataUtil.isDataElementNull(VerifyTaskList.get(position).get(Task.TASK_ID)));
         jsonObjectElement.set("CheckStatus",status);
+        if(reason!=null){
+            jsonObjectElement.set("Summary",reason);
+        }
         params.putJsonParams(jsonObjectElement.toJson());
         HttpUtils.post(this, "TaskAPI/TaskCheck", params, new HttpCallback() {
             @Override

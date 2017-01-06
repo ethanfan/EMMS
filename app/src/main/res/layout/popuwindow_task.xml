@@ -15,7 +15,7 @@
     <ImageView
         android:id="@+id/menu_detail"
         android:layout_width="25dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:scaleX="0.8"
         android:scaleY="0.8"
         android:layout_marginLeft="5dp"

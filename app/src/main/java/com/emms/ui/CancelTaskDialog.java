@@ -5,8 +5,10 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.emms.R;
+import com.emms.util.TipsUtil;
 import com.emms.util.ToastUtil;
 
 /**
@@ -16,12 +18,20 @@ import com.emms.util.ToastUtil;
 public class CancelTaskDialog extends Dialog{
     private Context context;
     private EditText cancelReason;
+    private int TipsResID;
     public CancelTaskDialog(Context context) {
         super(context, R.style.Base_Theme_AppCompat_Dialog);
         this.context = context;
         setContentView(R.layout.cancel_dialog);
        initview();
+        TipsResID=R.string.NoCancelReason;
         setCancelable(false);
+    }
+    public void setDialogTitle(int resID){
+        ((TextView)findViewById(R.id.DialogTitle)).setText(resID);
+    }
+    public void setTipsResID(int resID){
+        TipsResID=resID;
     }
     private void initview(){
         cancelReason=(EditText)findViewById(R.id.CancelReason);
@@ -43,7 +53,7 @@ public class CancelTaskDialog extends Dialog{
             @Override
             public void onClick(View v) {
                 if(cancelReason.getText().toString().equals("")){
-                    ToastUtil.showToastShort(R.string.NoCancelReason,context);
+                    ToastUtil.showToastShort(TipsResID,context);
                     return;
                 }
                 taskCancelListener.submitCancel(cancelReason.getText().toString());

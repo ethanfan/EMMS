@@ -101,7 +101,7 @@
                         android:layout_alignRight="@+id/equipment_name_tag"
                         android:id="@+id/taskOperatorStatus_tag"
                         />
-                    <ListView
+                    <com.emms.ui.MyListView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:divider="@null"
@@ -358,7 +358,7 @@
                         android:textColor="@color/text_color"
                         android:layout_toRightOf="@+id/workload_tag"
                         android:layout_alignTop="@+id/workload_tag"/>
-                    <ListView
+                    <com.emms.ui.MyListView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
@@ -366,7 +366,7 @@
                         android:id="@+id/workloadList"
                         android:layout_below="@+id/workload_num"
                         android:layout_marginBottom="5dp">
-                    </ListView>
+                    </com.emms.ui.MyListView>
                 </RelativeLayout>
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -393,6 +393,7 @@
                             android:layout_marginTop="20dp"
                             android:textColor="@color/black"
                             android:id="@+id/response_speed_tag"
+                            android:layout_alignRight="@+id/repair_speed_tag"
                             android:textSize="17sp"
                             />
                         <com.emms.ui.HorizontalListView
@@ -408,7 +409,7 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/response_speed_tag"
                             android:text="@string/service_attitude"
-                            android:layout_alignRight="@+id/response_speed_tag"
+                            android:layout_alignRight="@+id/repair_speed_tag"
                             android:textColor="@color/black"
                             android:layout_marginTop="20dp"
                             android:id="@+id/service_attitude_tag"
@@ -439,7 +440,6 @@
                             android:text="@string/repair_speed"
                             android:textColor="@color/black"
                             android:layout_marginTop="20dp"
-                            android:layout_alignRight="@+id/response_speed_tag"
                             android:id="@+id/repair_speed_tag"
                             android:textSize="17sp"
                             />
