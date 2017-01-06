@@ -274,4 +274,5 @@ public class DataUtil {
             SharedPreferenceManager.setNetwork(context,"InnerNetwork");
         }
     }
+
 }

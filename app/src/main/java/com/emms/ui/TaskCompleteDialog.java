@@ -166,6 +166,8 @@ public class TaskCompleteDialog extends Dialog {
                                 }
                             });
                             builder.show();
+                        }else {
+                            context.startActivity(new Intent(context, CusActivity.class));
                         }
                     }else {
                        ToastUtil.showToastShort(R.string.canNotSubmitTaskComplete,context);

@@ -1,5 +1,6 @@
 package com.emms.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.Gravity;
 import android.widget.Toast;

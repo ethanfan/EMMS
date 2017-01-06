@@ -44,7 +44,16 @@ import cn.jpush.android.api.JPushInterface;
  *
  */
 public class AppApplication extends Application {
-
+    public enum ServerEndPoint {
+        GAOMING,
+        PRODUCTION,
+        DEVELOPMENT,
+        UAT,
+        AZURE_UAT,
+        GARMENT,
+        GARMENTTEST
+    }
+    public static  ServerEndPoint endPoint = ServerEndPoint.UAT;
     private EPassSqliteStoreOpenHelper sqliteStoreOpenHelper;
     @Override
     public void onCreate() {

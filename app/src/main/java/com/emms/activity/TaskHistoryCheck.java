@@ -213,7 +213,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
 
                                 case 2:{
                                     task_status.getmEditText().setText(searchResult);
-                                    taskStatusCode=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get("Status"));
+                                    taskStatusCode=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(DataDictionary.DATA_CODE));
                                     break;
                                 }
                                 case 3:{
@@ -363,7 +363,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
               JsonObjectElement jsonObjectElement=new JsonObjectElement();
               jsonObjectElement.set(DataDictionary.DATA_CODE,key);
               jsonObjectElement.set(DataDictionary.DATA_NAME,BaseData.getTaskClass().get(key));
-              if(!"T0301".equals(key)
+              if(!"T0301".equals(key)                 //过滤掉普通搬车，转款搬车，维护，搬车
                       &&!"T0302".equals(key)
                       &&!"T03".equals(key)
                       &&!Task.MAINTAIN_TASK.equals(key)){

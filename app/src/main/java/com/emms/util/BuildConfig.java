@@ -1,20 +1,12 @@
 package com.emms.util;
 
+import android.app.Application;
 import android.content.Context;
 
+import com.emms.activity.AppApplication;
+
 public class BuildConfig {
-	
-	public enum ServerEndPoint {
-		GAOMING,
-		PRODUCTION,
-		DEVELOPMENT,
-		UAT,
-		AZURE_UAT,
-		GARMENT,
-		GARMENTTEST
-	}
-	
-	public static  ServerEndPoint endPoint = ServerEndPoint.UAT;
+
     public static boolean isDebug=true;
 	//Production
 	private static final String productionAPIEndPoint = "http://devazure.esquel.cn:80/EMMS/api/";
@@ -49,7 +41,7 @@ public class BuildConfig {
 //	https://edpazure.esquel.cn/apps/hrcampus/prod/EMMS.zip
 
 	public static String getConfigurationEndPoint() {
-      switch (endPoint){
+      switch (AppApplication.endPoint){
 		  case DEVELOPMENT:{
 			  return developmentConfigurationEndPoint;
 		  }
@@ -77,7 +69,7 @@ public class BuildConfig {
 	}
 	
 	public static String getServerAPIEndPoint() {
-		switch (endPoint){
+		switch (AppApplication.endPoint){
 			case DEVELOPMENT:{
 				return developmentAPIEndPoint;
 			}
@@ -108,22 +100,22 @@ public class BuildConfig {
         if(BuildConfig.isDebug){
             if(SharedPreferenceManager.getNetwork(context)!=null){
                 if(SharedPreferenceManager.getNetwork(context).equals("InnerNetwork")){
-                    BuildConfig.endPoint= ServerEndPoint.DEVELOPMENT;
+                    AppApplication.endPoint= AppApplication.ServerEndPoint.DEVELOPMENT;
                 }else {
-                    BuildConfig.endPoint= ServerEndPoint.DEVELOPMENT;
+					AppApplication.endPoint= AppApplication.ServerEndPoint.DEVELOPMENT;
                 }
             }else {
-                BuildConfig.endPoint=ServerEndPoint.DEVELOPMENT;
+				AppApplication.endPoint= AppApplication.ServerEndPoint.DEVELOPMENT;
             }
         }else {
             if(SharedPreferenceManager.getNetwork(context)!=null){
                 if(SharedPreferenceManager.getNetwork(context).equals("InnerNetwork")){
-                    BuildConfig.endPoint= ServerEndPoint.UAT;
+					AppApplication.endPoint= AppApplication.ServerEndPoint.UAT;
                 }else {
-                    BuildConfig.endPoint= ServerEndPoint.UAT;
+					AppApplication.endPoint= AppApplication.ServerEndPoint.UAT;
                 }
             }else {
-                BuildConfig.endPoint=ServerEndPoint.UAT;
+				AppApplication.endPoint= AppApplication.ServerEndPoint.UAT;
             }
         }
     }

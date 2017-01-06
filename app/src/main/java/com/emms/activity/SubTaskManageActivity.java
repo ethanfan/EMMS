@@ -23,6 +23,7 @@ import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.ui.CustomDialog;
 import com.emms.util.DataUtil;
+import com.emms.util.LocaleUtils;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -163,6 +164,14 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
                 holder.work_num.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkTimeCode")));
                 holder.approve_work_hours.setText(DataUtil.isDataElementNull(datas.get(position).get("PlanManhour")));
                 holder.work_name.setText(DataUtil.isDataElementNull(datas.get(position).get("WorkName")));
+                if( (LocaleUtils.getLanguage(context)!=null
+                        &&  LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH )
+                        || LocaleUtils.SupportedLanguage.ENGLISH == LocaleUtils.SupportedLanguage.getSupportedLanguage(context.getResources().getConfiguration().locale.getLanguage())  ) {
+                   //TODO 有待调整
+                    if("默认工时".equals(DataUtil.isDataElementNull(datas.get(position).get("WorkName")))) {
+                        holder.work_name.setText("Standard Work Hour");
+                      }
+                    }
                 //holder.status.setText(DataUtil.isDataElementNull(datas.get(position).get("Status")));
                 holder.work_description.setText(DataUtil.isDataElementNull(datas.get(position).get("DataDescr")));
                 //holder.equipment_num.setText(DataUtil.isDataElementNull(datas.get(position).get("Equipment_ID")));

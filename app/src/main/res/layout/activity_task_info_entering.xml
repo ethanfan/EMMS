@@ -118,14 +118,13 @@
                     android:textColor="@color/text_color"
                     android:layout_height="wrap_content" />
                 </LinearLayout>
-                <ListView
+                <com.emms.ui.MyListView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:dividerHeight="6dp"
                     android:divider="@null"
                     android:id="@+id/TaskParticipants">
-                </ListView>
+                </com.emms.ui.MyListView>
             </LinearLayout>
 
     <LinearLayout

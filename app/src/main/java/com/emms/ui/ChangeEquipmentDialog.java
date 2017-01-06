@@ -50,7 +50,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         EquipemntStatus = equipemntStatus;
     }
     public final static String DELETE="delete";
-    private int EquipemntStatus=-1;
+    private int EquipemntStatus=0;
     //private ArrayList<String> status=new ArrayList<String>();
     //private int tag=1;
     private Button change_equipment_operator_status,change_equipment_status;
@@ -73,16 +73,9 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
     private HashMap<String,Integer> Equipment_Operator_Status_Name_ID_map=new HashMap<>();
     private HashMap<String,Integer> Equipment_Status_Name_ID_map=new HashMap<>();
     private int ViewTag=1;
-    /*
-    public HashMap<String, Integer> getEquipment_OperatorID_Status() {
-        return Equipment_OperatorID_Status;
-    }
-    public void setEquipment_OperatorID_Status(HashMap<String, Integer> equipment_OperatorID_Status) {
-        Equipment_OperatorID_Status = equipment_OperatorID_Status;
-    }*/
-   // private HashMap<String,Integer> Equipment_OperatorID_Status=new HashMap<String, Integer>();
     private boolean isMaintainTask=false;
-    public ChangeEquipmentDialog(Context context, int layout, int style,boolean tag,boolean tag2,boolean tag3,boolean tag4,String Equipment_num) {
+    private int OperatorStatus=0;
+    public ChangeEquipmentDialog(Context context, int layout, int style,boolean tag,boolean tag2,boolean tag3,boolean tag4,String Equipment_num,int OperatorStatu,int EquipmentS) {
         super(context, style);
         this.context = context;
         setContentView(layout);
@@ -91,6 +84,8 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         isOneOperator=tag2;
         isNoEuqipment=tag3;
         isMaintainTask=tag4;
+        OperatorStatus=OperatorStatu;
+        EquipemntStatus=EquipmentS;
         //if(Equipment_OperatorID_Status.get())
       //  Collections.addAll(status,context.getResources().getStringArray(R.array.equip_status));
         if(Equipment_num!=null){
@@ -117,28 +112,6 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                 dismiss();
             }
         });
-//        findViewById(R.id.comfirm).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(ViewTag==1){
-//                   postTaskOperatorEquipment(Equipment_Operator_Status_Name_ID_map.get(Status.getSelectionItem().toString()));
-//                    }
-//                    else if(ViewTag==2){
-//                    postTaskEquipment(Equipment_Status_Name_ID_map.get((Status.getSelectionItem().toString())));
-//                    }
-//            }
-//        });
-//        initTagButton();
-//        showList.addAll(Equipment_Operator_Status_List);
-//        Status=(WheelView)findViewById(R.id.WheelView);
-//        Status.setWheelAdapter(new MyWheelAdapter(context));
-//        Status.setSkin(com.wx.wheelview.widget.WheelView.Skin.Holo);
-//        Status.setWheelData(showList);
-//        Status.setWheelSize(5);
-//        Status.setDividerHeight(2);
-    //   findViewById(R.id.dialog).setTranslationY((-1)*getNavigationBarHeight(context));
-
-      //  initEquipmentTagView();
         ListView listView = (ListView) findViewById(R.id.listView);
         TaskAdapter adapter = new TaskAdapter(showList) {
             @Override
@@ -381,25 +354,65 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
         Collections.addAll(arrayList,context.getResources().getStringArray(R.array.Equipment_Status));
         Collections.addAll(list,context.getResources().getStringArray(R.array.Equipment_Operator_Status));
 
-        for(String ss:list){
-            JsonObjectElement json=new JsonObjectElement();
-            json.set("Status",ss);
-            json.set("Type","EquipmentOperatorStatus");
-            Equipment_Operator_Status_List.add(json);
+//        for(String ss:list){
+//            JsonObjectElement json=new JsonObjectElement();
+//            json.set("Status",ss);
+//            json.set("Type","EquipmentOperatorStatus");
+//            Equipment_Operator_Status_List.add(json);
+//        }
+        //人员状态开始-0，完成-1 ,暂停-2
+        if(OperatorStatus==2){//当前人员状态为暂停
+            //开始选项
+            JsonObjectElement begin=new JsonObjectElement();
+            begin.set("Status",list.get(0));
+            begin.set("Type","EquipmentOperatorStatus");
+            Equipment_Operator_Status_List.add(begin);
+        }else if(OperatorStatus==1) {
+           //do not show OperatorStatus
+         }
+        else {//当前人员状态为开始
+            //暂停选项
+            JsonObjectElement pause=new JsonObjectElement();
+            pause.set("Status",list.get(1));
+            pause.set("Type","EquipmentOperatorStatus");
+            Equipment_Operator_Status_List.add(pause);
+            //完成选项
+            JsonObjectElement complete=new JsonObjectElement();
+            complete.set("Status",list.get(2));
+            complete.set("Type","EquipmentOperatorStatus");
+            Equipment_Operator_Status_List.add(complete);
         }
-
 
         if(is_Main_person_in_charge_operator_id&&!isOneOperator){
 //            JsonObjectElement jsonObjectElement=new JsonObjectElement();
 //            jsonObjectElement.set("Status",context.getResources().getString(R.string.deleteEquipment));
 //            jsonObjectElement.set("Type","delete");
 //            showList.add(jsonObjectElement);
-            for(String s:arrayList){
-                JsonObjectElement json=new JsonObjectElement();
-                json.set("Status",s);
-                json.set("Type","EquipmentStatus");
-                Equipment_Status_List.add(json);
+//            for(String s:arrayList){
+//                JsonObjectElement json=new JsonObjectElement();
+//                json.set("Status",s);
+//                json.set("Type","EquipmentStatus");
+//                Equipment_Status_List.add(json);
+//            }
+            //设备状态开始-1，完成-2，暂停-3
+            if(EquipemntStatus==3){//当前设备状态为暂停
+                JsonObjectElement EquipmentStart=new JsonObjectElement();
+                EquipmentStart.set("Status",arrayList.get(0));
+                EquipmentStart.set("Type","EquipmentStatus");
+                Equipment_Status_List.add(EquipmentStart);
+            }else {//当前设备状态为开始
+                JsonObjectElement Equipmentstop=new JsonObjectElement();
+                Equipmentstop.set("Status",arrayList.get(1));
+                Equipmentstop.set("Type","EquipmentStatus");
+                Equipment_Status_List.add(Equipmentstop);
+                JsonObjectElement EquipmentComplete=new JsonObjectElement();
+                EquipmentComplete.set("Status",arrayList.get(2));
+                EquipmentComplete.set("Type","EquipmentStatus");
+                Equipment_Status_List.add(EquipmentComplete);
             }
+
+
+
         showList.addAll(Equipment_Status_List);
         }
         showList.addAll(Equipment_Operator_Status_List);

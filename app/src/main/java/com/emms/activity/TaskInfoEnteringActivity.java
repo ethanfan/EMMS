@@ -43,6 +43,7 @@ import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DateTimePickDialog;
 import com.emms.ui.DropEditText;
 import com.emms.ui.HorizontalListView;
+import com.emms.ui.MyListView;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.ListViewUtility;
@@ -77,7 +78,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
     private ArrayList<ObjectElement> typeList=new ArrayList<>();
     private ObjectElement TaskDetail;
 
-    private ListView TaskParticipantsListView;
+    private MyListView TaskParticipantsListView;
     private WorkloadAdapter workloadAdapter;
     private ArrayList<ObjectElement> TaskParticipantsList=new ArrayList<>();
     @Override
@@ -437,13 +438,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
                                     TaskParticipantsList.get(0).set("TaskWorkLoad",100);
                                 }
                                 workloadAdapter.setDatas(TaskParticipantsList);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        ListViewUtility.setListViewHeightBasedOnChildren(TaskParticipantsListView);
-                                    }
-                                });
-
+                                ListViewUtility.setListViewHeightBasedOnChildren(TaskParticipantsListView);
                             }
                         }
                     });
@@ -494,7 +489,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
         }
     }
     private void initTaskParticipants(){
-        TaskParticipantsListView=(ListView)findViewById(R.id.TaskParticipants);
+        TaskParticipantsListView=(MyListView)findViewById(R.id.TaskParticipants);
         workloadAdapter=new WorkloadAdapter(TaskParticipantsList) {
             @Override
             public View getCustomView(View convertView, final int position, ViewGroup parent) {

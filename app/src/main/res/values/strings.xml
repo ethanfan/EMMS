@@ -198,7 +198,7 @@
     <string name="faultType">故障类型</string>
     <string name="total_worktime">工时总和：</string>
     <string name="total_workload">核定工时：</string>
-    <string name="workload">工作总量：</string>
+    <string name="workload">工作量：</string>
     <string name="workL">工作总量:</string>
     <string name="entering_workload">工作量录入</string>
     <string name="workload_title">工作量</string>
@@ -520,4 +520,7 @@
     <string name="ChangeFactory">分厂修改成功，正在同步相应数据</string>
     <string name="SelectFactory">请选择分厂</string>
     <string name="DataTooMorePleaseWait">数据量较大，请耐心等候</string>
+    <string name="RejectTask">退回任务</string>
+    <string name="RejectReasonCannotEmpty">退回原因不能为空</string>
+    <string name="AreYouSureToAddEquipment">确定要添加设备?</string>
 </resources>

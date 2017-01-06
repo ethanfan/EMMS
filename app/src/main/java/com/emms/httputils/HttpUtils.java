@@ -142,7 +142,6 @@ public  class HttpUtils {
                     //POST/PUT/DELETE/HEAD/OPTIONS/TRACE/PATCH
                     .httpMethod(RxVolley.Method.GET)
                     //设置缓存时间: 默认是 get 请求 5 分钟, post 请求不缓存
-                    // .cacheTime(6)
                     //内容参数传递形式，如果不加，默认为 FORM 表单提交，可选项 JSON 内容
                     .contentType(RxVolley.ContentType.JSON)
                     .retryPolicy(new DefaultRetryPolicy(20000,0,1f))

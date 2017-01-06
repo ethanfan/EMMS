@@ -138,17 +138,22 @@ private void initView(){
                 SelectItem);
         submitData.set("ICCardID",iccard_id.getText().toString());
         params.putJsonParams(submitData.toJson());
-        HttpUtils.postWithoutCookie(this, "Equipment", params, new HttpCallback() {
+        HttpUtils.postWithoutCookie(this, "BaseDataAPI/ModifyEquipmentBang", params, new HttpCallback() {
             @Override
-            public void onSuccess(String t) {
+            public void onSuccess(final String t) {
                 super.onSuccess(t);
                 if(t!=null){
-                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-                    if(jsonObjectElement.get(Data.SUCCESS).valueAsBoolean()){
-                ToastUtil.showToastShort(R.string.submitSuccess,context);
-                    }else {
-                        ToastUtil.showToastShort(R.string.submit_Fail,context);
-                    }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
+                            if(jsonObjectElement.get(Data.SUCCESS).valueAsBoolean()){
+                                ToastUtil.showToastShort(R.string.submitSuccess,context);
+                            }else {
+                                ToastUtil.showToastShort(R.string.submit_Fail,context);
+                            }
+                        }
+                    });
                 }
                 dismissCustomDialog();
             }
@@ -157,7 +162,12 @@ private void initView(){
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
                 dismissCustomDialog();
-                ToastUtil.showToastShort(R.string.submitFail,context);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtil.showToastShort(R.string.submitFail,context);
+                    }
+                });
             }
         });
     }

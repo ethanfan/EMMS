@@ -32,7 +32,7 @@
     <string-array name="menu_list">
         <item>Create New Task</item>
         <item>Scan QR Code</item>
-        <item>Fault Summary</item>
+        <item>Breakdown Summary</item>
         <item>Workload Input</item>
         <item>Sub Task</item>
         <item>Invite Assistance</item>
@@ -70,12 +70,12 @@
         <item>Binding Equipment</item>
     </string-array>
     <string-array name="Equipment_Status">
-        <item>Processing</item>
+        <item>In progress</item>
         <item>Suspend</item>
         <item>Complete</item>
     </string-array>
     <string-array name="Equipment_Operator_Status">
-        <item>Begin</item>
+        <item>Pending</item>
         <item>Suspend</item>
         <item>Complete</item>
     </string-array>
