@@ -1538,6 +1538,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
                 }
                     }
                 }
+
             }
 
             @Override
