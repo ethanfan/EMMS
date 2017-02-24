@@ -84,6 +84,15 @@ public  class HttpUtils {
         params.putHeaders("Referer", "http://EMMSAPP");
         RxVolley.setContext(context);
         RxVolley.post(BuildConfig.getConfigurationEndPoint(),params,callback);
+//        new RxVolley.Builder()
+//                .url(BuildConfig.getConfigurationEndPoint())
+//                .httpMethod(RxVolley.Method.POST) //default GET or POST/PUT/DELETE/HEAD/OPTIONS/TRACE/PATCH
+//                .contentType(RxVolley.ContentType.JSON)//default FORM or JSON
+//                .params(params)
+//                .retryPolicy(new DefaultRetryPolicy(25000,0,1f))
+//                .callback(callback)
+//                .encoding("UTF-8") //default
+//                .doTask();
     }
     public static void post( final Context context,final String table, final HttpParams params,final HttpCallback callback){
 

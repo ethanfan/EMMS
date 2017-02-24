@@ -105,6 +105,10 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
         isEquipmentComplete=getIntent().getBooleanExtra("EquipmentStatus",false);
         Task_ID=getIntent().getStringExtra(Task.TASK_ID);
         TaskEquipment=getIntent().getStringExtra("TaskEquipment");
+        if(isEquipmentComplete){
+            findViewById(R.id.title_tips_layout).setVisibility(View.VISIBLE);
+            ((TextView)findViewById(R.id.title_tips)).setText(R.string.EquipmentIsCompleteCanNotModifyMeasurePoint);
+        }
         initData();
 
 //        initView();
@@ -153,6 +157,21 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
 //                }else {
 //                    holder = (TaskViewHolder) convertView.getTag();
 //                }
+                {
+                    if(isEquipmentComplete){
+                        holder.editText.setEnabled(false);
+                        holder.dropEditText.getmEditText().setEnabled(false);
+                        holder.dropEditText.getDropImage().setEnabled(false);
+                        holder.image.setEnabled(false);
+                        convertView.findViewById(R.id.imageLayout).setEnabled(false);
+                        holder.dropEditText2.getmEditText().setEnabled(false);
+                        holder.dropEditText.getmEditText().setEnabled(false);
+                        holder.gridView.setEnabled(false);
+                        holder.editText2.setEnabled(false);
+                    }
+                }
+
+
                 if(measure_point_list.get(position).get("tag")!=null){
                     if(measure_point_list.get(position).get("tag").valueAsBoolean()){
                         holder.image.setImageResource(R.mipmap.select_pressed);
@@ -210,6 +229,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
 //                    holder.tv_repair_time.setVisibility(View.GONE);
                     holder.warranty_person.setVisibility(View.VISIBLE);
                     holder.tv_device_num.setVisibility(View.VISIBLE);
+                    ((TextView) convertView.findViewById(R.id.MeasureValueStandard_tag)).setText(R.string.LastMeasure);
                     convertView.findViewById(R.id.CollectionPoint_layout).setVisibility(View.VISIBLE);
                     convertView.findViewById(R.id.StandardMeasureValueLayout).setVisibility(View.VISIBLE);
                 }else {

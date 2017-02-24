@@ -1,37 +1,31 @@
 package com.emms.activity;
 
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.os.Build;
-import android.os.Handler;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.datastore_android_sdk.datastore.Datastore;
 import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
-import com.emms.push.PushReceiver;
 import com.emms.push.PushService;
 import com.emms.util.BuildConfig;
 import com.emms.util.LocaleUtils;
-import com.emms.util.SharedPreferenceManager;
-import com.google.common.util.concurrent.ServiceManager;
+import com.emms.util.NetworkConnectChangedReceiver;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -53,6 +47,7 @@ public class AppApplication extends Application {
         GARMENT,
         GARMENTTEST
     }
+    public static boolean KeepLive=false;
     public static  ServerEndPoint endPoint = ServerEndPoint.UAT;
     private EPassSqliteStoreOpenHelper sqliteStoreOpenHelper;
     @Override
@@ -71,9 +66,12 @@ public class AppApplication extends Application {
         //Garment测试包设置
         //SharedPreferenceManager.setFactory(this,"EGM");
         //SharedPreferenceManager.setNetwork(this,"InnerNetwork");
-
         JPushInterface.init(this);
         PushService.registerMessageReceiver(getApplicationContext());
+        if(BuildConfig.isDebug) {
+            NetworkConnectChangedReceiver.initNetWorkData();
+        }
+        BuildConfig.NetWorkSetting(this);
         System.setProperty("ssl.TrustManagerFactory.algorithm",
                 javax.net.ssl.KeyManagerFactory.getDefaultAlgorithm());
         //语言设置
@@ -84,13 +82,18 @@ public class AppApplication extends Application {
         CrashReport.initCrashReport(getApplicationContext(), "900057191", true);
         //地址设置
         JPushInterface.stopPush(getApplicationContext());
+
+        Intent intent=new Intent("AlarmKeepLive");
+        PendingIntent pendingIntent=PendingIntent.getBroadcast(this,0,intent,0);
+        AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);
+        am.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),60*1000,pendingIntent);
     }
 
     @Override
     public void onTerminate() {
-        if(!JPushInterface.isPushStopped(getApplicationContext())) {
-            JPushInterface.stopPush(getApplicationContext());
-        }
+//        if(!JPushInterface.isPushStopped(getApplicationContext())) {
+//            JPushInterface.stopPush(getApplicationContext());
+//        }
         super.onTerminate();
     }
 
@@ -208,6 +211,9 @@ public class AppApplication extends Application {
             Log.e("",e.getLocalizedMessage());
         }
         return  new PackageInfo();
+    }
+    public  static Context getContext(){
+        return new AppApplication().getApplicationContext();
     }
     // 从asserts目录下拷贝文件到files
 //    private void copyDB() {

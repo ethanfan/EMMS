@@ -181,22 +181,25 @@ public class ProcessingFragment extends BaseFragment {
             }}
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
-       // params.put("id", SharedPreferenceManager.getUserName(mContext));
-        //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
-       // Log.e("returnString","dd");
-      //  String s=SharedPreferenceManager.getLoginData(mContext);
-        //params.put("Operator_id",);
-      //  JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
-       // String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
-      //  params.put("operator_id",operator_id);
-        params.put("status",1);//状态1，即处理中任务
-        params.put("taskClass",TaskClass);
+//        params.put("status",1);//状态1，即处理中任务
+//        params.put("taskClass",TaskClass);
+//        if(TaskSubClass!=null&&!TaskSubClass.equals("")){
+//            params.put("taskSubClass",TaskSubClass);
+//        }
+//        params.put("pageSize",PAGE_SIZE);
+//        params.put("pageIndex",pageIndex);
+
+        JsonObjectElement data=new JsonObjectElement();
+        data.set("status",1);
+        data.set("taskClass",TaskClass);
         if(TaskSubClass!=null&&!TaskSubClass.equals("")){
-            params.put("taskSubClass",TaskSubClass);
+            data.set("taskSubClass",TaskSubClass);
         }
-        params.put("pageSize",PAGE_SIZE);
-        params.put("pageIndex",pageIndex);
-        HttpUtils.get(mContext, "TaskAPI/GetTaskList", params, new HttpCallback() {
+        data.set("pageSize",PAGE_SIZE);
+        data.set("pageIndex",pageIndex);
+        params.putJsonParams(data.toJson());
+
+        HttpUtils.post(mContext, "TaskAPI/GetTaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -235,7 +238,7 @@ public class ProcessingFragment extends BaseFragment {
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastShort(R.string.FailGetTaskListCauseByTimeOut,mContext);
+                ToastUtil.showToastShort(R.string.FailGetTaskListCauseByTimeOut+errorNo,mContext);
                 dismissCustomDialog();
             }
         });

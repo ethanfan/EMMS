@@ -218,7 +218,7 @@ public class PendingCommandFragment extends BaseFragment {
         //jsonObjectElement.set("Status",2);
         jsonObjectElement.set("IsEvaluated",0);
         params.putJsonParams(jsonObjectElement.toJson());
-        HttpUtils.post(mContext, "TaskAPI/TaskHistoryListGet", params, new HttpCallback() {
+        HttpUtils.post(mContext, "TaskAPI/GetTaskHistoryList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

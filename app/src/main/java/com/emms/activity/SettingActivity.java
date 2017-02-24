@@ -28,6 +28,7 @@ import com.emms.R;
 import com.emms.adapter.ResultListAdapter;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.schema.DataDictionary;
+import com.emms.schema.Factory;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
@@ -174,9 +175,9 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
 //        });
         FactoryList.clear();
         ObjectElement GEW=new JsonObjectElement();
-        GEW.set("OrganiseName","GEW");
+        GEW.set("OrganiseName",com.emms.schema.Factory.FACTORY_GEW);
         ObjectElement EGM=new JsonObjectElement();
-        EGM.set("OrganiseName","EGM");
+        EGM.set("OrganiseName",com.emms.schema.Factory.FACTORY_EGM);
         FactoryList.add(GEW);
         FactoryList.add(EGM);
     }
@@ -223,7 +224,7 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                                     Factory.getmEditText().setText(searchResult);
                                     String oldFactory=SharedPreferenceManager.getFactory(context);
                                     DataUtil.FactoryAndNetWorkAddressSetting(context,searchResult);
-                                    BuildConfig.NetWorkSetting(context);
+                                    ChangeServerConnectBaseOnNetwork();
 //                                    AlertDialog.Builder dialog=new AlertDialog.Builder(context);
 //                                    dialog.setMessage("");
 //                                    dialog.setPositiveButton(R.string.sure,new DialogInterface.OnClickListener() {

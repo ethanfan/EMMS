@@ -156,14 +156,26 @@ public class LinkedOrdersFragment extends BaseFragment{
        // JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
        // String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
        // params.put("operator_id",operator_id);
-        params.put("status",2);
-        params.put("taskClass",TaskClass);
+
+//        params.put("status",2);
+//        params.put("taskClass",TaskClass);
+//        if(TaskSubClass!=null&&!TaskSubClass.equals("")){
+//            params.put("taskSubClass",TaskSubClass);
+//        }
+//        params.put("pageSize",PAGE_SIZE);
+//        params.put("pageIndex",pageIndex);
+
+        JsonObjectElement da=new JsonObjectElement();
+        da.set("status",2);
+        da.set("taskClass",TaskClass);
         if(TaskSubClass!=null&&!TaskSubClass.equals("")){
-            params.put("taskSubClass",TaskSubClass);
+            da.set("taskSubClass",TaskSubClass);
         }
-        params.put("pageSize",PAGE_SIZE);
-        params.put("pageIndex",pageIndex);
-        HttpUtils.get(mContext, "TaskAPI/GetTaskList", params, new HttpCallback() {
+        da.set("pageSize",PAGE_SIZE);
+        da.set("pageIndex",pageIndex);
+        params.putJsonParams(da.toJson());
+
+        HttpUtils.post(mContext, "TaskAPI/GetTaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

@@ -104,6 +104,15 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 
     private dialogOnSubmitInterface onSubmitInterface=null;
 
+    public EquipmentCompleteListener getEquipmentCompleteListener() {
+        return equipmentCompleteListener;
+    }
+
+    public void setEquipmentCompleteListener(EquipmentCompleteListener equipmentCompleteListener) {
+        this.equipmentCompleteListener = equipmentCompleteListener;
+    }
+
+    private EquipmentCompleteListener equipmentCompleteListener=null;
     public void initview() {
         ((TextView)findViewById(R.id.cancle)).setText(R.string.cancel);
         findViewById(R.id.cancle).setOnClickListener(new View.OnClickListener() {
@@ -172,7 +181,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
 
 
 
-    private void postTaskEquipment(int status) {
+    private void postTaskEquipment(final int status) {
         showCustomDialog(R.string.submitData);
         HttpParams params = new HttpParams();
 
@@ -197,7 +206,11 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                         if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
                         ToastUtil.showToastShort(R.string.SuccessChangeStatus,context);
                         dismiss();
-                            onSubmitInterface.onsubmit();}else{
+                            onSubmitInterface.onsubmit();
+                            if(status==2&&equipmentCompleteListener!=null){
+                                equipmentCompleteListener.EquipmentComplete(true);//设备状态修改为完成的情况下回调
+                            }
+                        }else{
                             if(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")).equals("")){
                                 ToastUtil.showToastShort(R.string.FailChangeEquipmentStatusCauseByOperator,context);
                             }else {
@@ -307,7 +320,7 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             }
         });
     }
-    private void postTaskOperatorEquipment(int status){
+    private void postTaskOperatorEquipment(final int status){
         showCustomDialog(R.string.submitData);
       HttpParams params=new HttpParams();
        // JsonObjectElement TaskOperatorDataToSubmit=new JsonObjectElement();
@@ -325,6 +338,9 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
                     JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                     if(jsonObjectElement.get("Success").valueAsBoolean()){
                         onSubmitInterface.onsubmit();
+                        if(status==1&&isOneOperator&&equipmentCompleteListener!=null){//设备状态修改为完成的情况下回调
+                            equipmentCompleteListener.EquipmentComplete(true);
+                        }
                         dismiss();
                     }else {
                         if(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")).equals("")){
@@ -383,17 +399,8 @@ public class ChangeEquipmentDialog extends Dialog implements View.OnClickListene
             Equipment_Operator_Status_List.add(complete);
         }
 
-        if(is_Main_person_in_charge_operator_id&&!isOneOperator){
-//            JsonObjectElement jsonObjectElement=new JsonObjectElement();
-//            jsonObjectElement.set("Status",context.getResources().getString(R.string.deleteEquipment));
-//            jsonObjectElement.set("Type","delete");
-//            showList.add(jsonObjectElement);
-//            for(String s:arrayList){
-//                JsonObjectElement json=new JsonObjectElement();
-//                json.set("Status",s);
-//                json.set("Type","EquipmentStatus");
-//                Equipment_Status_List.add(json);
-//            }
+        if( (is_Main_person_in_charge_operator_id&&!isOneOperator)
+                ||( is_Main_person_in_charge_operator_id&&isOneOperator&&OperatorStatus==1)   ){
             //设备状态开始-1，完成-2，暂停-3
             if(EquipemntStatus==3){//当前设备状态为暂停
                 JsonObjectElement EquipmentStart=new JsonObjectElement();

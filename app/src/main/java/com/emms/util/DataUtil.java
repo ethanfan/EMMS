@@ -6,6 +6,8 @@ import android.content.Context;
 import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.emms.activity.AppApplication;
+import com.emms.datastore.EPassSqliteStoreOpenHelper;
+import com.emms.schema.Factory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -94,7 +96,7 @@ public class DataUtil {
     public static String utc2Local(String utcTime) {
         SimpleDateFormat utcFormater = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         utcFormater.setTimeZone(TimeZone.getTimeZone("UTC"));
-        Date gpsUTCDate = null;
+        Date gpsUTCDate;
         try {
             gpsUTCDate = utcFormater.parse(utcTime);
         } catch (ParseException e) {
@@ -109,7 +111,7 @@ public class DataUtil {
         SimpleDateFormat LocalFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         //LocalFormater.setTimeZone(TimeZone.getDefault());
         LocalFormater.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-        Date gpsLocalDate = null;
+        Date gpsLocalDate;
         try {
             gpsLocalDate = LocalFormater.parse(Local);
         } catch (ParseException e) {
@@ -144,9 +146,9 @@ public class DataUtil {
                     +" order by LT.Translation_ID asc limit 1"
                     +" ) Translation_Display,d.[DataName]"
                     +" from DataDictionary d"
-                    +" where d.DataType='"+DataType+"') a";
+                    +" where d.DataType in ('"+DataType+"')) a";
         }else {
-        sql= "select * from DataDictionary where DataType='"+DataType+"'";
+        sql= "select * from DataDictionary where DataType in ('"+DataType+"')";
         }
         ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
     }
@@ -266,9 +268,13 @@ public class DataUtil {
                 +" AND LT.[Language_Code] ='en-US'";
         ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "Language_Translation",storeCallback);
     }
+    public static void getConfigurationData(Context context,String FromFactory,StoreCallback storeCallback){
+        String sql="select * from System_FunctionSetting where Factory = '"+FromFactory+"'";
+        ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_SYSTEM_FUNCTION_SETTING,storeCallback);
+    }
     public static void FactoryAndNetWorkAddressSetting(Context context,String factory){
         SharedPreferenceManager.setFactory(context,factory);
-        if("GEW".equals(factory)){
+        if(Factory.FACTORY_GEW.equals(factory)){
             SharedPreferenceManager.setNetwork(context,"OuterNetwork");
         }else {
             SharedPreferenceManager.setNetwork(context,"InnerNetwork");

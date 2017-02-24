@@ -9,6 +9,7 @@ import com.datastore_android_sdk.schema.Model;
 
 /**
  * Created by jaffer.deng on 2016/7/10.
+ *
  */
 @DatabaseTable(tableName = "Team")
 public class Factory extends Model<Operator, Long> implements Identity<Long> {
@@ -25,6 +26,8 @@ public class Factory extends Model<Operator, Long> implements Identity<Long> {
     public static final String STATUS = "Status";
     public static final String FROMFACTORY = "FromFactory";
     public static final String KY_BH = "Ky_Bh";
+    public static final String FACTORY_GEW="GEW";
+    public static final String FACTORY_EGM="EGM";
 
     @DatabaseField(id = true,
             columnName = FACTORY_ID, canBeNull = false)

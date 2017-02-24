@@ -275,9 +275,10 @@
     <string name="exchangerIsInTask">Transferred staff already exist,fail to transfer</string>
     <string name="getTaskOperatorFail">Fail to access task participant,please check the network</string>
     <string name="OnlyDealingTaskCanAddEquipment">Only processing tasks can be added to the Equipment</string>
-    <string name="AddEquipmentSuccess">Add Equipment successfully</string>
+    <string name="AddEquipmentSuccess">Add Equipment successfully</string>S
     <string name="OnlyDealingTaskCanAddPhoto">Unable to add photo</string>
     <string name="CanNotChangeEquipmentStatus">Equipment status has been completed,can not be modified</string>
+    <string name="CanNotChangeOperatorStatus">Status has been completed,can not be modified</string>
     <string name="CanNotCompleteTask">In this task, there is a person who is not completed, and can not be submitted to the completion of the task</string>
     <string name="pleaseSelectExchangeOrderTarget">Please select to transfer</string>
     <string name="pleaseSelectInviteTarget">Please select to invite</string>
@@ -351,7 +352,7 @@
     <string name="FailGetTaskOperatorList">Failed to get the task participant status list</string>
     <string name="FailGetTaskOperatorListCauseByTimeOut">Failed to get the task participant status list, please check the network</string>
     <string name="FailGetMeasurePointListCauseByTimeOut">Failed to obtain a list of test points, please check the network</string>
-    <string name="FailGetTaskListCauseByTimeOut">Failed to obtain a list of tasks, please check the network</string>
+    <string name="FailGetTaskListCauseByTimeOut">Failed to obtain a list of tasks, please check the network，return code:</string>
     <string name="SuccessCancelTask">Cancel task success</string>
     <string name="SuccessSubmitPicture">Upload picture success</string>
     <string name="SuccessCreateTask">Task create success</string>
@@ -480,7 +481,7 @@
     <string name="langugage">language</string>
     <string name="LanguageSetting">Language:&#160;</string>
     <string name="LanguageTitle">Language Setting</string>
-    <string name="equelToOrLargeThan">equel to or larger than</string>
+    <string name="equelToOrLargeThan">equel to or larger than&#160;</string>
     <string name="ChangeLanguagePleaseWait">Modifying the language, please wait</string>
     <string name="AppError">Program Exception</string>
     <string name="free">free</string>
@@ -499,8 +500,8 @@
     <string name="menu_list_task_complete">Complete Task</string>
     <string name="pleaseSwipeICcardToMakeSureTaskComplete">Please confirm the task completed by the workshop personnel</string>
     <string name="sacn_qr_code">Scan QR Code</string>
-    <string name="account">Account:</string>
-    <string name="password">Password:</string>
+    <string name="account">Account：</string>
+    <string name="password">Password：</string>
     <string name="pleaseInputAccoutAndPasswordToMakeSureTaskComplete">Please enter the account and password to confirm the completion of the task</string>
     <string name="DoYouNeedToCreateAShuntingTask">Whether you need to create a tuning task?</string>
     <string name="DoYouNeedToCreateACarMovingTask">Whether you need to create a Machince-Moving task?</string>
@@ -523,5 +524,15 @@
     <string name="DataTooMorePleaseWait">Large amount of data, please wait patiently</string>
     <string name="RejectTask">Reject Task</string>
     <string name="RejectReasonCannotEmpty">The rejected reason can not be empty</string>
-    <string name="AreYouSureToAddEquipment">Machinery do not in the task, do you want to add it?</string>
+    <string name="AreYouSureToAddEquipment">This Machinery do not in the task, do you want to add it?</string>
+    <string name="TargetGroupCannotEqualToBelongGroup">Target group should be the same as the group of equipment!</string>
+    <string name="IsBinding">(Has been bound)</string>
+    <string name="TaskCompleteTipsForNFC">*Tips:Please evaluate the task and swipe the employee card to comfirm the task completed</string>
+    <string name="TaskCompleteTipsForAccountAndPassword">*Tips:Please evaluate the task and enter the account and password to confirm the task completed</string>
+    <string name="ICCardIsBinding">The ICCard number has been bound to the following device and cannot be rebound</string>
+    <string name="CheckForMONET">Detected you are using a mobile network, is automatically switched to the extranet server connection</string>
+    <string name="CheckForExtranet">Detected you are using extranet Wifi, is automatically switched to the extranet server connection</string>
+    <string name="CheckForIntranet">Detected you are using intranet Wifi, is automatically switched to the intranet server connection</string>
+    <string name="LastMeasure">M Standard:&#160;</string>
+    <string name="EquipmentIsCompleteCanNotModifyMeasurePoint">Tips:Status of the equipment has been completed, cannot modify measurement point</string>
 </resources>

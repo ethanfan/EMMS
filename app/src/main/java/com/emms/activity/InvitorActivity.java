@@ -164,6 +164,9 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
             toast.show();
             return;
         }}
+        if(groupData==null){
+            return;
+        }
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
         params.put("team_id", DataUtil.isDataElementNull(groupData.get("Organise_ID")));
@@ -217,22 +220,26 @@ public class InvitorActivity extends NfcActivity implements View.OnClickListener
         }
         HttpUtils.get(this, "BaseDataAPI/GetBaseOrganise", params, new HttpCallback() {
             @Override
-            public void onSuccess(String t) {
+            public void onSuccess(final String t) {
                 super.onSuccess(t);
                 if(!DataUtil.isNullOrEmpty(t)){
-                    JsonObjectElement json=new JsonObjectElement(t);
-                   if(json.get("PageData")!=null&&json.get("PageData").isArray()&&json.get("PageData").asArrayElement().size()>0){
-                       listGroup.clear();
-                        for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
-                            listGroup.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            JsonObjectElement json=new JsonObjectElement(t);
+                            if(json.get("PageData")!=null&&json.get("PageData").isArray()&&json.get("PageData").asArrayElement().size()>0){
+                                listGroup.clear();
+                                for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
+                                    listGroup.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
+                                }
+                                groupData=listGroup.get(0);
+                                getListItems();
+                                groupAdapter.setDatas(listGroup);
+                                groupAdapter.notifyDataSetChanged();
+                                groupAdapter.setSelection(listGroup.get(0));
+                            }
                         }
-                       groupData=listGroup.get(0);
-                       getListItems();
-                       groupAdapter.setDatas(listGroup);
-                       groupAdapter.notifyDataSetChanged();
-                       groupAdapter.setSelection(listGroup.get(0));
-                    }
-
+                    });
                    // if(json!=null)
                 }else {
                     runOnUiThread(new Runnable() {

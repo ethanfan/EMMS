@@ -16,7 +16,7 @@ public class LongToDate {
     public static String stringToDate(String lo){
         long time = Long.parseLong(lo);
         Date date = new Date(time);
-        SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sd = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         return sd.format(date);
     }
 

@@ -310,32 +310,6 @@ public class CommandActivity extends NfcActivity  {
 //    }
 
 
-//    public void getOperatorInfoFromServer(String iccardID){
-//        showCustomDialog(R.string.loadingData);
-//        HttpParams httpParams=new HttpParams();
-//        httpParams.put("ICCardID",Integer.valueOf(iccardID));
-//        HttpUtils.getWithoutCookies(this, "Token", httpParams, new HttpCallback() {
-//            @Override
-//            public void onSuccess(String t) {
-//                super.onSuccess(t);
-//                if(t!=null){
-//                    JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
-//                    if(jsonObjectElement.get("Success")!=null&&jsonObjectElement.get("Success").valueAsBoolean()){
-//                        ToastUtil.showToastShort(R.string.scanICCardSuccess,context);}
-//                    else{
-//                        ToastUtil.showToastShort("刷卡登录失败",context);
-//                    }
-//                }
-//                dismissCustomDialog();
-//            }
-//
-//            @Override
-//            public void onFailure(int errorNo, String strMsg) {
-//                super.onFailure(errorNo, strMsg);
-//                ToastUtil.showToastShort(R.string.scanICCardFail,context);
-//                dismissCustomDialog();
-//            }
-//        });
-//    }
+
 
 }

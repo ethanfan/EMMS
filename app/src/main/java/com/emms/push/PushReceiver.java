@@ -16,15 +16,12 @@ import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
-import com.emms.activity.AppApplication;
-import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.util.DataUtil;
 import com.emms.util.LocaleUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.Iterator;
 
 import cn.jpush.android.api.JPushInterface;
@@ -60,27 +57,7 @@ public class PushReceiver extends BroadcastReceiver {
             Log.d(TAG, "[MyReceiver] 接收到推送下来的通知的ID: " + notifactionId);
 			NotificationManager notificationManager=(NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
 			notificationManager.cancel(notifactionId);
-			final Bundle bun=bundle;
-			final Context ctx=context;
-			if(LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH
-					|| LocaleUtils.SupportedLanguage.getSupportedLanguage(context.getResources().getConfiguration().locale.getLanguage())==LocaleUtils.SupportedLanguage.ENGLISH) {
-				DataUtil.getDataFromLanguageTranslation(ctx, bun.getString(JPushInterface.EXTRA_ALERT), new StoreCallback() {
-					@Override
-					public void success(DataElement element, String resource) {
-						if (element.isArray() && element.asArrayElement().size() > 0) {
-							showInspectorRecordNotification(ctx, DataUtil.isDataElementNull(element.asArrayElement().get(0).asObjectElement().get("Translation_Display")));
-						} else {
-							showInspectorRecordNotification(ctx, bun.getString(JPushInterface.EXTRA_ALERT));
-						}
-					}
-					@Override
-					public void failure(DatastoreException ex, String resource) {
-						showInspectorRecordNotification(ctx, bun.getString(JPushInterface.EXTRA_ALERT));
-					}
-				});
-			}else {
-				showInspectorRecordNotification(ctx, bun.getString(JPushInterface.EXTRA_ALERT));
-			}
+			processCustomMessage(context, bundle);
 			//showInspectorRecordNotification(context,bundle.getString(JPushInterface.EXTRA_ALERT));
         } else if (JPushInterface.ACTION_NOTIFICATION_OPENED.equals(intent.getAction())) {
             Log.d(TAG, "[MyReceiver] 用户点击打开了通知");

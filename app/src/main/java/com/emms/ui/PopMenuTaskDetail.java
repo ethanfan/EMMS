@@ -24,17 +24,20 @@ import android.widget.TextView;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.emms.R;
-import com.emms.activity.CaptureActivity;
 import com.emms.activity.CreateTaskActivity;
 import com.emms.activity.InvitorActivity;
 import com.emms.activity.SubTaskManageActivity;
 import com.emms.activity.SummaryActivity;
+import com.emms.activity.TaskCompleteActivity;
 import com.emms.activity.WorkLoadActivity;
+import com.emms.schema.Data;
 import com.emms.schema.Task;
+import com.emms.util.BaseData;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.RootUtil;
 import com.emms.util.ToastUtil;
+import com.zxing.android.CaptureActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -176,6 +179,18 @@ public abstract class PopMenuTaskDetail {
 	public void addItems(String[] items) {
 		itemList.clear();
 		Collections.addAll(itemList, items);
+		switch (DataUtil.isDataElementNull(BaseData.getConfigData().get(BaseData.TASK_COMPLETE_SHOW_WORKLOAD_ACTION))){
+			case "1":{
+				if(itemList.contains(context.getString(R.string.menu_list_workload_input))){
+					itemList.remove(context.getString(R.string.menu_list_workload_input));
+				}
+				break;
+			}
+			default:{
+				//do nothing
+				break;
+			}
+		}
 	}
 
 	// 批量添加菜单项
@@ -374,16 +389,21 @@ public abstract class PopMenuTaskDetail {
 			return;
 		}
 		if (TaskClass != null && TaskClass.equals(Task.MOVE_CAR_TASK)) {
-			if(isHasNFC) {
-				if (nfcDialog != null && !nfcDialog.isShowing()) {
-					nfcDialog.show();
-				}
-			}else {
-				TaskCompleteDialog taskCompleteDialog=new TaskCompleteDialog(context,R.style.MyDialog);
-				taskCompleteDialog.setTask_ID(DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
-				taskCompleteDialog.setTaskClass(TaskClass);
-				taskCompleteDialog.show();
-			}
+//			if(isHasNFC) {
+//				if (nfcDialog != null && !nfcDialog.isShowing()) {
+//					nfcDialog.show();
+//				}
+//			}else {
+//				TaskCompleteDialog taskCompleteDialog=new TaskCompleteDialog(context,R.style.MyDialog);
+//				taskCompleteDialog.setTask_ID(DataUtil.isDataElementNull(TaskDetail.get(Task.TASK_ID)));
+//				taskCompleteDialog.setTaskClass(TaskClass);
+//				taskCompleteDialog.show();
+//			}
+			Intent intent=new Intent(context, TaskCompleteActivity.class);
+			intent.putExtra("TaskDetail", TaskDetail.toString());
+			intent.putExtra("TaskComplete", true);
+			intent.putExtra(Task.TASK_CLASS, TaskClass);
+			context.startActivity(intent);
 		} else if(TaskClass != null && TaskClass.equals(Task.TRANSFER_MODEL_TASK)){
 			Intent intent = new Intent(context, SummaryActivity.class);
 			//intent.putExtra(Task.TASK_ID,TaskId);

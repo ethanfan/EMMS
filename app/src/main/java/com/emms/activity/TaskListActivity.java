@@ -20,6 +20,7 @@ import com.emms.fragment.PendingOrdersFragment;
 import com.emms.fragment.ProcessingFragment;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
+import com.emms.util.BaseData;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
@@ -47,6 +48,7 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_repair_task);
         mContext = this;
+        BaseData.setBaseData(mContext);
         TaskClass=getIntent().getStringExtra(Task.TASK_CLASS);
         TaskSubClass=getIntent().getStringExtra(Task.TASK_SUBCLASS);
         initView();
@@ -67,6 +69,8 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
                 mFragments.add(processingFragment);
             }else if (i ==1){
                 PendingOrdersFragment pendingOrdersFragment=PendingOrdersFragment.newInstance(TaskClass,TaskSubClass);
+                pendingOrdersFragment.setFactory(getLoginInfo().getFromFactory());
+                pendingOrdersFragment.setOperatorID(String.valueOf(getLoginInfo().getId()));
                 pendingOrdersFragment.setTaskNumInteface(new TaskNumInteface() {
                     @Override
                     public void ChangeTaskNumListener(int tag, int num) {

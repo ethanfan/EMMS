@@ -91,10 +91,12 @@ public class SystemSettingActivity extends NfcActivity implements View.OnClickLi
     }
     private void initData(){
             for(int i=0;i<3;i++ ){
-                JsonObjectElement jsonObjectElement=new JsonObjectElement();
-                jsonObjectElement.set("module_ID",i+1);
-                jsonObjectElement=moduleMatchingRule(jsonObjectElement);
-                moduleList.add(jsonObjectElement);
+                if(i!=1) {//屏蔽绑定设备
+                    JsonObjectElement jsonObjectElement = new JsonObjectElement();
+                    jsonObjectElement.set("module_ID", i + 1);
+                    jsonObjectElement = moduleMatchingRule(jsonObjectElement);
+                    moduleList.add(jsonObjectElement);
+                }
             }
     }
     private JsonObjectElement moduleMatchingRule(JsonObjectElement obj){

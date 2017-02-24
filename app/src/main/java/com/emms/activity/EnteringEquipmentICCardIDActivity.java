@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.datastore_android_sdk.DatastoreException.DatastoreException;
+import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
@@ -36,6 +38,7 @@ import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
 import com.emms.ui.DropEditText;
 import com.emms.util.DataUtil;
+import com.emms.util.TipsUtil;
 import com.emms.util.ToastUtil;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -73,6 +76,9 @@ private void initView(){
     ((TextView)findViewById(R.id.tv_title)).setText(R.string.entering_equipment);
     findViewById(R.id.btn_right_action).setOnClickListener(this);
     findViewById(R.id.comfirm).setOnClickListener(this);
+    findViewById(R.id.filter).setVisibility(View.VISIBLE);
+    findViewById(R.id.filter).setOnClickListener(this);
+    ((ImageView)findViewById(R.id.filter)).setImageResource(R.mipmap.sync);
     //findViewById(R.id.equipment_id_scan).setOnClickListener(this);
     findViewById(R.id.iccard_scan).setOnClickListener(this);
     equipment_id=(DropEditText)findViewById(R.id.equipment_id);
@@ -80,7 +86,7 @@ private void initView(){
     findViewById(R.id.iccard_scan).setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Intent it = new Intent(EnteringEquipmentICCardIDActivity.this, CaptureActivity.class);
+            Intent it = new Intent(EnteringEquipmentICCardIDActivity.this, com.zxing.android.CaptureActivity.class);
             startActivityForResult(it, 1);
         }
     });
@@ -95,8 +101,8 @@ private void initView(){
 //
             Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             String iccardID = NfcUtils.dumpTagData(tag);
-            iccard_id.setText(iccardID);
 
+            checkICCardID(iccardID);
 //            MessageUtils.showToast(iccardID,this);
         }
     }
@@ -117,6 +123,10 @@ private void initView(){
 //                break;
 //            }
             case R.id.iccard_scan:{
+                break;
+            }
+            case R.id.filter:{
+                getDBDataLastUpdateTime();
                 break;
             }
 
@@ -150,7 +160,11 @@ private void initView(){
                             if(jsonObjectElement.get(Data.SUCCESS).valueAsBoolean()){
                                 ToastUtil.showToastShort(R.string.submitSuccess,context);
                             }else {
-                                ToastUtil.showToastShort(R.string.submit_Fail,context);
+                                if(DataUtil.isDataElementNull(jsonObjectElement.get("Msg")).isEmpty()){
+                                    ToastUtil.showToastShort(R.string.submit_Fail, context);
+                                }else {
+                                    TipsUtil.ShowTips(context,DataUtil.isDataElementNull(jsonObjectElement.get("Msg")));
+                                }
                             }
                         }
                     });
@@ -172,7 +186,7 @@ private void initView(){
         });
     }
     private void initData(){
-        String rawQuery="select AssetsID,Equipment_ID,ifnull(ICCardID,'') ICCardID from Equipment where AssetsID not null";
+        String rawQuery="select AssetsID,Equipment_ID,ifnull(ICCardID,'') ICCardID from Equipment where AssetsID not null order by ICCardID asc";
         ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
                 EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
         Futures.addCallback(elemt, new FutureCallback<DataElement>() {
@@ -184,6 +198,11 @@ private void initView(){
                         for (int i=0;i<element.asArrayElement().size();i++){
                             if(element.asArrayElement().get(i).asObjectElement().get(Equipment.ASSETSID)!=null&&
                                     !DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(Equipment.ASSETSID)).equals("")) {
+                                if(!DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get("ICCardID")).isEmpty()) {
+                                    element.asArrayElement().get(i).asObjectElement().set("AssetsID",
+                                            DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get("AssetsID"))
+                                                    +getString(R.string.IsBinding)  );
+                                }
                                 EquipmentList.add(element.asArrayElement().get(i).asObjectElement());
                             }
                         }
@@ -385,7 +404,7 @@ private void initView(){
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                iccard_id.setText(result);
+                                checkICCardID(result);
                             }
                         });
                     }
@@ -396,5 +415,43 @@ private void initView(){
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+    private void checkICCardID(final String IC_Card_ID){
+        String rawQuery = "SELECT * FROM Equipment e,BaseOrganise b WHERE  e.ICCardID ='" + IC_Card_ID + "' and e.[Organise_ID_Use]=b.[Organise_ID]";
+        getSqliteStore().performRawQuery(rawQuery, EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT, new StoreCallback() {
+            @Override
+            public void success(final DataElement element, String resource) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
+                            AlertDialog.Builder builder=new AlertDialog.Builder(context);
+                            String message=getString(R.string.ICCardIsBinding)
+                                    +"\n"+getString(R.string.equipment_name)+DataUtil.isDataElementNull(element.asArrayElement().get(0).asObjectElement().get(Equipment.EQUIPMENT_NAME))
+                                    +"\n"+getString(R.string.equipment_num)+DataUtil.isDataElementNull(element.asArrayElement().get(0).asObjectElement().get(Equipment.ASSETSID));
+                            builder.setMessage(message);
+                            builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            builder.show();
+                        }else {
+                            iccard_id.setText(IC_Card_ID);
+                        }
+                    }
+                });
+            }
+            @Override
+            public void failure(DatastoreException ex, String resource) {
+                 runOnUiThread(new Runnable() {
+                     @Override
+                     public void run() {
+                         iccard_id.setText(IC_Card_ID);
+                     }
+                 });
+            }
+        });
     }
 }

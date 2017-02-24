@@ -159,35 +159,48 @@ public class TeamStatusActivity extends NfcActivity implements View.OnClickListe
         params.put(Task.TASK_ID,0);
         HttpUtils.get(this, "BaseDataAPI/GetBaseOrganise", params, new HttpCallback() {
             @Override
-            public void onSuccess(String t) {
+            public void onSuccess(final String t) {
                 super.onSuccess(t);
-                if(t!=null){
-                    try{
-                        JsonObjectElement json=new JsonObjectElement(t);
-                        if(json.get("PageData")!=null&&json.get("PageData").isArray()&&json.get("PageData").asArrayElement().size()>0){
-                            listGroup.clear();
-                            for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
-                                listGroup.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(t!=null){
+                            try{
+                                JsonObjectElement json=new JsonObjectElement(t);
+                                if(json.get("PageData")!=null&&json.get("PageData").isArray()&&json.get("PageData").asArrayElement().size()>0){
+                                    listGroup.clear();
+                                    for(int i=0;i<json.get("PageData").asArrayElement().size();i++){
+                                        listGroup.add(json.get("PageData").asArrayElement().get(i).asObjectElement());
+                                    }
+                                    groupData=listGroup.get(0);
+                                    getListItems();
+                                    groupAdapter.setDatas(listGroup);
+                                    groupAdapter.notifyDataSetChanged();
+                                    groupAdapter.setSelection(listGroup.get(0));
+                                }else {
+                                    ToastUtil.showToastLong(R.string.GetGroupDataFail,context);
+                                    dismissCustomDialog();
+                                }
+                            }catch (Exception e){
+                                if(e.getCause()!=null) {
+                                    ToastUtil.showToastShort(e.getCause().toString(), context);
+                                }
+                                dismissCustomDialog();
                             }
-                            groupData=listGroup.get(0);
-                            getListItems();
-                            groupAdapter.setDatas(listGroup);
-                            groupAdapter.notifyDataSetChanged();
-                            groupAdapter.setSelection(listGroup.get(0));
                         }
-                    }catch (Exception e){
-                        if(e.getCause()!=null) {
-                            ToastUtil.showToastShort(e.getCause().toString(), context);
-                        }
-                        dismissCustomDialog();
                     }
-
-                }
+                });
             }
 
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtil.showToastLong(R.string.GetGroupDataFailCauseByNetWork,context);
+                    }
+                });
                 dismissCustomDialog();
             }
         });

@@ -226,7 +226,7 @@ public class AllTaskHistoryFragment extends BaseFragment {
         objectElement.set("pageSize",PAGE_SIZE);
         objectElement.set("pageIndex",pageIndex);
         params.putJsonParams(objectElement.toJson());
-        HttpUtils.post(mContext, "TaskAPI/TaskHistoryListGet", params, new HttpCallback() {
+        HttpUtils.post(mContext, "TaskAPI/GetTaskHistoryList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

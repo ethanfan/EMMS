@@ -207,13 +207,11 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
             json.set("TroubleType",FaultType);
         }
         params.putJsonParams(json.toJson());
-        HttpUtils.post(this, "TaskEquipmentHistoryList", params, new HttpCallback() {
+        HttpUtils.post(this, "TaskTroubleAPI/TaskTroubleHistoryListGet", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                     super.onSuccess(t);
                 if(t!=null){
-
-
                     if (pageIndex == 1) {
                         fault_summary_list.clear();
                     }

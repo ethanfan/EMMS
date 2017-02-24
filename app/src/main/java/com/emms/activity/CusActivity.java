@@ -3,7 +3,6 @@ package com.emms.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,8 +22,8 @@ import com.emms.adapter.MainActivityAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.BaseData;
-import com.emms.util.Constants;
 import com.emms.util.DataUtil;
+import com.emms.util.ServiceUtils;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.flyco.tablayout.widget.MsgView;
@@ -49,6 +48,9 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cus);
+//        AppApplication.KeepLive=true;
+//        ServiceUtils.starKeepLiveService(ServiceUtils.Mode.Only_KeepLiveServiceNo_1,this);
+//        BroadcastUtils.startKeepLiveBroadcast(this);
         {
             TaskClass_moduleID_map.put(Task.REPAIR_TASK,3);//车间报修
             TaskClass_moduleID_map.put(Task.GROUP_ARRANGEMENT,2);//组内安排
@@ -65,24 +67,6 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         initView();
         initData();
         getTaskCountFromServer();
-        if(getIntent().getStringExtra(Constants.FLAG_CREATE_SHUNTING_TASK)!=null){
-            Intent intent=new Intent(this,CreateTaskActivity.class);
-            intent.putExtra(Constants.FLAG_CREATE_SHUNTING_TASK,Constants.FLAG_CREATE_SHUNTING_TASK);
-            if(getIntent().getStringExtra("OperatorInfo")!=null){
-                intent.putExtra("OperatorInfo",getIntent().getStringExtra("OperatorInfo"));
-                intent.putExtra("FromTask_ID",getIntent().getStringExtra("FromTask_ID"));
-            }
-            startActivity(intent);
-        }
-        if(getIntent().getStringExtra(Constants.FLAG_CREATE_CAR_MOVING_TASK)!=null){
-            Intent intent=new Intent(this,CreateTaskActivity.class);
-            intent.putExtra(Constants.FLAG_CREATE_CAR_MOVING_TASK,Constants.FLAG_CREATE_CAR_MOVING_TASK);
-            if(getIntent().getStringExtra("OperatorInfo")!=null){
-                intent.putExtra("OperatorInfo",getIntent().getStringExtra("OperatorInfo"));
-                intent.putExtra("FromTask_ID",getIntent().getStringExtra("FromTask_ID"));
-            }
-            startActivity(intent);
-        }
     }
 
     @Override
@@ -173,7 +157,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
 //            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.applicant);
 //        }
         //TODO
-        if(Integer.valueOf(SharedPreferenceManager.getUserRoleID(this))!=null) {
+        if(SharedPreferenceManager.getUserRoleID(this)!=null&&Integer.valueOf(SharedPreferenceManager.getUserRoleID(this))!=null) {
             if (Integer.valueOf(SharedPreferenceManager.getUserRoleID(this)) == 7) {
                 ((ImageView) findViewById(R.id.rootImage)).setImageResource(R.mipmap.applicant);
             } else if (Integer.valueOf(SharedPreferenceManager.getUserRoleID(this)) < 5) {
@@ -304,6 +288,11 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             case 14: {//转款
                 setModelProperty(obj, R.mipmap.model_transfer_model,
                         R.string.transfer_model, Task.TRANSFER_MODEL_TASK, null, "TaskListActivity", "0/0", 1);
+                break;
+            }
+            case 15:{
+                setModelProperty(obj,R.mipmap.system_setting_activity_binding,
+                        R.string.EquipmentBinding,null,null,"EnteringEquipmentICCardIDActivity",null,0);
                 break;
             }
             default:{

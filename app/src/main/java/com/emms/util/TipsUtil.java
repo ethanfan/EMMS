@@ -6,7 +6,7 @@ import android.content.Context;
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
-
+import com.tencent.bugly.crashreport.CrashReport;
 
 
 /**
@@ -20,36 +20,48 @@ public class TipsUtil {
             DataUtil.getDataFromLanguageTranslation(context, tips, new StoreCallback() {
                 @Override
                 public void success(final DataElement element, String resource) {
-                    ((Activity)context).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
-                                ToastUtil.showToastLong(DataUtil.isDataElementNull(element.asArrayElement().get(0).asObjectElement().get("Translation_Display")),context);
-                            }else {
-                                ToastUtil.showToastLong(tips,context);
+                    try {
+                        ((Activity)context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
+                                    ToastUtil.showToastLong(DataUtil.isDataElementNull(element.asArrayElement().get(0).asObjectElement().get("Translation_Display")),context);
+                                }else {
+                                    ToastUtil.showToastLong(tips,context);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }catch (Exception e){
+                        CrashReport.postCatchedException(e);
+                    }
                 }
 
                 @Override
                 public void failure(DatastoreException ex, String resource) {
-                    ((Activity)context).runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ToastUtil.showToastLong(tips,context);
-                        }
-                    });
+                    try {
+                        ((Activity)context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ToastUtil.showToastLong(tips,context);
+                            }
+                        });
+                    }catch (Exception e){
+                        CrashReport.postCatchedException(e);
+                    }
+
                 }
             });
         }else {
-            ((Activity)context).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    ToastUtil.showToastLong(tips,context);
-                }
-            });
-
+            try {
+                ((Activity)context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ToastUtil.showToastLong(tips,context);
+                    }
+                });
+            }catch (Exception e){
+                CrashReport.postCatchedException(e);
+            }
         }
     }
 }

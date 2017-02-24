@@ -12,8 +12,8 @@ android {
         applicationId "com.emms"
         minSdkVersion 14
         targetSdkVersion 20
-        versionCode 42
-        versionName "1.0.42"
+        versionCode 51
+        versionName "1.0.51beta"
         multiDexEnabled true
         multiDexKeepFile file('multiDexKeep.txt')
         ndk {
@@ -33,7 +33,6 @@ android {
         }
     }
 }
-
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
@@ -46,4 +45,6 @@ dependencies {
     compile 'com.tencent.bugly:nativecrashreport:latest.release'
     compile 'com.tencent.bugly:crashreport:latest.release'
     compile files('libs/gesture-imageview.jar')
+    compile files('libs/ZXing-core-3.2.1.jar')
+    compile files('libs/jpush-android-2.1.7.jar')
 }

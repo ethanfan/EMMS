@@ -19,6 +19,7 @@ import com.emms.R;
 
 /**
  * Created by jaffer.deng on 2016/6/20.
+ *
  */
 public class BadgeView extends TextView{
 

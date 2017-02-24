@@ -38,7 +38,9 @@ import com.emms.R;
 import com.emms.httputils.HttpUtils;
 import com.emms.push.PushService;
 import com.emms.schema.Data;
+import com.emms.schema.DataDictionary;
 import com.emms.schema.Equipment;
+import com.emms.schema.Factory;
 import com.emms.schema.Operator;
 import com.emms.ui.EquipmentSummaryDialog;
 import com.emms.ui.KProgressHUD;
@@ -47,6 +49,8 @@ import com.emms.util.BuildConfig;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.LocaleUtils;
+import com.emms.util.NetworkConnectChangedReceiver;
+import com.emms.util.ServiceUtils;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.tencent.bugly.crashreport.CrashReport;
@@ -66,11 +70,9 @@ import cn.jpush.android.api.JPushInterface;
 
 public class LoginActivity extends NfcActivity implements View.OnClickListener {
     private Context mContext=this;
-    //private TextView machine;
     private EditText inputPassWord;
     private EditText inputname;
     private KProgressHUD hud;
-    //private ImageButton setting;
     private static final String FILE_NAME = "emms.apk";
     private Handler pushHandler = PushService.mHandler;
     private AlertDialog dialog ;
@@ -78,6 +80,14 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+//        AppApplication.KeepLive=false;
+//        ServiceUtils.stopKeepLiveService(this);
+//        BroadcastUtils.stopKeepLiveBroadcast(this);
+//        IntentFilter intentFilter=new IntentFilter();
+//        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
+//        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+//        intentFilter.addAction(Intent.ACTION_USER_PRESENT);
+//        registerReceiver(new ScreenOnAndOffBroadcast(),intentFilter);
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_TAGS, new LinkedHashSet<>()));
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, ""));
         setStyleCustom();
@@ -85,9 +95,9 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         if(SharedPreferenceManager.getFactory(mContext)==null){
             ArrayList<ObjectElement> s=new ArrayList<>();
             JsonObjectElement GEW=new JsonObjectElement();
-            GEW.set(Equipment.EQUIPMENT_NAME,"GEW");
+            GEW.set(Equipment.EQUIPMENT_NAME, Factory.FACTORY_GEW);
             JsonObjectElement EGM=new JsonObjectElement();
-            EGM.set(Equipment.EQUIPMENT_NAME,"EGM");
+            EGM.set(Equipment.EQUIPMENT_NAME,Factory.FACTORY_EGM);
             s.add(GEW);
             s.add(EGM);
             final EquipmentSummaryDialog equipmentSummaryDialog=new EquipmentSummaryDialog(this,s);
@@ -101,6 +111,9 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                     String factory=DataUtil.isDataElementNull(equipmentSummaryDialog.getList().get(position).get(Equipment.EQUIPMENT_NAME));
                     DataUtil.FactoryAndNetWorkAddressSetting(mContext,factory);
                     BuildConfig.NetWorkSetting(mContext);
+                    if(Factory.FACTORY_EGM.equals(factory)){
+                    ChangeServerConnectBaseOnNetwork();
+                    }
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -111,8 +124,40 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 }
             });
         }else {
-            BuildConfig.NetWorkSetting(this);
-            getVersion();
+            initNetWorklist(new StoreCallback() {
+                @Override
+                public void success(DataElement element, String resource) {
+                    if (element != null && element.isArray() && element.asArrayElement().size() > 0) {
+                        for (DataElement dataElement : element.asArrayElement()) {
+                            if (!NetworkConnectChangedReceiver.mNetworkList.contains(DataUtil.isDataElementNull(dataElement.asObjectElement().get(DataDictionary.DATA_NAME)))) {
+                                NetworkConnectChangedReceiver.mNetworkList.add(DataUtil.isDataElementNull(dataElement.asObjectElement().get(DataDictionary.DATA_NAME)));
+                            }
+                        }
+                    }
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ChangeServerConnectBaseOnNetwork();
+                               // BuildConfig.NetWorkSetting(mContext);
+                                getVersion();
+                            }
+                        });
+
+                }
+
+                @Override
+                public void failure(DatastoreException ex, String resource) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ChangeServerConnectBaseOnNetwork();
+                            //BuildConfig.NetWorkSetting(mContext);
+                            getVersion();
+                        }
+                    });
+                }
+            });
+
         }
     }
    private void DoInit(){
@@ -121,14 +166,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
            public void run() {
                if(!getIntent().getBooleanExtra("FromCusActivity", false)) {
                    if(SharedPreferenceManager.getDatabaseVersion(mContext)!=null&&Integer.valueOf(SharedPreferenceManager.getDatabaseVersion(mContext))<DBVersion){
-                       File dbFile;
-                       if(BuildConfig.isDebug){
-                           dbFile = new File(getExternalFilesDir(null), "/EMMS_TEST_"+SharedPreferenceManager.getFactory(mContext)+".zip");
-                       }
-                       else {
-                           dbFile = new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(mContext)+".zip");
-                       }
-                       getDBFromServer(dbFile);
+                       getDBFromServer(getDBZipFile(BuildConfig.isDebug));
                    }else {
                        getNewDataFromServer();
                    }
@@ -146,7 +184,9 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             initView();
 //            SharedPreferenceManager.setLanguageChange(this,false);
 //        }
-        getNewDataFromServer();
+        if(SharedPreferenceManager.getLoginData(mContext)!=null) {
+            getNewDataFromServer();
+        }
     }
 
     private void initView() {
@@ -216,9 +256,15 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                         super.onFailure(errorNo, strMsg);
                         Loger.debug(errorNo + ":strMsg");
                         hud.dismiss();
-                        Toast.makeText(mContext,
-                                getString(R.string.network_error),
-                                Toast.LENGTH_LONG).show();
+                        if(strMsg!=null){
+                            Toast.makeText(mContext,
+                                    getString(R.string.network_error)+"\n"+strMsg,
+                                    Toast.LENGTH_LONG).show();
+                        }else {
+                            Toast.makeText(mContext,
+                                    getString(R.string.network_error),
+                                    Toast.LENGTH_LONG).show();
+                        }
                     }
 
                     @Override
@@ -537,12 +583,12 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
 //                    if (downloadTask == null) {
 //                        downloadTask = new DownloadTask(context, url, destination);
 //                    }
-                        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                            @Override
-                            public void onDismiss(DialogInterface dialog) {
-                                DoInit();
-                            }
-                        });
+//                        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+//                            @Override
+//                            public void onDismiss(DialogInterface dialog) {
+//                                DoInit();
+//                            }
+//                        });
                         dialog.setButton(context.getResources().getString(R.string.Update), new DialogInterface.OnClickListener() {
 
                             @Override
@@ -608,4 +654,5 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             }
         });
     }
+
 }

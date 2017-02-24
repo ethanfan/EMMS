@@ -236,7 +236,7 @@ public class FliterTaskHistoryFragment extends BaseFragment {
             objectElement.set("DateLength",1);
         }
         params.putJsonParams(objectElement.toJson());
-        HttpUtils.post(mContext, "TaskAPI/TaskHistoryListGet", params, new HttpCallback() {
+        HttpUtils.post(mContext, "TaskAPI/GetTaskHistoryList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

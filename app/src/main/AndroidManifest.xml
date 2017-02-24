@@ -28,6 +28,7 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS"/>
     <uses-permission android:name="android.permission.CAMERA"/>
 
     <uses-feature android:name="android.hardware.camera" />
@@ -42,6 +43,7 @@
         android:name=".activity.AppApplication"
         android:launchMode="singleInstance"
         android:allowBackup="true"
+        android:persistent="true"
         android:icon="@mipmap/emmsa"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -60,8 +62,12 @@
                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         <!--</activity>-->
+        <!--<activity-->
+            <!--android:name=".activity.CaptureActivity"-->
+            <!--android:screenOrientation="portrait">-->
+        <!--</activity>-->
         <activity
-            android:name=".activity.CaptureActivity"
+            android:name="com.zxing.android.CaptureActivity"
             android:screenOrientation="portrait">
         </activity>
         <activity android:name=".activity.MeasurePointActivity"
@@ -91,6 +97,9 @@
             android:screenOrientation="portrait">
         </activity>
         <activity android:name=".activity.SystemSettingActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".activity.TaskCompleteActivity"
             android:screenOrientation="portrait">
         </activity>
         <!--<activity android:name=".activity.EquipmentHistory"-->
@@ -191,7 +200,13 @@
             android:name=".activity.ImageGridActivity"
             android:screenOrientation="portrait">
         </activity>
-
+        <receiver android:name=".util.NetworkConnectChangedReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".activity.InvitorActivity"
             android:screenOrientation="portrait">
@@ -298,7 +313,14 @@
                 <category android:name="com.emms" />
             </intent-filter>
         </receiver>
-
+        <!--<receiver android:name=".broadcast.ScreenOnAndOffBroadcast"-->
+            <!--android:enabled="true">-->
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.SCREEN_OFF"/>-->
+                <!--<action android:name="android.intent.action.SCREEN_ON"/>-->
+                <!--<action android:name="android.intent.action.USER_PRESENT"/>-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
 
         <!-- Required  . Enable it you can get statistics data with channel -->
         <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
@@ -326,7 +348,18 @@
                 <category android:name="jpush.testCategory" />
             </intent-filter>
         </activity>
-
+        <!--<service-->
+        <!--android:name=".activity.KeepLiveService">-->
+        <!--</service>-->
+        <!--<service-->
+        <!--android:name=".activity.KeepLiveService2">-->
+        <!--</service>-->
+        <!--<receiver android:name=".broadcast.KeepLiveBroadcast"-->
+            <!--android:enabled="true">-->
+            <!--<intent-filter android:priority="1000">-->
+                <!--<action android:name="AlarmKeepLive"/>-->
+            <!--</intent-filter>-->
+        <!--</receiver>-->
     </application>
 
 </manifest>

@@ -29,11 +29,15 @@ import com.emms.activity.TaskNumInteface;
 import com.emms.adapter.TaskAdapter;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Data;
+import com.emms.schema.Factory;
 import com.emms.schema.Task;
 import com.emms.ui.CancelTaskDialog;
 import com.emms.ui.TaskCancelListener;
+import com.emms.util.BaseData;
+import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.LocaleUtils;
+import com.emms.util.LongToDate;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.TipsUtil;
 import com.emms.util.ToastUtil;
@@ -41,6 +45,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.jar.JarEntry;
 
 /**
@@ -60,6 +65,17 @@ public class PendingOrdersFragment extends BaseFragment{
     private int pageIndex=1;
     private int RecCount=0;
     private int removeNum=0;
+    private String From_Factory=null;
+
+    public String getOperatorID() {
+        return OperatorID;
+    }
+
+    public void setOperatorID(String operatorID) {
+        OperatorID = operatorID;
+    }
+
+    private String OperatorID=null;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -205,14 +221,27 @@ public class PendingOrdersFragment extends BaseFragment{
       //  JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
       //  String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
       //  params.put("operator_id",operator_id);
-        params.put("status",0);
-        params.put("taskClass",TaskClass);
+
+//        params.put("status",0);
+//        params.put("taskClass",TaskClass);
+//        if(TaskSubClass!=null&&!TaskSubClass.equals("")){
+//            params.put("taskSubClass",TaskSubClass);
+//        }
+//        params.put("pageSize",PAGE_SIZE);
+//        params.put("pageIndex",pageIndex);
+
+
+        JsonObjectElement data=new JsonObjectElement();
+        data.set("status",0);
+        data.set("taskClass",TaskClass);
         if(TaskSubClass!=null&&!TaskSubClass.equals("")){
-            params.put("taskSubClass",TaskSubClass);
+            data.set("taskSubClass",TaskSubClass);
         }
-        params.put("pageSize",PAGE_SIZE);
-        params.put("pageIndex",pageIndex);
-        HttpUtils.get(mContext, "TaskAPI/GetTaskList", params, new HttpCallback() {
+        data.set("pageSize",PAGE_SIZE);
+        data.set("pageIndex",pageIndex);
+        params.putJsonParams(data.toJson());
+
+        HttpUtils.post(mContext, "TaskAPI/GetTaskList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -246,7 +275,7 @@ public class PendingOrdersFragment extends BaseFragment{
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastShort(R.string.FailGetTaskListCauseByTimeOut,mContext);
+                ToastUtil.showToastShort(getString(R.string.FailGetTaskListCauseByTimeOut)+errorNo,mContext);
                 dismissCustomDialog();
             }
         });
@@ -330,6 +359,7 @@ public class PendingOrdersFragment extends BaseFragment{
                                     return;
                                 }
                             }
+                            ObjectElement detail=datas.get(position);
                             datas.remove(position);
                             removeNum++;
                             if(taskNumInteface!=null){
@@ -338,6 +368,31 @@ public class PendingOrdersFragment extends BaseFragment{
                             }
                             taskAdapter.setDatas(datas);
                             taskAdapter.notifyDataSetChanged();
+
+                    switch (DataUtil.isDataElementNull(BaseData.getConfigData().get(BaseData.RECEIVE_TASK_ACTION))){
+                        case "1":{
+                            Intent intent=new Intent(mContext,TaskDetailsActivity.class);
+                            intent.putExtra(Task.TASK_ID,DataUtil.isDataElementNull(detail.get(Task.TASK_ID)));
+                            detail.set("IsMain",true);//接单即为主负责人
+                            detail.set("StartTime",LongToDate.stringToDate(String.valueOf(new Date().getTime()))) ;
+                            if(OperatorID!=null) {
+                                detail.set("MainOperator_ID", OperatorID);
+                            }
+                            intent.putExtra("TaskDetail",detail.toString());
+                            intent.putExtra(Task.TASK_CLASS,TaskClass);
+                            intent.putExtra("FromProcessingFragment","1");
+                            intent.putExtra("TaskStatus",1);
+                            if(TaskSubClass!=null&&!TaskSubClass.equals("")){
+                                intent.putExtra(Task.TASK_SUBCLASS,TaskSubClass);}
+                            ((Activity)mContext).startActivityForResult(intent, Constants.REQUEST_CODE_PROCESSING_ORDER_TASK_DETAIL);
+                            break;
+                        }
+                        default:{
+                            //do nothing
+                            break;
+                        }
+                    }
+                    //针对EGM厂进行兼容
                 }
                 dismissCustomDialog();
             }
@@ -402,4 +457,13 @@ public class PendingOrdersFragment extends BaseFragment{
             }
         });
     }
+
+    public String getFactory() {
+        return From_Factory;
+    }
+
+    public void setFactory(String factory) {
+        From_Factory = factory;
+    }
+
 }

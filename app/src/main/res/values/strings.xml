@@ -255,7 +255,7 @@
     <string name="SuccessDownloadDB">数据文件下载完毕</string>
     <string name="FailDownloadDB">数据文件下载失败，请重新下载</string>
     <string name="CanNotChangeStatus">不允许修改状态</string>
-    <string name="judgeTaskClass">只有维修任务能进行故障总结</string>
+    <string name="judgeTaskClass">只有车间报修任务能进行故障总结</string>
     <string name="onlyTaskChargerCanChangeEquipmentStatus">只有任务主负责人可以修改设备状态</string>
     <string name="pleaseInputEquipmentNum">请输入设备编号</string>
     <string name="pleaseScanICcardNum">请扫描或输入ICCard号</string>
@@ -278,6 +278,7 @@
     <string name="AddEquipmentSuccess">添加设备成功</string>
     <string name="OnlyDealingTaskCanAddPhoto">不可添加照片</string>
     <string name="CanNotChangeEquipmentStatus">设备状态为已完成，不可修改状态</string>
+    <string name="CanNotChangeOperatorStatus">状态为已完成，不可修改状态</string>
     <string name="CanNotCompleteTask">该任务中存在参与人处于未完成状态，不可提交任务完成</string>
     <string name="pleaseSelectExchangeOrderTarget">请选择转单对象</string>
     <string name="pleaseSelectInviteTarget">请选择邀请对象</string>
@@ -352,7 +353,7 @@
     <string name="FailGetTaskOperatorList">获取任务参与人状态列表失败</string>
     <string name="FailGetTaskOperatorListCauseByTimeOut">获取任务参与人状态列表失败，请检查网络</string>
     <string name="FailGetMeasurePointListCauseByTimeOut">获取测点列表失败，请检查网络</string>
-    <string name="FailGetTaskListCauseByTimeOut">获取任务列表失败，请检查网络</string>
+    <string name="FailGetTaskListCauseByTimeOut">获取任务列表失败，请检查网络,返回码：</string>
     <string name="SuccessCancelTask">取消任务成功</string>
     <string name="SuccessSubmitPicture">上传图片成功</string>
     <string name="SuccessCreateTask">任务创建成功</string>
@@ -498,7 +499,7 @@
     <string name="menu_list_invite_help">邀请协助</string>
     <string name="menu_list_transfer_order">转单</string>
     <string name="menu_list_task_complete">完成任务</string>
-    <string name="pleaseSwipeICcardToMakeSureTaskComplete">请车间人员刷卡确认任务完成</string>
+    <string name="pleaseSwipeICcardToMakeSureTaskComplete">请车间人员评价并刷卡确认任务完成</string>
     <string name="SuccessToCheckID">身份验证通过,正在提交任务完成</string>
     <string name="FailToCheckID">身份验证失败，请检查信息</string>
     <string name="FailToCheckIDCauseByTimeOut">身份验证失败，请检查网络</string>
@@ -506,8 +507,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="msg_default_status">将二维码放入框内，即可自动扫描</string>
     <string name="sacn_qr_code">扫二维码</string>
-    <string name="account">账号:</string>
-    <string name="password">密码:</string>
+    <string name="account">账号：</string>
+    <string name="password">密码：</string>
     <string name="pleaseInputAccoutAndPasswordToMakeSureTaskComplete">请输入账号密码确认任务完成</string>
     <string name="DoYouNeedToCreateAShuntingTask">是否需要创建调车任务?</string>
     <string name="DoYouNeedToCreateACarMovingTask">是否需要创建搬车任务?</string>
@@ -523,4 +524,14 @@
     <string name="RejectTask">退回任务</string>
     <string name="RejectReasonCannotEmpty">退回原因不能为空</string>
     <string name="AreYouSureToAddEquipment">确定要添加设备?</string>
+    <string name="TargetGroupCannotEqualToBelongGroup">目标组别不可与所属组别相同！</string>
+    <string name="IsBinding">(已绑定)</string>
+    <string name="TaskCompleteTipsForNFC">*提示:请对任务进行评价并刷员工卡确认任务完成</string>
+    <string name="TaskCompleteTipsForAccountAndPassword">*提示:请对任务进行评价并输入账号密码确认任务完成</string>
+    <string name="ICCardIsBinding">该ICCard号已绑定如下设备，不可重新绑定</string>
+    <string name="CheckForMONET">检测到您所使用的是移动网络，已自动切换至外网服务器连接</string>
+    <string name="CheckForExtranet">检测到您所使用的是外网Wifi，已自动切换至外网服务器连接</string>
+    <string name="CheckForIntranet">检测到您所使用的是内网Wifi，已自动切换至内网服务器连接</string>
+    <string name="LastMeasure">上次测值:</string>
+    <string name="EquipmentIsCompleteCanNotModifyMeasurePoint">提示:设备状态为已完成，不可修改测量值</string>
 </resources>

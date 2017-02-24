@@ -20,13 +20,16 @@ import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.SubTaskAdapter;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Factory;
 import com.emms.schema.Task;
 import com.emms.ui.CustomDialog;
+import com.emms.util.BaseData;
 import com.emms.util.DataUtil;
 import com.emms.util.LocaleUtils;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.j256.ormlite.stmt.query.In;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
@@ -76,7 +79,17 @@ public class SubTaskManageActivity extends NfcActivity implements View.OnClickLi
             @Override
             public void onClick(View v) {
                 //待写
-                Intent intent=new Intent(context,WorkLoadActivity.class);
+                Intent intent;
+                switch (DataUtil.isDataElementNull(BaseData.getConfigData().get(BaseData.TASK_COMPLETE_SHOW_WORKLOAD_ACTION))){
+                    case "1":{
+                        intent=new Intent(context,SummaryActivity.class);
+                        break;
+                    }
+                    default:{
+                        intent=new Intent(context,WorkLoadActivity.class);
+                        break;
+                    }
+                }
                 intent.putExtra("TaskComplete",true);
                 intent.putExtra("TaskDetail",TaskDetail.toString());
                 intent.putExtra(Task.TASK_CLASS,TaskClass);

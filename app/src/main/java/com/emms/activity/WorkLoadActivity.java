@@ -25,6 +25,7 @@ import com.emms.httputils.HttpUtils;
 import com.emms.schema.Task;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,7 +169,7 @@ public class WorkLoadActivity extends NfcActivity{
             @Override
             public void onSuccess(final String t) {
                 super.onSuccess(t);
-                if(t!=null&&!t.equals("null")){
+                if(t!=null&&!"null".equals(t)){
                    runOnUiThread(new Runnable() {
                        @Override
                        public void run() {
@@ -191,32 +192,40 @@ public class WorkLoadActivity extends NfcActivity{
         });
     }
     private void SetViewData(ObjectElement ViewData){
-        group.setText(DataUtil.isDataElementNull(ViewData.get("TaskApplicantOrgName")));
-        task_id.setText(DataUtil.isDataElementNull(ViewData.get(Task.TASK_ID)));
-        String s=DataUtil.isDataElementNull(ViewData.get("Workload"))+getResources().getString(R.string.hours);
-        total_worktime.setText(s);
-        if(ViewData.get("TaskOperator")!=null&&ViewData.get("TaskOperator").isArray()&&ViewData.get("TaskOperator").asArrayElement().size()>0) {
+        try {
+            group.setText(DataUtil.isDataElementNull(ViewData.get("TaskApplicantOrgName")));
+            task_id.setText(DataUtil.isDataElementNull(ViewData.get(Task.TASK_ID)));
+            String s = DataUtil.isDataElementNull(ViewData.get("Workload")) + getResources().getString(R.string.hours);
+            total_worktime.setText(s);
+            if (ViewData.get("TaskOperator") != null && ViewData.get("TaskOperator").isArray() && ViewData.get("TaskOperator").asArrayElement().size() > 0) {
+                boolean isSubmited = false;
+                int sum = 0;
                 for (int i = 0; i < ViewData.get("TaskOperator").asArrayElement().size(); i++) {
-                    ObjectElement objectElement=ViewData.get("TaskOperator").asArrayElement().get(i).asObjectElement();
-                    if(DataUtil.isFloat(DataUtil.isDataElementNull(objectElement.get("Coefficient")))){
-                        if(  !(((int)(Float.parseFloat(DataUtil.isDataElementNull(objectElement.get("Coefficient")))*100))==0)    ){
-                            objectElement.set("Work",(int)(Float.parseFloat(DataUtil.isDataElementNull(objectElement.get("Coefficient")))*100));
+                    ObjectElement objectElement = ViewData.get("TaskOperator").asArrayElement().get(i).asObjectElement();
+                    if (DataUtil.isFloat(DataUtil.isDataElementNull(objectElement.get("Coefficient")))) {
+                        sum += (int) (Float.parseFloat(DataUtil.isDataElementNull(objectElement.get("Coefficient"))) * 100);
+                    }
+                }
+                if (sum == 100) {
+                    isSubmited = true;
+                }
+                for (int i = 0; i < ViewData.get("TaskOperator").asArrayElement().size(); i++) {
+                    ObjectElement objectElement = ViewData.get("TaskOperator").asArrayElement().get(i).asObjectElement();
+                    if (DataUtil.isFloat(DataUtil.isDataElementNull(objectElement.get("Coefficient")))) {
+                        if (!(((int) (Float.parseFloat(DataUtil.isDataElementNull(objectElement.get("Coefficient"))) * 100)) == 0) || isSubmited) {
+                            objectElement.set("Work", (int) (Float.parseFloat(DataUtil.isDataElementNull(objectElement.get("Coefficient"))) * 100));
                         }
                     }
-                    objectElement.set("Tag",true);
+                    objectElement.set("Tag", true);
                     datas.add(objectElement);
                 }
-            if(datas.size()==1){
-                datas.get(0).set("Work",100);
-            }
-            workloadAdapter.notifyDataSetChanged();
-       /*     workloadAdapter.unregisterDataSetObserver(new DataSetObserver() {
-                @Override
-                public void onChanged() {
-                    super.onChanged();
+                if (datas.size() == 1) {
+                    datas.get(0).set("Work", 100);
                 }
-            });*/
-
+                workloadAdapter.notifyDataSetChanged();
+            }
+        }catch (Exception e){
+            CrashReport.postCatchedException(e);
         }
     }
     private void submitWorkLoadToServer(){

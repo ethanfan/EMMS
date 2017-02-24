@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -172,8 +173,12 @@ public class TaskVerifyActivity extends NfcActivity {
         if(reason!=null){
             jsonObjectElement.set("Summary",reason);
         }
-        params.putJsonParams(jsonObjectElement.toJson());
-        HttpUtils.post(this, "TaskAPI/TaskCheck", params, new HttpCallback() {
+        ArrayList<ObjectElement> submitdata=new ArrayList<>();
+        submitdata.add(jsonObjectElement);
+        JsonArrayElement jsonArrayElement=new JsonArrayElement(submitdata.toString());
+        params.putJsonParams(jsonArrayElement.toJson());
+//        params.putJsonParams(jsonObjectElement.toJson());
+        HttpUtils.post(this, "TaskAPI/TaskCheckList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -217,17 +222,21 @@ public class TaskVerifyActivity extends NfcActivity {
             }}
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
-        params.put("pageSize",PAGE_SIZE);
-        params.put("pageIndex",pageIndex);
+//        params.put("pageSize",PAGE_SIZE);
+//        params.put("pageIndex",pageIndex);
         //   String s=SharedPreferenceManager.getLoginData(mContext);
         //  JsonObjectElement jsonObjectElement=new JsonObjectElement(s);
         //  String operator_id=jsonObjectElement.get("Operator_ID").valueAsString();
         //  params.put("operator_id",operator_id);
+        JsonObjectElement jsonObjectElement=new JsonObjectElement();
+        jsonObjectElement.set("pageSize",PAGE_SIZE);
+        jsonObjectElement.set("pageIndex",pageIndex);
+        params.putJsonParams(jsonObjectElement.toJson());
 //        params.put("status",0);
 //        params.put("taskClass","T01");
 //        params.put("pageSize",PAGE_SIZE);
 //        params.put("pageIndex",pageIndex);
-        HttpUtils.get(mContext, "TaskAPI/GetTaskCheckList", params, new HttpCallback() {
+        HttpUtils.post(mContext, "TaskAPI/GetTaskCheckList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
