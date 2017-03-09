@@ -28,6 +28,7 @@
         <item>Invite Assistance</item>
         <item>Transfer Order</item>
         <item>Complete Task</item>
+        <item>Refresh</item>
     </string-array>
     <string-array name="menu_list">
         <item>Create New Task</item>
@@ -37,6 +38,7 @@
         <item>Invite Assistance</item>
         <item>Transfer Order</item>
         <item>Complete Task</item>
+        <item>Refresh</item>
     </string-array>
     <string-array name="menu_list_maintain">
         <item>Create New Task</item>
@@ -46,6 +48,7 @@
         <item>Invite Assistance</item>
         <item>Transfer Order</item>
         <item>Complete Task</item>
+        <item>Refresh</item>
     </string-array>
 
     <string-array name="menu_list_move_car">
@@ -54,6 +57,7 @@
         <item>Invite Assistance</item>
         <item>Transfer Order</item>
         <item>Complete Task</item>
+        <item>Refresh</item>
     </string-array>
 
     <string-array name="menu_list_transfer_model">
@@ -62,6 +66,7 @@
         <item>Invite Assistance</item>
         <item>Transfer Order</item>
         <item>Complete Task</item>
+        <item>Refresh</item>
     </string-array>
 
     <string-array name="menu_login">

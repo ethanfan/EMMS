@@ -9,11 +9,13 @@
     <TextView
         android:id="@+id/tv_item_result_listview_name"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:gravity="center_vertical"
         android:textSize="16sp"
-        android:singleLine="true"
         android:textColor="@color/text_color"
         tools:ignore="RtlHardcoded" />
     <View

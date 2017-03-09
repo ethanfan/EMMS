@@ -7,6 +7,7 @@ import com.datastore_android_sdk.schema.Model;
 import com.datastore_android_sdk.schema.Schema;
 import com.datastore_android_sdk.sqlite.SqliteStoreHelper;
 import com.emms.schema.Message;
+import com.emms.util.DataUtil;
 import com.j256.ormlite.support.ConnectionSource;
 
 import java.io.File;
@@ -40,7 +41,7 @@ public class systemSqliteStoreOpenHelper extends SqliteStoreHelper {
 
 	@Override
 	public String getDatabaseName() {
-		return new File(getContext().getExternalFilesDir(null), "system.db")
+		return new File(DataUtil.getDBDirPath(getContext()), "system.db")
 					.getAbsolutePath();
 
 	}

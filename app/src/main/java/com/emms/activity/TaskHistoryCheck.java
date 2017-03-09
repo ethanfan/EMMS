@@ -33,6 +33,7 @@ import com.emms.fragment.AllTaskHistoryFragment;
 import com.emms.fragment.FliterTaskHistoryFragment;
 import com.emms.fragment.PendingCommandFragment;
 import com.emms.schema.DataDictionary;
+import com.emms.schema.Factory;
 import com.emms.schema.Task;
 import com.emms.ui.CloseDrawerListener;
 import com.emms.ui.CustomDrawerLayout;
@@ -70,7 +71,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
     private ArrayList<ObjectElement> taskStatusList=new ArrayList<>();
     private ArrayList<ObjectElement> timeList=new ArrayList<>();
     private DropEditText task_class,task_status,time;
-    private String taskClassCode="",taskStatusCode="",timeCode="";
+    private String taskClassCode="",taskStatusCode="",timeCode="",checkStatusCode="";
     private ViewPager vp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,7 +170,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
                 break;
             }
             case R.id.search_button:{
-                ((FliterTaskHistoryFragment)mFragments.get(2)).setData(taskClassCode,taskStatusCode,timeCode);
+                ((FliterTaskHistoryFragment)mFragments.get(2)).setData(taskClassCode,taskStatusCode,timeCode,checkStatusCode);
                 ((FliterTaskHistoryFragment)mFragments.get(2)).getTaskHistory();
                 vp.setCurrentItem(2,true);
                 buttonAnim(false);
@@ -213,7 +214,13 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
 
                                 case 2:{
                                     task_status.getmEditText().setText(searchResult);
-                                    taskStatusCode=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(DataDictionary.DATA_CODE));
+                                    if("CheckStatus".equals(DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(DataDictionary.DATA_TYPE)))){
+                                        checkStatusCode=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(DataDictionary.DATA_CODE));
+                                        taskStatusCode="";
+                                    }else {
+                                        taskStatusCode=DataUtil.isDataElementNull(mResultAdapter.getItem(position).get(DataDictionary.DATA_CODE));
+                                        checkStatusCode="";
+                                    }
                                     break;
                                 }
                                 case 3:{
@@ -366,8 +373,17 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
               if(!"T0301".equals(key)                 //过滤掉普通搬车，转款搬车，维护，搬车
                       &&!"T0302".equals(key)
                       &&!"T03".equals(key)
+                      &&!"T0203".equals(key)
                       &&!Task.MAINTAIN_TASK.equals(key)){
-              taskClassList.add(jsonObjectElement);
+                  if(Factory.FACTORY_GEW.equals(getLoginInfo().getFromFactory())) {
+                      if(!Task.MOVE_CAR_TASK.equals(key)
+                              &&!Task.TRANSFER_MODEL_TASK.equals(key)
+                              &&!Task.OTHER_TASK.equals(key)) {
+                          taskClassList.add(jsonObjectElement);
+                      }
+                  }else {
+                      taskClassList.add(jsonObjectElement);
+                  }
               }
           }
 //        String rawQuery = "select * from DataDictionary " +
@@ -414,8 +430,16 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
 //        taskStatusList.add(jsonObjectElement3);
         for(String key:BaseData.getTaskStatus().keySet()){
             JsonObjectElement jsonObjectElement=new JsonObjectElement();
+            jsonObjectElement.set(DataDictionary.DATA_TYPE,"TaskStatus");
             jsonObjectElement.set(DataDictionary.DATA_CODE,key);
             jsonObjectElement.set(DataDictionary.DATA_NAME,BaseData.getTaskStatus().get(key));
+            taskStatusList.add(jsonObjectElement);
+        }
+        for(String key:BaseData.getCheckStatus().keySet()){
+            JsonObjectElement jsonObjectElement=new JsonObjectElement();
+            jsonObjectElement.set(DataDictionary.DATA_TYPE,"CheckStatus");
+            jsonObjectElement.set(DataDictionary.DATA_CODE,key);
+            jsonObjectElement.set(DataDictionary.DATA_NAME,BaseData.getCheckStatus().get(key));
             taskStatusList.add(jsonObjectElement);
         }
     }
@@ -489,6 +513,7 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
             case Constants.REQUEST_CODE_TASKHISTORY:{
                 if(resultCode==3){
                     ((PendingCommandFragment)mFragments.get(0)).doRefresh();
+                    ((AllTaskHistoryFragment)mFragments.get(1)).doRefresh();
                 }else if(resultCode==1) {
                     ((AllTaskHistoryFragment)mFragments.get(1)).doRefresh();
                 }else if(resultCode==2){
@@ -535,5 +560,10 @@ public class TaskHistoryCheck extends NfcActivity implements View.OnClickListene
 
         }
 
-
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+////        setTilteColor();
+////        findViewById(R.id.toolbar_layout).setBackgroundColor(Color.BLUE);
+//    }
 }

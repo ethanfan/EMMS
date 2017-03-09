@@ -28,28 +28,28 @@ public class KeepLiveBroadcast extends BroadcastReceiver{
             if(AppApplication.KeepLive) {
                 ServiceUtils.starKeepLiveService(ServiceUtils.Mode.Both_KeepLiveService, context);
             }
-            try {
-                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
-                mBuilder.setContentIntent(PendingIntent.getActivity(context, 0,
-                        new Intent(context, LoginActivity.class), 0))
-                        .setWhen(System.currentTimeMillis())
-                        .setPriority(Notification.DEFAULT_VIBRATE)
-                        .setOngoing(false)
-                        .setSmallIcon(R.drawable.ic_emms);
-                mBuilder.setTicker("Foreground Service Start");
-                mBuilder.setContentTitle("Foreground Service");
-                mBuilder.setContentText("Make this service run in the foreground.");
-                Notification notify = mBuilder.build();
-                notify.flags |= Notification.FLAG_AUTO_CANCEL; // 点击通知后通知栏消失
-                notify.defaults |= Notification.DEFAULT_ALL;
-                notify.vibrate = new long[]{0, 100, 1100, 2100, 4100};
-                // 通知id需要唯一，要不然会覆盖前一条通知
-                int notifyId = (int) System.currentTimeMillis();
-                NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                mNotificationManager.notify(notifyId, notify);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+//            try {
+//                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
+//                mBuilder.setContentIntent(PendingIntent.getActivity(context, 0,
+//                        new Intent(context, LoginActivity.class), 0))
+//                        .setWhen(System.currentTimeMillis())
+//                        .setPriority(Notification.DEFAULT_VIBRATE)
+//                        .setOngoing(false)
+//                        .setSmallIcon(R.drawable.ic_emms);
+//                mBuilder.setTicker("Foreground Service Start");
+//                mBuilder.setContentTitle("Foreground Service");
+//                mBuilder.setContentText("Make this service run in the foreground.");
+//                Notification notify = mBuilder.build();
+//                notify.flags |= Notification.FLAG_AUTO_CANCEL; // 点击通知后通知栏消失
+//                notify.defaults |= Notification.DEFAULT_ALL;
+//                notify.vibrate = new long[]{0, 100, 1100, 2100, 4100};
+//                // 通知id需要唯一，要不然会覆盖前一条通知
+//                int notifyId = (int) System.currentTimeMillis();
+//                NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+//                mNotificationManager.notify(notifyId, notify);
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
         }
     }
 }

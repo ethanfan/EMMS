@@ -101,7 +101,7 @@ public abstract class PopMenuTaskDetail {
 		item_image_mapping.put(context.getResources().getString(R.string.menu_list_invite_help),R.mipmap.more_invitation);
 		item_image_mapping.put(context.getResources().getString(R.string.menu_list_transfer_order),R.mipmap.more_single_turn);
 		item_image_mapping.put(context.getResources().getString(R.string.menu_list_task_complete),R.mipmap.more_finish);
-
+        item_image_mapping.put(context.getResources().getString(R.string.Refresh),R.mipmap.refresh);
 		this.TaskDetail=new JsonObjectElement(taskDetail);
 		TaskId=TaskDetail.get(Task.TASK_ID).valueAsLong();
 		TaskClass=taskClass;
@@ -168,6 +168,8 @@ public abstract class PopMenuTaskDetail {
 					ExChangeOrder();
 				}else if(itemList.get(position).equals(context.getString(R.string.menu_list_task_complete))){
 					TaskComplete();
+				}else if (itemList.get(position).equals(context.getString(R.string.Refresh))){
+					Refresh();
 				}
 				popMenuTaskDetail.dismiss();
 			}
@@ -432,7 +434,11 @@ public abstract class PopMenuTaskDetail {
 		}
 		((Activity)context).startActivityForResult(new Intent(context, CaptureActivity.class),Constants.REQUEST_CODE_TASK_DETAIL_TO_CAPTURE_ACTIVITY);
 	}
-
+	private void Refresh(){
+		if(onTaskDetailRefreshListener!=null){
+			onTaskDetailRefreshListener.onRefresh();
+		}
+	}
 //	public void setDialogOnSubmit(dialogOnSubmitInterface dialogOnSubmit) {
 //		this.dialogOnSubmit = dialogOnSubmit;
 //	}
@@ -441,4 +447,18 @@ public abstract class PopMenuTaskDetail {
 	public void setTaskComplete(boolean taskComplete){
 		this.taskComplete=taskComplete;
 	}
+
+	public interface OnTaskDetailRefreshListener{
+		void onRefresh();
+	}
+
+	public OnTaskDetailRefreshListener getOnTaskDetailRefreshListener() {
+		return onTaskDetailRefreshListener;
+	}
+
+	public void setOnTaskDetailRefreshListener(OnTaskDetailRefreshListener onTaskDetailRefreshListener) {
+		this.onTaskDetailRefreshListener = onTaskDetailRefreshListener;
+	}
+
+	private OnTaskDetailRefreshListener onTaskDetailRefreshListener;
 }

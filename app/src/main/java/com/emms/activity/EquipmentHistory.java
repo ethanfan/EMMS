@@ -152,6 +152,7 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
         findViewById(R.id.filter).setVisibility(View.VISIBLE);
         findViewById(R.id.search_button).setOnClickListener(this);
         findViewById(R.id.search_filter).setOnClickListener(this);
+        findViewById(R.id.reset_button).setOnClickListener(this);
         adapter=new TaskAdapter(fault_summary_list) {
             @Override
             public View getCustomView(View convertView, int position, ViewGroup parent) {
@@ -277,7 +278,19 @@ public class EquipmentHistory extends NfcActivity implements View.OnClickListene
                 buttonAnim(false);
                 break;
             }
+            case R.id.reset_button:{
+                resetCondition();
+                break;
+            }
         }
+    }
+    private void  resetCondition(){
+        equipment_name.getmEditText().setText("");
+        EquipmentName="";
+        task_description.getmEditText().setText("");
+        Task_Description="";
+        fault_type.getmEditText().setText("");
+        FaultType="";
     }
     private void initSearchView() {
         searchBox = (EditText) findViewById(R.id.et_search);

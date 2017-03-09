@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">EMMS</string>
-
+    <string name="app_name_debug">EMMSUAT</string>
     <string name="login_id_hint">Please enter account</string>
     <string name="login_password_hint">Please enter password</string>
     <string name="pleaseInput">Please input</string>
@@ -97,6 +97,9 @@
     <string name="task_number">Task num:&#160;</string>
     <string name="issue_time">Issued time:&#160;</string>
     <string name="receive_time">Received time:&#160;</string>
+    <string name="Approver">Approver:&#160;</string>
+    <string name="ApproverTime">Approval time:&#160;</string>
+    <string name="ApproverReason">Reason:&#160;</string>
     <string name="device_count">Total:&#160;</string>
     <string name="dealed_count">Resolved:&#160;</string>
     <string name="participant">Participant:&#160;</string>
@@ -386,7 +389,7 @@
     <string name="downloading">Download</string>
     <string name="sureDeleteEquipment">Confirm delete Equipment?</string>
     <string name="measure_point_id">MP number:&#160;</string>
-    <string name="id">number:&#160;</string>
+    <string name="id">Measure Point &#160;%s&#160;</string>
     <string name="measure_point_name">MP name:&#160;</string>
     <string name="measure_point_content">MP content:&#160;</string>
     <string name="measure_point_standard">&#160;&#160;C Standard:&#160;</string>
@@ -464,8 +467,10 @@
     <string name="SuccessReceiveTask">Receive order successful</string>
     <string name="FailGetDataPleaseRestartApp">Obtain data fail , please restart</string>
     <string name="PleaseAddTaskPeople">Please add participant task</string>
-    <string name="EndTimeCanNotlessThanStartTime">The end time can not be in the start time, please re select</string>
-    <string name="StartTimeCanNotlessThanApplicantTime">Start time can not be created before the time, please reselect \n create time:&#160;</string>
+    <string name="EndTimeCanNotlessThanStartTime">The end time can not before the start time, please reselect</string>
+    <string name="StartTimeCanNotlessThanApplicantTime">Start time can not before the created time, please reselect \n create time:&#160;</string>
+    <string name="StartTimeCanNotlargeThanNowTime">The start time can not behind the recent time, please reselect</string>
+    <string name="EndTimeCanNotlargeThanNowTime">The end time can not behind the recent time, please reselect</string>
     <string name="pleaseInputRightValue">Please enter the correct measurement value, range:&#160;</string>
     <string name="pleaseInputMeasureValue">No optional value, please enter the measured value</string>
     <string name="UpdateTime">yyyy.MM.dd HH:mm:ss</string>
@@ -535,4 +540,6 @@
     <string name="CheckForIntranet">Detected you are using intranet Wifi, is automatically switched to the intranet server connection</string>
     <string name="LastMeasure">M Standard:&#160;</string>
     <string name="EquipmentIsCompleteCanNotModifyMeasurePoint">Tips:Status of the equipment has been completed, cannot modify measurement point</string>
+    <string name="Refresh">Refresh</string>
+    <string name="Reset">Reset</string>
 </resources>

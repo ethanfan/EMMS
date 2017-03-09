@@ -16,6 +16,8 @@ import com.datastore_android_sdk.datastore.ObjectElement;
 import com.emms.ui.DropEditText;
 import com.emms.ui.MyListView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 /**
@@ -86,6 +88,11 @@ public abstract class TaskAdapter extends BaseAdapter{
         public EtTextChanged textChanged1;
         public EtTextChanged textChanged2;
         public ExOnClickListener onClickListener;
+        public TextView tv_verify_person_tag;
+        public TextView tv_verify_person;
+        public TextView tv_verify_reason_tag;
+        public TextView tv_verify_reason;
+
     }
     public class EtTextChanged implements TextWatcher {
         private int position;

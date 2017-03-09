@@ -28,6 +28,7 @@
         <item>邀请协助</item>
         <item>转单</item>
         <item>完成任务</item>
+        <item>刷新</item>
     </string-array>
     <string-array name="menu_list_group_arrange">
         <item>发起新任务</item>
@@ -37,6 +38,7 @@
         <item>邀请协助</item>
         <item>转单</item>
         <item>完成任务</item>
+        <item>刷新</item>
     </string-array>
     <string-array name="menu_list_maintain">
         <item>发起新任务</item>
@@ -46,6 +48,7 @@
         <item>邀请协助</item>
         <item>转单</item>
         <item>完成任务</item>
+        <item>刷新</item>
     </string-array>
     <string-array name="menu_list_move_car">
         <item>发起新任务</item>
@@ -53,6 +56,7 @@
         <item>邀请协助</item>
         <item>转单</item>
         <item>完成任务</item>
+        <item>刷新</item>
     </string-array>
     <string-array name="menu_list_transfer_model">
         <item>发起新任务</item>
@@ -60,6 +64,7 @@
         <item>邀请协助</item>
         <item>转单</item>
         <item>完成任务</item>
+        <item>刷新</item>
     </string-array>
 
     <string-array name="menu_login">

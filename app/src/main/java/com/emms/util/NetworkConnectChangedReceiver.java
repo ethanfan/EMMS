@@ -33,15 +33,36 @@ public class NetworkConnectChangedReceiver extends  BroadcastReceiver{
     private static final String TAG="NetworkConnectChanged";
     @Override
     public void onReceive(final Context context,final Intent intent) {
-        if(BuildConfig.isDebug){
-            if(!mNetworkList.contains("Linkgoo-Base")){
-                initNetWorkData();
+        switch (BuildConfig.appEnvironment){
+            case DEVELOPMENT:{
+                if(!mNetworkList.contains("Linkgoo-Base")){
+                    initNetWorkData();
+                }
+                break;
             }
-        }else {
-            if(mNetworkList.size()==0){
-                initNetWorkData();
+            case PROD:
+            case UAT:{
+                if(mNetworkList.size()==0){
+                    initNetWorkData();
+                }
+                break;
+            }
+            default:{
+                if(mNetworkList.size()==0){
+                    initNetWorkData();
+                }
+                break;
             }
         }
+//        if(BuildConfig.isDebug){
+//            if(!mNetworkList.contains("Linkgoo-Base")){
+//                initNetWorkData();
+//            }
+//        }else {
+//            if(mNetworkList.size()==0){
+//                initNetWorkData();
+//            }
+//        }
        doReceive(context,intent);
     }
     private String getConnectionType(int type) {

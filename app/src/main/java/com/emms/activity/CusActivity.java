@@ -1,8 +1,12 @@
 package com.emms.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,17 +24,23 @@ import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.MainActivityAdapter;
 import com.emms.httputils.HttpUtils;
+import com.emms.schema.Factory;
 import com.emms.schema.Task;
 import com.emms.util.BaseData;
+import com.emms.util.BuildConfig;
 import com.emms.util.DataUtil;
+import com.emms.util.NetworkUtils;
 import com.emms.util.ServiceUtils;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.flyco.tablayout.widget.MsgView;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshGridView;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -44,13 +54,24 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
     private static HashMap<String,Integer> TaskClass_moduleID_map=new HashMap<>();
     private HashMap<Integer,ObjectElement> ID_module_map=new HashMap<>();
     private MainActivityAdapter adapter;
+    RefreshTaskNumBroadCast refreshTaskNumBroadCast=new RefreshTaskNumBroadCast();
+    IntentFilter intentFilter=new IntentFilter("RefreshTaskNum");
+    private static boolean syncLock=false;//用于限制只能同时进行一次任务数字获取
+    private int retryTimes=1;
+    private Handler mHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cus);
+        mHandler=new Handler(getMainLooper());
 //        AppApplication.KeepLive=true;
 //        ServiceUtils.starKeepLiveService(ServiceUtils.Mode.Only_KeepLiveServiceNo_1,this);
 //        BroadcastUtils.startKeepLiveBroadcast(this);
+        if(Factory.FACTORY_EGM.equals(SharedPreferenceManager.getFactory(this))) {
+            TimeZone.setDefault(TimeZone.getTimeZone("GMT+7"));
+        }else {
+            TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
+        }
         {
             TaskClass_moduleID_map.put(Task.REPAIR_TASK,3);//车间报修
             TaskClass_moduleID_map.put(Task.GROUP_ARRANGEMENT,2);//组内安排
@@ -66,7 +87,10 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         }
         initView();
         initData();
-        getTaskCountFromServer();
+        getTaskCountFromServer(true);
+//        for(int i=0;i<100;i++){
+//            getTaskCountFromServer(true);
+//        }
     }
 
     @Override
@@ -80,7 +104,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             ((TextView) findViewById(R.id.UserName)).setText(getLoginInfo().getName());
             ((TextView) findViewById(R.id.WorkNum_tag)).setText(getLoginInfo().getOperator_no());
         }
-        GridView module_list = (GridView) findViewById(R.id.module_list);
+        final PullToRefreshGridView module_list = (PullToRefreshGridView) findViewById(R.id.module_list);
         adapter=new MainActivityAdapter(moduleList) {
             @Override
             public View getCustomView(View convertView, int position, ViewGroup parent) {
@@ -151,6 +175,19 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             }
         });
         module_list.setAdapter(adapter);
+        module_list.setMode(PullToRefreshBase.Mode.PULL_FROM_START);
+        module_list.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<GridView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<GridView> refreshView) {
+                getTaskCountFromServer(true);
+                module_list.onRefreshComplete();
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<GridView> refreshView) {
+
+            }
+        });
 //        if(getLoginInfo().isMaintenMan()){
 //            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.repairer);
 //        }else {
@@ -322,12 +359,44 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
     @Override
     protected void onRestart() {
         super.onRestart();
-        getTaskCountFromServer();
+        BuildConfig.NetWorkSetting(context);
+        getTaskCountFromServer(true);
         getDBDataLastUpdateTime();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            if (refreshTaskNumBroadCast != null) {
+                context.registerReceiver(refreshTaskNumBroadCast, intentFilter);
+            }
+        }catch (Exception e){
+            CrashReport.postCatchedException(e);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            if (refreshTaskNumBroadCast != null) {
+                unregisterReceiver(refreshTaskNumBroadCast);
+            }
+        }catch (Exception e){
+            CrashReport.postCatchedException(e);
+        }
+    }
+
     //获取任务数量
-    private void getTaskCountFromServer(){
-        showCustomDialog(R.string.loadingData);
+    private synchronized void getTaskCountFromServer(boolean showLoadingDialog){
+        if(syncLock){
+            return;
+        }
+        syncLock=true;
+        if(showLoadingDialog) {
+            showCustomDialog(R.string.loadingData);
+        }
         HttpParams params=new HttpParams();
         //params.put("id",String.valueOf(getLoginInfo().getId()));
         // String s=SharedPreferenceManager.getUserName(this);
@@ -335,31 +404,37 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
-                if (t != null) {
-                    JsonArrayElement json = new JsonArrayElement(t);
-                    //获取任务数目，Data_ID对应，1对应维修，2对应维护，3对应搬车，4对应其它
+                retryTimes=1;
+                syncLock=false;
+                try {
+                    if (t != null) {
+                        JsonArrayElement json = new JsonArrayElement(t);
+                        //获取任务数目，Data_ID对应，1对应维修，2对应维护，3对应搬车，4对应其它
                         for (int i = 0; i < json.size(); i++) {
                             //   taskNum.put(jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement().get("Data_ID").valueAsInt(),
                             //         jsonObjectElement.get("PageData").asArrayElement().get(i).asObjectElement());
-                            if(json.get(i).asObjectElement().get("DoingNo")!=null&&
-                                    json.get(i).asObjectElement().get("ToDoNo")!=null) {
-                                ObjectElement jsonObjectElement=json.get(i).asObjectElement();
-                                optimizationData(jsonObjectElement,"ToDoNo","DoingNo");
+                            if (json.get(i).asObjectElement().get("DoingNo") != null &&
+                                    json.get(i).asObjectElement().get("ToDoNo") != null) {
+                                ObjectElement jsonObjectElement = json.get(i).asObjectElement();
+                                optimizationData(jsonObjectElement, "ToDoNo", "DoingNo");
                                 String taskNumToShow;
-                                if(DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")).equals("C1")
-                                        ||DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")).equals("C2")
-                                        ||DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")).equals("C3")){
-                                    taskNumToShow=DataUtil.isDataElementNull(jsonObjectElement.get("ToDoNo"));
-                                }else {
+                                if (DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")).equals("C1")
+                                        || DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")).equals("C2")
+                                        || DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")).equals("C3")) {
+                                    taskNumToShow = DataUtil.isDataElementNull(jsonObjectElement.get("ToDoNo"));
+                                } else {
                                     taskNumToShow = DataUtil.isDataElementNull(jsonObjectElement.get("DoingNo")) + "/" +
                                             DataUtil.isDataElementNull(jsonObjectElement.get("ToDoNo"));
                                 }
-                                if(ID_module_map.get(TaskClass_moduleID_map.get(DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass"))))!=null){
-                               ID_module_map.get(TaskClass_moduleID_map.get(DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")))).set("TaskNum",taskNumToShow);
+                                if (ID_module_map.get(TaskClass_moduleID_map.get(DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")))) != null) {
+                                    ID_module_map.get(TaskClass_moduleID_map.get(DataUtil.isDataElementNull(jsonObjectElement.get("TaskClass")))).set("TaskNum", taskNumToShow);
                                 }
                             }
                         }
                         adapter.notifyDataSetChanged();
+                    }
+                }catch (Exception e){
+                    CrashReport.postCatchedException(e);
                 }
                 BaseData.setBaseData(context);
                 dismissCustomDialog();
@@ -368,13 +443,34 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             @Override
             public void onFailure(int errorNo, String strMsg) {
                 super.onFailure(errorNo, strMsg);
-                BaseData.setBaseData(context);
-                if(errorNo==401){
-                    ToastUtil.showToastShort(R.string.unauthorization,context);
+                syncLock=false;
+                try {
+                    BaseData.setBaseData(context);
+                    if (errorNo == 401) {
+                        ToastUtil.showToastShort(R.string.unauthorization, context);
+                        dismissCustomDialog();
+                        return;
+                    }
+                    if(retryTimes<4){
+                        if(mHandler!=null){
+                            mHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.e("retry",String.valueOf(retryTimes));
+                                    retryTimes++;
+                                    getTaskCountFromServer(true);
+                                }
+                            },1500);
+                        }else {
+                            mHandler=new Handler(getMainLooper());
+                        }
+                        return;
+                    }
+                    ToastUtil.showToastShort(getString(R.string.loadingFail)+"\n"+strMsg+"\n"+"returnCode:"+errorNo, context);
+                }catch (Exception e){
+                    //Do nothing
                     dismissCustomDialog();
-                    return;
                 }
-                ToastUtil.showToastShort(R.string.loadingFail,context);
                 dismissCustomDialog();
             }
         });
@@ -441,6 +537,16 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                 &&DataUtil.isNum(DataUtil.isDataElementNull(data.get(key2)))
                 &&data.get(key2).valueAsInt()>=100){
             data.set(key2,"99");
+        }
+    }
+
+    private class RefreshTaskNumBroadCast extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+              if("RefreshTaskNum".equals(intent.getAction())){
+                  getTaskCountFromServer(false);
+              }
         }
     }
 }

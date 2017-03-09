@@ -28,7 +28,6 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.GET_TASKS"/>
     <uses-permission android:name="android.permission.CAMERA"/>
 
     <uses-feature android:name="android.hardware.camera" />
@@ -349,7 +348,10 @@
             </intent-filter>
         </activity>
         <!--<service-->
-        <!--android:name=".activity.KeepLiveService">-->
+        <!--android:name=".activity.GrayInnerService">-->
+        <!--</service>-->
+        <!--<service-->
+            <!--android:name=".activity.KeepLiveService">-->
         <!--</service>-->
         <!--<service-->
         <!--android:name=".activity.KeepLiveService2">-->

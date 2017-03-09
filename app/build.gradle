@@ -12,8 +12,8 @@ android {
         applicationId "com.emms"
         minSdkVersion 14
         targetSdkVersion 20
-        versionCode 51
-        versionName "1.0.51beta"
+        versionCode 57
+        versionName "1.0.57"
         multiDexEnabled true
         multiDexKeepFile file('multiDexKeep.txt')
         ndk {
@@ -22,6 +22,10 @@ android {
             }
     }
     buildTypes {
+        debug{
+            applicationIdSuffix "debug"
+            manifestPlaceholders = [app_label:"@string/app_name_debug"]
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

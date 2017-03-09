@@ -233,11 +233,26 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                                     if(!searchResult.equals(oldFactory)) {
                                         ToastUtil.showToastLong(R.string.ChangeFactory,context);
                                         File dbFile;
-                                        if (BuildConfig.isDebug) {
-                                            dbFile = new File(getExternalFilesDir(null), "/EMMS_TEST_" + SharedPreferenceManager.getFactory(context) + ".zip");
-                                        } else {
-                                            dbFile = new File(getExternalFilesDir(null), "/EMMS_" + SharedPreferenceManager.getFactory(context) + ".zip");
+                                        switch (BuildConfig.appEnvironment){
+                                            case DEVELOPMENT:{
+                                                dbFile = new File(DataUtil.getDBDirPath(context), "/EMMS_TEST_" + SharedPreferenceManager.getFactory(context) + ".zip");
+                                                break;
+                                            }
+                                            case PROD:
+                                            case UAT:{
+                                                dbFile = new File(DataUtil.getDBDirPath(context), "/EMMS_" + SharedPreferenceManager.getFactory(context) + ".zip");
+                                                break;
+                                            }
+                                            default:{
+                                                dbFile = new File(DataUtil.getDBDirPath(context), "/EMMS_" + SharedPreferenceManager.getFactory(context) + ".zip");
+                                                break;
+                                            }
                                         }
+//                                        if (BuildConfig.isDebug) {
+//                                            dbFile = new File(DataUtil.getDBDirPath(context), "/EMMS_TEST_" + SharedPreferenceManager.getFactory(context) + ".zip");
+//                                        } else {
+//                                            dbFile = new File(DataUtil.getDBDirPath(context), "/EMMS_" + SharedPreferenceManager.getFactory(context) + ".zip");
+//                                        }
                                         getDBFromServer(dbFile);
                                     }
 //                                            dialog.dismiss();

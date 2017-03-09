@@ -13,18 +13,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.Build.VERSION;
+import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
+import com.datastore_android_sdk.datastore.Build;
 import com.emms.R;
 import com.emms.util.ServiceUtils;
+import com.tencent.bugly.crashreport.CrashReport;
 
 public class KeepLiveService extends Service {
     private static final String TAG = "ForegroundService";
 
     private boolean mReflectFlg = false;
 
-    private static final int NOTIFICATION_ID = 1; // 如果id设置为0,会导致不能设置为前台service
+    public static final int NOTIFICATION_ID = 1; // 如果id设置为0,会导致不能设置为前台service
     private static final Class<?>[] mSetForegroundSignature = new Class[] {
             boolean.class};
     private static final Class<?>[] mStartForegroundSignature = new Class[] {
@@ -60,8 +63,8 @@ public class KeepLiveService extends Service {
             mSetForeground = getClass().getMethod("setForeground",
                     mSetForegroundSignature);
         } catch (NoSuchMethodException e) {
-            throw new IllegalStateException(
-                    "OS doesn't have Service.startForeground OR Service.setForeground!");
+            CrashReport.postCatchedException(new IllegalStateException(
+                    "OS doesn't have Service.startForeground OR Service.setForeground!"));
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
@@ -70,10 +73,16 @@ public class KeepLiveService extends Service {
         builder.setContentIntent(contentIntent);
         builder.setSmallIcon(R.mipmap.emmsa);
         builder.setTicker("Foreground Service Start");
-        builder.setContentTitle("Foreground Service");
+        builder.setContentTitle("Foreground Service111");
         builder.setContentText("Make this service run in the foreground.");
         Notification notification = builder.build();
-        startForegroundCompat(NOTIFICATION_ID, notification);
+        if(VERSION.SDK_INT<18) {
+            startForegroundCompat(NOTIFICATION_ID, notification);
+        }else {
+            Intent innerIntent=new Intent(this,GrayInnerService.class);
+            startService(innerIntent);
+            startForegroundCompat(NOTIFICATION_ID,notification);
+        }
     }
 
     @Override
@@ -108,7 +117,7 @@ public class KeepLiveService extends Service {
         super.onDestroy();
         Log.d(TAG, "onDestroy");
 
-        stopForegroundCompat(NOTIFICATION_ID);
+        //stopForegroundCompat(NOTIFICATION_ID);
     }
 
     void invokeMethod(Method method, Object[] args) {
@@ -128,31 +137,35 @@ public class KeepLiveService extends Service {
      * APIs if it is not available.
      */
     void startForegroundCompat(int id, Notification notification) {
-        if (mReflectFlg) {
-            // If we have the new startForeground API, then use it.
-            if (mStartForeground != null) {
-                mStartForegroundArgs[0] = Integer.valueOf(id);
-                mStartForegroundArgs[1] = notification;
-                invokeMethod(mStartForeground, mStartForegroundArgs);
-                return;
-            }
+        try {
+            if (mReflectFlg) {
+                // If we have the new startForeground API, then use it.
+                if (mStartForeground != null) {
+                    mStartForegroundArgs[0] = Integer.valueOf(id);
+                    mStartForegroundArgs[1] = notification;
+                    invokeMethod(mStartForeground, mStartForegroundArgs);
+                    return;
+                }
 
-            // Fall back on the old API.
-            mSetForegroundArgs[0] = Boolean.TRUE;
-            invokeMethod(mSetForeground, mSetForegroundArgs);
-            mNM.notify(id, notification);
-        } else {
-            /* 还可以使用以下方法，当sdk大于等于5时，调用sdk现有的方法startForeground设置前台运行，
-             * 否则调用反射取得的sdk level 5（对应Android 2.0）以下才有的旧方法setForeground设置前台运行 */
-
-            if(VERSION.SDK_INT >= 5) {
-                startForeground(id, notification);
-            } else {
                 // Fall back on the old API.
                 mSetForegroundArgs[0] = Boolean.TRUE;
                 invokeMethod(mSetForeground, mSetForegroundArgs);
                 mNM.notify(id, notification);
+            } else {
+            /* 还可以使用以下方法，当sdk大于等于5时，调用sdk现有的方法startForeground设置前台运行，
+             * 否则调用反射取得的sdk level 5（对应Android 2.0）以下才有的旧方法setForeground设置前台运行 */
+
+                if (VERSION.SDK_INT >= 5) {
+                    startForeground(id, notification);
+                } else {
+                    // Fall back on the old API.
+                    mSetForegroundArgs[0] = Boolean.TRUE;
+                    invokeMethod(mSetForeground, mSetForegroundArgs);
+                    mNM.notify(id, notification);
+                }
             }
+        }catch (Exception e){
+            CrashReport.postCatchedException(e);
         }
     }
 

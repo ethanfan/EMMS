@@ -38,6 +38,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/text_color"
         android:textSize="17sp"
+        android:singleLine="true"
         android:layout_toRightOf="@+id/textView8"
         android:layout_alignTop="@+id/textView8"
         android:id="@+id/task_group" />
@@ -59,6 +60,7 @@
         android:textColor="@color/text_color"
         android:textSize="17sp"
         android:visibility="gone"
+        android:singleLine="true"
         android:layout_toRightOf="@+id/target_group_tag"
         android:layout_alignTop="@+id/target_group_tag"
         android:id="@+id/target_group" />
@@ -119,6 +121,7 @@
         android:singleLine="true"
         android:layout_alignTop="@+id/textView15"
         android:layout_toRightOf="@+id/textView15" />
+
     <TextView
         android:id="@+id/textView16"
         android:layout_width="wrap_content"
@@ -136,5 +139,67 @@
         android:id="@+id/task_description"
         android:layout_alignTop="@+id/textView16"
         android:layout_toRightOf="@+id/textView16"/>
+    <!-- 新增-->
+    <TextView
+        android:id="@+id/task_verify_person_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Approver"
+        android:textColor="@color/text_color"
+        android:textSize="17sp"
+        android:layout_marginTop="5dp"
+        android:visibility="gone"
+        android:layout_below="@+id/task_description"
+        android:layout_alignRight="@+id/textView16" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:id="@+id/task_verify_person"
+        android:textSize="17sp"
+        android:visibility="gone"
+        android:layout_alignTop="@+id/task_verify_person_tag"
+        android:layout_toRightOf="@+id/task_verify_person_tag" />
+    <TextView
+        android:id="@+id/task_verify_time_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ApproverTime"
+        android:textColor="@color/text_color"
+        android:textSize="17sp"
+        android:layout_marginTop="5dp"
+        android:visibility="gone"
+        android:layout_below="@+id/task_verify_person"
+        android:layout_alignRight="@+id/textView16" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:id="@+id/task_verify_time"
+        android:textSize="17sp"
+        android:visibility="gone"
+        android:layout_alignTop="@+id/task_verify_time_tag"
+        android:layout_toRightOf="@+id/task_verify_time_tag" />
+    <TextView
+        android:id="@+id/task_verify_reason_tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ApproverReason"
+        android:textColor="@color/text_color"
+        android:textSize="17sp"
+        android:layout_marginTop="5dp"
+        android:visibility="gone"
+        android:layout_below="@+id/task_verify_time_tag"
+        android:layout_alignRight="@+id/textView16" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:id="@+id/task_verify_reason"
+        android:textSize="17sp"
+        android:visibility="gone"
+        android:layout_alignTop="@+id/task_verify_reason_tag"
+        android:layout_toRightOf="@+id/task_verify_reason_tag" />
 
+    <!-- -->
 </RelativeLayout>

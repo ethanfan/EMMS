@@ -57,7 +57,7 @@ public class DownloadTask {
 							getSourceReference());
 					Representation result = client.get(MediaType.ALL);
 
-					file = new File(getContext().getExternalFilesDir(null),
+					file = new File(DataUtil.getDBDirPath(getContext()),
 							getDestinationReference().getLastSegment());
 					saveFile(result.getStream(), file.getAbsolutePath());
 				} catch (Exception e) {
@@ -89,7 +89,7 @@ public class DownloadTask {
 	 * @throws IOException
 	 */
 	private boolean saveFile(InputStream in, String desPath) throws IOException {
-		File folder = new File(getContext().getExternalFilesDir(null), "");
+		File folder = new File(DataUtil.getDBDirPath(getContext()), "");
 		File file = new File(desPath);
 		if (!folder.exists()) {
 			folder.mkdirs();

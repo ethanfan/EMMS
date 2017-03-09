@@ -3,6 +3,7 @@ package com.emms.activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
 import com.datastore_android_sdk.DatastoreException.DatastoreException;
 import com.datastore_android_sdk.callback.StoreCallback;
@@ -60,6 +62,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         JPushInterface.onResume(this);
+        setTilteColor();
+
     }
 
     protected void onPause() {
@@ -476,11 +480,11 @@ public abstract class BaseActivity extends AppCompatActivity {
                             @SuppressWarnings("ResultOfMethodCallIgnored")
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                File dbFile=getDBZipFile(BuildConfig.isDebug);
+                                File dbFile=getDBZipFile();
                                 if(dbFile.exists()){
                                     dbFile.delete();
                                 }
-                                final File db = new File(getExternalFilesDir(null), "/EMMS.db");
+                                final File db = new File(DataUtil.getDBDirPath(mContext), "/EMMS.db");
                                 if(db.exists()){
                                     db.delete();
                                 }
@@ -499,7 +503,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
     public void getNewDataFromServer() {
         //检测数据库文件是否已经存在，若已存在，则调用增量接口
-        final File db = new File(getExternalFilesDir(null), "/EMMS.db");
+        final File db = new File(DataUtil.getDBDirPath(mContext), "/EMMS.db");
+
 //        final File dbZip;
 //        if(BuildConfig.isDebug){
 //            dbZip=new File(getExternalFilesDir(null), "/EMMS_TEST_"+SharedPreferenceManager.getFactory(this)+".zip");
@@ -510,39 +515,77 @@ public abstract class BaseActivity extends AppCompatActivity {
             getDBDataLastUpdateTime();
             return;
         }
-        if(BuildConfig.isDebug){
-            final File dbFile = getDBZipFile(BuildConfig.isDebug);
-            if(dbFile.exists()){
-                try{
-                    //解压db文件
-                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
-                }catch (Throwable e){
-                    CrashReport.postCatchedException(e);
-                    if(dbFile.exists()&&dbFile.delete()){
-                        showErrorDownloadDatabaseDialog(null);
+        final File dbFile = getDBZipFile();
+        switch (BuildConfig.appEnvironment){
+            case DEVELOPMENT:{
+                if(dbFile.exists()){
+                    try{
+                        //解压db文件
+                        HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
+                    }catch (Throwable e){
+                        CrashReport.postCatchedException(e);
+                        if(dbFile.exists()&&dbFile.delete()){
+                            showErrorDownloadDatabaseDialog(null);
+                        }
+                        ToastUtil.showToastLong(R.string.FailToUnZipDB,mContext);
                     }
-                    ToastUtil.showToastLong(R.string.FailToUnZipDB,mContext);
+                    return;
                 }
-                return;
+                getDBFromServer(dbFile);
+                break;
             }
-            getDBFromServer(dbFile);
-        }else {
-            final File dbFile = getDBZipFile(BuildConfig.isDebug);
-            if(dbFile.exists()){
-                try{
-                    //解压db文件
-                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
-                }catch (Throwable e){
-                    CrashReport.postCatchedException(e);
-                    if(dbFile.exists()&&dbFile.delete()){
-                        showErrorDownloadDatabaseDialog(null);
+            case PROD:
+            case UAT:{
+                if(dbFile.exists()){
+                    try{
+                        //解压db文件
+                        HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
+                    }catch (Throwable e){
+                        CrashReport.postCatchedException(e);
+                        if(dbFile.exists()&&dbFile.delete()){
+                            showErrorDownloadDatabaseDialog(null);
+                        }
+                        ToastUtil.showToastLong(R.string.FailToUnZipDB,mContext);
                     }
-                    ToastUtil.showToastLong(R.string.FailToUnZipDB,mContext);
+                    return;
                 }
-                return;
+                getDBFromServer(dbFile);
+                break;
             }
-            getDBFromServer(dbFile);
         }
+//        if(BuildConfig.isDebug){
+//            final File dbFile = getDBZipFile(BuildConfig.appEnvironment);
+//            if(dbFile.exists()){
+//                try{
+//                    //解压db文件
+//                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
+//                }catch (Throwable e){
+//                    CrashReport.postCatchedException(e);
+//                    if(dbFile.exists()&&dbFile.delete()){
+//                        showErrorDownloadDatabaseDialog(null);
+//                    }
+//                    ToastUtil.showToastLong(R.string.FailToUnZipDB,mContext);
+//                }
+//                return;
+//            }
+//            getDBFromServer(dbFile);
+//        }else {
+//            final File dbFile = getDBZipFile(BuildConfig.appEnvironment);
+//            if(dbFile.exists()){
+//                try{
+//                    //解压db文件
+//                    HttpUtils.upZipFile(dbFile,dbFile.getParentFile().getAbsolutePath(),mContext);
+//                }catch (Throwable e){
+//                    CrashReport.postCatchedException(e);
+//                    if(dbFile.exists()&&dbFile.delete()){
+//                        showErrorDownloadDatabaseDialog(null);
+//                    }
+//                    ToastUtil.showToastLong(R.string.FailToUnZipDB,mContext);
+//                }
+//                return;
+//            }
+//            getDBFromServer(dbFile);
+//        }
     }
 //    private void RunDelayToast(int DelayTime){
 //        mHandler.postDelayed(new Runnable() {
@@ -581,12 +624,50 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
         BuildConfig.NetWorkSetting(mContext);
     }
-    public File getDBZipFile(boolean isDebug){
-        if(isDebug){
-            return new File(getExternalFilesDir(null), "/EMMS_TEST_"+SharedPreferenceManager.getFactory(mContext)+".zip");
+    public File getDBZipFile(){
+        switch (BuildConfig.appEnvironment){
+            case DEVELOPMENT: {
+                return new File(DataUtil.getDBDirPath(mContext), "/EMMS_TEST_" + SharedPreferenceManager.getFactory(mContext) + ".zip");
+            }
+            case PROD:
+            case UAT: {
+                return new File(DataUtil.getDBDirPath(mContext), "/EMMS_" + SharedPreferenceManager.getFactory(mContext) + ".zip");
+            }
+            default:{
+                return new File(DataUtil.getDBDirPath(mContext), "/EMMS_" + SharedPreferenceManager.getFactory(mContext) + ".zip");
+            }
         }
-        else {
-            return new File(getExternalFilesDir(null), "/EMMS_"+SharedPreferenceManager.getFactory(mContext)+".zip");
+
+    }
+    public void setTilteColor(){
+        try {
+            switch (BuildConfig.appEnvironment){
+                case UAT:{
+                    if (findViewById(R.id.tv_title) != null && findViewById(R.id.tv_title).getParent() != null) {
+                        ((View) findViewById(R.id.tv_title).getParent()).setBackgroundColor(getResources().getColor(R.color.main_color_debug));
+                    }
+                    if (findViewById(R.id.lay_cus) != null) {
+                        findViewById(R.id.lay_cus).setBackgroundColor(getResources().getColor(R.color.main_color_debug));
+                    }
+                    if(findViewById(R.id.login)!=null){
+                        findViewById(R.id.login).setBackgroundColor(getResources().getColor(R.color.main_color_debug));
+                    }
+                    break;
+                }
+            }
+//            if (BuildConfig.isDebug) {
+//                if (findViewById(R.id.tv_title) != null && findViewById(R.id.tv_title).getParent() != null) {
+//                    ((View) findViewById(R.id.tv_title).getParent()).setBackgroundColor(getResources().getColor(R.color.main_color_debug));
+//                }
+//                if (findViewById(R.id.lay_cus) != null) {
+//                    findViewById(R.id.lay_cus).setBackgroundColor(getResources().getColor(R.color.main_color_debug));
+//                }
+//                if(findViewById(R.id.login)!=null){
+//                    findViewById(R.id.login).setBackgroundColor(getResources().getColor(R.color.main_color_debug));
+//                }
+//            }
+        }catch (Exception e){
+            CrashReport.postCatchedException(e);
         }
     }
 }

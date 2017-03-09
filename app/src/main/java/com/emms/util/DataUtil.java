@@ -9,6 +9,7 @@ import com.emms.activity.AppApplication;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.schema.Factory;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -104,13 +105,13 @@ public class DataUtil {
         }
         SimpleDateFormat localFormater = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         //localFormater.setTimeZone(TimeZone.getDefault());
-        localFormater.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        localFormater.setTimeZone(TimeZone.getDefault());
         return localFormater.format(gpsUTCDate.getTime());
     }
     public static String Local2utc(String Local) {
         SimpleDateFormat LocalFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         //LocalFormater.setTimeZone(TimeZone.getDefault());
-        LocalFormater.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        LocalFormater.setTimeZone(TimeZone.getDefault());
         Date gpsLocalDate;
         try {
             gpsLocalDate = LocalFormater.parse(Local);
@@ -280,5 +281,45 @@ public class DataUtil {
             SharedPreferenceManager.setNetwork(context,"InnerNetwork");
         }
     }
+    public static void getDataFromDataBaseForEquipmentTroubleSort(Context context,String DataType, StoreCallback storeCallback){
+        String sql;
+        if( (LocaleUtils.getLanguage(context)!=null&&LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH)
+                || LocaleUtils.SupportedLanguage.getSupportedLanguage(context.getResources().getConfiguration().locale.getLanguage())==LocaleUtils.SupportedLanguage.ENGLISH){
+//            sql="select distinct d.[DataCode],(case LT.[Translation_Display]"
+//                    +" when '' then d.[DataName]"
+//                    +" when null then d.[DataName]"
+//                    +" else LT.[Translation_Display] end) DataName,LT.[Translation_Code]"
+//                    +" from DataDictionary d,Language_Translation LT"
+//                    +" where d.[DataName]=LT.[Translation_Code]"
+//                    +" and d.DataType='"+DataType+"'";
+            sql= "select distinct DataCode,DataName Translation_Code,"
+                    +" (case when Translation_Display is null then DataName"
+                    +" when Translation_Display ='' then DataName"
+                    +" else Translation_Display end) DataName"
+                    +" FROM (select  d.[DataCode],(select"
+                    +" LT.[Translation_Display]"
+                    +" from Language_Translation  LT"
+                    +" where d.[DataName]=LT.[Translation_Code]"
+                    +" and LT.[Translation_Display] is not null"
+                    +" AND LT.[Translation_Display] <>''"
+                    +" AND LT.[Language_Code] ='en-US'"
+                    +" order by LT.Translation_ID asc limit 1"
+                    +" ) Translation_Display,d.[DataName]"
+                    +" from DataDictionary d"
+                    +" where d.DataType in ('"+DataType+"')) a";
+        }else {
+            sql="SELECT dd.DataName||'('||substr(dd_1.DataName,1,2)||')' DataName,dd.DataCode FROM DataDictionary dd LEFT JOIN DataDictionary dd_1 ON dd.DataValue1 = dd_1.DataCode WHERE dd.DataType in ('"+DataType+"')";
+            //sql= "select * from DataDictionary where DataType in ('"+DataType+"')";
+        }
+        ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
+    }
 
+
+    public static File getDBDirPath(Context context){
+//        if(BuildConfig.isDebug){
+//            return context.getExternalFilesDir(null)+"UAT"+File.separator;
+//        }else {
+            return context.getExternalFilesDir(null);
+//        }
+    }
 }

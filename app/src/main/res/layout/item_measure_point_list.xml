@@ -270,7 +270,7 @@
                 android:paddingLeft="5dp"
                 android:hint="@string/pleaseInput"
                 android:imeOptions="actionDone"
-                android:inputType="text"
+                android:inputType="textMultiLine"
                 android:id="@+id/StateValueInput"
                 android:textColorHint="@color/hint_color"/>
         </LinearLayout>

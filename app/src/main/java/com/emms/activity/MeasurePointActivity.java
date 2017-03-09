@@ -667,7 +667,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
 //        params.put("taskEquipment_id",DataUtil.isDataElementNull(new JsonObjectElement(getIntent().getStringExtra("TaskEquipment")).get("TaskEquipment_ID")));
 //        params.put("pageSize",PAGE_SIZE);
 //        params.put("pageIndex",pageIndex);
-        HttpUtils.post(this, "TaskMaintain/MaintainPointList?task_id="+Task_ID
+        HttpUtils.post(this, "MaintainAPI/MaintainPointList?task_id="+Task_ID
                 +"&taskEquipment_id="+DataUtil.isDataElementNull(new JsonObjectElement(TaskEquipment).get("TaskEquipment_ID"))
                 +"&pageSize=1000&pageIndex=1", params, new HttpCallback() {
             @Override
@@ -743,9 +743,8 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
         for(int i=0;i<submitData.size();i++){
             //判断测量值是否为空，没值返回并提示
             if(submitData.get(i).get("ResultValue")==null||DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")).isEmpty()){
-                String s=getResources().getString(R.string.pleaseInputMeasureData)+","
-                        +getResources().getString(R.string.id)
-                        +DataUtil.isDataElementNull(submitData.get(i).get("num"));
+                String s=String.format(getResources().getString(R.string.id),DataUtil.isDataElementNull(submitData.get(i).get("num")))
+                +getResources().getString(R.string.pleaseInputMeasureData);
                 ToastUtil.showToastShort(s,context);
                 return;
             }
@@ -763,9 +762,8 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
             }
             if(MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")))==null) {
                 if (!DataUtil.isFloat(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue")).trim())) {
-                    String s = getResources().getString(R.string.pleaseInputNum) + ","
-                            + getResources().getString(R.string.id)
-                            + DataUtil.isDataElementNull(submitData.get(i).get("num"));
+                    String s = String.format(getResources().getString(R.string.id),DataUtil.isDataElementNull(submitData.get(i).get("num")))
+                    +getResources().getString(R.string.pleaseInputNum);
                     ToastUtil.showToastShort(s, context);
                     return;
                 }
@@ -800,7 +798,7 @@ public class MeasurePointActivity extends NfcActivity implements View.OnClickLis
         }
         final JsonArrayElement jsonArrayElement=new JsonArrayElement(list.toString());
         params.putJsonParams(jsonArrayElement.toJson());
-        HttpUtils.post(context, "TaskMaintain/JudeResultValue", params, new HttpCallback() {
+        HttpUtils.post(context, "MaintainAPI/JudeResultValue", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);
@@ -1004,25 +1002,22 @@ private void showdialog(String message,final EditText editText){
 }
 private boolean judgeNonObverseMeasurePoint(int i) {
     if (submitData.get(i).get("ReferenceValue") == null || DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).equals("")) {
-        String s = getResources().getString(R.string.pleaseInputMeasureDataStandard) + ","
-                + getResources().getString(R.string.id)
-                + DataUtil.isDataElementNull(submitData.get(i).get("num"));
+        String s = String.format(getResources().getString(R.string.id),DataUtil.isDataElementNull(submitData.get(i).get("num")))
+        +getResources().getString(R.string.pleaseInputMeasureDataStandard);
         ToastUtil.showToastShort(s, context);
         return true;
     }
     if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue"))) == null) {
         if (!DataUtil.isFloat(DataUtil.isDataElementNull(submitData.get(i).get("ReferenceValue")).trim())) {
-            String s = getResources().getString(R.string.pleaseInputNum) + ","
-                    + getResources().getString(R.string.id)
-                    + DataUtil.isDataElementNull(submitData.get(i).get("num"));
+            String s =String.format(getResources().getString(R.string.id),DataUtil.isDataElementNull(submitData.get(i).get("num")))
+                    +getResources().getString(R.string.pleaseInputNum);
             ToastUtil.showToastShort(s, context);
             return true;
         }
     } else {
         if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue"))) == null) {
-            String s = getResources().getString(R.string.pleaseSelectMeaValue) + ","
-                    + getResources().getString(R.string.id)
-                    + DataUtil.isDataElementNull(submitData.get(i).get("num"));
+            String s =String.format(getResources().getString(R.string.id),DataUtil.isDataElementNull(submitData.get(i).get("num")))
+                    + getResources().getString(R.string.id);
             ToastUtil.showToastShort(s, context);
             return true;
         }
@@ -1042,9 +1037,8 @@ private boolean judgeNonCounterOrCollectorPoint(int i){
     } else {
         //观察测点判断
         if (MeasureValueMap.get(DataUtil.isDataElementNull(submitData.get(i).get("ResultValue"))) == null) {
-            String s = getResources().getString(R.string.pleaseSelectMeaValue) + ","
-                    + getResources().getString(R.string.id)
-                    + DataUtil.isDataElementNull(submitData.get(i).get("num"));
+            String s =String.format(getResources().getString(R.string.id),DataUtil.isDataElementNull(submitData.get(i).get("num")))
+                    +getResources().getString(R.string.pleaseSelectMeaValue);
             ToastUtil.showToastShort(s, context);
             return true;
         }

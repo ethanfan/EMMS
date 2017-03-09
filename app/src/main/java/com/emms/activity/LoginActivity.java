@@ -36,6 +36,7 @@ import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.datastore_android_sdk.rxvolley.toolbox.Loger;
 import com.emms.R;
 import com.emms.httputils.HttpUtils;
+import com.emms.push.PushReceiver;
 import com.emms.push.PushService;
 import com.emms.schema.Data;
 import com.emms.schema.DataDictionary;
@@ -64,6 +65,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cn.jpush.android.api.CustomPushNotificationBuilder;
 import cn.jpush.android.api.JPushInterface;
@@ -166,7 +169,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
            public void run() {
                if(!getIntent().getBooleanExtra("FromCusActivity", false)) {
                    if(SharedPreferenceManager.getDatabaseVersion(mContext)!=null&&Integer.valueOf(SharedPreferenceManager.getDatabaseVersion(mContext))<DBVersion){
-                       getDBFromServer(getDBZipFile(BuildConfig.isDebug));
+                       getDBFromServer(getDBZipFile());
                    }else {
                        getNewDataFromServer();
                    }
@@ -214,6 +217,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                 startActivity(new Intent(mContext,SystemSettingActivity.class));
             }
         });
+//        initVersionChange();
     }
 
     @Override
@@ -471,7 +475,12 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     String[] or = Organise_ID.split(",");
     Collections.addAll(tagSet, or);
     //tagSet.add(new JSONObject(data).get(Operator.OPERATOR_ID).toString());
-
+          if(PushReceiver.PushTagOrAliasList==null){
+              PushReceiver.PushTagOrAliasList=new ArrayList<>();
+          }
+          PushReceiver.PushTagOrAliasList.clear();
+          Collections.addAll(PushReceiver.PushTagOrAliasList,or);
+          PushReceiver.PushTagOrAliasList.add(new JSONObject(data).get(Operator.OPERATOR_ID).toString());
     JPushInterface.resumePush(mContext);
     //setStyleBasic();
     setStyleCustom();
@@ -574,9 +583,9 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
 //                            .asObjectElement().get("URL");
 //                    final Reference url = new Reference(clickEventUrl.asPrimitiveElement().valueAsString());
                         String pathDir = FILE_NAME;
-                        if (context.getExternalFilesDir(null) != null) {
+                        if (DataUtil.getDBDirPath(mContext) != null) {
                             //noinspection ConstantConditions
-                            pathDir = context.getExternalFilesDir(null).toString() + "/" + FILE_NAME;
+                            pathDir = DataUtil.getDBDirPath(mContext) + "/" + FILE_NAME;
                         }
                         final File file = new File(pathDir);
                         //final Reference destination = new Reference(file.getAbsolutePath());
@@ -654,5 +663,44 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
             }
         });
     }
-
+//    private int ClickTime=0;
+//    private Timer timer=new Timer();
+//    private TimerTask mTimerTask=null;
+//   private void initVersionChange(){
+//               findViewById(R.id.log).setOnClickListener(new View.OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				// TODO Auto-generated method stub
+//				if(mTimerTask==null){
+//					mTimerTask=new TimerTask() {
+//
+//						@Override
+//						public void run() {
+//							// TODO Auto-generated method stub
+//							ClickTime=0;
+//							mTimerTask=null;
+//						}
+//					};
+//					timer.schedule(mTimerTask, 3000);
+//				}
+//				ClickTime++;
+//				if(ClickTime>=5){
+//					if(mTimerTask!=null){
+//					mTimerTask.cancel();
+//					mTimerTask=null;
+//					}
+//					ClickTime=0;
+//					CustomDialog dialog = new com.esquel.epass.ui.CustomDialog(
+//							HomeActivity.this, R.layout.customdialog,
+//							R.style.dialog);
+//					dialog.setItem(R.array.dialog_option_app_envir);
+//					dialog.setCancelable(false);
+//					dialog.setTag(true);
+//					dialog.show();
+//				}
+//
+//			}
+//		});
+//   }
 }

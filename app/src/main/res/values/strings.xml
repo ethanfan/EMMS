@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">EMMS</string>
+    <string name="app_name_debug">EMMSUAT</string>
 
     <string name="login_id_hint">请输入用户名</string>
     <string name="login_password_hint">请输入密码</string>
@@ -98,6 +99,9 @@
     <string name="task_number">任务单号：</string>
     <string name="issue_time">发出时间：</string>
     <string name="receive_time">接单时间：</string>
+    <string name="Approver">审批人员：</string>
+    <string name="ApproverTime">审批时间：</string>
+    <string name="ApproverReason">原因说明：</string>
     <string name="device_count">设备总数：</string>
     <string name="dealed_count">已处理：</string>
     <string name="participant">参与人员：</string>
@@ -252,8 +256,8 @@
     <string name="loading_Fail">数据获取失败</string>
     <string name="failToChangeStatus">修改状态失败，请检查网络</string>
     <string name="SuccessToChangeStatus">修改状态成功</string>
-    <string name="SuccessDownloadDB">数据文件下载完毕</string>
-    <string name="FailDownloadDB">数据文件下载失败，请重新下载</string>
+    <string name="SuccessDownloadDB">文件下载完毕</string>
+    <string name="FailDownloadDB">文件下载失败，请重新下载</string>
     <string name="CanNotChangeStatus">不允许修改状态</string>
     <string name="judgeTaskClass">只有车间报修任务能进行故障总结</string>
     <string name="onlyTaskChargerCanChangeEquipmentStatus">只有任务主负责人可以修改设备状态</string>
@@ -364,7 +368,7 @@
     <string name="ErrorCauseByNoDataBase">程序数据库出错，请重新登陆</string>
     <string name="pass">通过</string>
     <string name="NotPass">退回</string>
-    <string name="EndTask">结单</string>
+    <string name="EndTask">补单</string>
     <string name="TaskVerify">任务审核</string>
     <string name="SuccessVerify">核验成功</string>
     <string name="FailVerify">核验失败</string>
@@ -387,7 +391,7 @@
     <string name="downloading">下载中</string>
     <string name="sureDeleteEquipment">确定删除设备?</string>
     <string name="measure_point_id">测点编号:</string>
-    <string name="id">编号：</string>
+    <string name="id">第%s个测点</string>
     <string name="measure_point_name">测点名称:</string>
     <string name="measure_point_content">测点内容:</string>
     <string name="measure_point_standard">检查标准:</string>
@@ -466,6 +470,8 @@
     <string name="PleaseAddTaskPeople">请添加任务参与人</string>
     <string name="EndTimeCanNotlessThanStartTime">结束时间不能在开始时间前，请重新选择</string>
     <string name="StartTimeCanNotlessThanApplicantTime">开始时间不能在创建时间前，请重新选择\n创建时间：</string>
+    <string name="StartTimeCanNotlargeThanNowTime">开始时间不能在当前时间之后，请重新选择</string>
+    <string name="EndTimeCanNotlargeThanNowTime">结束时间不能在当前时间之后，请重新选择</string>
     <string name="pleaseInputRightValue">请输入正确的测量值，范围:</string>
     <string name="pleaseInputMeasureValue">无可选值，请输入测量值</string>
     <string name="UpdateTime">yyyy.MM.dd HH:mm:ss</string>
@@ -512,7 +518,7 @@
     <string name="pleaseInputAccoutAndPasswordToMakeSureTaskComplete">请输入账号密码确认任务完成</string>
     <string name="DoYouNeedToCreateAShuntingTask">是否需要创建调车任务?</string>
     <string name="DoYouNeedToCreateACarMovingTask">是否需要创建搬车任务?</string>
-    <string name="FailToUnZipDB">数据文件解析异常，请重新下载</string>
+    <string name="FailToUnZipDB">文件解析异常，请重新下载</string>
     <string name="GroupArrangement">组内安排</string>
     <string name="GroupArrangementTask">组内安排任务</string>
     <string name="ThisEquipmentIsBinding">该设备已绑定IC卡，是否更改绑定？</string>
@@ -534,4 +540,6 @@
     <string name="CheckForIntranet">检测到您所使用的是内网Wifi，已自动切换至内网服务器连接</string>
     <string name="LastMeasure">上次测值:</string>
     <string name="EquipmentIsCompleteCanNotModifyMeasurePoint">提示:设备状态为已完成，不可修改测量值</string>
+    <string name="Refresh">刷新</string>
+    <string name="Reset">重置</string>
 </resources>

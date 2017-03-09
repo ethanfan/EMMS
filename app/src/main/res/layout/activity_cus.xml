@@ -6,7 +6,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:id="@+id/lay"
+        android:id="@+id/lay_cus"
         android:background="@color/main_color">
         <!--
                 <ImageView
@@ -94,7 +94,7 @@
             android:background="@color/transparent"
             android:layout_alignLeft="@+id/button2" />
     </RelativeLayout>
-    <GridView
+    <com.handmark.pulltorefresh.library.PullToRefreshGridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="5dp"
@@ -103,9 +103,9 @@
         android:verticalSpacing="5dp"
         android:horizontalSpacing="5dp"
         android:background="#EDEDED"
-        android:layout_below="@+id/lay"
+        android:layout_below="@+id/lay_cus"
         android:id="@+id/module_list"
         android:numColumns="3"
         >
-    </GridView>
+    </com.handmark.pulltorefresh.library.PullToRefreshGridView>
 </RelativeLayout>

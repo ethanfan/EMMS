@@ -37,8 +37,19 @@ public class VersionInfoActivity extends NfcActivity implements View.OnClickList
         }
         String email="PengA@esquel.com(Andy)";
         ((TextView)findViewById(R.id.connect_email)).setText(email);
-        if(BuildConfig.isDebug){
-            ((ImageView)findViewById(R.id.downloadImage)).setImageResource(R.mipmap.download_image_test);
+//        if(BuildConfig.isDebug){
+//            ((ImageView)findViewById(R.id.downloadImage)).setImageResource(R.mipmap.download_image_test);
+//        }
+        switch (BuildConfig.appEnvironment){
+            case DEVELOPMENT:{
+                ((ImageView)findViewById(R.id.downloadImage)).setImageResource(R.mipmap.download_image_test);
+                break;
+            }
+            case UAT:
+            case PROD:
+            default:{
+                break;
+            }
         }
     }
     @Override

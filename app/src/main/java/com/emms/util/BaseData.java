@@ -29,6 +29,36 @@ public class BaseData {
 
     public static HashMap<String,String> TaskStatus=new HashMap<>();
 
+    public static HashMap<String,String> CheckStatus=new HashMap<>();
+
+    public static HashMap<String, String> getCheckStatus() {
+        return CheckStatus;
+    }
+
+    public static void setCheckStatus(Context context) {
+        DataUtil.getDataFromDataBase(context, "CheckStatus", new StoreCallback() {
+            @Override
+            public void success(DataElement element, String resource) {
+                for(int i=0;i<element.asArrayElement().size();i++) {
+                    CheckStatus.put(DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_CODE)),
+                            DataUtil.isDataElementNull(element.asArrayElement().get(i).asObjectElement().get(DataDictionary.DATA_NAME)));
+                }
+                if(baseDataListener!=null){
+                    baseDataListener.GetBaseDataSuccess();
+                }
+            }
+
+            @Override
+            public void failure(DatastoreException ex, String resource) {
+                if(baseDataListener!=null){
+                    baseDataListener.GetBaseDataFail();
+                }
+            }
+        });
+    }
+
+
+
     public static HashMap<String, String> getTaskStatus() {
         return TaskStatus;
     }
@@ -98,15 +128,19 @@ public class BaseData {
        if(SharedPreferenceManager.getLanguageChange(context)){
            BaseData.setTaskClass(context);
            BaseData.setTaskStatus(context);
+           BaseData.setCheckStatus(context);
            SharedPreferenceManager.setLanguageChange(context,false);
            return false;
        }
-       if(BaseData.getTaskClass().size()<=0||BaseData.getTaskStatus().size()<=0) {
+       if(BaseData.getTaskClass().size()<=0||BaseData.getTaskStatus().size()<=0||BaseData.getCheckStatus().size()<=0) {
            if (BaseData.getTaskClass().size() <= 0) {
                BaseData.setTaskClass(context);
            }
            if (BaseData.getTaskStatus().size() <= 0) {
                BaseData.setTaskStatus(context);
+           }
+           if(BaseData.getCheckStatus().size() <= 0){
+               BaseData.setCheckStatus(context);
            }
            return false;
        }

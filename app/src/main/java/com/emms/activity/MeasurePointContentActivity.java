@@ -107,7 +107,7 @@ public class MeasurePointContentActivity extends NfcActivity  implements View.On
     private void getMeasurePointHistory(){
         HttpParams params=new HttpParams();
         params.put("taskItem_id",DataUtil.isDataElementNull(new JsonObjectElement(getIntent().getStringExtra("measure_point_detail")).get("TaskItem_ID")));
-        HttpUtils.get(this, "TaskMaintain/GetMaintainPointList", params, new HttpCallback() {
+        HttpUtils.get(this, "MaintainAPI/GetMaintainPointList", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
                 super.onSuccess(t);

@@ -451,6 +451,22 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
                 findViewById(R.id.target_group_tag).setVisibility(View.VISIBLE);
                 findViewById(R.id.target_group).setVisibility(View.VISIBLE);
             }
+            String checkStatus=DataUtil.isDataElementNull(taskDetail.get("CheckStatus"));
+            if(isTaskHistory) {
+                if ("2".equals(checkStatus)
+                        || "3".equals(checkStatus)
+                        || "3".equals(DataUtil.isDataElementNull(taskDetail.get("Status")))) {
+                    findViewById(R.id.task_verify_person_tag).setVisibility(View.VISIBLE);
+                    findViewById(R.id.task_verify_person).setVisibility(View.VISIBLE);
+                    ((TextView)findViewById(R.id.task_verify_person)).setText(DataUtil.isDataElementNull(taskDetail.get("CheckOperator")));
+//                    ((TextView)findViewById(R.id.task_verify_time)).setText(DataUtil.isDataElementNull(taskDetail.get("CheckOperator")));
+                    if(!"3".equals(checkStatus)) {
+                        findViewById(R.id.task_verify_reason_tag).setVisibility(View.VISIBLE);
+                        findViewById(R.id.task_verify_reason).setVisibility(View.VISIBLE);
+                        ((TextView)findViewById(R.id.task_verify_reason)).setText(DataUtil.isDataElementNull(taskDetail.get("Summary")));
+                    }
+                }
+            }
             Main_person_in_charge_Operator_id = DataUtil.isDataElementNull(taskDetail.get("MainOperator_ID"));
         }
         adapter = new GridAdapter(this);
@@ -565,6 +581,17 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         }
         popMenuTaskDetail.addItems(mTitles);
         popMenuTaskDetail.setHasEquipment(HasTaskEquipment);
+        popMenuTaskDetail.setOnTaskDetailRefreshListener(new PopMenuTaskDetail.OnTaskDetailRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(HasTaskEquipment) {
+                    getTaskEquipmentFromServerByTaskId();
+                }else {
+                    getTaskOperatorStatus();
+                }
+            }
+        });
+
         if(TaskClass!=null&&!TaskClass.equals(Task.REPAIR_TASK)){
             findViewById(R.id.serchDeviceHistory).setVisibility(View.GONE);
         }

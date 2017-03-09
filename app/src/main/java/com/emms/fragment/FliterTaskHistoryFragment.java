@@ -25,6 +25,7 @@ import com.emms.schema.Data;
 import com.emms.schema.Task;
 import com.emms.ui.CancelTaskDialog;
 import com.emms.ui.TaskCancelListener;
+import com.emms.util.BaseData;
 import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.SharedPreferenceManager;
@@ -35,6 +36,8 @@ import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.crypto.interfaces.PBEKey;
 
 /**
  * Created by jaffer.deng on 2016/6/20.
@@ -53,7 +56,7 @@ public class FliterTaskHistoryFragment extends BaseFragment {
     private int RecCount=0;
     private static HashMap<String,String> map=new HashMap<>();
     private static HashMap<String,String> taskStatusMap=new HashMap<>();
-    private String taskClassCode="",taskStatusCode="",timeCode="";
+    private String taskClassCode="",taskStatusCode="",timeCode="",checkStatusCode="";
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
        // initMap();
@@ -108,6 +111,11 @@ public class FliterTaskHistoryFragment extends BaseFragment {
                     holder.tv_device_num=(TextView)convertView.findViewById(R.id.Task_Equipment_Num);
                     holder.tv_target_group=(TextView)convertView.findViewById(R.id.target_group);
                     holder.tv_group=(TextView)convertView.findViewById(R.id.target_group_tag);
+                    //新增
+                    holder.tv_verify_person_tag=(TextView)convertView.findViewById(R.id.task_verify_person_tag);
+                    holder.tv_verify_person=(TextView)convertView.findViewById(R.id.task_verify_person);
+                    holder.tv_verify_reason_tag=(TextView)convertView.findViewById(R.id.task_verify_reason_tag);
+                    holder.tv_verify_reason=(TextView)convertView.findViewById(R.id.task_verify_reason);
                     convertView.setTag(holder);
                 }else {
                     holder = (TaskViewHolder) convertView.getTag();
@@ -125,12 +133,22 @@ public class FliterTaskHistoryFragment extends BaseFragment {
                 holder.tv_device_num.setText(DataUtil.isDataElementNull(data.get(position).get("EquipmentAssetsIDList")));
                // holder.tv_group.setText(DataUtil.isDataElementNull(data.get(position).get(Task.ORGANISE_NAME)));
                 holder.warranty_person.setText(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT)));
-                if(taskStatusMap.get(DataUtil.isDataElementNull(data.get(position).get("Status")))!=null){
-                holder.tv_task_state.setText(taskStatusMap.get(DataUtil.isDataElementNull(data.get(position).get("Status"))));
-                    }else {
-                    holder.tv_task_state.setText(DataUtil.isDataElementNull(data.get(position).get("Status")));
+                String checkStatus=DataUtil.isDataElementNull(data.get(position).get("CheckStatus"));
+                if(  ("2".equals(checkStatus) || "3".equals(checkStatus))
+                        && BaseData.CheckStatus.get(checkStatus)!=null){
+                    holder.tv_task_state.setText(BaseData.CheckStatus.get(checkStatus));
+                }else {
+                    if (taskStatusMap.get(DataUtil.isDataElementNull(data.get(position).get("Status"))) != null) {
+                        holder.tv_task_state.setText(taskStatusMap.get(DataUtil.isDataElementNull(data.get(position).get("Status"))));
+                    } else {
+                        holder.tv_task_state.setText(DataUtil.isDataElementNull(data.get(position).get("Status")));
+                    }
                 }
                 holder.tv_repair_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.APPLICANT_TIME))));
+//                if(data.get(position).get(Task.START_TIME)!=null){
+//                    holder.tv_start_time.setVisibility(View.VISIBLE);
+//
+//                }
                 holder.tv_start_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.START_TIME))));
                 holder.tv_end_time.setText(DataUtil.utc2Local(DataUtil.isDataElementNull(data.get(position).get(Task.FINISH_TIME))));
                 holder.tv_task_describe.setText(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_DESCRIPTION)));
@@ -146,6 +164,28 @@ public class FliterTaskHistoryFragment extends BaseFragment {
                 }
                 if(map.get(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_SUBCLASS)))!=null){
                     holder.tv_device_name.setText(map.get(DataUtil.isDataElementNull(data.get(position).get(Task.TASK_SUBCLASS))));
+                }
+                if("2".equals(checkStatus)
+                        ||"3".equals(checkStatus)
+                        ||"3".equals(DataUtil.isDataElementNull(data.get(position).get("Status")))){
+                    holder.tv_verify_person_tag.setVisibility(View.VISIBLE);
+                    holder.tv_verify_person.setVisibility(View.VISIBLE);
+                    holder.tv_verify_person.setText(DataUtil.isDataElementNull(data.get(position).get("CheckOperator")));
+                    if("3".equals(checkStatus)){
+                        holder.tv_verify_reason_tag.setVisibility(View.GONE);
+                        holder.tv_verify_reason.setVisibility(View.GONE);
+                        holder.tv_verify_reason.setText("");
+                    }else {
+                        holder.tv_verify_reason_tag.setVisibility(View.VISIBLE);
+                        holder.tv_verify_reason.setVisibility(View.VISIBLE);
+                        holder.tv_verify_reason.setText(DataUtil.isDataElementNull(data.get(position).get("Summary")));
+                    }
+                }else {
+                    holder.tv_verify_person_tag.setVisibility(View.GONE);
+                    holder.tv_verify_person.setVisibility(View.GONE);
+                    holder.tv_verify_reason_tag.setVisibility(View.GONE);
+                    holder.tv_verify_reason.setVisibility(View.GONE);
+                    holder.tv_verify_person.setText("");
                 }
                 return convertView;
             }
@@ -230,6 +270,9 @@ public class FliterTaskHistoryFragment extends BaseFragment {
         if(!taskStatusCode.equals("")){
             objectElement.set("Status",taskStatusCode);
         }
+        if(!"".equals(checkStatusCode)){
+            objectElement.set("CheckStatus",checkStatusCode);
+        }
         if(!timeCode.equals("")){
             objectElement.set("DateLength",timeCode);
         }else{
@@ -269,11 +312,12 @@ public class FliterTaskHistoryFragment extends BaseFragment {
             }
         });
     }
-    public void setData(String TaskClass,String TaskStatus,String Time){
+    public void setData(String TaskClass,String TaskStatus,String Time,String checkStatus){
         pageIndex=1;
        this.taskClassCode=TaskClass;
         this.taskStatusCode=TaskStatus;
         this.timeCode=Time;
+        this.checkStatusCode=checkStatus;
     }
     private void CancelTask(ObjectElement task, final String reason){
         showCustomDialog(R.string.loadingData);

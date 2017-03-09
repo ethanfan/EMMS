@@ -52,6 +52,12 @@ public class TaskVerifyActivity extends NfcActivity {
         setContentView(R.layout.activity_task_verify);
         initView();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     private void initView(){
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.TaskVerify);
         VerifyTaskListView=(PullToRefreshListView)findViewById(R.id.taskList);

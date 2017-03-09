@@ -11,6 +11,7 @@
     <color name="text_color">#333333</color>
     <color name="black">#000</color>
     <color name="main_color">#a9293d</color>
+    <color name="main_color_debug">#2E75B6</color>
     <color name="tag_color">#ECD3D9</color>
     <color name="hint_color">#999999</color>
     <color name="transparent">#00000000</color>

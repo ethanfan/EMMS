@@ -20,6 +20,8 @@ import com.emms.schema.TaskMessage;
 import com.emms.schema.TaskOrganiseRelation;
 import com.emms.schema.Team;
 import com.emms.schema.TeamService;
+import com.emms.util.BuildConfig;
+import com.emms.util.DataUtil;
 import com.emms.util.SharedPreferenceManager;
 import com.j256.ormlite.support.ConnectionSource;
 import com.datastore_android_sdk.schema.Model;
@@ -92,9 +94,13 @@ public class EPassSqliteStoreOpenHelper extends SqliteStoreHelper {
 
 	@Override
 	public String getDatabaseName() {
-		return new File(getContext().getExternalFilesDir(null), "EMMS.db")
+//		if(BuildConfig.isDebug) {
+//			return new File(getContext().getExternalFilesDir(null)+"UAT"+File.separator, "EMMS.db")
+//					.getAbsolutePath();
+//		}else {
+			return new File(DataUtil.getDBDirPath(getContext()), "EMMS.db")
 					.getAbsolutePath();
-
+//		}
 	}
 
 //	@Override

@@ -98,6 +98,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
         ((TextView)findViewById(R.id.Task_Equipment)).setText(DataUtil.isDataElementNull(TaskDetail.get("EquipmentAssetsIDList")));
         ((TextView)findViewById(R.id.task_create_time)).setText(DataUtil.utc2Local(DataUtil.isDataElementNull(TaskDetail.get(Task.APPLICANT_TIME))));
         ((TextView)findViewById(R.id.tv_title)).setText(R.string.task_info_entering);
+
         findViewById(R.id.btn_right_action).setOnClickListener(this);
         taskStartTime=(EditText)findViewById(R.id.task_start_time);
         initDatePickerDialog(taskStartTime,(ImageView)findViewById(R.id.task_start_time_image));
@@ -571,6 +572,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
             Long b=date2.getTime();
             if(!DataUtil.isDataElementNull(TaskDetail.get(Task.APPLICANT_TIME)).equals("")){
             SimpleDateFormat sdf2=new SimpleDateFormat(getResources().getString(R.string.UpdateTime));
+                //a为开始时间，c为创建时间，b为结束时间
             Date date3=sdf2.parse(DataUtil.utc2Local(DataUtil.isDataElementNull(TaskDetail.get(Task.APPLICANT_TIME))));
                 Long c=date3.getTime();
                 if(a<c){
@@ -580,6 +582,15 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
             }
             if(b<a){
                 ToastUtil.showToastShort(R.string.EndTimeCanNotlessThanStartTime,context);
+                return;
+            }
+            Long d=new Date().getTime();
+            if(a>d){
+                ToastUtil.showToastShort(R.string.StartTimeCanNotlargeThanNowTime,context);
+                return;
+            }
+            if(b>d){
+                ToastUtil.showToastShort(R.string.EndTimeCanNotlargeThanNowTime,context);
                 return;
             }
         }catch (Exception e){

@@ -22,6 +22,7 @@ import com.emms.util.LocaleUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import cn.jpush.android.api.JPushInterface;
@@ -35,7 +36,8 @@ import cn.jpush.android.api.JPushInterface;
  */
 public class PushReceiver extends BroadcastReceiver {
 	private static final String TAG = "JPush";
-
+	public static ArrayList<String> PushTagOrAliasList=new ArrayList<>();
+    public static ArrayList<String> PushMessageHistory=new ArrayList<>();
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		//showInspectorRecordNotification(context,"asdfds");
@@ -117,6 +119,12 @@ public class PushReceiver extends BroadcastReceiver {
 	//send msg
 	private synchronized void processCustomMessage(final Context context, final Bundle bundle) {
 		try {
+
+
+
+
+
+
 //			final String msg=bundle.getString(JPushInterface.EXTRA_MESSAGE);
 //			JsonObjectElement jsonObjectElement=new JsonObjectElement(msg);
 //			final HashMap<String,String> msgMap=new HashMap<>();
@@ -162,8 +170,38 @@ public class PushReceiver extends BroadcastReceiver {
 //
 //				}
 //			});
+			if(PushMessageHistory==null){
+				PushMessageHistory=new ArrayList<>();
+			}
 			final String msg=bundle.getString(JPushInterface.EXTRA_MESSAGE);
 			JsonObjectElement jsonObjectElement=new JsonObjectElement(msg);
+			//用于过滤不属于当前登录人的信息
+			if(!PushTagOrAliasList.contains(DataUtil.isDataElementNull(jsonObjectElement.get("Operator_ID")))
+					&&!PushTagOrAliasList.contains(DataUtil.isDataElementNull(jsonObjectElement.get("Organise_ID")))){
+				return;
+			}
+			//用于过滤重复信息（MainMessage+Task_ID唯一）
+			String Mes=DataUtil.isDataElementNull(jsonObjectElement.get("MainMessage"))+DataUtil.isDataElementNull(jsonObjectElement.get("Task_ID"));
+//			if(PushMessageHistory.contains(Mes)){
+//				if(!Mes.contains("转单")){//特殊处理A转给B,B再转给A,A再转给B等情况
+//				return;
+//				}
+//			}else {
+//				PushMessageHistory.add(Mes);
+//			}
+			for(String s:PushMessageHistory){
+				if(Mes.contains("转单")){
+					break;
+				}
+				if(Mes.equals(s)){
+					return;
+				}
+			}
+			PushMessageHistory.add(Mes);
+			//////
+			Intent intent=new Intent();
+			intent.setAction("RefreshTaskNum");
+			context.sendBroadcast(intent);
 			final String message=DataUtil.isDataElementNull(jsonObjectElement.get("MainMessage"));
 			if( (LocaleUtils.getLanguage(context)!=null
 					&&  LocaleUtils.getLanguage(context)== LocaleUtils.SupportedLanguage.ENGLISH )

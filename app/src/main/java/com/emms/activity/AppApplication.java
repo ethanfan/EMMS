@@ -19,14 +19,17 @@ import com.datastore_android_sdk.datastore.Datastore;
 import com.datastore_android_sdk.sqlite.SqliteStore;
 import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.push.PushService;
+import com.emms.schema.Factory;
 import com.emms.util.BuildConfig;
 import com.emms.util.LocaleUtils;
 import com.emms.util.NetworkConnectChangedReceiver;
+import com.emms.util.SharedPreferenceManager;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -68,8 +71,18 @@ public class AppApplication extends Application {
         //SharedPreferenceManager.setNetwork(this,"InnerNetwork");
         JPushInterface.init(this);
         PushService.registerMessageReceiver(getApplicationContext());
-        if(BuildConfig.isDebug) {
-            NetworkConnectChangedReceiver.initNetWorkData();
+//        if(BuildConfig.isDebug) {
+//            NetworkConnectChangedReceiver.initNetWorkData();
+//        }
+        //控制内外网切换SSID初始化
+        switch (BuildConfig.appEnvironment){
+            case DEVELOPMENT:{
+                NetworkConnectChangedReceiver.initNetWorkData();
+                break;
+            }
+            default:{
+                break;
+            }
         }
         BuildConfig.NetWorkSetting(this);
         System.setProperty("ssl.TrustManagerFactory.algorithm",
@@ -82,7 +95,11 @@ public class AppApplication extends Application {
         CrashReport.initCrashReport(getApplicationContext(), "900057191", true);
         //地址设置
         JPushInterface.stopPush(getApplicationContext());
-
+        if(Factory.FACTORY_EGM.equals(SharedPreferenceManager.getFactory(this))) {
+            TimeZone.setDefault(TimeZone.getTimeZone("GMT+7"));
+        }else {
+            TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
+        }
         Intent intent=new Intent("AlarmKeepLive");
         PendingIntent pendingIntent=PendingIntent.getBroadcast(this,0,intent,0);
         AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);

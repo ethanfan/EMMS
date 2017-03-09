@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -43,6 +44,7 @@ import com.emms.util.TipsUtil;
 import com.emms.util.ToastUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -275,7 +277,11 @@ public class PendingOrdersFragment extends BaseFragment{
             public void onFailure(int errorNo, String strMsg) {
 
                 super.onFailure(errorNo, strMsg);
-                ToastUtil.showToastShort(getString(R.string.FailGetTaskListCauseByTimeOut)+errorNo,mContext);
+                try {
+                    ToastUtil.showToastShort(getString(R.string.FailGetTaskListCauseByTimeOut) + errorNo, mContext);
+                }catch (Exception e){
+                    CrashReport.postCatchedException(e);
+                }
                 dismissCustomDialog();
             }
         });
@@ -346,7 +352,7 @@ public class PendingOrdersFragment extends BaseFragment{
             public void onSuccess(final String t) {
                 super.onSuccess(t);
                 if(t!=null) {
-
+                  try {
                             final JsonObjectElement jsonObjectElement=new JsonObjectElement(t);
                             if(jsonObjectElement.get("Success").valueAsBoolean()){
                                 //成功，通知用户接单成功
@@ -354,7 +360,11 @@ public class PendingOrdersFragment extends BaseFragment{
                             }else{
                                 //失败，通知用户接单失败，单已经被接
                                 TipsUtil.ShowTips(mContext,DataUtil.isDataElementNull(jsonObjectElement.get("Msg")));
+                                //Tag=0接单成功，1单已被接，2忙状态，3接单数目达到上限
                                 if(jsonObjectElement.get("Tag").valueAsInt()==2){
+                                    dismissCustomDialog();
+                                    return;
+                                }else if(jsonObjectElement.get("Tag").valueAsInt()==3){
                                     dismissCustomDialog();
                                     return;
                                 }
@@ -393,7 +403,12 @@ public class PendingOrdersFragment extends BaseFragment{
                         }
                     }
                     //针对EGM厂进行兼容
+                }catch (Exception e){
+                      CrashReport.postCatchedException(e);
+                      ToastUtil.showToastLong(e.getMessage(),mContext);
+                  }
                 }
+
                 dismissCustomDialog();
             }
 
