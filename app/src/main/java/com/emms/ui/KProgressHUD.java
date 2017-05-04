@@ -29,6 +29,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.emms.R;
+import com.tencent.bugly.crashreport.CrashReport;
 
 public class KProgressHUD {
 
@@ -231,8 +232,12 @@ public class KProgressHUD {
     }
 
     public KProgressHUD show() {
-        if (!isShowing()) {
-            mProgressDialog.show();
+        try {
+            if (!isShowing()) {
+                mProgressDialog.show();
+            }
+        }catch (Exception e){
+            CrashReport.postCatchedException(e);
         }
         return this;
     }

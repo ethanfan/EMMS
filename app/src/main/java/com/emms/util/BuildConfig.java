@@ -7,10 +7,11 @@ import com.emms.activity.AppApplication;
 
 public class BuildConfig {
     //打包时修改该值
-	// UAT为true并到清单文件中修改JPUSH_APPKEY为5e06ea48dfe4d377295cbff3
-	// 测试环境为false,并到清单文件中修改JPUSH_APPKEY为8f158ccb3769786e8814d044
+	// UAT到清单文件中修改JPUSH_APPKEY为5e06ea48dfe4d377295cbff3
+	// 测试环境到清单文件中修改JPUSH_APPKEY为8f158ccb3769786e8814d044
+	//PROD环境到清单文件中修改JPUSH_APPKEY为d77ebacf4c4368c50e5d8081
     //UAT包需要把两个String.xml文件的app_name改为EMMSUAT,PROD包String.xml文件的app_name为EMMS
-    //public static boolean isDebug=true;
+	//PROD打包release,UAT或者DEVELOPMENT打包debug
 
 	public enum APPEnvironment{
 		DEVELOPMENT,

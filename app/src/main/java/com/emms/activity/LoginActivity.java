@@ -12,9 +12,11 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
 import android.view.View;
@@ -83,8 +85,8 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-//        AppApplication.KeepLive=false;
-//        ServiceUtils.stopKeepLiveService(this);
+        AppApplication.KeepLive=false;
+        ServiceUtils.stopKeepLiveService(this);
 //        BroadcastUtils.stopKeepLiveBroadcast(this);
 //        IntentFilter intentFilter=new IntentFilter();
 //        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
@@ -168,7 +170,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
            @Override
            public void run() {
                if(!getIntent().getBooleanExtra("FromCusActivity", false)) {
-                   if(SharedPreferenceManager.getDatabaseVersion(mContext)!=null&&Integer.valueOf(SharedPreferenceManager.getDatabaseVersion(mContext))<DBVersion){
+                   if(SharedPreferenceManager.getDatabaseVersion(mContext)==null||Integer.valueOf(SharedPreferenceManager.getDatabaseVersion(mContext))<DBVersion){
                        getDBFromServer(getDBZipFile());
                    }else {
                        getNewDataFromServer();
@@ -623,8 +625,10 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
 
                                     @Override
                                     public void onFailure(int errorNo, String strMsg) {
-                                        d.dismiss();
-                                        DoInit();
+                                        if(!isFinishing()) {
+                                            d.dismiss();
+                                            DoInit();
+                                        }
                                         super.onFailure(errorNo, strMsg);
                                     }
                                 });

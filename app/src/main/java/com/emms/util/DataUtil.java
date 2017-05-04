@@ -105,13 +105,13 @@ public class DataUtil {
         }
         SimpleDateFormat localFormater = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         //localFormater.setTimeZone(TimeZone.getDefault());
-        localFormater.setTimeZone(TimeZone.getDefault());
+        localFormater.setTimeZone(TimeZone.getTimeZone(AppApplication.AppTimeZone));
         return localFormater.format(gpsUTCDate.getTime());
     }
     public static String Local2utc(String Local) {
         SimpleDateFormat LocalFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         //LocalFormater.setTimeZone(TimeZone.getDefault());
-        LocalFormater.setTimeZone(TimeZone.getDefault());
+        LocalFormater.setTimeZone(TimeZone.getTimeZone(AppApplication.AppTimeZone));
         Date gpsLocalDate;
         try {
             gpsLocalDate = LocalFormater.parse(Local);

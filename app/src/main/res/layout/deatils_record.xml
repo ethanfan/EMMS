@@ -26,10 +26,31 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="17sp"
+        android:layout_marginTop="5dp"
+        android:text="@string/mainPerson"
+        android:layout_alignRight="@+id/textView16"
+        android:layout_below="@+id/task_creater"
+        android:visibility="gone"
+        android:id="@+id/Main_Person_tag" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/Main_Person"
+        android:textColor="@color/text_color"
+        android:textSize="17sp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/task_creater"
+        android:visibility="gone"
+        android:layout_toRightOf="@+id/Main_Person_tag" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/group_type"
         android:layout_marginTop="5dp"
         android:textColor="@color/text_color"
-        android:layout_below="@+id/task_creater"
+        android:layout_below="@+id/Main_Person"
         android:layout_alignRight="@+id/textView16"
         android:textSize="17sp"
         android:id="@+id/textView8" />

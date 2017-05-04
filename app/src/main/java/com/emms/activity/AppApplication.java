@@ -12,6 +12,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 
@@ -29,7 +30,6 @@ import com.tencent.bugly.crashreport.CrashReport;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -53,6 +53,7 @@ public class AppApplication extends Application {
     public static boolean KeepLive=false;
     public static  ServerEndPoint endPoint = ServerEndPoint.UAT;
     private EPassSqliteStoreOpenHelper sqliteStoreOpenHelper;
+    public static String AppTimeZone="GMT+8";
     @Override
     public void onCreate() {
         super.onCreate();
@@ -96,14 +97,25 @@ public class AppApplication extends Application {
         //地址设置
         JPushInterface.stopPush(getApplicationContext());
         if(Factory.FACTORY_EGM.equals(SharedPreferenceManager.getFactory(this))) {
-            TimeZone.setDefault(TimeZone.getTimeZone("GMT+7"));
+            //TimeZone.setDefault(TimeZone.getTimeZone("GMT+7"));
+            AppTimeZone="GMT+7";
         }else {
-            TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
+            AppTimeZone="GMT+8";
+            //TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
         }
-        Intent intent=new Intent("AlarmKeepLive");
-        PendingIntent pendingIntent=PendingIntent.getBroadcast(this,0,intent,0);
-        AlarmManager am = (AlarmManager)getSystemService(ALARM_SERVICE);
-        am.setRepeating(AlarmManager.RTC_WAKEUP,System.currentTimeMillis(),60*1000,pendingIntent);
+        if(Build.VERSION.SDK_INT>=23){
+            Intent i = new Intent("AlarmKeepLive");
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, i, 0);
+            AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            int offset= 60 * 1000;//间隔时间10s
+            long triggerAtTime = SystemClock.elapsedRealtime() + offset;
+            manager.setAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pendingIntent);
+        }else {
+            Intent intent = new Intent("AlarmKeepLive");
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+            AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+            am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 60 * 1000, pendingIntent);
+        }
     }
 
     @Override
@@ -263,4 +275,6 @@ public class AppApplication extends Application {
 //        }
 //
 //    }
+
+
 }

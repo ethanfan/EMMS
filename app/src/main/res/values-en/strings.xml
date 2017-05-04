@@ -37,6 +37,7 @@
     <string name="task_t">Task type:&#160;</string>
     <string name="creater">Creator:&#160;</string>
     <string name="applicanter">Creator:&#160;</string>
+    <string name="mainPerson">Principal:&#160;</string>
     <string name="equipment_num">Machine number:&#160; </string>
     <string name="task_equipment_num">Machine number:&#160; </string>
     <string name="e_num">Machine num:&#160; </string>

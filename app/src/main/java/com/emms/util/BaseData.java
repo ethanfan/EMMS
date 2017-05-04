@@ -193,6 +193,7 @@ public class BaseData {
                     ConfigData.set(TASK_DETAIL_SHOW_WORKLOAD_ACTION, 1);//1为任务详情处不显示工作量块
                     ConfigData.set(TASK_COMPLETE_ACTION, 1);//1为任务完成试需要验证和评价
                     ConfigData.set(TASK_COMPLETE_SHOW_WORKLOAD_ACTION, 1);//1为任务完成流程不需要展现工作量录入界面
+                    ConfigData.set(TASK_GET_EQUIPMENT_DATA_FROM_ICCARD_ID,1);//扫描二维码根据ICCardID字段获取设备信息
                     break;
                 }
                 case Factory.FACTORY_GEW: {
@@ -201,6 +202,7 @@ public class BaseData {
                     ConfigData.set(TASK_DETAIL_SHOW_WORKLOAD_ACTION, 2);//2为任务详情处显示工作量块
                     ConfigData.set(TASK_COMPLETE_ACTION, 2);//2为任务完成试不需要验证和评价
                     ConfigData.set(TASK_COMPLETE_SHOW_WORKLOAD_ACTION, 2);//1为任务完成流程需要展现工作量录入界面
+                    ConfigData.set(TASK_GET_EQUIPMENT_DATA_FROM_ICCARD_ID,2);//扫描二维码根据AssertsID字段获取设备信息
                     break;
                 }
                 default: {
@@ -209,6 +211,7 @@ public class BaseData {
                     ConfigData.set(TASK_DETAIL_SHOW_WORKLOAD_ACTION, 2);
                     ConfigData.set(TASK_COMPLETE_ACTION, 2);
                     ConfigData.set(TASK_COMPLETE_SHOW_WORKLOAD_ACTION, 2);
+                    ConfigData.set(TASK_GET_EQUIPMENT_DATA_FROM_ICCARD_ID,2);
                     break;
                 }
             }
@@ -220,4 +223,5 @@ public class BaseData {
     public static final String TASK_DETAIL_SHOW_WORKLOAD_ACTION="TaskDetailShowWorkloadAction";
     public static final String TASK_COMPLETE_ACTION="TaskCompleteAction";
     public static final String TASK_COMPLETE_SHOW_WORKLOAD_ACTION="TaskCompleteShowWorkloadAction";
+    public static final String TASK_GET_EQUIPMENT_DATA_FROM_ICCARD_ID="TaskGetEquipmentDataFromICCardID";
 }

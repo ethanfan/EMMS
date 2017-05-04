@@ -79,9 +79,9 @@ public class KeepLiveService extends Service {
         if(VERSION.SDK_INT<18) {
             startForegroundCompat(NOTIFICATION_ID, notification);
         }else {
-            Intent innerIntent=new Intent(this,GrayInnerService.class);
+            Intent innerIntent = new Intent(this, GrayInnerService.class);
             startService(innerIntent);
-            startForegroundCompat(NOTIFICATION_ID,notification);
+            startForegroundCompat(NOTIFICATION_ID, notification);
         }
     }
 

@@ -447,6 +447,11 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
             ((TextView) findViewById(R.id.task_creater)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.APPLICANT)));
             ((TextView) findViewById(R.id.task_description)).setText(DataUtil.isDataElementNull(taskDetail.get(Task.TASK_DESCRIPTION)));
             ((TextView) findViewById(R.id.target_group)).setText(DataUtil.isDataElementNull(taskDetail.get("TargetTeam")));
+            if(TaskStatus>0&&taskDetail.get("MainTaskOperator")!=null){
+                findViewById(R.id.Main_Person_tag).setVisibility(View.VISIBLE);
+                findViewById(R.id.Main_Person).setVisibility(View.VISIBLE);
+                ((TextView) findViewById(R.id.Main_Person)).setText(DataUtil.isDataElementNull(taskDetail.get("MainTaskOperator")));
+            }
             if(TaskClass!=null&&TaskClass.equals(Task.MOVE_CAR_TASK)){
                 findViewById(R.id.target_group_tag).setVisibility(View.VISIBLE);
                 findViewById(R.id.target_group).setVisibility(View.VISIBLE);
@@ -1134,7 +1139,24 @@ public class TaskDetailsActivity extends NfcActivity implements View.OnClickList
         }
         String rawQuery;
         if(isQRCode){
-            rawQuery = "SELECT * FROM Equipment e,BaseOrganise b WHERE  e.AssetsID ='" + iccardID + "' and e.[Organise_ID_Use]=b.[Organise_ID]";
+            if(BaseData.getConfigData().get(BaseData.TASK_GET_EQUIPMENT_DATA_FROM_ICCARD_ID)==null){
+                rawQuery = "SELECT * FROM Equipment e,BaseOrganise b WHERE  e.AssetsID ='" + iccardID + "' and e.[Organise_ID_Use]=b.[Organise_ID]";
+            }else {
+                switch (DataUtil.isDataElementNull(BaseData.getConfigData().get(BaseData.TASK_GET_EQUIPMENT_DATA_FROM_ICCARD_ID))){
+                    case "1":{
+                        rawQuery = "SELECT * FROM Equipment e,BaseOrganise b WHERE  e.ICCardID ='" + iccardID + "' and e.[Organise_ID_Use]=b.[Organise_ID]";
+                        break;
+                    }
+                    case "2":{
+                        rawQuery = "SELECT * FROM Equipment e,BaseOrganise b WHERE  e.AssetsID ='" + iccardID + "' and e.[Organise_ID_Use]=b.[Organise_ID]";
+                        break;
+                    }
+                    default:{
+                        rawQuery = "SELECT * FROM Equipment e,BaseOrganise b WHERE  e.AssetsID ='" + iccardID + "' and e.[Organise_ID_Use]=b.[Organise_ID]";
+                        break;
+                    }
+                }
+            }
         }else {
             rawQuery = "SELECT * FROM Equipment e,BaseOrganise b WHERE  e.ICCardID ='" + iccardID + "' and e.[Organise_ID_Use]=b.[Organise_ID]";
         }

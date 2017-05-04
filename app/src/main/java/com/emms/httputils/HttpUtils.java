@@ -18,7 +18,6 @@ import com.emms.util.BuildConfig;
 import com.emms.util.Md5Utils;
 import com.emms.util.SharedPreferenceManager;
 
-import org.apache.http.protocol.HTTP;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -276,7 +275,7 @@ public  class HttpUtils {
                 ZipEntry entry = ((ZipEntry) entries.nextElement());
                 in = zf.getInputStream(entry);
                 String str = folderPath + File.separator + entry.getName();
-                str = new String(str.getBytes("8859_1"), HTTP.UTF_8);
+                str = new String(str.getBytes("8859_1"), "UTF-8");
                 File desFile = new File(str);
                 if (!desFile.exists()) {
                     File fileParentDir = desFile.getParentFile();

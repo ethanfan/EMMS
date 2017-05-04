@@ -64,13 +64,15 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cus);
         mHandler=new Handler(getMainLooper());
-//        AppApplication.KeepLive=true;
-//        ServiceUtils.starKeepLiveService(ServiceUtils.Mode.Only_KeepLiveServiceNo_1,this);
+        AppApplication.KeepLive=true;
+        ServiceUtils.starKeepLiveService(ServiceUtils.Mode.Only_KeepLiveServiceNo_1,this);
 //        BroadcastUtils.startKeepLiveBroadcast(this);
         if(Factory.FACTORY_EGM.equals(SharedPreferenceManager.getFactory(this))) {
-            TimeZone.setDefault(TimeZone.getTimeZone("GMT+7"));
+            AppApplication.AppTimeZone="GMT+7";
+//            TimeZone.setDefault(TimeZone.getTimeZone("GMT+7"));
         }else {
-            TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
+            AppApplication.AppTimeZone="GMT+8";
+//            TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
         }
         {
             TaskClass_moduleID_map.put(Task.REPAIR_TASK,3);//车间报修

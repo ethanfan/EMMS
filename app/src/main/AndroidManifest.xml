@@ -4,11 +4,11 @@
 
 
     <permission
-        android:name="com.emms.permission.JPUSH_MESSAGE"
+        android:name="${applicationId}.permission.JPUSH_MESSAGE"
         android:protectionLevel="signature" />
 
     <!-- Required  一些系统要求的权限，如访问网络等-->
-    <uses-permission android:name="com.emms.permission.JPUSH_MESSAGE" />
+    <uses-permission android:name="${applicationId}.permission.JPUSH_MESSAGE" />
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -21,7 +21,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-
     <!-- Optional for location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -233,7 +232,7 @@
             <intent-filter>
                 <action android:name="cn.jpush.android.ui.PushActivity" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="com.emms" />
+                <category android:name="${applicationId}" />
             </intent-filter>
         </activity>
         <!-- Required  SDK核心功能-->
@@ -266,7 +265,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="cn.jpush.android.intent.DaemonService" />
-                <category android:name="com.emms" />
+                <category android:name="${applicationId}" />
             </intent-filter>
 
         </service>
@@ -278,7 +277,7 @@
             android:exported="false">
             <intent-filter android:priority="1000">
                 <action android:name="cn.jpush.android.intent.NOTIFICATION_RECEIVED_PROXY" />   <!--Required  显示通知栏 -->
-                <category android:name="com.emms" />
+                <category android:name="${applicationId}" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.USER_PRESENT" />
@@ -309,7 +308,7 @@
                 <action android:name="cn.jpush.android.intent.NOTIFICATION_OPENED" /> <!--Required  用户打开自定义通知栏的intent-->
                 <action android:name="cn.jpush.android.intent.ACTION_RICHPUSH_CALLBACK" /> <!--Optional 用户接受Rich Push Javascript 回调函数的intent-->
                 <action android:name="cn.jpush.android.intent.CONNECTION" /><!-- 接收网络变化 连接/断开 since 1.6.3 -->
-                <category android:name="com.emms" />
+                <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
         <!--<receiver android:name=".broadcast.ScreenOnAndOffBroadcast"-->
@@ -325,9 +324,11 @@
         <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         <!--  </>值来自开发者平台取得的AppKey-->
         <!--  </>正式版本的AppKey-->
-            <!--<meta-data android:name="JPUSH_APPKEY" android:value="5e06ea48dfe4d377295cbff3" />-->
+            <meta-data android:name="JPUSH_APPKEY" android:value="d77ebacf4c4368c50e5d8081" />
+        <!--  </>UAT版本的AppKey-->
+        <!--<meta-data android:name="JPUSH_APPKEY" android:value="9d0b43f868d45eb4492d6276" />-->
         <!--  </>DEVELOPMENT的AppKey-->
-        <meta-data android:name="JPUSH_APPKEY" android:value="8f158ccb3769786e8814d044" />
+        <!--<meta-data android:name="JPUSH_APPKEY" android:value="be47eca97046a2b576a7c304" />-->
         <!--<activity-->
             <!--android:name="com.ic_emms.push.MainActivity"-->
             <!--android:label="@string/app_name" >-->
@@ -347,21 +348,21 @@
                 <category android:name="jpush.testCategory" />
             </intent-filter>
         </activity>
-        <!--<service-->
-        <!--android:name=".activity.GrayInnerService">-->
-        <!--</service>-->
-        <!--<service-->
-            <!--android:name=".activity.KeepLiveService">-->
-        <!--</service>-->
-        <!--<service-->
-        <!--android:name=".activity.KeepLiveService2">-->
-        <!--</service>-->
-        <!--<receiver android:name=".broadcast.KeepLiveBroadcast"-->
-            <!--android:enabled="true">-->
-            <!--<intent-filter android:priority="1000">-->
-                <!--<action android:name="AlarmKeepLive"/>-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
+        <service
+        android:name=".activity.GrayInnerService">
+        </service>
+        <service
+            android:name=".activity.KeepLiveService">
+        </service>
+        <service
+        android:name=".activity.KeepLiveService2">
+        </service>
+        <receiver android:name=".broadcast.KeepLiveBroadcast"
+            android:enabled="true">
+            <intent-filter android:priority="1000">
+                <action android:name="AlarmKeepLive"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

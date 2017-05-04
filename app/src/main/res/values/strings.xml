@@ -39,6 +39,7 @@
     <string name="task_t">任务类型：</string>
     <string name="creater">创建人员:</string>
     <string name="applicanter">创建人员：</string>
+    <string name="mainPerson">主负责人：</string>
     <string name="equipment_num"> 机台编号: </string>
     <string name="task_equipment_num"> 机台编号： </string>
     <string name="e_num"> 机台编号： </string>

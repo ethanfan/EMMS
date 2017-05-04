@@ -1,9 +1,13 @@
 package com.emms.util;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.emms.R;
@@ -41,5 +45,24 @@ public class NetworkUtils {
         }else {
             return "OuterNetwork";
         }
+    }
+    @SuppressWarnings("deprecation")
+    public void WifiNeverDormancy(Context mContext)
+    {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        int value = Settings.System.getInt(resolver, Settings.System.WIFI_SLEEP_POLICY,  Settings.System.WIFI_SLEEP_POLICY_DEFAULT);
+        final SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("WIFI_SLEEP", value);
+
+        editor.apply();
+        if(Settings.System.WIFI_SLEEP_POLICY_NEVER != value)
+        {
+            Settings.System.putInt(resolver, Settings.System.WIFI_SLEEP_POLICY, Settings.System.WIFI_SLEEP_POLICY_NEVER);
+
+        }
+        Log.e("wifi value:","wifi value:" + value);
     }
 }

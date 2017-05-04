@@ -31,6 +31,20 @@ public class VersionInfoActivity extends NfcActivity implements View.OnClickList
         });
         try {
             String versionName="v"+getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            switch (BuildConfig.appEnvironment){
+                case DEVELOPMENT:{
+                    versionName+="Development";
+                    break;
+                }
+                case UAT:{
+                    versionName+="UAT";
+                    break;
+                }
+                case PROD:
+                default:{
+                    break;
+                }
+            }
             ((TextView) findViewById(R.id.version_num)).setText(versionName);
         }catch (Throwable e){
             CrashReport.postCatchedException(e);
@@ -45,7 +59,10 @@ public class VersionInfoActivity extends NfcActivity implements View.OnClickList
                 ((ImageView)findViewById(R.id.downloadImage)).setImageResource(R.mipmap.download_image_test);
                 break;
             }
-            case UAT:
+            case UAT:{
+                ((ImageView)findViewById(R.id.downloadImage)).setImageResource(R.mipmap.emmsuat);
+                break;
+            }
             case PROD:
             default:{
                 break;

@@ -1193,7 +1193,24 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
     private void getEquipmentNumByICcardId(final String iccardID,boolean isQRCode){
         String rawQuery;
         if(isQRCode){
-            rawQuery = "SELECT * FROM Equipment WHERE  AssetsID ='" + iccardID + "'";
+            if(BaseData.getConfigData().get(BaseData.TASK_GET_EQUIPMENT_DATA_FROM_ICCARD_ID)==null){
+                rawQuery = "SELECT * FROM Equipment WHERE  AssetsID ='" + iccardID + "'";
+            }else {
+                switch (DataUtil.isDataElementNull(BaseData.getConfigData().get(BaseData.TASK_GET_EQUIPMENT_DATA_FROM_ICCARD_ID))){
+                    case "1":{
+                        rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='" + iccardID + "'";
+                        break;
+                    }
+                    case "2":{
+                        rawQuery = "SELECT * FROM Equipment WHERE  AssetsID ='" + iccardID + "'";
+                        break;
+                    }
+                    default:{
+                        rawQuery = "SELECT * FROM Equipment WHERE  AssetsID ='" + iccardID + "'";
+                        break;
+                    }
+                }
+            }
         }else {
             rawQuery = "SELECT * FROM Equipment WHERE  ICCardID ='" + iccardID + "'";
         }

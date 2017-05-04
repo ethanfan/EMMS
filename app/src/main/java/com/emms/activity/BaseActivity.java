@@ -3,12 +3,12 @@ package com.emms.activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -43,7 +43,9 @@ import com.emms.util.NetworkUtils;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.tencent.bugly.crashreport.CrashReport;
+
 import org.apache.commons.lang.StringUtils;
+
 import java.io.File;
 import java.util.Date;
 
@@ -58,12 +60,24 @@ public abstract class BaseActivity extends AppCompatActivity {
     private LoadingDialog loadingDialog;
     private Handler mHandler;
     private Context mContext=this;
-    public final int DBVersion=7;//需要进行DB更新的时候+1
+    public final int DBVersion=8;//需要进行DB更新的时候+1
     protected void onResume() {
         super.onResume();
         JPushInterface.onResume(this);
         setTilteColor();
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        acquireWakeLock();
+    }
+
+    @Override
+    protected void onDestroy() {
+        releaseWakeLock();
+        super.onDestroy();
     }
 
     protected void onPause() {
@@ -230,7 +244,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }
                     finally {
                         try {
-                            RunDelay(Count/14);
+                            RunDelay(Count/38);
                             if(Count>500) {
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -260,7 +274,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             @Override
             public void success(DataElement element, String resource) {
                 Log.e("Success","successSave");
-                DoUpdate(0,key,data,resource);
+                //DoUpdate(0,key,data,resource);
             }
 
             @Override
@@ -629,8 +643,10 @@ public abstract class BaseActivity extends AppCompatActivity {
             case DEVELOPMENT: {
                 return new File(DataUtil.getDBDirPath(mContext), "/EMMS_TEST_" + SharedPreferenceManager.getFactory(mContext) + ".zip");
             }
-            case PROD:
-            case UAT: {
+            case UAT:{
+                return new File(DataUtil.getDBDirPath(mContext), "/EMMS_UAT_" + SharedPreferenceManager.getFactory(mContext) + ".zip");
+            }
+            case PROD:{
                 return new File(DataUtil.getDBDirPath(mContext), "/EMMS_" + SharedPreferenceManager.getFactory(mContext) + ".zip");
             }
             default:{
@@ -668,6 +684,27 @@ public abstract class BaseActivity extends AppCompatActivity {
 //            }
         }catch (Exception e){
             CrashReport.postCatchedException(e);
+        }
+    }
+    private PowerManager.WakeLock wakeLock = null;
+    private void acquireWakeLock()
+    {
+        if (null == wakeLock)
+        {
+            PowerManager pm = (PowerManager)this.getSystemService(Context.POWER_SERVICE);
+            wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getCanonicalName());
+            if (null != wakeLock)
+            {
+                wakeLock.acquire();
+            }
+        }
+    }
+    private void releaseWakeLock()
+    {
+        if (null != wakeLock&&wakeLock.isHeld())
+        {
+            wakeLock.release();
+            wakeLock = null;
         }
     }
 }

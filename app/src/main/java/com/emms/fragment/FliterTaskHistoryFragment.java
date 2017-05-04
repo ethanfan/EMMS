@@ -263,7 +263,13 @@ public class FliterTaskHistoryFragment extends BaseFragment {
         objectElement.set("pageSize",PAGE_SIZE);
         objectElement.set("pageIndex",pageIndex);
         if(!taskClassCode.equals("")){
-            objectElement.set("TaskClass", taskClassCode);
+            if("T0201".equals(taskClassCode)
+                    ||"T0202".equals(taskClassCode)){
+                objectElement.set("TaskClass", Task.MAINTAIN_TASK);
+               objectElement.set("TaskSubClass",taskClassCode);
+            }else {
+                objectElement.set("TaskClass", taskClassCode);
+            }
         }else {
             objectElement.set("TaskClass",Task.REPAIR_TASK);
         }

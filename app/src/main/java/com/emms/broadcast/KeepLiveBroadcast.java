@@ -1,11 +1,14 @@
 package com.emms.broadcast;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.os.SystemClock;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
@@ -27,6 +30,14 @@ public class KeepLiveBroadcast extends BroadcastReceiver{
             Log.e("KeepLiveBroadcast","KeepLive");
             if(AppApplication.KeepLive) {
                 ServiceUtils.starKeepLiveService(ServiceUtils.Mode.Both_KeepLiveService, context);
+            }
+            if(Build.VERSION.SDK_INT>=23){
+                Intent i = new Intent("AlarmKeepLive");
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, i, 0);
+                AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                int offset= 60 * 1000;//间隔时间10s
+                long triggerAtTime = SystemClock.elapsedRealtime() + offset;
+                manager.setAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pendingIntent);
             }
 //            try {
 //                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);

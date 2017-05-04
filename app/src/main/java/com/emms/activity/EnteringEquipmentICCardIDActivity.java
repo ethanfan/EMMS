@@ -425,18 +425,20 @@ private void initView(){
                     @Override
                     public void run() {
                         if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
-                            AlertDialog.Builder builder=new AlertDialog.Builder(context);
-                            String message=getString(R.string.ICCardIsBinding)
-                                    +"\n"+getString(R.string.equipment_name)+DataUtil.isDataElementNull(element.asArrayElement().get(0).asObjectElement().get(Equipment.EQUIPMENT_NAME))
-                                    +"\n"+getString(R.string.equipment_num)+DataUtil.isDataElementNull(element.asArrayElement().get(0).asObjectElement().get(Equipment.ASSETSID));
-                            builder.setMessage(message);
-                            builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                            builder.show();
+                            if(!isFinishing()) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                String message = getString(R.string.ICCardIsBinding)
+                                        + "\n" + getString(R.string.equipment_name) + DataUtil.isDataElementNull(element.asArrayElement().get(0).asObjectElement().get(Equipment.EQUIPMENT_NAME))
+                                        + "\n" + getString(R.string.equipment_num) + DataUtil.isDataElementNull(element.asArrayElement().get(0).asObjectElement().get(Equipment.ASSETSID));
+                                builder.setMessage(message);
+                                builder.setPositiveButton(R.string.sure, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                builder.show();
+                            }
                         }else {
                             iccard_id.setText(IC_Card_ID);
                         }

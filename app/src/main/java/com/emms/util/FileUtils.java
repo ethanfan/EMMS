@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.os.Environment;
 import android.util.Log;
 
-import org.apache.http.protocol.HTTP;
 
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -137,7 +136,7 @@ public class FileUtils
 				ZipEntry entry = ((ZipEntry) entries.nextElement());
 				in = zf.getInputStream(entry);
 				String str = folderPath + File.separator + entry.getName();
-				str = new String(str.getBytes("8859_1"), HTTP.UTF_8);
+				str = new String(str.getBytes("8859_1"), "UTF-8");
 				File desFile = new File(str);
 				if (!desFile.exists()) {
 					File fileParentDir = desFile.getParentFile();

@@ -13,6 +13,46 @@
             <set />
           </value>
         </entry>
+        <entry key="$USER_HOME$/Desktop/PloyU e-Inspection/QRQM/frontend/wireFrame/build.gradle">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Desktop/PloyU e-Inspection/QRQM/frontend/wireFrame/gradle/wrapper/gradle-wrapper.properties">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/github4/EAP-Order-Tracking-System/app/src/main/AndroidManifest.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/github4/EAP-Order-Tracking-System/app/src/main/java/com/foxconn/esquelrfidapp/ui/Login.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../EAP-Order-Tracking-System/app/app.iml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../EAP-Order-Tracking-System/app/src/main/AndroidManifest.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../EAP-Order-Tracking-System/app/src/main/java/com/foxconn/esquelrfidapp/ui/Login.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/app.iml">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/build.gradle">
           <value>
             <set />
@@ -39,6 +79,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/activity/CusActivity.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/activity/EnteringEquipmentICCardIDActivity.java">
           <value>
             <set />
           </value>
@@ -168,6 +213,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/ui/KProgressHUD.java">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/ui/PopMenuTaskDetail.java">
           <value>
             <set />
@@ -193,7 +243,27 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/util/FileUtils.java">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/util/NetworkConnectChangedReceiver.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/util/NetworkUtils.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/util/NumberFormatUtil.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/zxing/android/CaptureActivity.java">
           <value>
             <set />
           </value>
@@ -284,6 +354,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/gradle.properties">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/local.properties">
           <value>
             <set />
           </value>

@@ -232,14 +232,19 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
 //                                        public void onClick(DialogInterface dialog, int which) {
                                     if(!searchResult.equals(oldFactory)) {
                                         ToastUtil.showToastLong(R.string.ChangeFactory,context);
+                                        SharedPreferenceManager.setDatabaseVersion(context,"0");
                                         File dbFile;
                                         switch (BuildConfig.appEnvironment){
                                             case DEVELOPMENT:{
                                                 dbFile = new File(DataUtil.getDBDirPath(context), "/EMMS_TEST_" + SharedPreferenceManager.getFactory(context) + ".zip");
                                                 break;
                                             }
-                                            case PROD:
+
                                             case UAT:{
+                                                dbFile = new File(DataUtil.getDBDirPath(context), "/EMMS_UAT_" + SharedPreferenceManager.getFactory(context) + ".zip");
+                                                break;
+                                            }
+                                            case PROD:{
                                                 dbFile = new File(DataUtil.getDBDirPath(context), "/EMMS_" + SharedPreferenceManager.getFactory(context) + ".zip");
                                                 break;
                                             }
