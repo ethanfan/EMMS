@@ -13,6 +13,8 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -178,9 +180,9 @@ public class DataUtil {
                 +" ) Translation_Display,d.[DataName]"
                 +" from DataDictionary d"
                 +" where d.DataType in ('"+DataType+"','TaskSubClass')"
-                +" and d.PData_ID in ('" +Pdata_ID+"','2') Order By Sort asc) a";
+                +" and ( d.PData_ID =0 or d.PData_ID =(select Data_ID from DataDictionary where factory_ID = '"+SharedPreferenceManager.getFactory(context)+"' and datatype = 'TaskClass' and datacode = 'T02' )  ) Order By Sort asc) a";
         }else {
-            sql=  "select * from DataDictionary where DataType in ('"+DataType+"','TaskSubClass') and PData_ID in ('" +Pdata_ID+"','2') Order By Sort asc";
+            sql=  "select * from DataDictionary where DataType in ('"+DataType+"','TaskSubClass') and ( PData_ID =0 or PData_ID =(select Data_ID from DataDictionary where factory_ID = '"+SharedPreferenceManager.getFactory(context)+"' and datatype = 'TaskClass' and datacode = 'T02' )  ) Order By Sort asc";
         }
         ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
     }
@@ -316,10 +318,7 @@ public class DataUtil {
 
 
     public static File getDBDirPath(Context context){
-//        if(BuildConfig.isDebug){
-//            return context.getExternalFilesDir(null)+"UAT"+File.separator;
-//        }else {
             return context.getExternalFilesDir(null);
-//        }
     }
+
 }

@@ -16,6 +16,9 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.datastore_android_sdk.DatastoreException.DatastoreException;
+import com.datastore_android_sdk.callback.StoreCallback;
+import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
@@ -23,6 +26,7 @@ import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.adapter.MainActivityAdapter;
+import com.emms.datastore.EPassSqliteStoreOpenHelper;
 import com.emms.httputils.HttpUtils;
 import com.emms.schema.Factory;
 import com.emms.schema.Task;
@@ -87,12 +91,31 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             TaskClass_moduleID_map.put("C1",10);//任务审核
             TaskClass_moduleID_map.put("C3",7); //任务历史
         }
-        initView();
-        initData();
-        getTaskCountFromServer(true);
-//        for(int i=0;i<100;i++){
-//            getTaskCountFromServer(true);
-//        }
+        String sql="select (case when dd.[DataValue3]='Garment' then 'EGM' else dd.[DataValue3] end) appMode from DataDictionary  dd where dd.DataType = 'AppFactorySetting'"
+                +" and dd.[Factory_ID] ='"+SharedPreferenceManager.getFactory(context)+"'";
+        getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
+            @Override
+            public void success(DataElement element, String resource) {
+                if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
+                        SharedPreferenceManager.setAppMode(context,DataUtil.isDataElementNull(element.asArrayElement().get(0).asObjectElement().get("appMode")));
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        initView();
+                        initData();
+                        getTaskCountFromServer(true);
+                    }
+                });
+            }
+
+            @Override
+            public void failure(DatastoreException ex, String resource) {
+                  Log.e("fail",ex.toString());
+            }
+        });
+
+
     }
 
     @Override
@@ -190,11 +213,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
 
             }
         });
-//        if(getLoginInfo().isMaintenMan()){
-//            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.repairer);
-//        }else {
-//            ((ImageView)findViewById(R.id.rootImage)).setImageResource(R.mipmap.applicant);
-//        }
+
         //TODO
         if(SharedPreferenceManager.getUserRoleID(this)!=null&&Integer.valueOf(SharedPreferenceManager.getUserRoleID(this))!=null) {
             if (Integer.valueOf(SharedPreferenceManager.getUserRoleID(this)) == 7) {
@@ -219,16 +238,6 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
                 ID_module_map.put(Integer.valueOf(module1), jsonObjectElement);
                 moduleList.add(jsonObjectElement);
             }
-//            JsonObjectElement json=new JsonObjectElement();
-//            json.set("module_ID", 11);
-//            json = moduleMatchingRule(json);
-//            ID_module_map.put(11, json);
-//            moduleList.add(json);
-//            JsonObjectElement json2=new JsonObjectElement();
-//            json2.set("module_ID", 12);
-//            json2 = moduleMatchingRule(json2);
-//            ID_module_map.put(12, json2);
-//            moduleList.add(json2);
         }else {
             if(!SharedPreferenceManager.getUserModuleList(this).equals("")){
                 String module = SharedPreferenceManager.getUserModuleList(this);
@@ -251,9 +260,6 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
             }
         }
 
-//        if(moduleList.size()<=6){
-//            module_list.setNumColumns(2);
-//        }
     }
     //个性化开发，根据服务器返回的角色模块ID进行个性化配置
     private JsonObjectElement moduleMatchingRule(JsonObjectElement obj){

@@ -34,12 +34,7 @@ public class NetworkConnectChangedReceiver extends  BroadcastReceiver{
     @Override
     public void onReceive(final Context context,final Intent intent) {
         switch (BuildConfig.appEnvironment){
-            case DEVELOPMENT:{
-                if(!mNetworkList.contains("Linkgoo-Base")){
-                    initNetWorkData();
-                }
-                break;
-            }
+            case DEVELOPMENT:
             case PROD:
             case UAT:{
                 if(mNetworkList.size()==0){
@@ -54,15 +49,6 @@ public class NetworkConnectChangedReceiver extends  BroadcastReceiver{
                 break;
             }
         }
-//        if(BuildConfig.isDebug){
-//            if(!mNetworkList.contains("Linkgoo-Base")){
-//                initNetWorkData();
-//            }
-//        }else {
-//            if(mNetworkList.size()==0){
-//                initNetWorkData();
-//            }
-//        }
        doReceive(context,intent);
     }
     private String getConnectionType(int type) {
@@ -79,7 +65,6 @@ public class NetworkConnectChangedReceiver extends  BroadcastReceiver{
     public static void initNetWorkData(){
         mNetworkList.add("Linkgoo-Base");
         mNetworkList.add("esq-data");
-        //mNetworkList.add("Linkgoo-Base");
     }
 
     private void doReceive(Context context,Intent intent){
@@ -127,7 +112,7 @@ public class NetworkConnectChangedReceiver extends  BroadcastReceiver{
                         }else {
                             ToastUtil.showToastLong(R.string.CheckForMONET,context);
                             SharedPreferenceManager.setNetwork(context.getApplicationContext(),NetworkUtils.initNetWork(false));
-                            BuildConfig.NetWorkSetting(context.getApplicationContext());
+//                            BuildConfig.NetWorkSetting(context.getApplicationContext());
                         }
                     }
                 } else {

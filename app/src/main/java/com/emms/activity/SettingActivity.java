@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.datastore_android_sdk.DatastoreException.DatastoreException;
+import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
@@ -120,25 +122,11 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                 finish();
                 break;
             }
-//            case R.id.comfirm:{
-//                submitEquipmentData();
-//                break;
-//            }
-//            case R.id.equipment_id_scan:{
-//                break;
-//            }
+
 
         }
     }
-//    private void submitEquipmentData(){
-//        if(Factory.getText().equals("")){
-//            ToastUtil.showToastShort(R.string.pleaseSelectFactory,this);
-//            return;
-//        }
-//        SharedPreferenceManager.setFactory(this,Factory.getText());
-//        ToastUtil.showToastShort(R.string.setting_su,this);
-//        finish();
-//    }
+
     private void initData(){
         initFactory();
         initNetWork();
@@ -153,33 +141,23 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
         LanguageList.add(language2);
     }
     private void initFactory(){
-//        String rawQuery="select * from BaseOrganise where  OrganiseType = 1";
-//        ListenableFuture<DataElement> elemt = getSqliteStore().performRawQuery(rawQuery,
-//                EPassSqliteStoreOpenHelper.SCHEMA_DEPARTMENT, null);
-//        Futures.addCallback(elemt, new FutureCallback<DataElement>() {
-//            @Override
-//            public void onSuccess(DataElement element) {
-//                if(element!=null) {
-//                    if(element.isArray()&&element.asArrayElement().size()>0){
-//                        FactoryList.clear();
-//                        for (int i=0;i<element.asArrayElement().size();i++){
-//                            FactoryList.add(element.asArrayElement().get(i).asObjectElement());}
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Throwable throwable) {
-//                System.out.println(throwable.getMessage());
-//            }
-//        });
         FactoryList.clear();
-        ObjectElement GEW=new JsonObjectElement();
-        GEW.set("OrganiseName",com.emms.schema.Factory.FACTORY_GEW);
-        ObjectElement EGM=new JsonObjectElement();
-        EGM.set("OrganiseName",com.emms.schema.Factory.FACTORY_EGM);
-        FactoryList.add(GEW);
-        FactoryList.add(EGM);
+        String sql="select dd.[Factory_ID] OrganiseName,dd.[DataValue1] IntranetURL,dd.[DataValue2] ExtranetURL,(case when dd.[DataValue3]='Garment' then 'EGM' else dd.[DataValue3] end) appMode from DataDictionary  dd where dd.DataType = 'AppFactorySetting' ";
+        getSqliteStore().performRawQuery(sql, EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY, new StoreCallback() {
+            @Override
+            public void success(DataElement element, String resource) {
+                if(element!=null&&element.isArray()&&element.asArrayElement().size()>0){
+                    for(int i=0;i<element.asArrayElement().size();i++){
+                        FactoryList.add(element.asArrayElement().get(i).asObjectElement());
+                    }
+                }
+            }
+
+            @Override
+            public void failure(DatastoreException ex, String resource) {
+
+            }
+        });
     }
     private void initNetWork(){
         NetWorkList.clear();
@@ -223,13 +201,11 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                                 case FACTORY_SETTING:
                                     Factory.getmEditText().setText(searchResult);
                                     String oldFactory=SharedPreferenceManager.getFactory(context);
+                                    SharedPreferenceManager.setAppMode(context,DataUtil.isDataElementNull(mResultAdapter.getItem(position).get("appMode")));
+                                    SharedPreferenceManager.setExtranetUrl(context,DataUtil.isDataElementNull(mResultAdapter.getItem(position).get("ExtranetURL")));
+                                    SharedPreferenceManager.setInteranetUrl(context,DataUtil.isDataElementNull(mResultAdapter.getItem(position).get("IntranetURL")));
                                     DataUtil.FactoryAndNetWorkAddressSetting(context,searchResult);
                                     ChangeServerConnectBaseOnNetwork();
-//                                    AlertDialog.Builder dialog=new AlertDialog.Builder(context);
-//                                    dialog.setMessage("");
-//                                    dialog.setPositiveButton(R.string.sure,new DialogInterface.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(DialogInterface dialog, int which) {
                                     if(!searchResult.equals(oldFactory)) {
                                         ToastUtil.showToastLong(R.string.ChangeFactory,context);
                                         SharedPreferenceManager.setDatabaseVersion(context,"0");
@@ -253,23 +229,10 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
                                                 break;
                                             }
                                         }
-//                                        if (BuildConfig.isDebug) {
-//                                            dbFile = new File(DataUtil.getDBDirPath(context), "/EMMS_TEST_" + SharedPreferenceManager.getFactory(context) + ".zip");
-//                                        } else {
-//                                            dbFile = new File(DataUtil.getDBDirPath(context), "/EMMS_" + SharedPreferenceManager.getFactory(context) + ".zip");
-//                                        }
+
                                         getDBFromServer(dbFile);
                                     }
-//                                            dialog.dismiss();
-//                                        }
-//                                    });
-//                                    dialog.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(DialogInterface dialog, int which) {
-//                                            dialog.dismiss();
-//                                        }
-//                                    });
-//                                    dialog.show();
+
                                     break;
                                 case NETWORK_SETTING:
                                     NetWork.getmEditText().setText(searchResult);
@@ -445,36 +408,6 @@ public class SettingActivity extends NfcActivity implements View.OnClickListener
             }
         });
     }
-//    private void initLanguageSelect() {
-//        View languageSelectView = new View(this);
-//        TextView languageView = new TextView(this);
-//        languageSelectView.setOnClickListener(new View.OnClickListener() {
-//
-//            @Override
-//            public void onClick(View v) {
-//                int selectedNumber = 0;
-//                LocaleUtils.SupportedLanguage language = LocaleUtils.getLanguage(SettingActivity.this);
-//                if (language == LocaleUtils.SupportedLanguage.ENGLISH) {
-//                    selectedNumber = 1;
-//                } else if (language == LocaleUtils.SupportedLanguage.VIETNAMESE) {
-//                    selectedNumber = 2;
-//                } else {
-//                    selectedNumber = 0;
-//                }
-//                openLanguageDialog(selectedNumber);
-//            }
-//
-//        });
-//        String currentLanguage = "";
-//        LocaleUtils.SupportedLanguage language = LocaleUtils.getLanguage(this);
-//        if (language == LocaleUtils.SupportedLanguage.ENGLISH) {
-//            currentLanguage = getString(R.string.english);
-//        } else if (language == LocaleUtils.SupportedLanguage.VIETNAMESE) {
-//            //currentLanguage = getString(R.string.vietnamese);
-//        } else {
-//            currentLanguage = getString(R.string.chinese);
-//        }
-//        languageView.setText(currentLanguage);
-//    }
+
 
 }

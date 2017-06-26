@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EMMS</string>
+    <string name="app_name">EMMSUAT</string>
     <string name="app_name_debug">EMMSUAT</string>
     <string name="login_id_hint">Please enter account</string>
     <string name="login_password_hint">Please enter password</string>
@@ -543,4 +543,5 @@
     <string name="EquipmentIsCompleteCanNotModifyMeasurePoint">Tips:Status of the equipment has been completed, cannot modify measurement point</string>
     <string name="Refresh">Refresh</string>
     <string name="Reset">Reset</string>
+    <string name="FailGetFactoryList">Failed to get factory list</string>
 </resources>

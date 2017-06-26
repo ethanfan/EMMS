@@ -87,7 +87,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
         setContentView(R.layout.activity_task_info_entering);
 
         SimpleDateFormat sf=new SimpleDateFormat(getResources().getString(R.string.DateFormat2));
-        initEndDateTime=sf.format(new Date());
+        initEndDateTime=sf.format(new Date(System.currentTimeMillis()));
         TaskDetail=new JsonObjectElement(getIntent().getStringExtra("TaskDetail"));
         initData();
         initView();
@@ -584,7 +584,7 @@ public class TaskInfoEnteringActivity extends NfcActivity implements View.OnClic
                 ToastUtil.showToastShort(R.string.EndTimeCanNotlessThanStartTime,context);
                 return;
             }
-            Long d=new Date().getTime();
+            Long d=System.currentTimeMillis();
             if(a>d){
                 ToastUtil.showToastShort(R.string.StartTimeCanNotlargeThanNowTime,context);
                 return;

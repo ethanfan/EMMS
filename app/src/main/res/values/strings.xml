@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EMMS</string>
+    <string name="app_name">EMMSUAT</string>
     <string name="app_name_debug">EMMSUAT</string>
 
     <string name="login_id_hint">请输入用户名</string>
@@ -543,4 +543,5 @@
     <string name="EquipmentIsCompleteCanNotModifyMeasurePoint">提示:设备状态为已完成，不可修改测量值</string>
     <string name="Refresh">刷新</string>
     <string name="Reset">重置</string>
+    <string name="FailGetFactoryList">获取工厂列表失败</string>
 </resources>

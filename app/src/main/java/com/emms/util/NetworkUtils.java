@@ -27,8 +27,7 @@ public class NetworkUtils {
                 SSID=SSID.substring(1,SSID.length()-1);
             }
         }
-        if(NetworkConnectChangedReceiver.mNetworkList.contains(SSID)
-                && Factory.FACTORY_EGM.equals(SharedPreferenceManager.getFactory(context))){
+        if(NetworkConnectChangedReceiver.mNetworkList.contains(SSID)){
             Log.d("SSID",wifiInfo.getSSID());
             ToastUtil.showToastLong(R.string.CheckForIntranet,context);
             SharedPreferenceManager.setNetwork(context.getApplicationContext(),initNetWork(true));
@@ -37,7 +36,7 @@ public class NetworkUtils {
             SharedPreferenceManager.setNetwork(context.getApplicationContext(),initNetWork(false));
         }
         //TODO 内外网切换
-        BuildConfig.NetWorkSetting(context.getApplicationContext());
+//        BuildConfig.NetWorkSetting(context.getApplicationContext());
     }
     public static String initNetWork(boolean isInnerNetwork){
         if(isInnerNetwork){

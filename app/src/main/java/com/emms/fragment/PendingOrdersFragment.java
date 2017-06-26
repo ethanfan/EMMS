@@ -78,6 +78,8 @@ public class PendingOrdersFragment extends BaseFragment{
     }
 
     private String OperatorID=null;
+
+    private String equipmentName="",equipmentNum="";
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -238,6 +240,12 @@ public class PendingOrdersFragment extends BaseFragment{
         data.set("taskClass",TaskClass);
         if(TaskSubClass!=null&&!TaskSubClass.equals("")){
             data.set("taskSubClass",TaskSubClass);
+        }
+        if(!DataUtil.isNullOrEmpty(equipmentName)){
+            //TODO
+        }
+        if(!DataUtil.isNullOrEmpty(equipmentNum)){
+           //TODO
         }
         data.set("pageSize",PAGE_SIZE);
         data.set("pageIndex",pageIndex);
@@ -434,6 +442,11 @@ public class PendingOrdersFragment extends BaseFragment{
     }
 
     private TaskNumInteface taskNumInteface;
+    public void setSearchCondition(String equipmentNum,String equipmentName){
+        this.equipmentName=equipmentName;
+        this.equipmentNum=equipmentNum;
+    }
+
     public void doRefresh(){
         removeNum=0;
         pageIndex=1;

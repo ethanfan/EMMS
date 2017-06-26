@@ -40,8 +40,49 @@ public final class SharedPreferenceManager {
 
 	public static final String DATA_UPDATE_TIME="data_update_time";
 	public static final String DATABASE_VERSION="DataBase_version";
+
+
+	public static final String INTERANET_URL="IntranetURL";
+	public static final String EXTRANET_URL="ExtranetURL";
+	public static final String APP_MODE="appMode";
+
 	private SharedPreferenceManager() {
 
+	}
+	public static String getAppMode(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getString(APP_MODE, null);
+	}
+
+	public static void setAppMode(Context context, String appMode) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putString(APP_MODE, appMode).commit();
+	}
+
+	public static String getInteranetUrl(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getString(INTERANET_URL, null);
+	}
+
+	public static void setInteranetUrl(Context context, String interanetUrl) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putString(INTERANET_URL, interanetUrl).commit();
+	}
+
+	public static String getExtranetUrl(Context context) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		return pref.getString(EXTRANET_URL, null);
+	}
+
+	public static void setExtranetUrl(Context context, String extranetUrl) {
+		SharedPreferences pref = PreferenceManager
+				.getDefaultSharedPreferences(context);
+		pref.edit().putString(EXTRANET_URL, extranetUrl).commit();
 	}
 
 	public static String getCookie(Context context) {
@@ -218,5 +259,9 @@ public final class SharedPreferenceManager {
 				.getDefaultSharedPreferences(context);
 		pref.edit().putLong(DATA_UPDATE_TIME, Data).commit();
 	}
+
+
+
+
 }
  

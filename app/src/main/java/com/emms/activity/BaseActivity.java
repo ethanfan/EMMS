@@ -42,12 +42,21 @@ import com.emms.util.DownloadCallback;
 import com.emms.util.NetworkUtils;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.tencent.bugly.crashreport.CrashReport;
 
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Future;
 
 import cn.jpush.android.api.JPushInterface;
 
@@ -114,7 +123,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                 operator.setTeamId(DataUtil.isDataElementNull(json.get("Team_ID")));
                 operator.setTeamName(DataUtil.isDataElementNull(json.get("TeamName")));
                 operator.setName(DataUtil.isDataElementNull(json.get("Name")));
-                operator.setFromFactory(DataUtil.isDataElementNull(json.get("FromFactory")));
+                operator.setFactoryId(DataUtil.isDataElementNull(json.get("FromFactory")));
+                operator.setFromFactory(SharedPreferenceManager.getAppMode(mContext));
                 operator.setOrganiseID(DataUtil.isDataElementNull(json.get("Organise_ID")));
                 operator.setOperator_no(DataUtil.isDataElementNull(json.get("OperatorNo")));
                 operator.setMaintenMan(json.get("IsMaintenMan").valueAsBoolean());
@@ -196,66 +206,19 @@ public abstract class BaseActivity extends AppCompatActivity {
                                 Count = json.get("Count").valueAsInt();
                             }
                         }
-                        if (json.get("DataType") != null && json.get("DataType").isArray() && json.get("DataType").asArrayElement().size() > 0) {
-                            Log.e("DataType",String.valueOf(json.get("DataType").asArrayElement().size()));
-                            updateData(json.get("DataType"), EPassSqliteStoreOpenHelper.SCHEMA_DATATYPE,DataType.DATATYPE_ID);
-                           // DoUpdate(0,DataType.DATATYPE_ID,json.get("DataType"),EPassSqliteStoreOpenHelper.SCHEMA_DATATYPE);
-                        }
-                        if (json.get("BaseOrganise") != null && json.get("BaseOrganise").isArray() && json.get("BaseOrganise").asArrayElement().size() > 0) {
-                            Log.e("BaseOrganise",String.valueOf(json.get("BaseOrganise").asArrayElement().size()));
-                            updateData(json.get("BaseOrganise"), EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE,BaseOrganise.ORGANISE_ID);
-                            //DoUpdate(0,BaseOrganise.ORGANISE_ID,json.get("BaseOrganise"),EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE);
-                        }
-                        if (json.get("DataDictionary") != null && json.get("DataDictionary").isArray() && json.get("DataDictionary").asArrayElement().size() > 0) {
-                            Log.e("DataDictionary",String.valueOf(json.get("DataDictionary").asArrayElement().size()));
-                            updateData(json.get("DataDictionary"), EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY,DataDictionary.DATA_ID);
-                            //DoUpdate(0,DataDictionary.DATA_ID,json.get("DataDictionary"),EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY);
-                        }
-                        if (json.get("Equipment") != null && json.get("Equipment").isArray() && json.get("Equipment").asArrayElement().size() > 0) {
-                            Log.e("Equipment",String.valueOf(json.get("Equipment").asArrayElement().size()));
-                            updateData(json.get("Equipment"), EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT,Equipment.EQUIPMENT_ID);
-                            //DoUpdate(0,Equipment.EQUIPMENT_ID,json.get("Equipment"),EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT);
-                        }
-                        if (json.get("TaskOrganiseRelation") != null && json.get("TaskOrganiseRelation").isArray() && json.get("TaskOrganiseRelation").asArrayElement().size() > 0) {
-                            Log.e("TaskOrganiseRelation",String.valueOf(json.get("TaskOrganiseRelation").asArrayElement().size()));
-                            updateData(json.get("TaskOrganiseRelation"), EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION,TaskOrganiseRelation.TEAM_SERVICE_ID);
-                            //DoUpdate(0,TaskOrganiseRelation.TEAM_SERVICE_ID,json.get("TaskOrganiseRelation"),EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION);
-                        }
-                        if (json.get("DataRelation") != null && json.get("DataRelation").isArray() && json.get("DataRelation").asArrayElement().size() > 0) {
-                            Log.e("DataRelation",String.valueOf(json.get("DataRelation").asArrayElement().size()));
-                            updateData(json.get("DataRelation"), EPassSqliteStoreOpenHelper.SCHEMA_DATA_RELATION,DataRelation.DATARELATION_ID);
-                            //DoUpdate(0,DataRelation.DATARELATION_ID,json.get("DataRelation"),EPassSqliteStoreOpenHelper.SCHEMA_DATA_RELATION);
-                        }
-                        if (json.get("Languages") != null && json.get("Languages").isArray() && json.get("Languages").asArrayElement().size() > 0) {
-                            Log.e("Languages",String.valueOf(json.get("Languages").asArrayElement().size()));
-                            updateData(json.get("Languages"), EPassSqliteStoreOpenHelper.SCHEMA_LANGUAGES,Languages.LANGUAGE_ID);
-                        }
-                        if (json.get("Language_Translation") != null && json.get("Language_Translation").isArray() && json.get("Language_Translation").asArrayElement().size() > 0) {
-                            Log.e("Language_Translation",String.valueOf(json.get("Language_Translation").asArrayElement().size()));
-                            updateData(json.get("Language_Translation"), EPassSqliteStoreOpenHelper.SCHEMA_LANGUAGE_TRANSLATION,Language_Translation.TRANSLATION_ID);
-                        }
-                        if (json.get("System_FunctionSetting") != null && json.get("System_FunctionSetting").isArray() && json.get("System_FunctionSetting").asArrayElement().size() > 0) {
-                            Log.e("System_FunctionSetting",String.valueOf(json.get("System_FunctionSetting").asArrayElement().size()));
-                            updateData(json.get("System_FunctionSetting"), EPassSqliteStoreOpenHelper.SCHEMA_SYSTEM_FUNCTION_SETTING, System_FunctionSetting.FUNCTION_ID);
-                        }
-
+                        Map<String ,String> map=new HashMap<String, String>();
+                        map.put("DataType",EPassSqliteStoreOpenHelper.SCHEMA_DATATYPE);
+                        map.put("BaseOrganise",EPassSqliteStoreOpenHelper.SCHEMA_BASE_ORGANISE);
+                        map.put("DataDictionary",EPassSqliteStoreOpenHelper.SCHEMA_DATADICTIONARY);
+                        map.put("Equipment",EPassSqliteStoreOpenHelper.SCHEMA_EQUIPMENT);
+                        map.put("TaskOrganiseRelation",EPassSqliteStoreOpenHelper.SCHEMA_TASK_ORGANISE_RELATION);
+                        map.put("DataRelation",EPassSqliteStoreOpenHelper.SCHEMA_DATA_RELATION);
+                        map.put("Languages",EPassSqliteStoreOpenHelper.SCHEMA_LANGUAGES);
+                        map.put("Language_Translation",EPassSqliteStoreOpenHelper.SCHEMA_LANGUAGE_TRANSLATION);
+                        map.put("System_FunctionSetting",EPassSqliteStoreOpenHelper.SCHEMA_SYSTEM_FUNCTION_SETTING);
+                        doInsert(json,0,map);
                     } catch (Exception e) {
                         CrashReport.postCatchedException(e);
-                    }
-                    finally {
-                        try {
-                            RunDelay(Count/38);
-                            if(Count>500) {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        ToastUtil.showToastLong(R.string.DataTooMorePleaseWait, mContext);
-                                    }
-                                });
-                            }
-                        }catch (Exception e){
-                            CrashReport.postCatchedException(e);
-                        }
                     }
                 }else {
                     dismissCustomDialog();
@@ -269,93 +232,44 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         });
     }
-    public void updateData(final DataElement data, String resource, final String key){
-        getSqliteStore().createElement(data, resource, new StoreCallback() {
-            @Override
-            public void success(DataElement element, String resource) {
-                Log.e("Success","successSave");
-                //DoUpdate(0,key,data,resource);
-            }
 
-            @Override
-            public void failure(DatastoreException ex, String resource) {
-                Log.e("Fail","FailSave");
-                DoUpdate(0,key,data,resource);
-            }
-        });
-//        if(data!=null&&data.isArray()){
-//            String s="";
-//            switch (resource){
-//                case "DataDictionary":{
-//                    s= DataDictionary.DATA_ID;
-//                    break;
-//                }
-//                case "Equipment":{
-//                    s= Equipment.EQUIPMENT_ID;
-//                    break;
-//                }
-//                case "BaseOrganise":{
-//                    s= BaseOrganise.ORGANISE_ID;
-//                    break;
-//                }
-//                case "DataType":{
-//                    s= DataType.DATATYPE_ID;
-//                    break;
-//                }
-//                case "TaskOrganiseRelation":{
-//                    s= TaskOrganiseRelation.TEAM_SERVICE_ID;
-//                    break;
-//                }
-//                case "DataRelation":{
-//                    s= DataRelation.DATARELATION_ID;
-//                    break;
-//                }
-//                case "Languages":{
-//                    s= Languages.LANGUAGE_ID;
-//                    break;
-//                }
-//                case "Language_Translation":{
-//                    s= Language_Translation.TRANSLATION_ID;
-//                    break;
-//                }
-//                case "TaskMessage":{
-//                    s= TaskMessage.MESSAGE_ID;
-//                    break;
-//                }
-//            }
+    public boolean doInsert(final JsonObjectElement jsonObjectElement, final int index, final Map<String,String> map){
 
-//            for(int i=0;i<data.asArrayElement().size();i++){
-//                getSqliteStore().updateElement(DataUtil.isDataElementNull(data.asArrayElement().get(i).asObjectElement().get(s)),
-//                        data.asArrayElement().get(i), resource, new StoreCallback() {
-//                            @Override
-//                            public void success(DataElement element, String resource) {
-//                                Log.e("SuccessUpdate", "SuccessUpdate");
-//                            }
-//
-//                            @Override
-//                            public void failure(DatastoreException ex, String resource) {
-//                                Log.e("FailUpdate", "FailUpdate");
-//                            }
-//                        });
-//                //}
-//            }
-//        }
+        if(index >= map.keySet().size()) {
+            dismissCustomDialog();
+            return true;
+        }
+        String key=(String) map.keySet().toArray()[index];
+        Log.e("key",key);
+        if(checkNullAndInsert(jsonObjectElement,key)){
+             getSqliteStore().createElement(jsonObjectElement.get(key), map.get(key), new StoreCallback() {
+                 @Override
+                 public void success(DataElement element, String resource) {
+                     Log.e("finishUpdate","finishUpdate");
+                     doInsert(jsonObjectElement,index+1,map);
+                 }
 
-      /*  for(int i=0;i<data.asArrayElement().size();i++) {
-            getSqliteStore().updateElements(new Query(), data.asArrayElement().get(i),resource, new StoreCallback() {
-                @Override
-                public void success(DataElement element, String resource) {
-                    Log.e("Success","Success");
-                }
-
-                @Override
-                public void failure(DatastoreException ex, String resource) {
-                    Log.e(ex.toString(),resource.toString());
-                }
-            });
-        }*/
-
+                 @Override
+                 public void failure(DatastoreException ex, String resource) {
+                     Log.e("failUpdate","failUpdate");
+                 }
+             });
+        }else {
+            doInsert(jsonObjectElement,index+1,map);
+        }
+        return false;
     }
+
+    public boolean checkNullAndInsert(JsonObjectElement jsonObjectElement,String key){
+
+        if (jsonObjectElement.get(key) != null && jsonObjectElement.get(key).isArray() && jsonObjectElement.get(key).asArrayElement().size() > 0){
+            Log.e(key,String.valueOf(jsonObjectElement.get(key).asArrayElement().size()));
+            return true;
+        }else {
+            return false;
+        }
+    }
+
 
     public void getDBDataLastUpdateTime(){
         String sql="    select * from ( select max(LastUpdateTime) LastUpdateTime_BaseOrganise from BaseOrganise)," +
@@ -628,15 +542,14 @@ public abstract class BaseActivity extends AppCompatActivity {
              mobileInfo.isConnected() ){
             ToastUtil.showToastLong(R.string.CheckForMONET,mContext);
             SharedPreferenceManager.setNetwork(mContext.getApplicationContext(), NetworkUtils.initNetWork(false));
-            BuildConfig.NetWorkSetting(mContext.getApplicationContext());
+//            BuildConfig.NetWorkSetting(mContext.getApplicationContext());
             return;
         }
         if(activeInfo.getType()==ConnectivityManager.TYPE_WIFI &&
                 wifiInfo.isConnected()){
             NetworkUtils.DoNetworkChange(mContext);
-            return;
         }
-        BuildConfig.NetWorkSetting(mContext);
+//        BuildConfig.NetWorkSetting(mContext);
     }
     public File getDBZipFile(){
         switch (BuildConfig.appEnvironment){
@@ -671,17 +584,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                     break;
                 }
             }
-//            if (BuildConfig.isDebug) {
-//                if (findViewById(R.id.tv_title) != null && findViewById(R.id.tv_title).getParent() != null) {
-//                    ((View) findViewById(R.id.tv_title).getParent()).setBackgroundColor(getResources().getColor(R.color.main_color_debug));
-//                }
-//                if (findViewById(R.id.lay_cus) != null) {
-//                    findViewById(R.id.lay_cus).setBackgroundColor(getResources().getColor(R.color.main_color_debug));
-//                }
-//                if(findViewById(R.id.login)!=null){
-//                    findViewById(R.id.login).setBackgroundColor(getResources().getColor(R.color.main_color_debug));
-//                }
-//            }
         }catch (Exception e){
             CrashReport.postCatchedException(e);
         }

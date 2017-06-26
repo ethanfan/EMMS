@@ -32,6 +32,7 @@ import com.datastore_android_sdk.callback.StoreCallback;
 import com.datastore_android_sdk.datastore.ArrayElement;
 import com.datastore_android_sdk.datastore.DataElement;
 import com.datastore_android_sdk.datastore.ObjectElement;
+import com.datastore_android_sdk.rest.JsonArrayElement;
 import com.datastore_android_sdk.rest.JsonObjectElement;
 import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
@@ -57,7 +58,9 @@ import com.emms.util.ServiceUtils;
 import com.emms.util.SharedPreferenceManager;
 import com.emms.util.ToastUtil;
 import com.tencent.bugly.crashreport.CrashReport;
+import com.zxing.android.decoding.Intents;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,6 +68,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
@@ -81,6 +85,7 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
     private static final String FILE_NAME = "emms.apk";
     private Handler pushHandler = PushService.mHandler;
     private AlertDialog dialog ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,37 +102,59 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
         pushHandler.sendMessage(pushHandler.obtainMessage(PushService.MSG_SET_ALIAS, ""));
         setStyleCustom();
         initView();
+        selectFactory();
+
+    }
+
+    private void selectFactory(){
         if(SharedPreferenceManager.getFactory(mContext)==null){
-            ArrayList<ObjectElement> s=new ArrayList<>();
-            JsonObjectElement GEW=new JsonObjectElement();
-            GEW.set(Equipment.EQUIPMENT_NAME, Factory.FACTORY_GEW);
-            JsonObjectElement EGM=new JsonObjectElement();
-            EGM.set(Equipment.EQUIPMENT_NAME,Factory.FACTORY_EGM);
-            s.add(GEW);
-            s.add(EGM);
-            final EquipmentSummaryDialog equipmentSummaryDialog=new EquipmentSummaryDialog(this,s);
-            equipmentSummaryDialog.dismissCancelButton();
-            equipmentSummaryDialog.setTitle(R.string.SelectFactory);
-            equipmentSummaryDialog.setCancelable(false);
-            equipmentSummaryDialog.show();
-            equipmentSummaryDialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            ChangeServerConnectBaseOnNetwork();
+            HttpUtils.getWithoutCookiesByUrl(mContext, BuildConfig.getFactoryListUrl(mContext), new HttpParams(), new HttpCallback() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String factory=DataUtil.isDataElementNull(equipmentSummaryDialog.getList().get(position).get(Equipment.EQUIPMENT_NAME));
-                    DataUtil.FactoryAndNetWorkAddressSetting(mContext,factory);
-                    BuildConfig.NetWorkSetting(mContext);
-                    if(Factory.FACTORY_EGM.equals(factory)){
-                    ChangeServerConnectBaseOnNetwork();
-                    }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            equipmentSummaryDialog.dismiss();
-                            getVersion();
+                public void onSuccess(String t) {
+                    super.onSuccess(t);
+                    if("".equals(t)||t==null){
+                        ToastUtil.showToastLong(getString(R.string.FailGetFactoryList),mContext);
+                    }else {
+                        JsonArrayElement jsonArrayElement=new JsonArrayElement(t);
+                        ArrayList<ObjectElement> s=new ArrayList<>();
+                        for(int i=0;i<jsonArrayElement.size();i++){
+                            ObjectElement objectElement=jsonArrayElement.get(i).asObjectElement();
+                            objectElement.set(Equipment.EQUIPMENT_NAME,objectElement.get("factoryCode"));
+                            s.add(objectElement);
                         }
-                    });
+                        final EquipmentSummaryDialog equipmentSummaryDialog=new EquipmentSummaryDialog(mContext,s);
+                        equipmentSummaryDialog.dismissCancelButton();
+                        equipmentSummaryDialog.setTitle(R.string.SelectFactory);
+                        equipmentSummaryDialog.setCancelable(false);
+                        equipmentSummaryDialog.show();
+                        equipmentSummaryDialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                ObjectElement objectElement=equipmentSummaryDialog.getList().get(position);
+                                String factory=DataUtil.isDataElementNull(objectElement.get(Equipment.EQUIPMENT_NAME));
+                                SharedPreferenceManager.setFactory(mContext,factory);
+                                SharedPreferenceManager.setInteranetUrl(mContext,DataUtil.isDataElementNull(objectElement.get("IntranetURL")));
+                                SharedPreferenceManager.setExtranetUrl(mContext,DataUtil.isDataElementNull(objectElement.get("ExtranetURL")));
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        equipmentSummaryDialog.dismiss();
+                                        getVersion();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+                @Override
+                public void onFailure(int errorNo, String strMsg) {
+                    super.onFailure(errorNo, strMsg);
+                    ToastUtil.showToastLong(getString(R.string.FailGetFactoryList)+"/n"+strMsg,mContext);
                 }
             });
+
+
         }else {
             initNetWorklist(new StoreCallback() {
                 @Override
@@ -139,14 +166,14 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                             }
                         }
                     }
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ChangeServerConnectBaseOnNetwork();
-                               // BuildConfig.NetWorkSetting(mContext);
-                                getVersion();
-                            }
-                        });
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ChangeServerConnectBaseOnNetwork();
+                            // BuildConfig.NetWorkSetting(mContext);
+                            getVersion();
+                        }
+                    });
 
                 }
 
@@ -165,23 +192,52 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
 
         }
     }
+
    private void DoInit(){
-       runOnUiThread(new Runnable() {
-           @Override
-           public void run() {
-               if(!getIntent().getBooleanExtra("FromCusActivity", false)) {
-                   if(SharedPreferenceManager.getDatabaseVersion(mContext)==null||Integer.valueOf(SharedPreferenceManager.getDatabaseVersion(mContext))<DBVersion){
-                       getDBFromServer(getDBZipFile());
-                   }else {
-                       getNewDataFromServer();
+       if(SharedPreferenceManager.getExtranetUrl(mContext)==null){
+           HttpUtils.getWithoutCookiesByUrl(mContext, BuildConfig.getFactoryListUrl(mContext), new HttpParams(), new HttpCallback() {
+               @Override
+               public void onSuccess(String t) {
+                   super.onSuccess(t);
+                   JsonArrayElement jsonArrayElement=new JsonArrayElement(t);
+                   for(int i=0;i<jsonArrayElement.size();i++){
+                       ObjectElement objectElement=jsonArrayElement.get(i).asObjectElement();
+                       if(SharedPreferenceManager.getFactory(mContext).equals(DataUtil.isDataElementNull(objectElement.get("factoryCode")))){
+                           SharedPreferenceManager.setExtranetUrl(mContext,DataUtil.isDataElementNull(objectElement.get("ExtranetURL")));
+                           SharedPreferenceManager.setInteranetUrl(mContext,DataUtil.isDataElementNull(objectElement.get("IntranetURL")));
+                           break;
+                       }
                    }
+                   doGetDB();
                }
-               if (mAdapter!=null&&!mAdapter.isEnabled()) {
-                   showWirelessSettingsDialog();
+
+               @Override
+               public void onFailure(int errorNo, String strMsg) {
+                   super.onFailure(errorNo, strMsg);
+                   ToastUtil.showToastLong(getString(R.string.FailGetFactoryList)+"/n"+strMsg,mContext);
                }
-           }
-       });
+           });
+       }else {
+           doGetDB();
+       }
    }
+    private void doGetDB(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(!getIntent().getBooleanExtra("FromCusActivity", false)) {
+                    if(SharedPreferenceManager.getDatabaseVersion(mContext)==null||Integer.valueOf(SharedPreferenceManager.getDatabaseVersion(mContext))<DBVersion){
+                        getDBFromServer(getDBZipFile());
+                    }else {
+                        getNewDataFromServer();
+                    }
+                }
+                if (mAdapter!=null&&!mAdapter.isEnabled()) {
+                    showWirelessSettingsDialog();
+                }
+            }
+        });
+    }
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -426,22 +482,23 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                         final ArrayElement arrayElement=json.get("UserRoles").asArrayElement();
                         if(arrayElement.size()==0){
                             ToastUtil.showToastShort(R.string.NoRoleInfo,mContext);
-                        }else if(arrayElement.size()==1){
+                        }else{
                             SetRole(arrayElement.get(0).asObjectElement(),data);
-                        }else {
-                            final ArrayList<ObjectElement> list=new ArrayList<>();
-                            for(int i=0;i<arrayElement.size();i++){
-                                list.add(arrayElement.get(i).asObjectElement());
-                            }
-                            UserRoleDialog userRoleDialog=new UserRoleDialog(mContext,list);
-                            userRoleDialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                    SetRole(list.get(position), data);
-                                }
-                            });
-                            userRoleDialog.show();
                         }
+//                        else {
+//                            final ArrayList<ObjectElement> list=new ArrayList<>();
+//                            for(int i=0;i<arrayElement.size();i++){
+//                                list.add(arrayElement.get(i).asObjectElement());
+//                            }
+//                            UserRoleDialog userRoleDialog=new UserRoleDialog(mContext,list);
+//                            userRoleDialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                                @Override
+//                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                                    SetRole(list.get(position), data);
+//                                }
+//                            });
+//                            userRoleDialog.show();
+//                        }
                     } else if (code == Constants.REQUEST_CODE_FROZEN_ACCOUNT) {
                         Toast.makeText(mContext, getResources().getString(R.string.warning_message_frozen), Toast.LENGTH_SHORT).show();
                     } else if (code == Constants.REQUEST_CODE_IDENTITY_AUTHENTICATION_FAIL) {
@@ -707,4 +764,5 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
 //			}
 //		});
 //   }
+
 }

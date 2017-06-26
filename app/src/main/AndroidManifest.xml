@@ -324,9 +324,9 @@
         <meta-data android:name="JPUSH_CHANNEL" android:value="developer-default"/>
         <!--  </>值来自开发者平台取得的AppKey-->
         <!--  </>正式版本的AppKey-->
-            <meta-data android:name="JPUSH_APPKEY" android:value="d77ebacf4c4368c50e5d8081" />
+            <!--<meta-data android:name="JPUSH_APPKEY" android:value="d77ebacf4c4368c50e5d8081" />-->
         <!--  </>UAT版本的AppKey-->
-        <!--<meta-data android:name="JPUSH_APPKEY" android:value="9d0b43f868d45eb4492d6276" />-->
+        <meta-data android:name="JPUSH_APPKEY" android:value="9d0b43f868d45eb4492d6276" />
         <!--  </>DEVELOPMENT的AppKey-->
         <!--<meta-data android:name="JPUSH_APPKEY" android:value="be47eca97046a2b576a7c304" />-->
         <!--<activity-->

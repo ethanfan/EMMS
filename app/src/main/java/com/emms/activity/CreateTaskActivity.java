@@ -1023,7 +1023,7 @@ public class CreateTaskActivity extends NfcActivity implements View.OnClickListe
             taskDetail.set("TaskClass", task_type_class.get(TaskType));
         }
         taskDetail.set("TaskApplicantOrg",teamId);//任务发起人组别
-        taskDetail.set("Factory",getLoginInfo().getFromFactory());//任务发起人所属班组
+        taskDetail.set("Factory",getLoginInfo().getFactoryId());//任务发起人所属班组
         taskDetail.set("IsExsitTaskEquipment",HasEquipment_map.get(hasEquipment.getText()));//是否为设备相关任务
         //TODO
         if(task_type_class.get(TaskType).equals(Task.MOVE_CAR_TASK)){

@@ -9,6 +9,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.datastore_android_sdk.rest.JsonObjectElement;
@@ -16,6 +20,7 @@ import com.datastore_android_sdk.rxvolley.client.HttpCallback;
 import com.datastore_android_sdk.rxvolley.client.HttpParams;
 import com.emms.R;
 import com.emms.fragment.LinkedOrdersFragment;
+import com.emms.fragment.OverDueVerifyFragment;
 import com.emms.fragment.PendingOrdersFragment;
 import com.emms.fragment.ProcessingFragment;
 import com.emms.httputils.HttpUtils;
@@ -25,6 +30,7 @@ import com.emms.util.Constants;
 import com.emms.util.DataUtil;
 import com.emms.util.ToastUtil;
 import com.emms.util.ViewFindUtils;
+import com.flyco.tablayout.OnPageSelectListener;
 import com.flyco.tablayout.SlidingTabLayout;
 import com.flyco.tablayout.listener.OnTabSelectListener;
 import com.tencent.bugly.crashreport.CrashReport;
@@ -42,6 +48,8 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
     private String TaskClass;
     private String TaskSubClass;
     private SlidingTabLayout tabLayout_2;
+    private EditText editText_equipment_name,editText_equipment_num;
+    private ViewPager vp;
     //private HashMap<String,Integer> TaskClass_Position_map=new HashMap<>()
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +96,7 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
             }
         }
         View decorView = getWindow().getDecorView();
-        ViewPager vp = ViewFindUtils.find(decorView, R.id.vp);
+        vp = ViewFindUtils.find(decorView, R.id.vp);
         vp.setOffscreenPageLimit(2);
         MyPagerAdapter mAdapter = new MyPagerAdapter(getSupportFragmentManager());
         vp.setAdapter(mAdapter);
@@ -98,7 +106,12 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
            tabLayout_2 = ViewFindUtils.find(decorView, R.id.tl_2);
            tabLayout_2.setViewPager(vp);
            tabLayout_2.setOnTabSelectListener(this);
-
+           tabLayout_2.setOnPageSelectListener(new OnPageSelectListener() {
+               @Override
+               public void onPageChange(int position) {
+                       findViewById(R.id.search_filter).setVisibility(View.INVISIBLE);
+               }
+           });
 
            //   tabLayout_2.showMsg(2, 9);         //消息数量和位置
            //   tabLayout_2.setMsgMargin(2, 12, 10);
@@ -116,6 +129,12 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
 
     private void initView() {
         findViewById(R.id.btn_right_action).setOnClickListener(this);
+        findViewById(R.id.filter).setOnClickListener(this);
+        findViewById(R.id.filter).setVisibility(View.VISIBLE);
+        findViewById(R.id.search_button).setOnClickListener(this);
+        findViewById(R.id.reset_button).setOnClickListener(this);
+        editText_equipment_name=(EditText) findViewById(R.id.equipment_name);
+        editText_equipment_num=(EditText)findViewById(R.id.equipment_num);
        switch (TaskClass){
            case Task.REPAIR_TASK:{
                ((TextView) findViewById(R.id.tv_title)).setText(getResources().getString(R.string.repair_task));
@@ -168,17 +187,42 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
         if (click_id ==R.id.btn_right_action){
             finish();
         }
+        switch (click_id){
+            case R.id.btn_right_action:{
+                finish();
+                break;
+            }
+        case R.id.filter:{
+            if(findViewById(R.id.search_filter).getVisibility()==View.GONE||
+                    findViewById(R.id.search_filter).getVisibility()==View.INVISIBLE){
+                //findViewById(R.id.search_filter).setVisibility(View.VISIBLE);
+                buttonAnim(true);
+            }
+            else {
+                //findViewById(R.id.search_filter).setVisibility(View.GONE);
+                buttonAnim(false);
+            }
+            break;
+        }
+        case R.id.search_filter:{
+            break;
+        }
+        case R.id.search_button:{
+            ((PendingOrdersFragment)mFragments.get(1)).setSearchCondition(editText_equipment_num.getText().toString(),editText_equipment_name.getText().toString());
+            ((PendingOrdersFragment)mFragments.get(1)).doRefresh();
+            buttonAnim(false);
+            vp.setCurrentItem(1);
+            break;
+        }
+        case R.id.reset_button:{
+            resetCondition();
+            break;
+        }
+        }
     }
 
     @Override
     public void resolveNfcMessage(Intent intent) {
-//        String action = intent.getAction();
-//        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)
-//                || NfcAdapter.ACTION_TECH_DISCOVERED.equals(action)
-//                || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-//            Parcelable tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-//            String iccardID = NfcUtils.dumpTagData(tag);
-//        }
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
@@ -203,72 +247,12 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
     }
 
 
-    /*
-    private void getRepairTaskFromServer(){
-        HttpParams params=new HttpParams();
-     //   params.put("Operator_ID", SharedPreferenceManager.getUserName(this));
-        //params.putHeaders("cookies",SharedPreferenceManager.getCookie(this));
-        Log.e("returnString","dd");
-        HttpUtils.get(this, "Task", params, new HttpCallback() {
-            @Override
-            public void onSuccess(String t) {
-                super.onSuccess(t);
-                Log.e("returnString",t);
-            }
-            @Override
-            public void onFailure(int errorNo, String strMsg) {
-
-                super.onFailure(errorNo, strMsg);
-            }
-        });
-    }*/
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
     }
-    //  private ListenableFuture<DataElement> getRepairTaskContent(String status) {
-        // RepairTask.clear();
-   //     String rawQuery = "SELECT * FROM MAINTAIN WHERE STATUS=" + "\""+status+"\"";
-  //      return  getSqliteStore().performRawQuery(rawQuery,
- //               EPassSqliteStoreOpenHelper.SCHEMA_MAINTAIN, null);
-        /*Futures.addCallback(elemt, new FutureCallback<DataElement>() {
-            @Override
-            public void onSuccess(DataElement dataElement) {
-               if(dataElement!=null&&dataElement.asArrayElement().size()>0){
-                   for(DataElement obj:dataElement.asArrayElement()){
-                       RepairTask.add(obj.asObjectElement());
-                   }
-                   Log.e("RepairTask",RepairTask.toString());
 
-               }
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-               runOnUiThread(new Runnable() {
-                   @Override
-                   public void run() {
-                       Toast.makeText(TaskListActivity.this,"获取维修任务信息失败，请重新获取",Toast.LENGTH_SHORT).show();
-                   }
-               });
-            }
-        });*/
-//    }
-   /* private ArrayList<ObjectElement> getRepairTaskList(String status){
-        ListenableFuture<DataElement> data=getRepairTaskContent(status);
-        Futures.addCallback(data, new FutureCallback<DataElement>() {
-            @Override
-            public void onSuccess(DataElement dataElement) {
-
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-
-            }
-        });
-    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -288,8 +272,6 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
     private void getTaskCountFromServer(){
         showCustomDialog(R.string.loadingData);
         HttpParams params=new HttpParams();
-        //params.put("id",String.valueOf(getLoginInfo().getId()));
-        // String s=SharedPreferenceManager.getUserName(this);
         HttpUtils.get(this, "TaskNum", params, new HttpCallback() {
             @Override
             public void onSuccess(String t) {
@@ -321,5 +303,48 @@ public class TaskListActivity extends NfcActivity implements OnTabSelectListener
     }
     private void getTaskByICcardID(String ICcardID){
 
+    }
+    private void buttonAnim(final boolean showChannelFilterView){
+        if(showChannelFilterView){
+            Animation operatingAnim2 = AnimationUtils.loadAnimation(this, R.anim.expand);
+            operatingAnim2.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    findViewById(R.id.search_filter).setVisibility(View.VISIBLE);
+                }
+            });
+            LinearInterpolator lin = new LinearInterpolator();
+            operatingAnim2.setInterpolator(lin);
+            findViewById(R.id.search_filter).startAnimation(operatingAnim2);
+        }else{
+            Animation operatingAnim2 = AnimationUtils.loadAnimation(this, R.anim.collapse);
+            operatingAnim2.setAnimationListener(new Animation.AnimationListener() {
+
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    findViewById(R.id.search_filter).setVisibility(View.GONE);
+                }
+            });
+            LinearInterpolator lin = new LinearInterpolator();
+            operatingAnim2.setInterpolator(lin);
+            findViewById(R.id.search_filter).startAnimation(operatingAnim2);
+
+        }
+    }
+    private void  resetCondition(){
+        editText_equipment_name.setText("");
+        editText_equipment_num.setText("");
     }
 }
