@@ -180,9 +180,9 @@ public class DataUtil {
                 +" ) Translation_Display,d.[DataName]"
                 +" from DataDictionary d"
                 +" where d.DataType in ('"+DataType+"','TaskSubClass')"
-                +" and ( d.PData_ID =0 or d.PData_ID =(select Data_ID from DataDictionary where factory_ID = '"+SharedPreferenceManager.getFactory(context)+"' and datatype = 'TaskClass' and datacode = 'T02' )  ) Order By Sort asc) a";
+                +" and ( d.PData_ID =0 or d.PData_ID =(select Data_ID from DataDictionary where factory_ID = '"+SharedPreferenceManager.getFactory(context)+"' and datatype = 'TaskClass' and datacode = 'T02' )  ) and Factory_ID='"+SharedPreferenceManager.getFactory(context)+"' Order By Sort asc) a";
         }else {
-            sql=  "select * from DataDictionary where DataType in ('"+DataType+"','TaskSubClass') and ( PData_ID =0 or PData_ID =(select Data_ID from DataDictionary where factory_ID = '"+SharedPreferenceManager.getFactory(context)+"' and datatype = 'TaskClass' and datacode = 'T02' )  ) Order By Sort asc";
+            sql=  "select * from DataDictionary where DataType in ('"+DataType+"','TaskSubClass') and ( PData_ID =0 or PData_ID =(select Data_ID from DataDictionary where factory_ID = '"+SharedPreferenceManager.getFactory(context)+"' and datatype = 'TaskClass' and datacode = 'T02' )  ) and Factory_ID='"+SharedPreferenceManager.getFactory(context)+"' Order By Sort asc";
         }
         ((AppApplication)context.getApplicationContext()).getSqliteStore().performRawQuery(sql, "DataDictionary",storeCallback);
     }

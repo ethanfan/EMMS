@@ -52,6 +52,7 @@
     <string name="NothaveEquipment">设备无关</string>
     <string name="task_subtype_name"> 任务子类型: </string>
     <string name="task_description"> 任务描述:</string>
+    <string name="task_create_description">任务描述:&#160;</string>
     <string name="task_status">任务状态:</string>
     <string name="task_s">任务状态</string>
     <string name="time">创建时间:</string>

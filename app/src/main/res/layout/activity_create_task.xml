@@ -364,7 +364,7 @@
                             android:layout_weight="1.6"
                             android:layout_gravity="center_vertical"
                             android:gravity="end"
-                            android:text="@string/task_description"
+                            android:text="@string/task_create_description"
                             android:textColor="@color/text_color"
                             android:textSize="18sp" />
 

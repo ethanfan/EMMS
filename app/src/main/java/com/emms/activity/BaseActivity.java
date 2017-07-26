@@ -184,7 +184,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         data.set("LastUpdateTime_System_FunctionSetting",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_System_FunctionSetting")));
         //data.set("LastUpdateTime_TaskMessage",DataUtil.isDataElementNull(dataElement.asObjectElement().get("LastUpdateTime_TaskMessage")));
         if(SharedPreferenceManager.getFactory(this)==null){
-            data.set("Factory_ID", Factory.FACTORY_GEW);}
+            data.set("Factory_ID", Factory.FACTORY_GEW);
+        }
         else {
             data.set("Factory_ID",SharedPreferenceManager.getFactory(this));
         }

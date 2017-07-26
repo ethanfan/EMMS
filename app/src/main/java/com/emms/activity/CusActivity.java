@@ -72,7 +72,7 @@ public class CusActivity extends NfcActivity implements View.OnClickListener{
         ServiceUtils.starKeepLiveService(ServiceUtils.Mode.Only_KeepLiveServiceNo_1,this);
 //        BroadcastUtils.startKeepLiveBroadcast(this);
         if(Factory.FACTORY_EGM.equals(SharedPreferenceManager.getFactory(this))) {
-            AppApplication.AppTimeZone="GMT+7";
+            AppApplication.AppTimeZone="GMT+8";
 //            TimeZone.setDefault(TimeZone.getTimeZone("GMT+7"));
         }else {
             AppApplication.AppTimeZone="GMT+8";

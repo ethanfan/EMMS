@@ -13,6 +13,46 @@
             <set />
           </value>
         </entry>
+        <entry key="$USER_HOME$/Desktop/HelloMui 2/HBuilder-Hello1/app/build.gradle">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Desktop/HelloMui 2/HBuilder-Hello1/app/src/main/AndroidManifest.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Desktop/HelloMui 2/HBuilder-Hello1/app/src/main/assets/apps/WeCare/www/View/login.html">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Desktop/HelloMui 2/HBuilder-Hello1/app/src/main/assets/apps/WeCare/www/controller/environment.js">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Desktop/HelloMui 2/HBuilder-Hello1/app/src/main/assets/apps/WeCare/www/manifest.json">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Desktop/HelloMui 2/HBuilder-Hello1/app/src/main/assets/data/dcloud_control.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Desktop/HelloMui 2/HBuilder-Hello1/app/src/main/assets/data/dcloud_properties.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$USER_HOME$/Desktop/HelloMui 2/HBuilder-Hello1/app/src/main/res/values/strings.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$USER_HOME$/Desktop/PloyU e-Inspection/QRQM/frontend/wireFrame/build.gradle">
           <value>
             <set />
@@ -64,6 +104,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/activity/AppApplication.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/activity/BackgroundActivity.java">
           <value>
             <set />
           </value>
@@ -143,6 +188,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/activity/TaskListActivity.java">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/activity/TaskVerifyActivity.java">
           <value>
             <set />
@@ -159,6 +209,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/activity/WorkLoadActivity.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/adapter/BackgroundAdapter.java">
           <value>
             <set />
           </value>
@@ -213,6 +268,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/schema/Operator.java">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/ui/KProgressHUD.java">
           <value>
             <set />
@@ -263,7 +323,17 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/emms/util/SharedPreferenceManager.java">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/zxing/android/CaptureActivity.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/res/layout/activity_background.xml">
           <value>
             <set />
           </value>
@@ -293,7 +363,17 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/res/layout/activity_repair_task.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/app/src/main/res/layout/deatils_record.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/res/layout/item_background.xml">
           <value>
             <set />
           </value>

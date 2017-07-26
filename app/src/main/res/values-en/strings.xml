@@ -50,6 +50,7 @@
     <string name="NothaveEquipment">Equipment irrelevant</string>
     <string name="task_subtype_name">Task sub type:&#160; </string>
     <string name="task_description">Task description:&#160;</string>
+    <string name="task_create_description">Task description type:&#160;</string>
     <string name="task_status">Task status:&#160;</string>
     <string name="task_s">Task status</string>
     <string name="time">Created time:&#160;</string>

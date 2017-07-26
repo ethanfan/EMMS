@@ -30,8 +30,8 @@ android {
         applicationId "com.emms"
         minSdkVersion 14
         targetSdkVersion 20
-        versionCode 63
-        versionName "1.0.63"
+        versionCode 64
+        versionName "1.0.64"
         multiDexEnabled true
         multiDexKeepFile file('multiDexKeep.txt')
         ndk {
