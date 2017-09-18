@@ -380,6 +380,7 @@
     <string name="NoCommand">未评价</string>
     <string name="NoEquipment">无设备</string>
     <string name="NoRoleInfo">该账号无角色信息，请联系管理员</string>
+    <string name="AccountFactoryDifferentFromSelectFactory">登录账号与所选工厂不一致，请更换账号或在设置中修改所选工厂</string>
     <string name="NoFaultSummaryType">请选择故障类型</string>
     <string name="NoFaultSummary">请填写故障描述</string>
     <string name="NoRepairStatus">请填写维修情况</string>

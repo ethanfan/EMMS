@@ -82,6 +82,7 @@ public class AppApplication extends Application {
                 break;
             }
             default:{
+                NetworkConnectChangedReceiver.initNetWorkData();
                 break;
             }
         }
@@ -95,7 +96,9 @@ public class AppApplication extends Application {
         //bugly初始化
         CrashReport.initCrashReport(getApplicationContext(), "900057191", true);
         //地址设置
-        JPushInterface.stopPush(getApplicationContext());
+        if(!JPushInterface.isPushStopped(this)){
+            JPushInterface.stopPush(getApplicationContext());
+        }
         if(Factory.FACTORY_EGM.equals(SharedPreferenceManager.getFactory(this))) {
             //TimeZone.setDefault(TimeZone.getTimeZone("GMT+7"));
             AppTimeZone="GMT+7";
@@ -207,10 +210,10 @@ public class AppApplication extends Application {
             return null ;
         }
         public void waitForDexopt(Context base) {
-            Intent intent = new Intent();
-            ComponentName componentName = new
-                    ComponentName("com.emms", LoadResActivity.class.getName());
-            intent.setComponent(componentName);
+            Intent intent = new Intent(base,LoadResActivity.class);
+//            ComponentName componentName = new
+//                    ComponentName("com.emms.activity", LoadResActivity.class.getName());
+//            intent.setComponent(componentName);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             base.startActivity(intent);
             long startWait = System.currentTimeMillis ();

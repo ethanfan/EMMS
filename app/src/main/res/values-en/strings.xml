@@ -381,6 +381,7 @@
     <string name="NoFaultSummaryType">Please select the type of breakdown</string>
     <string name="NoFaultSummary">Please fill in the breakdown description</string>
     <string name="NoRepairStatus">Please fill in the maintenance condition</string>
+    <string name="AccountFactoryDifferentFromSelectFactory">The login account is not in agreement with the selected factory. Change your account number or modify the selected factory in the settings </string>
     <string name="NoTaskSummary">Please fill in the summary of the task</string>
     <string name="isCommand">Evaluated</string>
     <string name="ReGetEquipmentList">Please wait for a new access to the Equipment list</string>

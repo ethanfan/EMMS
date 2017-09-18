@@ -477,6 +477,13 @@ public class LoginActivity extends NfcActivity implements View.OnClickListener {
                         String userData =jsonObject.getString("UserData");
                         SharedPreferenceManager.setUserData(LoginActivity.this, userData);
                         final String data=jsonObject.getString("Data");
+                        JsonObjectElement userD=new JsonObjectElement(data);
+                        String fromFactory=DataUtil.isDataElementNull(userD.get("FromFactory"));
+                        if(!SharedPreferenceManager.getFactory(mContext).equals(fromFactory)){
+                            dismissCustomDialog();
+                            ToastUtil.showToastLong(R.string.AccountFactoryDifferentFromSelectFactory,mContext);
+                            return;
+                        }
                         SharedPreferenceManager.setLoginData(LoginActivity.this,data);
                         JsonObjectElement json=new JsonObjectElement(Msg);
                         final ArrayElement arrayElement=json.get("UserRoles").asArrayElement();

@@ -63,8 +63,12 @@ public class NetworkConnectChangedReceiver extends  BroadcastReceiver{
 
     public static ArrayList<String> mNetworkList=new ArrayList<>();
     public static void initNetWorkData(){
-        mNetworkList.add("Linkgoo-Base");
+        mNetworkList.add("Linkgoo-AP1_5G");
         mNetworkList.add("esq-data");
+        mNetworkList.add("esq-app-garment");
+        mNetworkList.add("esq-apps-weav1");
+        mNetworkList.add("esq-apps-weav2");
+        mNetworkList.add("esq-apps-weav3");
     }
 
     private void doReceive(Context context,Intent intent){
