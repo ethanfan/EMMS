@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Linkgoo.EMMS.MP", "Linkgoo.EMMS.MP\Linkgoo.EMMS.MP.csproj", "{2FFCCF6F-2405-4EC1-AE3F-E4EC8301F415}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Linkgoo.EMMS.MP.Core", "Linkgoo.EMMS.MP.Core\Linkgoo.EMMS.MP.Core.csproj", "{2C9997D8-0733-4F26-9839-9005CA87A4C9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2FFCCF6F-2405-4EC1-AE3F-E4EC8301F415}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FFCCF6F-2405-4EC1-AE3F-E4EC8301F415}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FFCCF6F-2405-4EC1-AE3F-E4EC8301F415}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FFCCF6F-2405-4EC1-AE3F-E4EC8301F415}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C9997D8-0733-4F26-9839-9005CA87A4C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C9997D8-0733-4F26-9839-9005CA87A4C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C9997D8-0733-4F26-9839-9005CA87A4C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C9997D8-0733-4F26-9839-9005CA87A4C9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
